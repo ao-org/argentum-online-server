@@ -108,6 +108,12 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                 Slot = .Accion.ObjSlot
                 Select Case obj.TipoRuna
                     Case e_RuneType.ReturnHome
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.ReturnHome) Then
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call UpdateUserInv(False, UserIndex, Slot)
                         Call HomeArrival(UserIndex)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
@@ -129,19 +135,24 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                     Case e_RuneType.FastTravel
-                        If .flags.Muerto = 1 Then
-                            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.FastTravel) Then
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
-                        If MapInfo(.pos.Map).Seguro = 0 Then
+                        If .pos.Map <> obj.DesdeMap Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
+                        If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
-                        Call HomeArrival(UserIndex)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)
@@ -164,6 +175,40 @@ Public Sub ResetPendingAction(ByVal UserIndex As Integer)
         .Accion.Deadline = 0
     End With
 End Sub
+
+' Determina si el usuario cumple los requisitos de vida/zona para usar
+' o completar una runa del tipo indicado. Centraliza el criterio para
+' evitar duplicarlo entre el chequeo temprano (UseInvItem) y el chequeo
+' de defensa al completar (CompletePendingAction).
+Public Function CanUseRuneNow(ByVal UserIndex As Integer, ByVal TipoRuna As e_RuneType) As Boolean
+    With UserList(UserIndex)
+        Select Case TipoRuna
+            Case e_RuneType.ReturnHome
+                ' Zona segura obligatoria, vivo o muerto indistinto.
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_RuneType.FastTravel
+                ' Debe estar vivo y en zona segura.
+                If .flags.Muerto = 1 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case Else
+                ' MesonSafePassage: comportamiento original, sin cambios.
+                If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+        End Select
+    End With
+    CanUseRuneNow = True
+End Function
 
 Public Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo HandleWorldAction_Err
