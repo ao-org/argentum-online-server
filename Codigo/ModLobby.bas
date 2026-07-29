@@ -25,6 +25,7 @@ Attribute VB_Name = "ModLobby"
 '
 '
 Const WaitingForPlayersTime = 300000 '5 minutes
+Private Const DEFAULT_EVENT_NAME As String = "Evento"
 
 Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
@@ -95,6 +96,7 @@ Type t_Lobby
     IsGlobal As Boolean
     MapOpenTime As Long
     BroadOpenEvent As t_Timer
+    RoundCount As Byte ' Cantidad de rondas que tendrá el lobby/evento
 End Type
 
 Public Type t_response
@@ -217,6 +219,7 @@ Public Sub SetupLobby(ByRef instance As t_Lobby, ByRef LobbySettings As t_NewSce
     instance.Description = LobbySettings.Description
     instance.Password = LobbySettings.Password
     instance.InscriptionPrice = LobbySettings.InscriptionFee
+    instance.RoundCount = LobbySettings.RoundNumber
 End Sub
 
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
@@ -564,9 +567,13 @@ Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) 
     instance.IsPublic = IsPublic
     Call UpdateLobbyState(instance, AcceptingPlayers)
     If IsPublic Then
-        Dim EventName As String: EventName = "Evento"
-        If Not instance.Scenario Is Nothing Then
+        Dim EventName As String
+        If Len(instance.Description) > 0 Then
+            EventName = instance.Description
+        ElseIf Not instance.Scenario Is Nothing Then
             EventName = instance.Scenario.GetScenarioName()
+        Else
+            EventName = DEFAULT_EVENT_NAME
         End If
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName & "¬" & instance.MaxPlayers & "¬" & instance.MinLevel & "¬" & instance.MaxLevel _
                 & "¬" & instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GLOBAL))
@@ -997,8 +1004,12 @@ Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSetti
 End Function
 
 Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
-    GlobalLobbyIndex = GetAvailableLobby()
     If Not ValidateLobbySettings(LobbySettings) Then
+        Exit Sub
+    End If
+    GlobalLobbyIndex = GetAvailableLobby()
+    If GlobalLobbyIndex < 0 Then
+        LogInfoServidor "CreatePublicEvent GlobalLobbyIndex < 0"
         Exit Sub
     End If
     Call InitializeLobby(LobbyList(GlobalLobbyIndex))
@@ -1008,9 +1019,7 @@ Public Sub CreatePublicEvent(ByRef LobbySettings As t_NewScenearioSettings)
 End Sub
 
 Public Sub initEventLobby(ByVal UserIndex As Integer, ByVal eventType As Integer, LobbySettings As t_NewScenearioSettings)
-    'aca se podria validar por nivel de patreon
     If eventType = 0 Then
-        'a esto que esta aca abajo solo se accede si el lobby fue creado mediante comando GM
         CurrentActiveEventType = LobbySettings.ScenearioType
         Select Case LobbySettings.ScenearioType
             Case e_EventType.CaptureTheFlag

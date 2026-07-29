@@ -901,6 +901,7 @@ Sub LoadBalance()
     PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
     NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
     PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
+    GuildCallCooldown = val(BalanceIni.GetValue("GUILD", "GuildCallCooldown"))
     ' Exp
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
@@ -1054,6 +1055,7 @@ Sub LoadOBJData()
             .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+            If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
@@ -1203,6 +1205,8 @@ Sub LoadOBJData()
                     .Cooldown = val(Leer.GetValue(ObjKey, "Cooldown"))
                 Case e_OBJType.otTeleport
                     .Radio = val(Leer.GetValue(ObjKey, "Radio"))
+                Case e_OBJType.otCastleSpawner
+                    .AssignedCastleIndex = val(Leer.GetValue(ObjKey, "AssignedCastleIndex"))
                 Case e_OBJType.otChest
                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
                     Select Case .Subtipo
@@ -1341,6 +1345,10 @@ Sub LoadOBJData()
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
             Dim s As String
+            Dim ListaRazasObjDat(1 To NUMRAZAS) As String
+            For i = 1 To NUMRAZAS
+                ListaRazasObjDat(i) = RaceToString(i)
+            Next i
             For i = 1 To NUMCLASES
                 s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
@@ -1352,10 +1360,11 @@ Sub LoadOBJData()
             For i = 1 To NUMRAZAS
                 s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
-                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+                Do While LenB(s) > 0 And N <= NUMRAZAS
+                    If Tilde(ListaRazasObjDat(N)) = Trim$(s) Then Exit Do
                     n = n + 1
                 Loop
-                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .RazaProhibida(i) = IIf(LenB(s) > 0 And n <= NUMRAZAS, n, 0)
             Next i
             ' Skill requerido
             str = Leer.GetValue(ObjKey, "SkillRequerido")
@@ -2190,6 +2199,7 @@ Sub LoadIntervalos()
     IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
     IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
     IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
+    IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub

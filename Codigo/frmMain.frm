@@ -1361,6 +1361,9 @@ Private Sub SubastaTimer_Timer()
     On Error GoTo SubastaTimer_Timer_Err
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
+    If Subasta.TiempoRestanteSubasta Mod 5 = 0 And Subasta.SubastadorIndex > 0 Then
+        Call WriteConsoleMsg(Subasta.SubastadorIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_SEGUNDOS_RESTANTES, CStr(Subasta.TiempoRestanteSubasta), e_FontTypeNames.FONTTYPE_SUBASTA))
+    End If
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
@@ -1371,7 +1374,7 @@ Private Sub SubastaTimer_Timer()
     If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
         Subasta.HaySubastaActiva = False
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_CANCELADA_FALTA_OFERTAS, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
-        'Devolver item antes de resetear datos
+        frmMain.SubastaTimer.Enabled = False
         Call DevolverItem
         Exit Sub
     End If
@@ -1490,33 +1493,13 @@ End Sub
 
 Private Sub TimerRespawn_Timer()
     On Error GoTo ErrorHandler
-    Dim NpcIndex         As Long
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    'Update NPCs
-    For NpcIndex = 1 To MaxRespawn
-        'Debug.Print RespawnList(NpcIndex).name
-        If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
-            If RespawnList(NpcIndex).Contadores.IntervaloRespawn > 0 Then
-                RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
-            Else
-                RespawnList(NpcIndex).flags.NPCActive = False
-                If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, RespawnList(NpcIndex).Numero, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1788=¬1 ha vuelto a este mundo.
-                    If RespawnList(NpcIndex).flags.SndRespawn > 0 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(RespawnList(NpcIndex).flags.SndRespawn, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
-                    End If
-                End If
-                Call ReSpawnNpc(RespawnList(NpcIndex))
-            End If
-        End If
-    Next NpcIndex
+    Call ProcessRespawnQueue
     Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
 ErrorHandler:
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "NPC: " & NpcList(NpcIndex).name & " en la posicion: " & NpcList(NpcIndex).pos.Map & "-" & NpcList(NpcIndex).pos.x _
-            & "-" & NpcList(NpcIndex).pos.y, "frmMain.TimerRespawn_Timer", Erl)
-    Call MuereNpc(NpcIndex, 0)
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerRespawn_Timer", Erl)
 End Sub
 
 Private Sub tPiqueteC_Timer()
