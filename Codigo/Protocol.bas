@@ -1720,17 +1720,11 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 If .Accion.AccionPendiente = True Then
                     Dim CanceledActionType As e_AccionBarra
                     CanceledActionType = .Accion.TipoAccion
-                    .Accion.AccionPendiente = False
-                    .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                    .Accion.Particula = 0
-                    .Accion.RunaObj = 0
-                    .Accion.ObjSlot = 0
-                    .Accion.HechizoPendiente = 0
-                    .Accion.Deadline = 0
+                    Call ResetPendingAction(UserIndex)
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 0, e_AccionBarra.CancelarAccion))
                     If CanceledActionType = e_AccionBarra.Runa Then
                         ' Msg____=Has cancelado el uso de la runa.
-                        Call WriteLocaleMsg(UserIndex, MSG_CANCELADO_USO_RUNA, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_RUNE_USE_CANCELLED, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
                 ' Si no pudo moverse
@@ -6604,7 +6598,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
                 If DeadlinePassed(GetTickCountRaw(), .Accion.Deadline) Then
                     Call CompletePendingAction(UserIndex)
                 Else
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_ACCION_TODAVIA_COMPLETADA, e_FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteLocaleMsg(UserIndex, MSG_ACTION_NOT_COMPLETED_YET, e_FontTypeNames.FONTTYPE_SERVER)
                 End If
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.

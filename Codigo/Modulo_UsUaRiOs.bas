@@ -2180,13 +2180,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 Call WriteLocaleMsg(UserIndex, MSG_VIAJE_HA_TERMINADO, e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
             If .Accion.AccionPendiente = True Then
-                .Accion.AccionPendiente = False
-                .Accion.TipoAccion = e_AccionBarra.CancelarAccion
-                .Accion.Particula = 0
-                .Accion.RunaObj = 0
-                .Accion.ObjSlot = 0
-                .Accion.HechizoPendiente = 0
-                .Accion.Deadline = 0
+                Call ResetPendingAction(UserIndex)
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 0, e_AccionBarra.CancelarAccion))
             End If
         End If
