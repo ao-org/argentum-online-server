@@ -110,6 +110,7 @@ Public Enum e_EventType
     NpcHunt = 2
     DeathMatch = 3
     NavalBattle = 4
+    RoomRush = 5
 End Enum
 
 Public Enum e_LobbyCommandId

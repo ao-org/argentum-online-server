@@ -118,6 +118,13 @@ Public Const MsgInvalidPassword = 489
 Public Const MsgPassArghal = 490
 Public Const MsgThanksForTravelArghal = 491
 
+Public Const MsgRoomRushIntro = 2237
+Public Const MsgRoomRushInstructions = 2238
+Public Const MsgRoomRushStarted = 2239
+Public Const MsgRoomRushWinnerTeam = 2240
+Public Const MsgRoomRushOtherTeamWon = 2241
+Public Const MsgRoomRushRoomCleared = 2242
+
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType
         Case e_WeaponType.eAxe

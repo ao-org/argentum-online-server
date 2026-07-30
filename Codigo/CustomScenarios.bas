@@ -310,6 +310,8 @@ Public Sub PrepareNewEvent(ByVal eventType As e_EventType, ByVal LobbyIndex As I
             Set LobbyList(LobbyIndex).Scenario = New ScenarioDeathMatch
         Case e_EventType.NavalBattle
             Set LobbyList(LobbyIndex).Scenario = New ScenarioNavalBoarding
+        Case e_EventType.RoomRush
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioRoomRush
     End Select
     If Not LobbyList(LobbyIndex).Scenario Is Nothing Then
         LobbyList(LobbyIndex).Scenario.SetLobbyIndex (LobbyIndex)
