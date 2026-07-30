@@ -194,7 +194,7 @@ Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex
     End If
     
     ' Get the quantity of this specific card the user has
-    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    CardQuantity = GetUserCardQuantity(UserIndex, CardIndex)
     
     ' Apply EXP bonus based on card level (quantity)
     ' Accumulative bonuses as the player levels up their card
@@ -236,7 +236,7 @@ Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIn
     End If
     
     ' Get the quantity of this specific card the user has
-    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    CardQuantity = GetUserCardQuantity(UserIndex, CardIndex)
     
     ' Apply damage bonus based on card level (quantity)
     ' Accumulative bonuses as the player levels up their card
@@ -269,7 +269,7 @@ Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal N
     End If
     
     ' Get the quantity of this specific card the user has
-    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    CardQuantity = GetUserCardQuantity(UserIndex, CardIndex)
     
     ' Apply damage reduction based on card level (quantity)
     ' Lower values = more reduction (we multiply the incoming damage by this)
@@ -286,18 +286,18 @@ Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal N
 End Function
 
 
-Public Function GetCardDropBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
+Public Function GetCardDropBonusForNpc(ByVal UserIndex As Integer, ByRef Npc As t_Npc) As Single
     Dim CardIndex As Integer
     Dim CardQuantity As Byte
     
-    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
+    CardIndex = Npc.CollectibleCardIndex
     
     If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
         GetCardDropBonusForNpc = 1#
         Exit Function
     End If
     
-    CardQuantity = UserList(UserIndex).AccountCollectibleCardQuantities(CardIndex)
+    CardQuantity = GetUserCardQuantity(UserIndex, CardIndex)
     
     Select Case CardQuantity
         Case 0, 1, 2, 3

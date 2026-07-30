@@ -168,7 +168,7 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     End If
 
     Dim CardDropBonus As Single
-    CardDropBonus = GetCardDropBonusForNpc(UserIndex, Npc.Numero)
+    CardDropBonus = GetCardDropBonusForNpc(UserIndex, Npc)
     
     Dim i As Byte
     For i = 1 To Npc.DropCount

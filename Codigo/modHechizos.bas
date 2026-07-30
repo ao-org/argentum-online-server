@@ -2439,6 +2439,17 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         End If
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
+        
+        ' ===== APLICAR BONO DE DAÑO POR CARTA =====
+        If IsFeatureEnabled("collectible_cards") Then
+            Dim CardDamageBonus As Single
+            CardDamageBonus = GetCardDamageBonusForNpc(UserIndex, NpcIndex)
+            If CardDamageBonus > 1# Then
+                Damage = CLng(Damage * CardDamageBonus)
+            End If
+        End If
+        ' ===========================================
+        
         If Damage < 0 Then Damage = 0
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
