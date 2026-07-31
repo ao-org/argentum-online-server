@@ -830,20 +830,8 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
 
                 If .flags.MascotasGuardadas = 0 Then
-                    For i = 1 To MAXMASCOTAS
-                        If IsValidNpcRef(.MascotasIndex(i)) Then
-                            If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
-                                Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
-                                Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
-                                Call ClearNpcRef(.MascotasIndex(i))
-                                b = True
-                            End If
-                        Else
-                            Call ClearNpcRef(.MascotasIndex(i))
-                        End If
-                    Next i
-
-                    .flags.MascotasGuardadas = 1
+                    Call ForceGuardarMascotas(UserIndex)
+                    b = True
                 Else
                     For i = 1 To MAXMASCOTAS
                         If .MascotasType(i) > 0 And .MascotasIndex(i).ArrayIndex = 0 Then
@@ -4221,4 +4209,32 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
     Exit Sub
 UseSpellSlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
+End Sub
+
+''
+' Fuerza el guardado de las mascotas del usuario (sin recastear el hechizo de invocación).
+' Se usa tanto desde el hechizo de guardar mascotas como desde el hook de
+' desequipar/tirar el instrumento que sostiene el bono de invocación.
+'
+Public Sub ForceGuardarMascotas(ByVal UserIndex As Integer)
+    On Error GoTo ForceGuardarMascotas_Err
+    With UserList(UserIndex)
+        If .flags.MascotasGuardadas <> 0 Then Exit Sub
+        Dim i As Integer
+        For i = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(i)) Then
+                If NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then
+                    Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
+                    Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
+                    Call ClearNpcRef(.MascotasIndex(i))
+                End If
+            Else
+                Call ClearNpcRef(.MascotasIndex(i))
+            End If
+        Next i
+        .flags.MascotasGuardadas = 1
+    End With
+    Exit Sub
+ForceGuardarMascotas_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.ForceGuardarMascotas", Erl)
 End Sub
