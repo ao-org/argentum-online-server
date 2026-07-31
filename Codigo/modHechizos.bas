@@ -4155,6 +4155,29 @@ Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcInd
     End With
 End Sub
 
+''
+' Devuelve la máscara de tags elementales de la fuente correspondiente
+' según la clase del invocador: instrumento para Druida/Bardo, arma para el resto (Mago).
+'
+Public Function GetCasterElementalTags(ByVal UserIndex As Integer) As Long
+    On Error GoTo GetCasterElementalTags_Err
+    With UserList(UserIndex)
+        Select Case .clase
+            Case e_Class.Druid, e_Class.Bard
+                If .invent.EquippedRingAccesoryObjIndex = 0 Then Exit Function
+                GetCasterElementalTags = ObjData(.invent.EquippedRingAccesoryObjIndex).ElementalTags _
+                        Or .invent.Object(.invent.EquippedRingAccesorySlot).ElementalTags
+            Case Else
+                If .invent.EquippedWeaponObjIndex = 0 Then Exit Function
+                GetCasterElementalTags = ObjData(.invent.EquippedWeaponObjIndex).ElementalTags _
+                        Or .invent.Object(.invent.EquippedWeaponSlot).ElementalTags
+        End Select
+    End With
+    Exit Function
+GetCasterElementalTags_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.GetCasterElementalTags", Erl)
+End Function
+
 Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
     On Error GoTo UseSpellSlot_Err
     With UserList(UserIndex)

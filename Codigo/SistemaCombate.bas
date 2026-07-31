@@ -637,10 +637,34 @@ NpcImpactoNpc_Err:
 End Function
 
 Public Function NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Long
-    Dim Damage As Long
+    Dim Damage          As Long
+    Dim EffectiveMinHit As Long
+    Dim EffectiveMaxHit As Long
+    Dim ElementalBonus  As Integer
+    Dim CasterTags      As Long
+    Dim DamageColor     As Long
+
+    DamageColor = vbRed ' default
 
     With NpcList(Atacante)
-        Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit) _
+        EffectiveMinHit = .Stats.MinHit
+        EffectiveMaxHit = .Stats.MaxHit
+
+        If IsValidUserRef(.MaestroUser) Then
+            CasterTags = modHechizos.GetCasterElementalTags(.MaestroUser.ArrayIndex)
+            DamageColor = GetElementalDamageColor(CasterTags)
+
+            ElementalBonus = GetSummonElementalBonus(.MaestroUser.ArrayIndex, Victima)
+            If ElementalBonus <> 0 Then
+                EffectiveMinHit = EffectiveMinHit + ElementalBonus
+                EffectiveMaxHit = EffectiveMaxHit + ElementalBonus
+                If EffectiveMinHit < 0 Then EffectiveMinHit = 0
+                If EffectiveMaxHit < 0 Then EffectiveMaxHit = 0
+                If EffectiveMaxHit < EffectiveMinHit Then EffectiveMaxHit = EffectiveMinHit
+            End If
+        End If
+
+        Damage = RandomNumber(EffectiveMinHit, EffectiveMaxHit) _
                  + NPCs.GetLinearDamageBonus(Atacante) _
                  - NPCs.GetDefenseBonus(Victima) _
                  - NpcList(Victima).Stats.def
@@ -650,15 +674,78 @@ Public Function NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer
     If Damage < 0 Then Damage = 0
 
     ' Aplicamos el daño real en el juego (usa la lógica existente)
-    Call NpcDamageToNpc(Atacante, Victima, CInt(Damage))
+    Call NpcDamageToNpc(Atacante, Victima, CInt(Damage), DamageColor)
 
     ' Devolvemos el daño para que el caller lo mande al cliente
     NpcDamageNpc = Damage
 End Function
 
+''
+' Convierte una máscara de un solo tag elemental (bit) a su índice 1..MAX_ELEMENT_TAGS
+' dentro de ElementalMatrixForNpcs. Devuelve 0 si no hay tag o si no es una potencia de 2 válida.
+'
+Private Function ElementalTagToMatrixIndex(ByVal TagMask As Long) As Long
+    Dim i As Long
+    For i = 0 To MAX_ELEMENT_TAGS - 1
+        If TagMask = ShiftLeft(1, i) Then
+            ElementalTagToMatrixIndex = i + 1
+            Exit Function
+        End If
+    Next i
+End Function
+
+''
+' Bono/penalidad plano de golpe para el ataque de una mascota invocada contra un NPC,
+' según la ventaja/desventaja elemental de la matriz. +30 si hay ventaja (factor > 1),
+' -30 si hay desventaja (factor < 1), 0 si es neutral o no hay tags.
+'
+Private Function GetSummonElementalBonus(ByVal MaestroIndex As Integer, ByVal VictimaNpcIndex As Integer) As Integer
+    Const SummonElementalHitBonus As Integer = 30
+
+    GetSummonElementalBonus = 0
+    Dim CasterTags As Long
+    Dim VictimTags As Long
+    CasterTags = modHechizos.GetCasterElementalTags(MaestroIndex)
+    VictimTags = NpcList(VictimaNpcIndex).flags.ElementalTags
+    If CasterTags = 0 Or VictimTags = 0 Then Exit Function
+
+    Dim AttackerIdx As Long
+    Dim DefenderIdx As Long
+    AttackerIdx = ElementalTagToMatrixIndex(CasterTags)
+    DefenderIdx = ElementalTagToMatrixIndex(VictimTags)
+    If AttackerIdx = 0 Or DefenderIdx = 0 Then Exit Function
+
+    Dim ElementalFactor As Single
+    ElementalFactor = ElementalMatrixForNpcs(AttackerIdx, DefenderIdx)
+
+    If ElementalFactor > 1 Then
+        GetSummonElementalBonus = SummonElementalHitBonus
+    ElseIf ElementalFactor < 1 Then
+        GetSummonElementalBonus = -SummonElementalHitBonus
+    End If
+End Function
+
+' Devuelve el color a usar para el número de daño flotante según el elemento
+' del invocador. Sin elemento usa el color por defecto (rojo).
+Private Function GetElementalDamageColor(ByVal CasterTags As Long) As Long
+    Select Case CasterTags
+        Case e_ElementalTags.Fire
+            GetElementalDamageColor = RGB(255, 178, 102)
+        Case e_ElementalTags.Water
+            GetElementalDamageColor = RGB(64, 224, 208)
+        Case e_ElementalTags.Earth
+            GetElementalDamageColor = RGB(34, 102, 34)
+        Case e_ElementalTags.Wind
+            GetElementalDamageColor = RGB(211, 211, 211)
+        Case Else
+            GetElementalDamageColor = vbRed ' sin elemento: color por defecto
+    End Select
+End Function
+
 Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
                                ByVal TargetIndex As Integer, _
-                               ByVal Damage As Integer) As e_DamageResult
+                               ByVal Damage As Integer, _
+                               Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
     On Error GoTo NpcDamageNpc_Err
 
     With NpcList(attackerIndex)
@@ -669,7 +756,7 @@ Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
         finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
         finalDamage = finalDamage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
 
-        NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0)
+        NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0, DamageColor)
 
         If NpcDamageToNpc = eDead Then
             If Not IsValidUserRef(NpcList(attackerIndex).MaestroUser) Then

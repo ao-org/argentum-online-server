@@ -3453,7 +3453,7 @@ Public Function CanElementalTagBeApplied(ByVal UserIndex As Integer, ByVal Targe
     If SourceObj.OBJType <> otElementalRune Then
         Exit Function
     End If
-    If TargetObj.OBJType <> otWeapon Then
+    If TargetObj.OBJType <> otWeapon And TargetObj.OBJType <> otMagicalInstrument Then
         Exit Function
     End If
     If TargetObj.ElementalTags <> e_ElementalTags.Normal Then
