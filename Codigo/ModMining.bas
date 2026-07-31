@@ -52,6 +52,8 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
+            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ResourceLastUseEpoch = CLng(DateDiff("s", "01/01/1970", Now))
+            Call MarkResourceDirty(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
             Yacimiento = ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
             If .clase = Trabajador Then

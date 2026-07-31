@@ -515,6 +515,7 @@ Sub Main()
     Call ChDir(App.Path)
     Call ChDrive(App.Path)
     Call InicializarConstantes
+    Call EnsureResourceStateDir
     frmCargando.Show
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
@@ -602,6 +603,7 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
+    Call LoadResourceState
     frmCargando.Label1(2).Caption = "Cargando donadores"
     Call CargarDonadores
     Call InitPathFinding
@@ -628,6 +630,8 @@ Sub Main()
         .T_UsersOnline.Enabled = True
         .t_Extraer.Enabled = True
         .t_Extraer.Interval = IntervaloTrabajarExtraer
+        .t_GuardarRecursos.Enabled = True
+        .t_GuardarRecursos.Interval = IntervaloGuardarRecursos
         .tControlHechizos.Enabled = True
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
@@ -1699,6 +1703,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveResourceState
     Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray

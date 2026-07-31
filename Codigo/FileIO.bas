@@ -2195,6 +2195,7 @@ Sub LoadIntervalos()
     IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
     IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
     IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
+    IntervaloGuardarRecursos = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarRecursos", "60000"))
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub

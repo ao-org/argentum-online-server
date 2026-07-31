@@ -189,6 +189,7 @@ Module=ModSmelting; Codigo\ModSmelting.bas
 Module=ModUnderworld; Codigo\ModUnderworld.bas
 Module=modFontManager; Codigo\modFontManager.bas
 Module=ModCastle; Codigo\ModCastle.bas
+Module=ModResourceState; Codigo\ModResourceState.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

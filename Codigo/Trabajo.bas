@@ -1670,6 +1670,8 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y A
         If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
             MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
             MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+            MapData(Map, x, y).ResourceLastUseEpoch = 0
+            Call ClearResourceDirty(Map, x, y)
         End If
     End If
     Exit Sub

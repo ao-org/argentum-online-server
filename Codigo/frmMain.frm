@@ -58,6 +58,10 @@ Begin VB.Form frmMain
       Left            =   4440
       Top             =   4200
    End
+   Begin VB.Timer t_GuardarRecursos 
+      Left            =   4920
+      Top             =   4200
+   End  
    Begin VB.Timer T_UsersOnline 
       Enabled         =   0   'False
       Interval        =   10000
@@ -1559,4 +1563,15 @@ Private Sub Truenos_Timer()
     Exit Sub
 Truenos_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
+End Sub
+
+Private Sub t_GuardarRecursos_Timer()
+    On Error GoTo ErrHandler
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
+    Call SaveResourceState
+    Call PerformTimeLimitCheck(PerformanceTimer, "t_GuardarRecursos_Timer", 100)
+    Exit Sub
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "frmMain.t_GuardarRecursos_Timer", Erl)
 End Sub

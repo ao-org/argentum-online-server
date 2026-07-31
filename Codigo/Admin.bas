@@ -79,6 +79,7 @@ Public IntervaloMagiaGolpe           As Long
 Public IntervaloGolpeMagia           As Long
 Public IntervaloUserPuedeCastear     As Long
 Public IntervaloTrabajarExtraer      As Long
+Public IntervaloGuardarRecursos      As Long
 Public IntervaloNpcOwner             As Long
 Public IntervaloTrabajarConstruir    As Long
 Public IntervaloCerrarConexion       As Long '[Gonzalo]

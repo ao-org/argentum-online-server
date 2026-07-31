@@ -4,6 +4,7 @@ Logs/*
 Foros/*
 **/build/**
 WorldBackup/*
+SourcesStates/*
 Codigo/*.log
 Guilds/*
 .DS_Store

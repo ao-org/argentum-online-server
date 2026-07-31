@@ -124,7 +124,7 @@ Option Explicit
 '
 ' ==============================================================
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
-Private Const TICKS32 As Double = 4294967296#
+Public Const TICKS32 As Double = 4294967296#
 
 ' New raw version (preferred)
 Public Function GetTickCountRaw() As Long

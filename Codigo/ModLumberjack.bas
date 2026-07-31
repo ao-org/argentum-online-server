@@ -36,6 +36,8 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
             MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
+            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ResourceLastUseEpoch = CLng(DateDiff("s", "01/01/1970", Now))
+            Call MarkResourceDirty(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else

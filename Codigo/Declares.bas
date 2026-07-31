@@ -3489,6 +3489,7 @@ Public Type t_MapBlock
     Particula As Byte
     TimeParticula As Integer
     ObjInfo As t_Obj
+    ResourceLastUseEpoch As Long
     TileExit As t_WorldPos
     trigger As e_Trigger
     ParticulaIndex As Integer
