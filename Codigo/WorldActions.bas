@@ -159,6 +159,27 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
+                    Case e_RuneType.FactionChurch
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.FactionChurch) Then
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        If .Stats.GLD < obj.Valor Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        .Stats.GLD = .Stats.GLD - obj.Valor
+                        Call WriteUpdateGold(UserIndex)
+                        Dim ChurchDest As t_WorldPos
+                        If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
+                            ChurchDest = IglesiaArmada
+                        Else
+                            ChurchDest = IglesiaLegion
+                        End If
+                        Call FindLegalPos(UserIndex, ChurchDest.Map, CByte(ChurchDest.x), CByte(ChurchDest.y))
+                        Call WarpUserChar(UserIndex, ChurchDest.Map, ChurchDest.x, ChurchDest.y, True)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)
@@ -190,19 +211,26 @@ Public Function CanUseRuneNow(ByVal UserIndex As Integer, ByVal TipoRuna As e_Ru
     With UserList(UserIndex)
         Select Case TipoRuna
             Case e_RuneType.ReturnHome
-                ' Zona segura obligatoria, vivo o muerto indistinto.
                 If MapInfo(.pos.Map).Seguro = 0 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_RuneType.FastTravel
-                ' Debe estar vivo y en zona segura.
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If MapInfo(.pos.Map).Seguro = 0 Then
                     Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_RuneType.FactionChurch
+                If .flags.Muerto = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_DEAD_TO_USE_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If Status(UserIndex) <> e_Facciones.Armada And Status(UserIndex) <> e_Facciones.consejo And Status(UserIndex) <> e_Facciones.Caos And Status(UserIndex) <> e_Facciones.concilio Then
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_FACTION_MEMBERS_CAN_USE_RUNE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else

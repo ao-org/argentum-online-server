@@ -2700,7 +2700,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If Not CanUseRuneNow(UserIndex, obj.TipoRuna) Then
                     Exit Sub
                 End If
-                If obj.TipoRuna = e_RuneType.ReturnHome And .Stats.GLD < obj.Valor Then
+                If (obj.TipoRuna = e_RuneType.ReturnHome Or obj.TipoRuna = e_RuneType.FactionChurch) And .Stats.GLD < obj.Valor Then
                     ' Msg588=No tienes el oro suficiente.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub

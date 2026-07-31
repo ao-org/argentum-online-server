@@ -1589,6 +1589,7 @@ Public Enum e_RuneType
     ReturnHome = 1
     MesonSafePassage = 2
     FastTravel = 3
+    FactionChurch = 4
 End Enum
 
 Public Enum e_UseOnceSubType
@@ -3644,6 +3645,8 @@ Public UniqueMapFishCount                     As Long
 Public Prision                                As t_WorldPos
 Public Libertad                               As t_WorldPos
 Public Renacimiento                           As t_WorldPos
+Public IglesiaArmada                          As t_WorldPos
+Public IglesiaLegion                          As t_WorldPos
 Public NixDock                                As t_Transport
 Public ForgatDock                             As t_Transport
 Public ArghalDock                             As t_Transport
