@@ -2582,13 +2582,19 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = 1
                     ElseIf ObjData(.EquippedMunitionObjIndex).Subtipo <> WeaponData.Municion Then
                         DummyInt = 1
+                    ElseIf IsValidUserRef(UserList(UserIndex).flags.targetUser) And (ObjData(.EquippedMunitionObjIndex).ObjFlags And e_ObjFlags.e_NpcOnly) <> 0 Then
+                        DummyInt = 3
                     End If
                     If DummyInt <> 0 Then
-                        If DummyInt = 1 Then
-                            ' Msg709=No tenés municiones.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
-                        End If
-                        Call Desequipar(UserIndex, .EquippedMunitionSlot)
+                        Select Case DummyInt
+                            Case 1
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
+                                Call Desequipar(UserIndex, .EquippedMunitionSlot)
+                            Case 3
+                                Call WriteLocaleMsg(UserIndex, MSG_ARROW_CANNOT_BE_USED_AGAINST_PLAYERS, e_FontTypeNames.FONTTYPE_INFO)
+                            Case Else
+                                Call Desequipar(UserIndex, .EquippedMunitionSlot)
+                        End Select
                         Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
                     End If
@@ -2699,9 +2705,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     UserList(UserIndex).pos.y))
                         End If
                         If DummyInt <> 0 Then
-                            'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
+                            Dim MunicionActualObjIndex As Integer
+                            MunicionActualObjIndex = .EquippedMunitionObjIndex
                             If consumirMunicion And Not IsConsumableFreeZone(UserIndex) Then
-                                Call QuitarUserInvItem(UserIndex, DummyInt, 1)
+                                If (ObjData(.EquippedMunitionObjIndex).ObjFlags And e_ObjFlags.e_NotConsumable) = 0 Then
+                                    Call QuitarUserInvItem(UserIndex, DummyInt, 1)
+                                End If
                             End If
                             If .Object(DummyInt).amount > 0 Then
                                 'QuitarUserInvItem unequipps the ammo, so we equip it again

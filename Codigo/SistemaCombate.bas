@@ -2202,13 +2202,21 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             AmunitionState = 1
         ElseIf .Object(.EquippedMunitionSlot).amount < 1 Then
             AmunitionState = 1
+        ElseIf TargetType = eUser And (ObjData(.EquippedMunitionObjIndex).ObjFlags And e_ObjFlags.e_NpcOnly) <> 0 Then
+            AmunitionState = 3
         End If
         If AmunitionState <> 0 Then
-            If AmunitionState = 1 Then
-                ' Msg709=No tenés municiones.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
-            End If
-            Call Desequipar(UserIndex, .EquippedMunitionSlot)
+            Select Case AmunitionState
+                Case 1
+                    ' Msg709=No tenés municiones.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_MUNICIONES, e_FontTypeNames.FONTTYPE_INFO)
+                    Call Desequipar(UserIndex, .EquippedMunitionSlot)
+                Case 3
+                    ' Msg____=Esta flecha no puede usarse contra jugadores.
+                    Call WriteLocaleMsg(UserIndex, MSG_ARROW_CANNOT_BE_USED_AGAINST_PLAYERS, e_FontTypeNames.FONTTYPE_INFO)
+                Case Else
+                    Call Desequipar(UserIndex, .EquippedMunitionSlot)
+            End Select
             Call WriteWorkRequestTarget(UserIndex, 0)
             Exit Sub
         End If
@@ -2260,7 +2268,13 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
         End If
     End With
     If DidConsumeAmunition And Not IsConsumableFreeZone(UserIndex) Then
-        Call ConsumeAmunition(UserIndex)
+        Dim MunicionActualObjIndex As Integer
+        MunicionActualObjIndex = UserList(UserIndex).invent.EquippedMunitionObjIndex
+        If MunicionActualObjIndex = 0 Then
+            Call ConsumeAmunition(UserIndex)
+        ElseIf (ObjData(MunicionActualObjIndex).ObjFlags And e_ObjFlags.e_NotConsumable) = 0 Then
+            Call ConsumeAmunition(UserIndex)
+        End If
     End If
 End Sub
 

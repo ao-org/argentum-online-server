@@ -1051,6 +1051,8 @@ Sub LoadOBJData()
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
+            If val(Leer.GetValue(ObjKey, "NotConsumable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_NotConsumable)
+            If val(Leer.GetValue(ObjKey, "NpcOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_NpcOnly)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
@@ -1243,12 +1245,11 @@ Sub LoadOBJData()
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
+                    .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
                 Case e_OBJType.otMinerals
                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
-                Case e_OBJType.otUsableOntarget
-                    .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 Case e_OBJType.otElementalRune
                     .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
                 Case e_OBJType.otParchment, e_OBJType.otSkinsSpells

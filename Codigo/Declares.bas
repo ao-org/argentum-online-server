@@ -2208,11 +2208,12 @@ Public Type t_Retos
     AltoSala As Integer
 End Type
 
-' **************************************************
 Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
     e_JailObject = 4
+    e_NotConsumable = 8
+    e_NpcOnly = 16
 End Enum
 
 
