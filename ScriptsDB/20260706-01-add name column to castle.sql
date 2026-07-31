@@ -1,0 +1,1 @@
+ALTER TABLE castle ADD COLUMN name varchar(50) DEFAULT NULL;
