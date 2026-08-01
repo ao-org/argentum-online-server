@@ -1157,14 +1157,14 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
-                            estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                        estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
                 End If
             Else
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_INFO, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
-                            estatus)  'Msg1622=NPC ¬1 ¬2
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                        estatus)  'Msg1622=NPC ¬1 ¬2
                 End If
             End If
             ' End If
