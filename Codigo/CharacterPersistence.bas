@@ -33,7 +33,7 @@ Private Const SAVE_CHARACTER_TIME_LIMIT_MS As Long = 50
 Private Function db_load_house_key(ByRef User As t_User) As Boolean
     db_load_house_key = False
     With User
-        Debug.Assert .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda
+        Debug.Assert .Stats.tipoUsuario <> tNormal
         Dim RS As ADODB.Recordset
         Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
         If Not RS Is Nothing Then
@@ -137,7 +137,7 @@ Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
     'By default MAX_USERINVENTORY_SLOTS
     get_num_inv_slots_from_tier = MAX_USERINVENTORY_SLOTS
     Select Case t
-        Case tLeyenda
+        Case tLeyenda, tNoble, tEmperador
             Const EXTRA_SLOTS_LEYENDA As Integer = 18
             get_num_inv_slots_from_tier = MAX_USERINVENTORY_SLOTS + EXTRA_SLOTS_LEYENDA
         Case tHeroe
@@ -157,7 +157,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Dim SQLQuery          As String
         Dim max_slots_to_load As Integer
         'Load all slots to avoid destroying items when user stops being patreon
-        max_slots_to_load = get_num_inv_slots_from_tier(tLeyenda)
+        max_slots_to_load = get_num_inv_slots_from_tier(tEmperador)
         SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
         Set RS = Query(SQLQuery, .Id)
         counter = 0
@@ -259,7 +259,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
         .Stats.Creditos = 0
         ' If the user is a patron-type, load the house key.
-        If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
+        If IsPatreon(UserIndex) Then
             Call db_load_house_key(UserList(UserIndex))
         End If
     End With
@@ -499,7 +499,7 @@ Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
                 MaxCharacterForTier = 3
             Case e_TipoUsuario.tHeroe
                 MaxCharacterForTier = 5
-            Case e_TipoUsuario.tLeyenda
+            Case e_TipoUsuario.tLeyenda, e_TipoUsuario.tNoble, e_TipoUsuario.tEmperador
                 MaxCharacterForTier = 10
             Case Else
                 MaxCharacterForTier = 1
@@ -522,6 +522,10 @@ Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
                 GetPatronTierFromAccountID = e_TipoUsuario.tHeroe
             Case patron_tier_leyenda
                 GetPatronTierFromAccountID = e_TipoUsuario.tLeyenda
+            Case patron_tier_noble
+                GetPatronTierFromAccountID = e_TipoUsuario.tNoble
+            Case patron_tier_emperador
+                GetPatronTierFromAccountID = e_TipoUsuario.tEmperador
             Case Else
                 GetPatronTierFromAccountID = e_TipoUsuario.tNormal
         End Select
