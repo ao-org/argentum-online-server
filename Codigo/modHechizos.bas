@@ -3368,6 +3368,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         ' Prevengo daño negativo
         If Damage < 0 Then Damage = 0
         If UserIndex <> targetUserIndex Then
+            Call checkHechizosEfectividad(UserIndex, targetUserIndex)
             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
         End If
         enviarInfoHechizo = True
@@ -3598,13 +3599,31 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
+        If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDE_VOLVER_SER_PARALIZADO_TAN_RAPIDO, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1872=¬1 no puede volver a ser paralizado tan rápido.
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INMOVILIZAR_OBJETIVO_PUEDE_MOVERSE, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
         If UserIndex <> tU Then
+            Call checkHechizosEfectividad(UserIndex, tU)
             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
         End If
         enviarInfoHechizo = True
         b = True
-        UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+        If UserList(tU).clase = Warrior Or UserList(tU).clase = Hunter Then
+            UserList(tU).Counters.Paralisis = Hechizos(h).Duration * 0.7
+        Else
+            UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+        End If
         If UserList(tU).flags.Paralizado = 0 Then
             UserList(tU).flags.Paralizado = 1
             Call WriteParalizeOK(tU)
@@ -3616,13 +3635,31 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
+        If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDE_VOLVER_SER_INMOVILIZADO_TAN_RAPIDO, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1873=¬1 no puede volver a ser inmovilizado tan rápido.
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INMOVILIZAR_OBJETIVO_PUEDE_MOVERSE, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
         If UserIndex <> tU Then
+            Call checkHechizosEfectividad(UserIndex, tU)
             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
         End If
         enviarInfoHechizo = True
         b = True
-        UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+        If UserList(tU).clase = Warrior Or UserList(tU).clase = Hunter Then
+            UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration * 0.7
+        Else
+            UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+        End If
         If UserList(tU).flags.Inmovilizado = 0 Then
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
