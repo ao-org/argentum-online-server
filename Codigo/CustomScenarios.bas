@@ -124,6 +124,7 @@ Public Sub RemoveUpdateScenario(ByRef Index As Integer)
             ActiveUpdateSlots.currentIndex = ActiveUpdateSlots.currentIndex - 1
             AvailableUpdateSlots.currentIndex = AvailableUpdateSlots.currentIndex + 1
             AvailableUpdateSlots.IndexInfo(AvailableUpdateSlots.currentIndex) = Index
+            Exit For
         End If
     Next
 End Sub
