@@ -34,7 +34,7 @@ Public CastleData() As t_CastleInfo
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
 
 Private Const UPDATE_EMPEROR_CASTLE As String = "UPDATE castle SET owner_account_id = ?, owner_character_id = ?, foundation_date = ?, is_active = ?, name = ? WHERE id = ?;"
-Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE id = ?;"
+Private Const UPDATE_OUTSIDE_CASTLE_LOCATION As String = "UPDATE castle_coordinates SET outside_map = ?, outside_x = ?, outside_y = ? WHERE castle_id = ?;"
 
 Private Const INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST As String = "INSERT OR IGNORE INTO castle_whitelist (character_name, castle_id) VALUES (?,?)"
 Private Const DELETE_CHAR_IN_CASTLE_WHITELIST As String = "DELETE FROM castle_whitelist WHERE id = ?"
@@ -517,7 +517,6 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(map, x + 3, y - 7).Blocked = e_Block.ALL_SIDES
 
         'create castle inside tile exits to the outside part
-        #If DEBUGGING = 0 Then
         If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
             Call LogInfoServidor("CreateCastleInMap invalid inside exit 1. map=" & CStr(.castle_coordinates.inside.map) & _
                 " x=" & CStr(.castle_coordinates.inside.x) & _
@@ -541,7 +540,6 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.map = .castle_coordinates.outside.map
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.x = .castle_coordinates.outside.x - 1
         MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.y = .castle_coordinates.outside.y + 1
-        #End If
 
         'erase castle sign
         If MapData(map, x, y).ObjInfo.Amount > 0 Then
@@ -678,11 +676,6 @@ HasCastleRelocationCooldownPassed = False
     If Acumulator >= CASTLE_REPOSITION_COOLDOWN_IN_DAYS Then
         HasCastleRelocationCooldownPassed = True
     End If
-        
-    #If DEBUGGING = 1 Then
-        HasCastleRelocationCooldownPassed = True
-    #End If
-    
 End Function
 
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
@@ -751,9 +744,7 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
         If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
                 Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
                 Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
-            #If DEBUGGING = 0 Then
                 Exit Sub
-            #End If
         End If
         
         Dim CastleIndex As Integer
@@ -833,7 +824,7 @@ Public Sub SaveCastleDataToDb()
             
             If .dirtyCastleData Then
                 'update castle data in db
-                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .id, DateToSQLite(.foundation_date), 1, .name, i)
+                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .owner_char_id, DateToSQLite(.foundation_date), 1, .name, i)
                 'update castle coordinates in db
                 Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
                 Call LogInfoServidor("Persisted new data for castle number: " & i & " name: " & .name)
