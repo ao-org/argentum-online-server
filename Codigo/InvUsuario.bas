@@ -3000,8 +3000,13 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
             
             Select Case .OBJType
                 Case e_OBJType.otCastleSpawner
-                    If IsValidCastlePosition(UserIndex) Then
-                        Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                    If UserList(UserIndex).Stats.tipoUsuario >= e_TipoUsuario.tNoble Then
+                        If IsValidCastlePosition(UserIndex) Then
+                            Call CreateNewEmperorCastle(UserIndex, ObjIndex)
+                        End If
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
+                        Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
                     End If
                 Case Else
                     Select Case .Subtipo
