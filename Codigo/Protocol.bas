@@ -2393,7 +2393,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         If Not DesdeInventario Then
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("El usuario " & GetUserGMName(UserIndex) & _
                     " está tomando pociones con click estando en hechizos....Fue kickeado automaticamente", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
+            Call LogSecurity("User:" & GetUserDisplayName(UserIndex) & " Is clicking the inventory while is not in focus")
         End If
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
