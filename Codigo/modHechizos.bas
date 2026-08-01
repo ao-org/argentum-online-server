@@ -4134,17 +4134,20 @@ Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcInd
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer
+    Dim ElvenWoodMultiplier As Single
+    ElvenWoodMultiplier = CSng(SvrConfig.GetValue("ElvenWoodMagicDamageMultiplier"))
+    If ElvenWoodMultiplier <= 0 Then ElvenWoodMultiplier = 3
     BaseHit = UserList(UserIndex).Stats.ELV
     If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     BonusDamage = BonusFromItem / 100
