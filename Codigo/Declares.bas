@@ -3154,6 +3154,7 @@ Public Type t_NPCFlags
     team As Byte
     GlobalQuestBossIndex As Integer
     ElementalTags As Long
+    WasSpellSummoned As Boolean
 End Type
 
 Public Type t_CriaturasEntrenador

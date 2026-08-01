@@ -837,7 +837,9 @@ Dim obj                         As t_ObjData
                     Call WriteUpdateRM(UserIndex)
                 Case e_OBJType.otRingAccesory, e_OBJType.otMagicalInstrument
                     If obj.OBJType = e_OBJType.otMagicalInstrument And .NroMascotas > 0 Then
-                        Call modHechizos.ForceGuardarMascotas(UserIndex)
+                        If UserHasSpellSummonedPets(UserIndex) Then
+                            Call modHechizos.ForceGuardarMascotas(UserIndex, MSG_PETS_SAVED_INSTRUMENT_UNEQUIPPED)
+                        End If
                     End If
                     .invent.Object(Slot).Equipped = 0
                     .invent.EquippedRingAccesoryObjIndex = 0

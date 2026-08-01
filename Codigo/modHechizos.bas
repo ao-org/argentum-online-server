@@ -806,6 +806,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     Call SetUserRef(NpcList(npcIndex).MaestroUser, UserIndex)
                     NpcList(npcIndex).Contadores.TiempoExistencia = IntervaloInvocacion
                     NpcList(npcIndex).GiveGLD = 0
+                    NpcList(NpcIndex).flags.WasSpellSummoned = True
 
                     If shouldAdjustNpc Then
                         Call AdjustNpcStatWithCasterLevel(UserIndex, npcIndex)
@@ -841,6 +842,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                 Call SetNpcRef(.MascotasIndex(i), npcIndex)
                                 Call SetUserRef(NpcList(npcIndex).MaestroUser, UserIndex)
                                 Call FollowAmo(npcIndex)
+                                NpcList(NpcIndex).flags.WasSpellSummoned = True
 
                                 If shouldAdjustNpc Then
                                     Call AdjustNpcStatWithCasterLevel(UserIndex, npcIndex)
@@ -4216,7 +4218,7 @@ End Sub
 ' Se usa tanto desde el hechizo de guardar mascotas como desde el hook de
 ' desequipar/tirar el instrumento que sostiene el bono de invocación.
 '
-Public Sub ForceGuardarMascotas(ByVal UserIndex As Integer)
+Public Sub ForceGuardarMascotas(ByVal UserIndex As Integer, Optional ByVal ReasonMsgId As Integer = 0)
     On Error GoTo ForceGuardarMascotas_Err
     With UserList(UserIndex)
         If .flags.MascotasGuardadas <> 0 Then Exit Sub
@@ -4233,8 +4235,34 @@ Public Sub ForceGuardarMascotas(ByVal UserIndex As Integer)
             End If
         Next i
         .flags.MascotasGuardadas = 1
+        If ReasonMsgId > 0 Then
+            Call WriteLocaleMsg(UserIndex, ReasonMsgId, e_FontTypeNames.FONTTYPE_INFO)
+        End If
     End With
     Exit Sub
 ForceGuardarMascotas_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.ForceGuardarMascotas", Erl)
 End Sub
+
+''
+' Devuelve True si el usuario tiene al menos una mascota activa que fue
+' creada por el hechizo de invocacion (no por doma), es decir, una mascota
+' que podria tener el bono de AdjustNpcStatWithCasterLevel horneado.
+'
+Public Function UserHasSpellSummonedPets(ByVal UserIndex As Integer) As Boolean
+    On Error GoTo UserHasSpellSummonedPets_Err
+    Dim i As Integer
+    With UserList(UserIndex)
+        For i = 1 To MAXMASCOTAS
+            If IsValidNpcRef(.MascotasIndex(i)) Then
+                If NpcList(.MascotasIndex(i).ArrayIndex).flags.WasSpellSummoned Then
+                    UserHasSpellSummonedPets = True
+                    Exit Function
+                End If
+            End If
+        Next i
+    End With
+    Exit Function
+UserHasSpellSummonedPets_Err:
+    Call TraceError(Err.Number, Err.Description, "modHechizos.UserHasSpellSummonedPets", Erl)
+End Function
