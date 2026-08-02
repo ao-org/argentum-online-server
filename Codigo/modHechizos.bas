@@ -576,13 +576,19 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
         End If
+
+        ' --- Validación de cooldown por hechizo ---
         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
-            Dim nowRaw            As Long
+            Dim nowRaw As Long
             Dim SegundosFaltantes As Long
             nowRaw = GetTickCountRaw()
+
+            ' Escalamos a milisegundos ANTES de aplicar reducciones, para no perder precisión
+            ' en cooldowns impares (ej: 5s con reducción del 50% debería dar 2500ms, no 2000ms).
             Dim Cooldown As Long
-            Cooldown = Hechizos(HechizoIndex).Cooldown
-            'cooldown reduction for Elven Wood items
+            Cooldown = CLng(Hechizos(HechizoIndex).Cooldown) * 1000
+
+            'Reducción de cooldown por Madera Élfica (arma y/o anillo equipados)
             If .invent.EquippedWeaponObjIndex > 0 Then
                 If ObjData(.invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
                     Cooldown = Cooldown / 2
@@ -593,15 +599,17 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     Cooldown = Cooldown / 2
                 End If
             End If
-            Cooldown = Cooldown * 1000
+
             Dim elapsedMs As Double
             elapsedMs = TicksElapsed(.Counters.UserHechizosInterval(Slot), nowRaw)
             If elapsedMs < Cooldown Then
-                SegundosFaltantes = Int((Cooldown - elapsedMs) / 1000)
+                ' Ceiling en vez de floor: nunca debe mostrar "0 segundos" mientras sigue bloqueado.
+                SegundosFaltantes = -Int(-(Cooldown - elapsedMs) / 1000)
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESPERAR_SEGUNDOS_VOLVER_TIRAR_HECHIZO, e_FontTypeNames.FONTTYPE_WARNING, SegundosFaltantes) 'Msg1635=Debes esperar ¬1 segundos para volver a tirar este hechizo.
                 Exit Function
             End If
         End If
+
         If .Stats.UserSkills(e_Skill.Magia) < Hechizos(HechizoIndex).MinSkill Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_PUNTOS_MAGIA_LANZAR_HECHIZO_NECESITAS_PUNTOS, e_FontTypeNames.FONTTYPE_INFO, Hechizos(HechizoIndex).MinSkill) 'Msg1636=No tienes suficientes puntos de magia para lanzar este hechizo, necesitas ¬1 puntos.
             Exit Function
