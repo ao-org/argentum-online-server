@@ -1089,6 +1089,7 @@ Sub LoadOBJData()
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                    .InstrumentPower = val(Leer.GetValue(ObjKey, "InstrumentPower"))
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))

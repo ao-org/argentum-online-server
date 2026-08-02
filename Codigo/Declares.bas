@@ -2270,6 +2270,7 @@ Public Type t_ObjData
     SkillIndex As Byte     ' El indice de Skill para equipar el item
     SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
     InstrumentoRequerido As Integer
+    InstrumentPower As Integer
     CreaGRH As String
     SndAura As Integer
     Intirable As Byte
