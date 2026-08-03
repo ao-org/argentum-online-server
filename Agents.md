@@ -182,7 +182,7 @@ Call MsgBox(JsonLanguage.Item("MENSAJE_ERROR_CARGAR_OPCIONES"), vbCritical, Json
 
 ### 10. Clear control flow
 
-Use `Exit Sub` for early exits. Avoid unnecessary nesting.
+Use `Exit Sub` for early exits. Avoid unnecessary nesting. Avoid GoTo flow control statements except for error handling, or unless absolutely necessary for performance issues.
 
 ```vb
 If Not EstaAutenticado(UserIndex) Then
@@ -198,3 +198,18 @@ Prefer `Function` for validations or transformations. Avoid modifying global var
 ### 12. Files Encoding
 
 All source code files must be saved with Windows-1252 encoding to ensure compatibility with VB6.
+
+### 13. Function parameters
+
+Avoid using explicit parameter declaration for syntactic sugar like
+```vb
+Public Function GetUserName(ByVal userId As Long = 0, Optional Something As Boolean = False) As String
+End Function
+Call GetUserName(userId, Something:= False)
+```
+
+Try to use simple ByVal parameters unless necessary. (for example when refactoring legacy code that uses ByRef).
+
+### 14. Helper Functions
+
+Matematicas.bas — Mathematical operations helper functions
