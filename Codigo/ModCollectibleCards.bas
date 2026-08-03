@@ -127,16 +127,15 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
         .flags.DirtyCollectibleCardCollection = True
         ' Increment the quantity for this specific card (cap at 255 per byte)
         Dim Inc As Integer
-        Select Case ObjData(ObjCard.ObjIndex).CollectibleCardRarity
-            Case e_CardRarity.Bronce
-                Inc = 1
-            Case e_CardRarity.Silver
-                Inc = 3
-            Case e_CardRarity.gold
-                Inc = 5
-            Case Else
-                Inc = 0
-        End Select
+        If ObjData(ObjCard.ObjIndex).CollectibleCardRarity = e_CardRarity.Bronce Then
+            Inc = CInt(SvrConfig.GetValue("CardBronceQuantity"))
+        ElseIf ObjData(ObjCard.ObjIndex).CollectibleCardRarity = e_CardRarity.Silver Then
+            Inc = CInt(SvrConfig.GetValue("CardSilverQuantity"))
+        ElseIf ObjData(ObjCard.ObjIndex).CollectibleCardRarity = e_CardRarity.gold Then
+            Inc = CInt(SvrConfig.GetValue("CardGoldQuantity"))
+        Else
+            Inc = 0
+        End If
 
         If Inc > 0 Then
             Dim NewQty As Integer
@@ -198,26 +197,11 @@ Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex
     
     ' Apply EXP bonus based on card level (quantity)
     ' Accumulative bonuses as the player levels up their card
-    Select Case CardQuantity
-        Case 0
-            GetCardExpBonusForNpc = 1#      ' No card = no bonus
-        Case 1
-            GetCardExpBonusForNpc = 1.1     ' Lv1 = +10% EXP
-        Case 2, 3, 4
-            GetCardExpBonusForNpc = 1.1     ' Lv2-4 = same +10% EXP (other bonuses apply elsewhere)
-        Case 5
-            GetCardExpBonusForNpc = 1.2     ' Lv5 = +20% EXP (replaces previous)
-        Case 6, 7
-            GetCardExpBonusForNpc = 1.2     ' Lv6-7 = same +20% EXP (other bonuses apply elsewhere)
-        Case 8
-            GetCardExpBonusForNpc = 1.4     ' Lv8 = +40% EXP (replaces previous)
-        Case 9
-            GetCardExpBonusForNpc = 1.4     ' Lv9 = same +40% EXP (other bonuses apply elsewhere)
-        Case 10
-            GetCardExpBonusForNpc = 1.8     ' Lv10 = +80% EXP (replaces previous)
-        Case Is > 10
-            GetCardExpBonusForNpc = 1.8     ' Max level cap
-    End Select
+    GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonusBase"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl1")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus1"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl2")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus2"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl3")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus3"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl4")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus4"))
 End Function
 
 Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
@@ -240,16 +224,10 @@ Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIn
     
     ' Apply damage bonus based on card level (quantity)
     ' Accumulative bonuses as the player levels up their card
-    Select Case CardQuantity
-        Case 0, 1
-            GetCardDamageBonusForNpc = 1#       ' Lv0-1 = no damage bonus
-        Case 2, 3, 4, 5
-            GetCardDamageBonusForNpc = 1.2      ' Lv2-5 = +20% damage
-        Case 6, 7, 8, 9
-            GetCardDamageBonusForNpc = 1.5      ' Lv6-9 = +50% damage (replaces previous)
-        Case Is >= 10
-            GetCardDamageBonusForNpc = 1.5      ' Lv10+ = +50% damage (cap)
-    End Select
+    GetCardDamageBonusForNpc = CSng(SvrConfig.GetValue("CardDamageBonusBase"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageBonusLvl1")) Then GetCardDamageBonusForNpc = CSng(SvrConfig.GetValue("CardDamageBonus1"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageBonusLvl2")) Then GetCardDamageBonusForNpc = CSng(SvrConfig.GetValue("CardDamageBonus2"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageBonusLvl3")) Then GetCardDamageBonusForNpc = CSng(SvrConfig.GetValue("CardDamageBonus3"))
 End Function
 
 Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
@@ -273,16 +251,10 @@ Public Function GetCardDamageReductionForNpc(ByVal UserIndex As Integer, ByVal N
     
     ' Apply damage reduction based on card level (quantity)
     ' Lower values = more reduction (we multiply the incoming damage by this)
-    Select Case CardQuantity
-        Case 0, 1, 2
-            GetCardDamageReductionForNpc = 1#      ' Lv0-2 = no damage reduction
-        Case 3, 4, 5, 6
-            GetCardDamageReductionForNpc = 0.8     ' Lv3-6 = -20% damage (take 80% damage)
-        Case 7, 8, 9
-            GetCardDamageReductionForNpc = 0.5     ' Lv7-9 = -50% damage (take 50% damage)
-        Case Is >= 10
-            GetCardDamageReductionForNpc = 0.5     ' Lv10+ = -50% damage (cap)
-    End Select
+    GetCardDamageReductionForNpc = CSng(SvrConfig.GetValue("CardDamageReductionBase"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageReductionLvl1")) Then GetCardDamageReductionForNpc = CSng(SvrConfig.GetValue("CardDamageReduction1"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageReductionLvl2")) Then GetCardDamageReductionForNpc = CSng(SvrConfig.GetValue("CardDamageReduction2"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDamageReductionLvl3")) Then GetCardDamageReductionForNpc = CSng(SvrConfig.GetValue("CardDamageReduction3"))
 End Function
 
 
@@ -299,12 +271,7 @@ Public Function GetCardDropBonusForNpc(ByVal UserIndex As Integer, ByRef Npc As 
     
     CardQuantity = GetUserCardQuantity(UserIndex, CardIndex)
     
-    Select Case CardQuantity
-        Case 0, 1, 2, 3
-            GetCardDropBonusForNpc = 1#        ' Lv0-3 = no drop bonus
-        Case 4, 5, 6, 7, 8, 9
-            GetCardDropBonusForNpc = 1.5       ' Lv4-9 = +50% drop
-        Case Is >= 10
-            GetCardDropBonusForNpc = 2#        ' Lv10+ = +100% drop (double)
-    End Select
+    GetCardDropBonusForNpc = CSng(SvrConfig.GetValue("CardDropBonusBase"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDropBonusLvl1")) Then GetCardDropBonusForNpc = CSng(SvrConfig.GetValue("CardDropBonus1"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardDropBonusLvl2")) Then GetCardDropBonusForNpc = CSng(SvrConfig.GetValue("CardDropBonus2"))
 End Function
