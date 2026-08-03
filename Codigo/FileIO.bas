@@ -2210,6 +2210,7 @@ Sub LoadMainConfigFile()
     Call CargarInfoRetos
     Call CargarInfoEventos
     Call CargarMapasEspeciales
+    Call ModHotZone.LoadHotZones(DatPath & "HotZones.dat")
     Exit Sub
 LoadMainConfigFile_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadMainConfigFile", Erl)

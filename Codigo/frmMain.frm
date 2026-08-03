@@ -910,6 +910,7 @@ Private Sub Minuto_Timer()
     If IsFeatureEnabled("automatic_events") Then
         Call Automatic_Event_Timer
     End If
+    Call ModHotZone.CheckHotZoneEvent
     Call dump_stats
     Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub

@@ -83,6 +83,9 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     'Number of milliseconds DirectPlay should wait before it retries a connection request.
     mSettings.Add "DP_ConnectTimeout", CLng(val(reader.GetValue("DIRECTPLAY", "ConnectTimeout", 500)))
     mSettings.Add "ExpMult", CInt(val(reader.GetValue("CONFIGURACIONES", "ExpMult")))
+    mSettings.Add "HotZoneExpMult", CSng(val(reader.GetValue("CONFIGURACIONES", "HotZoneExpMult", "1.2")))
+    mSettings.Add "HotZoneStartHour", CInt(val(reader.GetValue("CONFIGURACIONES", "HotZoneStartHour", "18")))
+    mSettings.Add "HotZoneEndHour", CInt(val(reader.GetValue("CONFIGURACIONES", "HotZoneEndHour", "21")))
     mSettings.Add "GoldMult", CInt(val(reader.GetValue("CONFIGURACIONES", "OroMult")))
     mSettings.Add "RecoleccionMult", CDbl(val(reader.GetValue("CONFIGURACIONES", "RecoleccionMult")))
     mSettings.Add "OroPorNivelBilletera", CLng(val(reader.GetValue("CONFIGURACIONES", "OroPorNivelBilletera")))

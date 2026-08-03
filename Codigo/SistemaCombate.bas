@@ -1577,6 +1577,10 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         If SvrConfig.GetValue("ExpMult") > 0 Then
             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
         End If
+        ' Bonus de exp por Hot Zone (si el mapa del NPC es la zona activa del dia)
+        Dim HotZoneMult As Single
+        HotZoneMult = ModHotZone.GetHotZoneExpMultiplier(NpcList(NpcIndex).pos.Map)
+        ExpaDar = ExpaDar * HotZoneMult
         If ExpaDar > 0 Then
             If NpcList(NpcIndex).nivel Then
                 Dim DeltaLevel As Integer
@@ -1601,7 +1605,13 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
             End If
-            Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), .pos.x, .pos.y, RGB(0, 169, 255))
+            Dim ExpColor As Long
+            If HotZoneMult <> 1 Then
+                ExpColor = RGB(255, 215, 0) ' Dorado - bonus de Hot Zone activo
+            Else
+                ExpColor = RGB(0, 169, 255) ' Celeste - color normal
+            End If
+            Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), .pos.x, .pos.y, ExpColor)
         End If
     End With
     Exit Sub
@@ -1611,7 +1621,7 @@ End Sub
 
 Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExpGrupal_Err
-    Dim ExpaDar                 As Long
+    Dim ExpaDar                 As Double
     Dim BonificacionGrupo       As Single
     Dim CantidadMiembrosValidos As Integer
     Dim i                       As Long
@@ -1624,11 +1634,9 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     'La experiencia a dar es la porcion de vida quitada * toda la experiencia
-    ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
+    ExpaDar = CDbl(ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp)
     If ExpaDar <= 0 Then Exit Sub
-    'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-    'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-    'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
+    
     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
         ExpaDar = NpcList(NpcIndex).flags.ExpCount
         NpcList(NpcIndex).flags.ExpCount = 0
@@ -1670,8 +1678,16 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         If SvrConfig.GetValue("ExpMult") > 0 Then
             ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
         End If
+        ' Bonus de exp por Hot Zone (si el mapa del NPC es la zona activa del dia)
+        Dim ExpColor As Long
+        If ModHotZone.GetHotZoneExpMultiplier(NpcList(NpcIndex).pos.Map) <> 1 Then
+            ExpColor = RGB(255, 215, 0) ' Dorado - bonus de Hot Zone activo
+        Else
+            ExpColor = RGB(0, 169, 255) ' Celeste - color normal
+        End If
+        ExpaDar = ExpaDar * ModHotZone.GetHotZoneExpMultiplier(NpcList(NpcIndex).pos.Map)
         ExpaDar = ExpaDar / CantidadMiembrosValidos
-        Dim ExpUser As Long, DeltaLevel As Integer, ExpBonusForUser As Double
+        Dim ExpUser As Double, DeltaLevel As Integer, ExpBonusForUser As Double
         If ExpaDar > 0 Then
             For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
                 If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
@@ -1706,6 +1722,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                 If UserList(Index).ChatCombate = 1 Then
                                     Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
                                 End If
+                                Call WriteTextOverTile(Index, "+" & PonerPuntos(ExpUser), UserList(Index).pos.x, UserList(Index).pos.y, ExpColor)
                                 Call WriteUpdateExp(Index)
                                 Call CheckUserLevel(Index)
                             End If

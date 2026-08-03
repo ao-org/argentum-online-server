@@ -1260,3 +1260,7 @@ Public Const MSG_CHARNAME_ADDED_TO_WHITELIST As Integer = 2221
 Public Const MSG_CHARNAME_REMOVED_FROM_WHITELIST As Integer = 2222
 Public Const MSG_JAIL_OBJECT_ONLY_IN_JAIL As Integer = 2226
 Public Const MSG_NOT_IN_A_GUILD As Integer = 2227
+Public Const MSG_HOTZONE_STARTED As Integer = 2252
+Public Const MSG_HOTZONE_ENDED As Integer = 2253
+Public Const MSG_HOTZONE_REMINDER As Integer = 2254
+
