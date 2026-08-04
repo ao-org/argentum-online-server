@@ -68,9 +68,22 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
                 ' Resto el porcentaje total
                 Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             End If
+            
             Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(NpcIndex))
             Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
+            
+            ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA (también aplica a magia) =====
+            If IsFeatureEnabled("collectible_cards") Then
+                Dim CardDamageReduction As Single
+                CardDamageReduction = GetCardDamageReductionForNpc(UserIndex, NpcIndex)
+                If CardDamageReduction < 1# Then
+                    Damage = CInt(Damage * CardDamageReduction)
+                End If
+            End If
+            ' =======================================================================
+            
             If Damage < 0 Then Damage = 0
+            
             IsAlive = UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
             DamageStr = PonerPuntos(Damage)
             Call WriteLocaleMsg(UserIndex, MSG_HA_QUITADO_PUNTOS_VIDA, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
@@ -2423,6 +2436,17 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         End If
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
+        
+        ' ===== APLICAR BONO DE DAÑO POR CARTA =====
+        If IsFeatureEnabled("collectible_cards") Then
+            Dim CardDamageBonus As Single
+            CardDamageBonus = GetCardDamageBonusForNpc(UserIndex, NpcIndex)
+            If CardDamageBonus > 1# Then
+                Damage = CLng(Damage * CardDamageBonus)
+            End If
+        End If
+        ' ===========================================
+        
         If Damage < 0 Then Damage = 0
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
@@ -4168,17 +4192,20 @@ Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcInd
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer
+    Dim ElvenWoodMultiplier As Single
+    ElvenWoodMultiplier = CSng(SvrConfig.GetValue("ElvenWoodMagicDamageMultiplier"))
+    If ElvenWoodMultiplier <= 0 Then ElvenWoodMultiplier = 3
     BaseHit = UserList(UserIndex).Stats.ELV
     If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     BonusDamage = BonusFromItem / 100

@@ -7949,7 +7949,8 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         Else
-            Call WriteLocaleMsg(UserIndex, "Funcion deshabilitada momentaneamente / Function disabled temporarily.", e_FontTypeNames.FONTTYPE_INFO)
+            'Msg2255= Funcion deshabilitada momentaneamente / Function disabled temporarily.
+            Call WriteLocaleMsg(UserIndex, MSG_SKIN_DELETE_DISABLED_TEMP, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With
