@@ -370,7 +370,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
     On Error GoTo UserDamageNpc_Err
     With UserList(UserIndex)
         Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
-        If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = DRAGON Then
+        If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = e_NPCType.Dragon Then
             ' Espada MataDragones
             DamageBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
             ' La pierde una vez usada
@@ -403,6 +403,17 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
         End If
+        
+        ' ===== APLICAR BONO DE DAÑO POR CARTA =====
+        If IsFeatureEnabled("collectible_cards") Then
+            Dim CardDamageBonus As Single
+            CardDamageBonus = GetCardDamageBonusForNpc(UserIndex, NpcIndex)
+            If CardDamageBonus > 1# Then
+                Damage = CLng(Damage * CardDamageBonus)
+            End If
+        End If
+        ' ===========================================
+        
         If Damage < 0 Then Damage = 0
         If IsFeatureEnabled("healers_and_tanks") And .clase = e_Class.Warrior Then
             Dim Calc As Long
@@ -420,6 +431,14 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = DamageBase * 0.33
                 DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
+                
+                If IsFeatureEnabled("collectible_cards") Then
+                    ' Aplicar bono de carta también al daño crítico extra
+                    If CardDamageBonus > 1# Then
+                        DamageExtra = CLng(DamageExtra * CardDamageBonus)
+                    End If
+                End If
+                
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
                     Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & (DamageExtra))
@@ -541,6 +560,17 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus(UserIndex)
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex))
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
+    
+    ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA =====
+    If IsFeatureEnabled("collectible_cards") Then
+        Dim CardDamageReduction As Single
+        CardDamageReduction = GetCardDamageReductionForNpc(UserIndex, NpcIndex)
+        If CardDamageReduction < 1# Then
+            Damage = CInt(Damage * CardDamageReduction)
+        End If
+    End If
+    ' ===========================================
+    
     If Damage < 0 Then Damage = 0
     If UserList(UserIndex).ChatCombate = 1 Then
         Call WriteNPCHitUser(UserIndex, Lugar, Damage)
@@ -1595,6 +1625,17 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                     End If
                 End If
             End If
+            
+            If IsFeatureEnabled("collectible_cards") Then
+                ' Apply card collection bonus for THIS specific NPC
+                Dim CardBonus As Single
+                CardBonus = GetCardExpBonusForNpc(UserIndex, NpcIndex)
+                
+                If CardBonus > 1# Then
+                    ExpaDar = ExpaDar * CardBonus
+                End If
+            End If
+            
             If .Stats.ELV < STAT_MAXELV Then
                 .Stats.Exp = .Stats.Exp + ExpaDar
                 If .Stats.Exp > MAXEXP Then .Stats.Exp = MAXEXP
@@ -1696,6 +1737,17 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                         End If
                                     End If
                                 End If
+                                
+                                If IsFeatureEnabled("collectible_cards") Then
+                                    ' Apply card collection bonus for THIS specific NPC
+                                    Dim CardBonus As Single
+                                    CardBonus = GetCardExpBonusForNpc(Index, NpcIndex)
+                                    
+                                    If CardBonus > 1# Then
+                                        ExpUser = ExpUser * CardBonus
+                                    End If
+                                End If
+                                
                                 If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
                                     ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
                                     UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
