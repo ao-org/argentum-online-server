@@ -639,17 +639,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
         End If
-        If .clase = e_Class.Druid Then
+        If .clase = e_Class.Druid Or .clase = e_Class.Bard Then
             If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
                 If .invent.EquippedRingAccesoryObjIndex = 0 Then
-                    'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_FLAUTA_INVOCAR_DESINVOCAR_TUS_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
                     Exit Function
                 Else
                     If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
-                    'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
-                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_FLAUTA_INVOCAR_DESINVOCAR_TUS_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
+                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
+                        Exit Function
                     End If
                 End If
             End If
