@@ -97,6 +97,10 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         Objeto.ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
         If Objeto.ObjIndex = 0 Then
             Exit Sub
+        ElseIf EsSkinNoComprablePorComerciante(ObjData(Objeto.ObjIndex).OBJType) Then
+            'Msg1084= Lo siento, no puedo comprarte ese item.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM, e_FontTypeNames.FONTTYPE_TALK)
+            Exit Sub
         ElseIf ObjData(Objeto.ObjIndex).Newbie = 1 Then
             'Msg1083= Lo siento, no comercio objetos para newbies.
             Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_COMERCIO_OBJETOS_NEWBIES, e_FontTypeNames.FONTTYPE_TALK)
@@ -215,6 +219,15 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
     End With
 SlotEnNPCInv_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
+End Function
+
+Private Function EsSkinNoComprablePorComerciante(ByVal OBJType As e_OBJType) As Boolean
+    Select Case OBJType
+        Case e_OBJType.otSkinsWings, e_OBJType.otSkinsArmours, e_OBJType.otSkinsShields, _
+            e_OBJType.otSkinsHelmets, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsBoats, _
+            e_OBJType.otSkinsSpells
+            EsSkinNoComprablePorComerciante = True
+    End Select
 End Function
 
 Private Function Descuento(ByVal UserIndex As Integer) As Single

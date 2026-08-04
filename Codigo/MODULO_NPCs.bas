@@ -317,6 +317,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         .AfectaParalisis = 0
         .ImmuneToSpells = 0
         .AguaValida = 0
+        .LavaValida = 0
         .AttackedBy = vbNullString
         .AttackedTime = 0
         .AttackedFirstBy = vbNullString
@@ -542,7 +543,8 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         PuedeAgua = .flags.AguaValida = 1
         PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
-        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
+        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) _
+                And (HayLava(OrigPos.Map, OrigPos.x, OrigPos.y) = (.flags.LavaValida = 1)) Then
             Map = OrigPos.Map
             x = OrigPos.x
             y = OrigPos.y
@@ -551,9 +553,13 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         Else
             ' Primera búsqueda: buscamos una posición ideal hasta llegar al máximo de iteraciones
             Do
-                .pos.Map = Mapa
-                .pos.x = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
-                .pos.y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+                If Iteraciones = 0 And .flags.LavaValida = 1 And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) Then
+                    .pos = OrigPos
+                Else
+                    .pos.Map = Mapa
+                    .pos.x = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
+                    .pos.y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+                End If
                 .pos = ClosestLegalPosNPC(NpcIndex, 10, , True)     'Nos devuelve la posicion valida mas cercana
                 Iteraciones = Iteraciones + 1
             Loop While .pos.x = 0 And .pos.y = 0 And Iteraciones < MAXSPAWNATTEMPS
@@ -783,6 +789,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
         esGuardia = .npcType = e_NPCType.GuardiaReal Or .npcType = e_NPCType.GuardiasCaos
+        If .flags.LavaValida = 1 And Not HayLava(nPos.Map, nPos.x, nPos.y) Then Exit Function
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
             UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
@@ -1044,6 +1051,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
         .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
+        .CollectibleCardIndex = val(LeerNPCs.GetValue(SectionName, "CollectibleCardIndex"))
         .OnlyEnabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "ONLYENABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
@@ -1053,6 +1061,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Movement = Val(LeerNPCs.GetValue(SectionName, "Movement"))
         .AguaValida = Val(LeerNPCs.GetValue(SectionName, "AguaValida"))
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
+        .LavaValida = Val(LeerNPCs.GetValue(SectionName, "LavaValida"))
         .Faccion = Val(LeerNPCs.GetValue(SectionName, "Faccion"))
         .ElementalTags = Val(LeerNPCs.GetValue(SectionName, "ElementalTags"))
         .GlobalQuestBossIndex = val(LeerNPCs.GetValue(SectionName, "GlobalQuestBossIndex"))
@@ -1284,6 +1293,31 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         Else
             Erase .Caminata
         End If
+        If .npcType = e_NPCType.Transporter Then
+            Dim cityCount As Integer
+            cityCount = val(LeerNPCs.GetValue(SectionName, "CityCount", 0))
+            .TransporterLevel = val(LeerNPCs.GetValue(SectionName, "TransporterLevel", 0))
+            .cityCount = cityCount
+            If cityCount > 0 Then
+                ReDim .CityNames(1 To cityCount)
+                ReDim .CityMap(1 To cityCount)
+                ReDim .CityX(1 To cityCount)
+                ReDim .CityY(1 To cityCount)
+                ReDim .CityPrice(1 To cityCount)
+                Dim ci As Integer
+                For ci = 1 To cityCount
+                    Dim entry As String
+                    entry = LeerNPCs.GetValue(SectionName, "City" & ci)
+                    .CityNames(ci) = ReadField(1, entry, Asc("-"))
+                    .CityMap(ci) = val(ReadField(2, entry, Asc("-")))
+                    .CityX(ci) = val(ReadField(3, entry, Asc("-")))
+                    .CityY(ci) = val(ReadField(4, entry, Asc("-")))
+                    .CityPrice(ci) = val(ReadField(5, entry, Asc("-")))
+                Next ci
+            End If
+        Else
+            .cityCount = 0
+        End If
     End With
     Exit Sub
 ErrHandler:
@@ -1414,6 +1448,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .flags.AguaValida = Info.AguaValida
         .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex
         .flags.TierraInvalida = Info.TierraInvalida
+        .flags.LavaValida = Info.LavaValida
         .flags.Faccion = Info.Faccion
         .flags.ElementalTags = Info.ElementalTags
         .npcType = Info.npcType
@@ -1482,6 +1517,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
         .DisabledInBattleServer = Info.DisabledInBattleServer
+        .CollectibleCardIndex = Info.CollectibleCardIndex
         .OnlyEnabledInBattleServer = Info.OnlyEnabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
@@ -1552,6 +1588,27 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         Else
             .NroCriaturas = 0
             Erase .Criaturas
+        End If
+        If .npcType = e_NPCType.Transporter Then
+            .TransportCityCount = Info.cityCount
+            .TransporterLevel = Info.TransporterLevel
+            If .TransportCityCount > 0 Then
+                ReDim .TransportCityNames(1 To .TransportCityCount)
+                ReDim .TransportCityMap(1 To .TransportCityCount)
+                ReDim .TransportCityX(1 To .TransportCityCount)
+                ReDim .TransportCityY(1 To .TransportCityCount)
+                ReDim .TransportCityPrice(1 To .TransportCityCount)
+                Dim tc As Integer
+                For tc = 1 To .TransportCityCount
+                    .TransportCityNames(tc) = Info.CityNames(tc)
+                    .TransportCityMap(tc) = Info.CityMap(tc)
+                    .TransportCityX(tc) = Info.CityX(tc)
+                    .TransportCityY(tc) = Info.CityY(tc)
+                    .TransportCityPrice(tc) = Info.CityPrice(tc)
+                Next tc
+            End If
+        Else
+            .TransportCityCount = 0
         End If
         Call ResetMask(.flags.StatusMask)
         .flags.NPCActive = True
