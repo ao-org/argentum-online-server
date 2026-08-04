@@ -36,10 +36,14 @@ Public Sub MaybeSpawnFenix()
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     If Not IsPhoenixAlive Then
+        Dim nIndex As Integer
         PhoenixSpawnPosition.Map = PhoenixMapPool(RandomNumber(LBound(PhoenixMapPool), UBound(PhoenixMapPool)))
-        Call SpawnNpc(PHOENIX_NPC_INDEX, PhoenixSpawnPosition, 1, False, False, 0, 3)
-        Call modSendData.SendData(ToAll, 0, PrepareMessageLocaleMsg(PHOENIX_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
-        IsPhoenixAlive = True
+        nIndex = SpawnNpc(PHOENIX_NPC_INDEX, PhoenixSpawnPosition, 1, False, False, 0, SND_WARP)
+        If nIndex <> 0 Then
+            Call modSendData.SendData(ToAll, 0, PrepareMessageLocaleMsg(PHOENIX_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
+            Call modSendData.SendData(ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.PhoenixRebirth, NO_3D_SOUND, NO_3D_SOUND, False, 0))
+            IsPhoenixAlive = True
+        End If
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "ModPhoenix.MaybeSpawnFenix", 100)
     Exit Sub
