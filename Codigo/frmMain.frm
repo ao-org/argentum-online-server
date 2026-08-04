@@ -997,6 +997,7 @@ Private Sub Command4_Click()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
+    Call modNetwork.Poll
     GuardarYCerrar = True
     Unload frmMain
     Exit Sub
