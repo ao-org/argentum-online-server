@@ -1226,6 +1226,9 @@ Sub LoadOBJData()
                                 .Item(i).data = 101 - val(Leer.GetValue(ObjKey, "Drop" & i))
                             Next i
                     End Select
+                Case e_OBJType.otCollectibleCard
+                    .CollectibleCardIndex = val(Leer.GetValue(ObjKey, "CollectibleCardIndex"))
+                    .CollectibleCardRarity = val(Leer.GetValue(ObjKey, "CollectibleCardRarity"))
                 Case e_OBJType.otOreDeposit
                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
                     ' Drop gemas yacimientos
