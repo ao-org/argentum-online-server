@@ -641,7 +641,8 @@ Public Enum e_SoundEffects
     RuneArrival = 463
     'Libre = 464 to 480
     IAOPotionChug = 481
-    'Libre = 482 to 499
+    PhoenixRebirth = 482
+    'Libre = 483 to 499
     MenuSelect = 500
     MenuSelect2 = 501
     'Libre = 502 to 519
@@ -654,6 +655,7 @@ Public Enum e_SoundEffects
     NewLevelUp = 554
     FlareActivation = 555
     'Repetido = 1152
+    NewCastleRPGVoice = 1600
     SnowStorm = 2000
     'Imperium 2028 - 2186
     FailToExtractOre = 2185
@@ -1143,6 +1145,27 @@ Public Enum e_Trigger
     NADOCOMBINADO = 18
     CARCEL = 19
     ONLY_PATREON_TILE = 20
+    EMPEROR_CASTLE_ENTRY_1 = 21
+    EMPEROR_CASTLE_ENTRY_2 = 22
+    EMPEROR_CASTLE_ENTRY_3 = 23
+    EMPEROR_CASTLE_ENTRY_4 = 24
+    EMPEROR_CASTLE_ENTRY_5 = 25
+    EMPEROR_CASTLE_ENTRY_6 = 26
+    EMPEROR_CASTLE_ENTRY_7 = 27
+    EMPEROR_CASTLE_ENTRY_8 = 28
+    EMPEROR_CASTLE_ENTRY_9 = 29
+    EMPEROR_CASTLE_ENTRY_10 = 30
+    EMPEROR_CASTLE_ENTRY_11 = 31
+    EMPEROR_CASTLE_ENTRY_12 = 32
+    EMPEROR_CASTLE_ENTRY_13 = 33
+    EMPEROR_CASTLE_ENTRY_14 = 34
+    EMPEROR_CASTLE_ENTRY_15 = 35
+    EMPEROR_CASTLE_ENTRY_16 = 36
+    EMPEROR_CASTLE_ENTRY_17 = 37
+    EMPEROR_CASTLE_ENTRY_18 = 38
+    EMPEROR_CASTLE_ENTRY_19 = 39
+    EMPEROR_CASTLE_ENTRY_20 = 40
+    CASTLE_FOUNDATION_POSITION = 41
 End Enum
 
 Public Enum e_NpcInfoMask
@@ -1369,6 +1392,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
 
+Public Const MAXCOLLECTIBLECARDS As Integer = 1024
 
 ''
 'Direccion
@@ -1477,6 +1501,7 @@ Public Const SND_RESURRECCION    As Byte = 117
 
 Public Const SND_SACARARMA           As Byte = 25
 Public Const SND_ESCUDO              As Byte = 37
+Public Const SND_ESCUDO_MADERA       As Integer = 2053
 Public Const MARTILLOHERRERO         As Byte = 41
 Public Const LABUROCARPINTERO        As Byte = 42
 Public Const SND_BEBER               As Byte = 135
@@ -1513,7 +1538,7 @@ Public Enum e_OBJType
     otBackpack = 7
     otSignBoards = 8
     otKeys = 9
-    'otLibre = 10
+    otCastleSpawner = 10
     otPotions = 11
     'otLibre = 12
     otDrinks = 13
@@ -1559,6 +1584,7 @@ Public Enum e_OBJType
     otPlants = 54
     otElementalRune = 55
     otFactionForgiveness = 56
+    otCollectibleCard = 57
     otElse = 100
 End Enum
 
@@ -2066,6 +2092,7 @@ Public Type t_Obj
     ElementalTags As Long
     amount As Long
     data As Double
+    CastleSlot As Integer
 End Type
 
 Public Type t_QuestNpc
@@ -2188,6 +2215,7 @@ End Type
 Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
+    e_JailObject = 4
 End Enum
 
 
@@ -2315,6 +2343,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
+    AssignedCastleIndex As Integer
     BackpackAnim As Integer
     Valor As Long     ' Precio
     Cerrada As Integer
@@ -2401,6 +2430,8 @@ Public Type t_ObjData
     BowCategory As Byte
     ArrowCategory As Byte
     RepairTo As Integer ' ObjIndex of the item granted when this object is repaired.
+    CollectibleCardIndex As Integer
+    CollectibleCardRarity As Byte
 End Type
 
 '[Pablo ToxicWaste]
@@ -2446,12 +2477,16 @@ End Type
 Public Const patron_tier_aventurero As Long = 6057393
 Public Const patron_tier_heroe      As Long = 6057394
 Public Const patron_tier_leyenda    As Long = 6057395
+Public Const patron_tier_noble      As Long = 28929328
+Public Const patron_tier_emperador  As Long = 28929365
 
 Public Enum e_TipoUsuario
     tNormal = 0
-    tAventurero
-    tHeroe
-    tLeyenda
+    tAventurero = 1
+    tHeroe = 2
+    tLeyenda = 3
+    tNoble = 4
+    tEmperador = 5
 End Enum
 
 Public Const MaxRecentKillToStore = 5
@@ -2706,6 +2741,7 @@ Public Type t_UserFlags
     QuestNumber As Integer
     QuestItemSlot As Integer
     RespondiendoPregunta As Boolean
+    DirtyCollectibleCardCollection As Boolean
     CurrentTeam As Byte
     'Captura de bandera
     jugando_captura As Byte
@@ -2762,6 +2798,7 @@ Public Type t_UserCounters
     DisabledInvisibility As Integer
     TiempoOculto As Integer
     LastAttackTime As Long
+    LastGuildCallTime As Long
     PiqueteC As Long
     Pena As Long
     SendMapCounter As t_WorldPos
@@ -2952,6 +2989,8 @@ Public Type t_User
     InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     Id As Long
     Trabajo As t_UserTrabajo
+    AccountCollectibleCardBitArray(1 To 128) As Byte
+    AccountCollectibleCardQuantities(1 To 1024) As Byte
     AccountID As Long
     Grupo As Tgrupo
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
@@ -3101,6 +3140,7 @@ Public Type t_NPCFlags
     OldHostil As Byte
     AguaValida As Byte
     TierraInvalida As Byte
+    LavaValida As Byte
     ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     AttackedBy As String
@@ -3195,6 +3235,7 @@ Public Type t_NpcInfoCache
     AguaValida As Integer
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
+    LavaValida As Integer
     Faccion As Integer
     ElementalTags As Long
     npcType As Integer
@@ -3302,6 +3343,7 @@ Public Type t_NpcInfoCache
     CityY()         As Integer
     CityPrice()     As Long
     TransporterLevel As Integer
+    CollectibleCardIndex As Integer
 End Type
 
 Public Enum e_TipoAI
@@ -3431,6 +3473,7 @@ Public Type t_Npc
     TransportCityY()     As Integer
     TransportCityPrice() As Long
     TransporterLevel As Integer
+    CollectibleCardIndex As Integer
 End Type
 
 '**********************************************************

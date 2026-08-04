@@ -78,7 +78,7 @@ Public Function IsPatreon(ByVal UserIndex As Integer) As Boolean
    On Error GoTo IsPatreon_Error
 
     With UserList(UserIndex).Stats
-        IsPatreon = .tipoUsuario = e_TipoUsuario.tAventurero Or .tipoUsuario = e_TipoUsuario.tHeroe Or .tipoUsuario = e_TipoUsuario.tLeyenda
+        IsPatreon = .tipoUsuario >= e_TipoUsuario.tAventurero And .tipoUsuario <= e_TipoUsuario.tEmperador
     End With
 
    On Error GoTo 0
@@ -1973,8 +1973,8 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
             Call PenalizeFactionScoreLegionAndCouncil(UserIndex, TargetIndex)
         Else
             'Mantener comportamiento original
-            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
             Call WriteLocaleMsg(UserIndex, MSG_FACTION_POINTS_GAINED, GetFontTypeByFactionStatus(.Faccion.Status), max(Score, 0) & "¬" & UserList(TargetIndex).Name)
+            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), .pos.x, .pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.faccion.Status)))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -1998,8 +1998,8 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
             .Faccion.FactionScore = newScore
         Else
             'Mantener comportamiento original
-            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
             Call WriteLocaleMsg(UserIndex, MSG_FACTION_POINTS_GAINED, GetFontTypeByFactionStatus(.Faccion.Status), max(Score, 0) & "¬" & UserList(TargetIndex).Name)
+            Call WriteTextOverTile(UserIndex, "+" & max(Score, 0), .pos.x, .pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.faccion.Status)))
             .Faccion.FactionScore = .Faccion.FactionScore + max(Score, 0)
         End If
     End With
@@ -2027,7 +2027,7 @@ Sub PenalizeFactionScoreLegionAndCouncil(ByVal Attacker As Integer, ByVal Target
         newScore = .Faccion.FactionScore + Score
         If newScore < 0 Then newScore = 0
         .Faccion.FactionScore = newScore
-        Call WriteTextOverTile(Attacker, CStr(Score), UserList(Target).pos.x, UserList(Target).pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.Faccion.Status)))
+        Call WriteTextOverTile(Attacker, CStr(Score), .pos.x, .pos.y, FontTypeToColor(GetFontTypeByFactionStatus(.faccion.Status)))
     End With
     Exit Sub
 PenalizeFactionScoreLegionAndCouncil_Err:
