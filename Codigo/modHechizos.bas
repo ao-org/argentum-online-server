@@ -68,9 +68,22 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
                 ' Resto el porcentaje total
                 Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             End If
+            
             Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(NpcIndex))
             Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
+            
+            ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA (también aplica a magia) =====
+            If IsFeatureEnabled("collectible_cards") Then
+                Dim CardDamageReduction As Single
+                CardDamageReduction = GetCardDamageReductionForNpc(UserIndex, NpcIndex)
+                If CardDamageReduction < 1# Then
+                    Damage = CInt(Damage * CardDamageReduction)
+                End If
+            End If
+            ' =======================================================================
+            
             If Damage < 0 Then Damage = 0
+            
             IsAlive = UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
             DamageStr = PonerPuntos(Damage)
             Call WriteLocaleMsg(UserIndex, MSG_HA_QUITADO_PUNTOS_VIDA, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
@@ -639,17 +652,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
         End If
-        If .clase = e_Class.Druid Then
+        If .clase = e_Class.Druid Or .clase = e_Class.Bard Then
             If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
                 If .invent.EquippedRingAccesoryObjIndex = 0 Then
-                    'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_FLAUTA_INVOCAR_DESINVOCAR_TUS_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
                     Exit Function
                 Else
                     If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
-                    'Msg783= Necesitás una flauta para invocar o desinvocar a tus mascotas.
-                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_FLAUTA_INVOCAR_DESINVOCAR_TUS_MASCOTAS, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
+                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
+                        Exit Function
                     End If
                 End If
             End If
@@ -2426,6 +2437,17 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         End If
         Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
         Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
+        
+        ' ===== APLICAR BONO DE DAÑO POR CARTA =====
+        If IsFeatureEnabled("collectible_cards") Then
+            Dim CardDamageBonus As Single
+            CardDamageBonus = GetCardDamageBonusForNpc(UserIndex, NpcIndex)
+            If CardDamageBonus > 1# Then
+                Damage = CLng(Damage * CardDamageBonus)
+            End If
+        End If
+        ' ===========================================
+        
         If Damage < 0 Then Damage = 0
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
@@ -3368,6 +3390,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         ' Prevengo daño negativo
         If Damage < 0 Then Damage = 0
         If UserIndex <> targetUserIndex Then
+            Call checkHechizosEfectividad(UserIndex, targetUserIndex)
             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
         End If
         enviarInfoHechizo = True
@@ -3598,13 +3621,31 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
+        If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDE_VOLVER_SER_PARALIZADO_TAN_RAPIDO, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1872=¬1 no puede volver a ser paralizado tan rápido.
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INMOVILIZAR_OBJETIVO_PUEDE_MOVERSE, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
         If UserIndex <> tU Then
+            Call checkHechizosEfectividad(UserIndex, tU)
             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
         End If
         enviarInfoHechizo = True
         b = True
-        UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+        If UserList(tU).clase = Warrior Or UserList(tU).clase = Hunter Then
+            UserList(tU).Counters.Paralisis = Hechizos(h).Duration * 0.7
+        Else
+            UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+        End If
         If UserList(tU).flags.Paralizado = 0 Then
             UserList(tU).flags.Paralizado = 1
             Call WriteParalizeOK(tU)
@@ -3616,13 +3657,31 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
+        If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDE_VOLVER_SER_INMOVILIZADO_TAN_RAPIDO, UserList(tU).name, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1873=¬1 no puede volver a ser inmovilizado tan rápido.
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INMOVILIZAR_OBJETIVO_PUEDE_MOVERSE, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
+        If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
         If UserIndex <> tU Then
+            Call checkHechizosEfectividad(UserIndex, tU)
             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
         End If
         enviarInfoHechizo = True
         b = True
-        UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+        If UserList(tU).clase = Warrior Or UserList(tU).clase = Hunter Then
+            UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration * 0.7
+        Else
+            UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+        End If
         If UserList(tU).flags.Inmovilizado = 0 Then
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
@@ -4134,17 +4193,20 @@ Public Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcInd
     Dim BaseHit       As Integer
     Dim BonusDamage   As Single
     Dim BonusFromItem As Integer
+    Dim ElvenWoodMultiplier As Single
+    ElvenWoodMultiplier = CSng(SvrConfig.GetValue("ElvenWoodMagicDamageMultiplier"))
+    If ElvenWoodMultiplier <= 0 Then ElvenWoodMultiplier = 3
     BaseHit = UserList(UserIndex).Stats.ELV
     If UserList(UserIndex).invent.EquippedWeaponObjIndex > 0 Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedWeaponObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     If UserList(UserIndex).invent.EquippedRingAccesoryObjIndex Then
         BonusFromItem = BonusFromItem + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus
         If ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MaderaElfica > 0 Then
-            BonusFromItem = BonusFromItem * 2
+            BonusFromItem = BonusFromItem * ElvenWoodMultiplier
         End If
     End If
     BonusDamage = BonusFromItem / 100
