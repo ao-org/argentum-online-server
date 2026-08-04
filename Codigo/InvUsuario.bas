@@ -2750,6 +2750,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otCastleSpawner
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+            Case e_OBJType.otCollectibleCard
+                If IsFeatureEnabled("collectible_cards") Then
+                    MiObj.Amount = 1
+                    MiObj.ObjIndex = .invent.Object(Slot).ObjIndex
+                    Call AddCollectibleCardToUser(UserIndex, MiObj)
+                    Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
         End Select
     End With
     Exit Sub
