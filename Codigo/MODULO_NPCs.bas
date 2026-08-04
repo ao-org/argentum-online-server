@@ -1014,6 +1014,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
         .DisabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "DISABLEDINBATTLESERVER"))
+        .CollectibleCardIndex = val(LeerNPCs.GetValue(SectionName, "CollectibleCardIndex"))
         .OnlyEnabledInBattleServer = val(LeerNPCs.GetValue(SectionName, "ONLYENABLEDINBATTLESERVER"))
         .RequireToggle = LeerNPCs.GetValue(SectionName, "REQUIRETOGGLE")
         .name = LeerNPCs.GetValue(SectionName, "Name")
@@ -1479,6 +1480,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .OnlyForGuilds = Info.OnlyForGuilds
         .ShowKillerConsole = Info.ShowKillerConsole
         .DisabledInBattleServer = Info.DisabledInBattleServer
+        .CollectibleCardIndex = Info.CollectibleCardIndex
         .OnlyEnabledInBattleServer = Info.OnlyEnabledInBattleServer
         If .IntervaloMovimiento = 0 Then
             .IntervaloMovimiento = 380
