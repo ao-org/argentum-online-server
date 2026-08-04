@@ -641,7 +641,8 @@ Public Enum e_SoundEffects
     RuneArrival = 463
     'Libre = 464 to 480
     IAOPotionChug = 481
-    'Libre = 482 to 499
+    PhoenixRebirth = 482
+    'Libre = 483 to 499
     MenuSelect = 500
     MenuSelect2 = 501
     'Libre = 502 to 519
