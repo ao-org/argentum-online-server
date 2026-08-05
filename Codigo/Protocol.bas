@@ -1045,7 +1045,6 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     Dim encrypted_session_token As String
     Dim char_id As Long
-    Dim md5 As String
     Dim Version As String
     Dim CuentaEmail As String
     Dim UserIndex As Integer
@@ -1061,7 +1060,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim t_query As Long, t_map As Long, t_assign As Long, t_entrar As Long, t_connect As Long
     Dim totalMs As Long
     Dim outcome As String
-    Dim tokenLen As Long, md5Len As Long
+    Dim tokenLen As Long
     Dim rsCount As Long
 
     outcome = "ok"
@@ -1074,11 +1073,9 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     char_id = reader.ReadInt32
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8
     t_read = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
     tokenLen = Len(encrypted_session_token)
-    md5Len = Len(md5)
 
     ' ----------------------------
     ' Validate
@@ -1198,7 +1195,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     ' ----------------------------
     Call PerformanceTestStart(stepTimer)
 
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         outcome = "fail_entrar_cuenta"
         Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
         Call CloseSocket(UserIndex)
@@ -1230,7 +1227,6 @@ FinallyLog:
             " | email: " & CuentaEmail & _
             " | ver: " & Version & _
             " | tokenLen: " & tokenLen & _
-            " | md5Len: " & md5Len & _
             " | rsCount: " & rsCount & _
             " | outcome: " & outcome & _
             " | read: " & t_read & "ms" & _
@@ -1275,7 +1271,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim username                As String
     Dim CuentaEmail             As String
     Dim Version                 As String
-    Dim md5                     As String
     Dim encrypted_session_token As String
     Dim encrypted_username      As String
     Dim race                    As e_Raza
@@ -1288,7 +1283,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     encrypted_username = reader.ReadString8
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8()
     race = reader.ReadInt8()
     gender = reader.ReadInt8()
     Class = reader.ReadInt8()
@@ -1393,7 +1387,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
         End If
     End If
     UserList(UserIndex).AccountID = -1
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         Call CloseSocket(UserIndex)
         Exit Sub
     End If

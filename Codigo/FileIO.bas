@@ -1805,13 +1805,6 @@ Sub LoadPrivateKey()
     Close #1
 End Sub
 
-Sub LoadMD5()
-    Open IniPath & "ClienteMD5.txt" For Input As #1
-    Line Input #1, Md5Cliente
-    Close #1
-    Md5Cliente = Replace(Md5Cliente, " ", "")
-End Sub
-
 Sub LoadSini()
     On Error GoTo LoadSini_Err
     Dim Lector   As clsIniManager
