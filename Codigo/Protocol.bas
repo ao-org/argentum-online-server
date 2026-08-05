@@ -1479,6 +1479,8 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         chat = reader.ReadString8()
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
+        TargetX = reader.ReadInt8()
+        TargetY = reader.ReadInt8()
         Dim Packet_ID As Long
         Packet_ID = PacketNames.Talk
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Talk", PacketTimerThreshold( _
@@ -1823,6 +1825,10 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandlePickUp(ByVal UserIndex As Integer)
     On Error GoTo HandlePickUp_Err
+    Dim TargetX As Byte
+    Dim TargetY As Byte
+    TargetX = reader.ReadInt8()
+    TargetY = reader.ReadInt8()
     With UserList(UserIndex)
         'If dead, it can't pick up objects
         If .flags.Muerto = 1 Then
@@ -1836,7 +1842,8 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TOMAR_NINGUN_OBJETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Call PickObj(UserIndex)
+        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
+        Call PickObjAt(UserIndex, .pos.Map, TargetX, TargetY)
     End With
     Exit Sub
 HandlePickUp_Err:
@@ -2066,10 +2073,14 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     Dim amount        As Long
     Dim PacketCounter As Long
     Dim Packet_ID     As Long
+    Dim TargetX       As Byte
+    Dim TargetY       As Byte
     With UserList(UserIndex)
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
         PacketCounter = reader.ReadInt32
+        TargetX = reader.ReadInt8()
+        TargetY = reader.ReadInt8()
         Packet_ID = PacketNames.Drop
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
@@ -2081,6 +2092,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
+        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
         If amount <= 0 Then Exit Sub
         'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
@@ -2097,6 +2109,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
+            If TargetX <> .pos.x Or TargetY <> .pos.y Then Exit Sub
             If amount > 100000 Then amount = 100000
             Call TirarOro(amount, UserIndex)
         Else
@@ -2115,7 +2128,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                     ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                            Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                            Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
                         End If
                         Exit Sub
                     End If
@@ -2139,7 +2152,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             'Only drop valid slots
             If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                 If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
             End If
         End If
     End With
