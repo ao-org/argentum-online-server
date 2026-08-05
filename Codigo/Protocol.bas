@@ -1479,8 +1479,6 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         chat = reader.ReadString8()
         Dim PacketCounter As Long
         PacketCounter = reader.ReadInt32
-        TargetX = reader.ReadInt8()
-        TargetY = reader.ReadInt8()
         Dim Packet_ID As Long
         Packet_ID = PacketNames.Talk
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Talk", PacketTimerThreshold( _
