@@ -969,7 +969,11 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     ' Check if the equipped tool index is valid
     Dim ToolIndex As Integer
     ToolIndex = UserList(UserIndex).invent.EquippedWorkingToolObjIndex
-    If ToolIndex < LBound(ObjData) Or ToolIndex > UBound(ObjData) Then
+    If ToolIndex = 0 Then
+        'Msg376=Antes de usar la herramienta deberías equipártela.
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_EQUIP_TOOL_FIRST, e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    ElseIf ToolIndex < LBound(ObjData) Or ToolIndex > UBound(ObjData) Then
         Call TraceError(1003, "EquippedWorkingToolObjIndex out of range: " & ToolIndex, "AlquimistaConstruirItem", Erl)
         Exit Sub
     End If
