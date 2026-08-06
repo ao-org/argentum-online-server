@@ -611,6 +611,7 @@ Sub Main()
     Call LoadBans
     frmCargando.Label1(2).Caption = "Cargando Quests"
     Call LoadQuests
+    Call ModQuest.LoadDailyQuestNpcs
     Call LoadPhoenixModule
     Call LoadUnderworldModule
     'Comentado porque hay worldsave en ese mapa!

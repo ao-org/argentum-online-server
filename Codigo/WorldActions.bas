@@ -425,13 +425,22 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 Call PauseWalkingNpcForInteraction(NpcIndex, 20000)
                 Call IniciarSubasta(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Quest Then
-                If UserList(UserIndex).flags.Muerto = 1 Then
-                    'Msg77=¡¡Estás muerto!!.
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
+                If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 Call WritePlayWave(UserIndex, NpcList(NpcIndex).SoundOpen, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, 2, 1)
-                Call EnviarQuest(UserIndex)
+                If NpcList(NpcIndex).OffersDailyQuest = 1 Then
+                    Call ModQuest.EnsureDailyQuestFresh(UserIndex)
+                    If UserList(UserIndex).QuestStats.DailyQuest.State = 2 Then
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_DAILY_QUEST_ALREADY_DONE, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)
+                    ElseIf UserList(UserIndex).QuestStats.DailyQuest.State = 1 Then
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_DAILY_QUEST_PROGRESS, GetNpcName(UserList(UserIndex).QuestStats.DailyQuest.NpcIndex) & Chr$(172) & UserList( _
+                                UserIndex).QuestStats.DailyQuest.KillsCurrent & Chr$(172) & UserList(UserIndex).QuestStats.DailyQuest.KillsRequired, NpcList(NpcIndex).Char.charindex, vbYellow)
+                    Else
+                        Call ModQuest.SyncDailyQuestSyntheticEntry(UserIndex)
+                        Call WriteNpcQuestListSend(UserIndex, NpcIndex)
+                    End If
+                Else
+                    Call EnviarQuest(UserIndex)
+                End If
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Enlistador Then
                 Call HandleFactionRecruiterNpcInteraction(UserIndex, NpcIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Gobernador Then

@@ -37,6 +37,7 @@ Public Enum e_QuestPermittedFactions
     ChaosCouncil = 32
 End Enum
  
+Public Const DAILY_QUEST_LIST_INDEX As Integer = 410
 
 'Constantes de las quests
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
@@ -855,3 +856,185 @@ Private Function HasUserRequiredClassForQuest(ByVal UserIndex As Integer, ByRef 
 HasUserRequiredClassForQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.HasUserRequiredClassForQuest", Erl)
 End Function
+
+'==========================================================
+' SISTEMA DE QUEST DIARIA (Daily Quest)
+'==========================================================
+
+Public Sub LoadDailyQuestNpcs()
+    On Error GoTo LoadDailyQuestNpcs_Err
+    Dim reader As clsIniManager
+    Dim i      As Integer
+    Set reader = New clsIniManager
+    Call reader.Initialize(DatPath & "DailyQuestNpcs.dat")
+    DailyQuestNpcCount = val(reader.GetValue("INIT", "NumEntries"))
+    If DailyQuestNpcCount > 0 Then
+        ReDim DailyQuestNpcList(1 To DailyQuestNpcCount)
+        For i = 1 To DailyQuestNpcCount
+            With DailyQuestNpcList(i)
+                .NpcNumber = val(reader.GetValue("ENTRY" & i, "NpcIndex"))
+                .MinKills = val(reader.GetValue("ENTRY" & i, "MinKills"))
+                .MaxKills = val(reader.GetValue("ENTRY" & i, "MaxKills"))
+                .Weight = val(reader.GetValue("ENTRY" & i, "Weight", 1))
+                If .Weight <= 0 Then .Weight = 1
+            End With
+        Next i
+    Else
+        Erase DailyQuestNpcList
+    End If
+    Set reader = Nothing
+    Call InitDailyQuestSyntheticEntry
+    Exit Sub
+LoadDailyQuestNpcs_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.LoadDailyQuestNpcs", Erl)
+End Sub
+
+Private Function GetDailyQuestToday() As Long
+    GetDailyQuestToday = DateSerial(Year(Now), Month(Now), Day(Now))
+End Function
+
+Public Function SelectRandomDailyQuestNpc() As Integer
+    On Error GoTo SelectRandomDailyQuestNpc_Err
+    Dim i           As Integer
+    Dim TotalWeight As Long
+    Dim RandomPick  As Long
+    Dim Accum       As Long
+    SelectRandomDailyQuestNpc = 0
+    If DailyQuestNpcCount <= 0 Then Exit Function
+    For i = 1 To DailyQuestNpcCount
+        TotalWeight = TotalWeight + DailyQuestNpcList(i).Weight
+    Next i
+    If TotalWeight <= 0 Then Exit Function
+    RandomPick = RandomNumber(1, TotalWeight)
+    Accum = 0
+    For i = 1 To DailyQuestNpcCount
+        Accum = Accum + DailyQuestNpcList(i).Weight
+        If RandomPick <= Accum Then
+            SelectRandomDailyQuestNpc = i
+            Exit Function
+        End If
+    Next i
+    Exit Function
+SelectRandomDailyQuestNpc_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.SelectRandomDailyQuestNpc", Erl)
+End Function
+
+Public Sub OnDailyQuestNpcKilled(ByVal UserIndex As Integer, ByVal NpcNumber As Integer)
+    On Error GoTo OnDailyQuestNpcKilled_Err
+    With UserList(UserIndex).QuestStats.DailyQuest
+        If .State <> 1 Then Exit Sub
+        If .NpcIndex <> NpcNumber Then Exit Sub
+        If .KillsCurrent >= .KillsRequired Then Exit Sub
+        .KillsCurrent = .KillsCurrent + 1
+        .Dirty = True
+        UserList(UserIndex).flags.ModificoQuests = True
+        If .KillsCurrent >= .KillsRequired Then
+            Dim RewardText As String
+            RewardText = GrantDailyQuestReward(UserIndex)
+            .State = 2
+            .LastResetDate = GetDailyQuestToday()
+            .Dirty = True
+            Call WriteLocaleMsg(UserIndex, MSG_DAILY_QUEST_COMPLETED, e_FontTypeNames.FONTTYPE_INFOIAO, RewardText)
+        Else
+            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .KillsCurrent & "/" & .KillsRequired & " " & GetNpcName(.NpcIndex), UserList(UserIndex).Char.charindex, _
+                    GetNPCProgressColor(.KillsCurrent, .KillsRequired))
+        End If
+    End With
+    Exit Sub
+OnDailyQuestNpcKilled_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.OnDailyQuestNpcKilled", Erl)
+End Sub
+
+Private Function GrantDailyQuestReward(ByVal UserIndex As Integer) As String
+    On Error GoTo GrantDailyQuestReward_Err
+    Dim TargetNpcNumber As Integer
+    Dim GoldGiven As Long
+    Dim ExpGiven As Long
+    Dim KillsRequired As Integer
+    TargetNpcNumber = UserList(UserIndex).QuestStats.DailyQuest.NpcIndex
+    KillsRequired = UserList(UserIndex).QuestStats.DailyQuest.KillsRequired
+
+    If Not NpcInfoCacheInitialized Then Exit Function
+    If TargetNpcNumber < LBound(NpcInfoCache) Or TargetNpcNumber > UBound(NpcInfoCache) Then Exit Function
+    If Not NpcInfoCache(TargetNpcNumber).Exists Then Exit Function
+
+    With NpcInfoCache(TargetNpcNumber)
+        If .GiveGLD > 0 Then
+            GoldGiven = CLng((.GiveGLD * KillsRequired) / 2) * SvrConfig.GetValue("GoldMult")
+            UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GoldGiven
+            Call WriteUpdateGold(UserIndex)
+        End If
+        If .GiveEXP > 0 And UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+            ExpGiven = CLng((.GiveEXP * KillsRequired) / 2) * SvrConfig.GetValue("ExpMult")
+            UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpGiven
+            If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
+    End With
+
+    GrantDailyQuestReward = GoldGiven & Chr$(172) & ExpGiven
+    Exit Function
+GrantDailyQuestReward_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.GrantDailyQuestReward", Erl)
+End Function
+
+Public Sub EnsureDailyQuestFresh(ByVal UserIndex As Integer)
+    Dim Today As Long
+    Today = GetDailyQuestToday()
+    With UserList(UserIndex).QuestStats.DailyQuest
+        If .State = 2 And .LastResetDate <> Today Then
+            .State = 0
+            .KillsCurrent = 0
+            .KillsRequired = 0
+            .NpcIndex = 0
+            .Dirty = True
+        End If
+    End With
+End Sub
+
+Private Sub InitDailyQuestSyntheticEntry()
+    On Error GoTo InitDailyQuestSyntheticEntry_Err
+    If DAILY_QUEST_LIST_INDEX < LBound(QuestList) Or DAILY_QUEST_LIST_INDEX > UBound(QuestList) Then
+        Call LogError("InitDailyQuestSyntheticEntry: la quest 410 no existe en Quests.DAT. Verificar que este cargada.")
+        Exit Sub
+    End If
+    DailyQuestSyntheticIndex = DAILY_QUEST_LIST_INDEX
+    With QuestList(DailyQuestSyntheticIndex)
+        .Repetible = 1
+        .requiredNpcs = 1
+        ReDim .RequiredNPC(1 To 1)
+    End With
+    Exit Sub
+InitDailyQuestSyntheticEntry_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.InitDailyQuestSyntheticEntry", Erl)
+End Sub
+
+Public Sub SyncDailyQuestSyntheticEntry(ByVal UserIndex As Integer)
+    Dim EntryIndex As Integer, i As Integer
+
+    With UserList(UserIndex).QuestStats.DailyQuest
+        If .NpcIndex = 0 Then
+            EntryIndex = SelectRandomDailyQuestNpc()
+            If EntryIndex = 0 Then Exit Sub
+            .NpcIndex = DailyQuestNpcList(EntryIndex).NpcNumber
+            .KillsRequired = RandomNumber(DailyQuestNpcList(EntryIndex).MinKills, DailyQuestNpcList(EntryIndex).MaxKills)
+            .KillsCurrent = 0
+        End If
+    End With
+
+    With QuestList(DailyQuestSyntheticIndex)
+        .RequiredNPC(1).NpcIndex = UserList(UserIndex).QuestStats.DailyQuest.NpcIndex
+        .RequiredNPC(1).amount = UserList(UserIndex).QuestStats.DailyQuest.KillsRequired
+        If NpcInfoCacheInitialized Then
+            Dim TargetNPC As Integer
+            TargetNPC = UserList(UserIndex).QuestStats.DailyQuest.NpcIndex
+            If TargetNPC >= LBound(NpcInfoCache) And TargetNPC <= UBound(NpcInfoCache) Then
+                If NpcInfoCache(TargetNPC).Exists Then
+                    .RewardGLD = CLng((NpcInfoCache(TargetNPC).GiveGLD * UserList(UserIndex).QuestStats.DailyQuest.KillsRequired) / 2)
+                    .RewardEXP = CLng((NpcInfoCache(TargetNPC).GiveEXP * UserList(UserIndex).QuestStats.DailyQuest.KillsRequired) / 2)
+                End If
+            End If
+        End If
+    End With
+End Sub

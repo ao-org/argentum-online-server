@@ -29,6 +29,7 @@ Option Explicit
 Option Base 0
 
 Private Const SAVE_CHARACTER_TIME_LIMIT_MS As Long = 50
+Private Const DAILY_QUEST_SLOT As Byte = 0
 
 Private Function db_load_house_key(ByRef User As t_User) As Boolean
     db_load_house_key = False
@@ -254,6 +255,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         If IsFeatureEnabled("collectible_cards") Then
             Call SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex))
         End If
+        Call SetupUserDailyQuest(UserList(UserIndex))
         ' Load additional inventories.
         If Not LoadCharacterInventory(UserIndex) Then Exit Function
         If Not LoadCharacterBank(UserIndex) Then Exit Function
@@ -440,7 +442,7 @@ Private Sub SetupUserQuests(ByRef User As t_User)
     For SlotC = 1 To MAXUSERQUESTS
         User.QuestStats.Quests(SlotC).Dirty = False ' Loaded state starts clean.
     Next SlotC
-    Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", User.Id)
+    Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ? AND number >= 1;", User.Id)
     If Not RS Is Nothing Then
         While Not RS.EOF
             If Not IsNull(RS!Number) Then
@@ -576,6 +578,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
         ' ************************** User quests *********************************
         Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown, Builder)
         Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
+        Call SaveCharacterDailyQuestDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
         Call InitUserPersistSnapshot(UserIndex)
         If IsFeatureEnabled("collectible_cards") Then
@@ -1395,7 +1398,10 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
             Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown, Builder)
             Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
         End If
-
+        
+        Call SaveCharacterDailyQuestDB(UserList(UserIndex), QueryBreakdown)
+        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] daily quest update id:" & .Id, 50)
+        
         Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
         Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
 
@@ -1699,3 +1705,50 @@ SaveInventorySkins_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
 
 End Function
+
+Private Sub SetupUserDailyQuest(ByRef User As t_User)
+    ' On Error GoTo SetupUserDailyQuest_Err
+    Dim RS As ADODB.Recordset
+    Dim parts() As String
+    User.QuestStats.DailyQuest.Dirty = False
+    Set RS = Query("SELECT quest_id, npcs, npcstarget FROM quest WHERE user_id = ? AND number = ?;", User.Id, DAILY_QUEST_SLOT)
+    If Not RS Is Nothing Then
+        If Not (RS.EOF Or RS.BOF) Then
+            User.QuestStats.DailyQuest.NpcIndex = SanitizeNullValue(RS!quest_id, 0)
+            If Not IsNull(RS!NPCs) Then
+                parts = Split(CStr(RS!NPCs), "-")
+                If UBound(parts) >= 1 Then
+                    User.QuestStats.DailyQuest.KillsCurrent = val(parts(0))
+                    User.QuestStats.DailyQuest.KillsRequired = val(parts(1))
+                End If
+            End If
+            If Not IsNull(RS!NPCsTarget) Then
+                parts = Split(CStr(RS!NPCsTarget), "-")
+                If UBound(parts) >= 1 Then
+                    User.QuestStats.DailyQuest.LastResetDate = val(parts(0))
+                    User.QuestStats.DailyQuest.State = CByte(val(parts(1)))
+                End If
+            End If
+        End If
+    End If
+    Exit Sub
+SetupUserDailyQuest_Err:
+    Call LogDatabaseError("Error en SetupUserDailyQuest: " & User.name & ". " & Err.Number & " - " & Err.Description & ". L?nea: " & Erl)
+End Sub
+
+Private Sub SaveCharacterDailyQuestDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+    Dim QueryTimer As Long
+    If Not U.QuestStats.DailyQuest.Dirty Then
+        If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
+        QueryBreakdown = QueryBreakdown & "daily quest: skipped"
+        Exit Sub
+    End If
+    QueryTimer = GetTickCountRaw()
+    Call Execute("REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES (?, ?, ?, ?, ?);", _
+            U.Id, DAILY_QUEST_SLOT, U.QuestStats.DailyQuest.NpcIndex, _
+            U.QuestStats.DailyQuest.KillsCurrent & "-" & U.QuestStats.DailyQuest.KillsRequired, _
+            U.QuestStats.DailyQuest.LastResetDate & "-" & U.QuestStats.DailyQuest.State)
+    Call AppendQueryDuration(QueryBreakdown, "save daily quest", QueryTimer)
+    U.QuestStats.DailyQuest.Dirty = False
+End Sub
+

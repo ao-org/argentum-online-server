@@ -7077,11 +7077,38 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     'npc or item quest
     If NpcIndex > 0 Then
         'npc handled quest
-        tmpQuest = QuestList(NpcList(NpcIndex).QuestNumber(Indice))
         tmpIndex = NpcList(NpcIndex).QuestNumber(Indice)
     Else
         'item handled quest
         tmpIndex = UserList(UserIndex).flags.QuestNumber
+    End If
+
+    ' ===== Daily Quest: caso especial, no pasa por CanUserAcceptQuest ni por los 5 slots =====
+    If tmpIndex = DailyQuestSyntheticIndex Then
+        If UserList(UserIndex).QuestStats.DailyQuest.State = 1 Then
+            Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_IN_PROGRESS, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        ElseIf UserList(UserIndex).QuestStats.DailyQuest.State = 2 Then
+            Call WriteLocaleMsg(UserIndex, MSG_DAILY_QUEST_ALREADY_DONE, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Call ModQuest.SyncDailyQuestSyntheticEntry(UserIndex)
+        If UserList(UserIndex).QuestStats.DailyQuest.NpcIndex = 0 Then Exit Sub
+        UserList(UserIndex).QuestStats.DailyQuest.State = 1
+        UserList(UserIndex).QuestStats.DailyQuest.Dirty = True
+        UserList(UserIndex).flags.ModificoQuests = True
+        Call WriteLocaleMsg(UserIndex, MSG_ACEPTADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, "Mision Diaria")
+        If NpcIndex > 0 Then
+            Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+        End If
+        Call WriteQuestListSend(UserIndex)
+        Exit Sub
+    End If
+
+    ' ===== Flujo normal existente, sin cambios =====
+    If NpcIndex > 0 Then
+        tmpQuest = QuestList(tmpIndex)
+    Else
         tmpQuest = QuestList(tmpIndex)
     End If
     If Not ModQuest.CanUserAcceptQuest(UserIndex, NpcIndex, tmpIndex, tmpQuest) Then
@@ -7124,17 +7151,33 @@ End Sub
 
 Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
     On Error GoTo HandleQuestDetailsRequest_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Maneja el paquete QuestInfoRequest.
-    'Last modified: 30/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    Dim QuestSlot As Byte
-    QuestSlot = reader.ReadInt8
-    If QuestSlot <= MAXUSERQUESTS And QuestSlot > 0 Then
-        If UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex > 0 Then
-            Call WriteQuestDetails(UserIndex, UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex, QuestSlot)
+    Dim RequestedPosition As Byte
+    Dim CurrentPosition As Byte
+    Dim i As Byte
+
+    RequestedPosition = reader.ReadInt8
+
+    CurrentPosition = 0
+    For i = 1 To MAXUSERQUESTS
+        If UserList(UserIndex).QuestStats.Quests(i).QuestIndex > 0 Then
+            CurrentPosition = CurrentPosition + 1
+            If CurrentPosition = RequestedPosition Then
+                Call WriteQuestDetails(UserIndex, UserList(UserIndex).QuestStats.Quests(i).QuestIndex, i)
+                Exit Sub
+            End If
+        End If
+    Next i
+
+    ' Si no matcheo ninguno de los 5 slots, puede ser la Daily Quest (siempre al final de la lista)
+    If UserList(UserIndex).QuestStats.DailyQuest.State = 1 Then
+        CurrentPosition = CurrentPosition + 1
+        If CurrentPosition = RequestedPosition Then
+            Call ModQuest.EnsureDailyQuestFresh(UserIndex)
+            Call ModQuest.SyncDailyQuestSyntheticEntry(UserIndex)
+            Call WriteQuestDetails(UserIndex, DailyQuestSyntheticIndex, DAILY_QUEST_SYNTHETIC_SLOT)
         End If
     End If
+
     Exit Sub
 HandleQuestDetailsRequest_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
@@ -7142,49 +7185,69 @@ End Sub
  
 Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
     On Error GoTo HandleQuestAbandon_Err
-    With UserList(UserIndex)
-        Dim Slot As Byte
-        Slot = reader.ReadInt8
-        If Slot > MAXUSERQUESTS Then Exit Sub
-        With .QuestStats.Quests(Slot)
-            ' Le quitamos los objetos de quest que no puede tirar
-            If QuestList(.QuestIndex).RequiredOBJs Then
-                Dim ObjIndex As Integer, i As Integer
-                For i = 1 To QuestList(.QuestIndex).RequiredOBJs
-                    ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
-                    If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
-                        ' Revisamos que ninguna otra quest que tenga activa le pida el mismo item
-                        Dim q As Integer, j As Byte, K As Byte, QuitarItem As Boolean
-                        QuitarItem = True
-                        For j = 1 To MAXUSERQUESTS
-                            q = UserList(UserIndex).QuestStats.Quests(j).QuestIndex
-                            If q <> 0 And q <> .QuestIndex Then
-                                For K = 1 To QuestList(q).RequiredOBJs
-                                    If QuestList(q).RequiredOBJ(K).ObjIndex = ObjIndex Then
-                                        QuitarItem = False
-                                        Exit For
+    Dim RequestedPosition As Byte
+    Dim CurrentPosition As Byte
+    Dim i As Byte
+
+    RequestedPosition = reader.ReadInt8
+
+    CurrentPosition = 0
+    For i = 1 To MAXUSERQUESTS
+        If UserList(UserIndex).QuestStats.Quests(i).QuestIndex > 0 Then
+            CurrentPosition = CurrentPosition + 1
+            If CurrentPosition = RequestedPosition Then
+                With UserList(UserIndex)
+                    With .QuestStats.Quests(i)
+                        ' Le quitamos los objetos de quest que no puede tirar
+                        If QuestList(.QuestIndex).RequiredOBJs Then
+                            Dim ObjIndex As Integer, j As Integer
+                            For j = 1 To QuestList(.QuestIndex).RequiredOBJs
+                                ObjIndex = QuestList(.QuestIndex).RequiredOBJ(j).ObjIndex
+                                If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
+                                    Dim q As Integer, k As Byte, l As Byte, QuitarItem As Boolean
+                                    QuitarItem = True
+                                    For k = 1 To MAXUSERQUESTS
+                                        q = UserList(UserIndex).QuestStats.Quests(k).QuestIndex
+                                        If q <> 0 And q <> .QuestIndex Then
+                                            For l = 1 To QuestList(q).RequiredOBJs
+                                                If QuestList(q).RequiredOBJ(l).ObjIndex = ObjIndex Then
+                                                    QuitarItem = False
+                                                    Exit For
+                                                End If
+                                            Next
+                                        End If
+                                        If Not QuitarItem Then Exit For
+                                    Next
+                                    If QuitarItem Then
+                                        Call QuitarObjetos(ObjIndex, GetMaxInvOBJ(), UserIndex)
                                     End If
-                                Next
-                            End If
-                            If Not QuitarItem Then Exit For
-                        Next
-                        If QuitarItem Then
-                            Call QuitarObjetos(ObjIndex, GetMaxInvOBJ(), UserIndex)
+                                End If
+                            Next j
                         End If
-                    End If
-                Next i
+                    End With
+                    'Le avisamos que abandono la quest
+                    'Msg2115=Has abandonado la misi?n ?1.
+                    Call WriteLocaleMsg(UserIndex, MSG_ABANDONADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestStats.Quests(i).QuestIndex).nombre)
+                    'Borramos la quest.
+                    Call CleanQuestSlot(UserIndex, i)
+                    'Ordenamos la lista de quests del usuario.
+                    Call ArrangeUserQuests(UserIndex)
+                    'Enviamos la lista de quests actualizada.
+                    Call WriteQuestListSend(UserIndex)
+                End With
+                Exit Sub
             End If
-        End With
-        'Le avisamos que abandono la quest
-        'Msg2115=Has abandonado la misión ¬1.
-        Call WriteLocaleMsg(UserIndex, MSG_ABANDONADO_MISION, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
-        'Borramos la quest.
-        Call CleanQuestSlot(UserIndex, Slot)
-        'Ordenamos la lista de quests del usuario.
-        Call ArrangeUserQuests(UserIndex)
-        'Enviamos la lista de quests actualizada.
-        Call WriteQuestListSend(UserIndex)
-    End With
+        End If
+    Next i
+
+    ' Si no matcheo ninguno de los 5 slots, puede ser la Daily Quest (siempre al final de la lista)
+    If UserList(UserIndex).QuestStats.DailyQuest.State = 1 Then
+        CurrentPosition = CurrentPosition + 1
+        If CurrentPosition = RequestedPosition Then
+            Call WriteLocaleMsg(UserIndex, MSG_DAILY_QUEST_CANNOT_ABANDON, e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End If
+
     Exit Sub
 HandleQuestAbandon_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)

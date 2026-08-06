@@ -2818,8 +2818,9 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         For i = 1 To QuestList(QuestIndex).RequiredNPCs
             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
-            'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
-            If QuestSlot Then
+            If QuestIndex = DailyQuestSyntheticIndex Then
+                Call Writer.WriteInt16(UserList(UserIndex).QuestStats.DailyQuest.KillsCurrent)
+            ElseIf QuestSlot Then
                 Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
             End If
         Next i
@@ -2879,6 +2880,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
     Dim tmpStr  As String
     Dim tmpByte As Byte
     With UserList(UserIndex)
+        Call ModQuest.EnsureDailyQuestFresh(UserIndex)
         Call Writer.WriteInt16(ServerPacketID.eQuestListSend)
         For i = 1 To MAXUSERQUESTS
             If .QuestStats.Quests(i).QuestIndex Then
@@ -2886,6 +2888,10 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
                 tmpStr = tmpStr & .QuestStats.Quests(i).QuestIndex & ";"
             End If
         Next i
+        If .QuestStats.DailyQuest.State = 1 Then
+            tmpByte = tmpByte + 1
+            tmpStr = tmpStr & DailyQuestSyntheticIndex & ";"
+        End If
         'Escribimos la cantidad de quests
         Call Writer.WriteInt8(tmpByte)
         'Escribimos la lista de quests (sacamos el íltimo caracter)
@@ -2970,7 +2976,19 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
         Next j
     End If
-
+    
+    If NpcList(NpcIndex).OffersDailyQuest = 1 And NpcList(NpcIndex).NumQuest = 0 Then
+        If UserList(UserIndex).QuestStats.DailyQuest.State = 0 Then
+            validQuestCount = validQuestCount + 1
+            If validQuestCount = 1 Then
+                ReDim validQuestIndexes(1 To 1)
+            Else
+                ReDim Preserve validQuestIndexes(1 To validQuestCount)
+            End If
+            validQuestIndexes(validQuestCount) = DailyQuestSyntheticIndex
+        End If
+    End If
+    
     ' ===== Packet header =====
     Call Writer.WriteInt16(ServerPacketID.eNpcQuestListSend)
     Call Writer.WriteInt8(validQuestCount)

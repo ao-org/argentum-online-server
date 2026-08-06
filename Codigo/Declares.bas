@@ -2835,11 +2835,35 @@ Public Type t_UserCounters
     LastTransferGold As Long
 End Type
 
+Public Type t_UserDailyQuest
+    NpcIndex As Integer          ' NPC objetivo elegido de DailyQuestNpcs.dat
+    KillsRequired As Integer
+    KillsCurrent As Integer
+    LastResetDate As Long        ' DateSerial(Year,Month,Day) del último ciclo
+    State As Byte                ' 0=Disponible 1=EnProgreso 2=CompletadaHoy
+    Dirty As Boolean
+End Type
+
 Public Type t_QuestStats
     Quests(1 To MAXUSERQUESTS) As t_UserQuest
     NumQuestsDone As Integer
     QuestsDone() As Integer
+    DailyQuest As t_UserDailyQuest
 End Type
+
+Public Type t_DailyQuestNpcEntry
+    NpcNumber As Integer
+    MinKills As Integer
+    MaxKills As Integer
+    Weight As Integer
+    RewardGLD As Long
+    RewardEXP As Long
+End Type
+
+Public DailyQuestNpcList() As t_DailyQuestNpcEntry
+Public DailyQuestNpcCount As Integer
+Public DailyQuestSyntheticIndex As Integer
+Public Const DAILY_QUEST_SYNTHETIC_SLOT As Byte = 255
 
 Public Const SUBASTA_OFERTA_MAXIMA As Long = 1999999
 
@@ -3342,6 +3366,7 @@ Public Type t_NpcInfoCache
     CityPrice()     As Long
     TransporterLevel As Integer
     CollectibleCardIndex As Integer
+    OffersDailyQuest As Byte
 End Type
 
 Public Enum e_TipoAI
@@ -3472,6 +3497,7 @@ Public Type t_Npc
     TransportCityPrice() As Long
     TransporterLevel As Integer
     CollectibleCardIndex As Integer
+    OffersDailyQuest As Byte
 End Type
 
 '**********************************************************

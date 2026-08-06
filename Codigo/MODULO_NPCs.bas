@@ -1049,6 +1049,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .GiveEXPClan = Val(LeerNPCs.GetValue(SectionName, "GiveEXPClan"))
         .Veneno = Val(LeerNPCs.GetValue(SectionName, "Veneno"))
         .Domable = Val(LeerNPCs.GetValue(SectionName, "Domable"))
+        .OffersDailyQuest = val(LeerNPCs.GetValue(SectionName, "OffersDailyQuest", 0))
         .AttackableByEveryone = Val(LeerNPCs.GetValue(SectionName, "AttackableByEveryone", 0))
         .MapEntryPrice = Val(LeerNPCs.GetValue(SectionName, "MapEntryPrice", 0))
         .MapTargetEntry = Val(LeerNPCs.GetValue(SectionName, "MapTargetEntry", 1))
@@ -1620,6 +1621,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         Else
             Erase .QuestNumber
         End If
+        .OffersDailyQuest = Info.OffersDailyQuest
         .NumDropQuest = Info.NumDropQuest
         If .NumDropQuest > 0 Then
             ReDim .DropQuest(1 To .NumDropQuest)
@@ -2498,6 +2500,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
             End If
         End With
     Next i
+    Call ModQuest.OnDailyQuestNpcKilled(UserIndex, MiNPC.Numero)
     Exit Sub
 OnNpcKilledUpdateQuest_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
