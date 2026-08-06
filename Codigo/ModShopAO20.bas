@@ -62,6 +62,7 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal UserIndex As Integer)
         Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
         Call writeUpdateShopClienteCredits(UserIndex)
         Call RegisterTransaction(.AccountID, .Id, obj.ObjNum, obj.Valor, .Stats.Creditos)
+        Call LogCreditosPatreon(.name & " | Compro objeto " & ObjData(obj.ObjNum).name & " | Creditos usados: " & obj.Valor & " | Creditos restantes: " & .Stats.Creditos)
         Call MeterItemEnInventario(UserIndex, objInventario)
     End With
     Exit Sub

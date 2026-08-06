@@ -436,6 +436,7 @@ Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
     Next
     Exit Function
 ErrHandler:
+    Call Logging.TraceError(Err.Number, Err.Description, "modHechizos.TieneHechizo", Erl)
 End Function
 
 Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
