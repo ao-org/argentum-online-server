@@ -1453,6 +1453,7 @@ Public Sub EcharPjsNoPrivilegiados()
         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
             If UserList(LoopC).flags.Privilegios And e_PlayerType.User Then
                 Call WriteCerrarleCliente(LoopC)
+                Call modNetwork.Flush(LoopC)
                 Call CloseSocket(LoopC)
             End If
         End If
@@ -1461,6 +1462,7 @@ Public Sub EcharPjsNoPrivilegiados()
 EcharPjsNoPrivilegiados_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
 End Sub
+
 
 Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal head As Integer) As Boolean
     Select Case UserSexo
