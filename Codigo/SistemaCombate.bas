@@ -1068,6 +1068,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
     On Error GoTo UsuarioAtacaUsuario_Err
     Dim sendto As SendTarget
     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
+    Call AvisarSeguroClanSinGrupo(AtacanteIndex, VictimaIndex)
     If Distancia(UserList(AtacanteIndex).pos, UserList(VictimaIndex).pos) > MAXDISTANCIAARCO Then
         Call WriteLocaleMsg(AtacanteIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
@@ -1475,14 +1476,16 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         PuedeAtacar = False
         Exit Function
     End If
-    ' Seguro Clan
+    ' Seguro Clan (solo protege si atacante y víctima están en la MISMA party)
     If UserList(attackerIndex).GuildIndex > 0 Then
         If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= RequiredGuildLevelSafe Then
             If UserList(attackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
-                'Msg1054= No podes atacar a un miembro de tu clan.
-                Call WriteLocaleMsg(attackerIndex, "1054", e_FontTypeNames.FONTTYPE_INFOIAO)
-                PuedeAtacar = False
-                Exit Function
+                If UserList(AttackerIndex).Grupo.Id > 0 And UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
+                    'Msg1054= No podés atacar a un miembro de tu clan.
+                    Call WriteLocaleMsg(AttackerIndex, "1054", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    PuedeAtacar = False
+                    Exit Function
+                End If
             End If
         End If
     End If
@@ -1867,6 +1870,25 @@ Public Function PeleaSegura(ByVal Source As Integer, ByVal dest As Integer) As B
         PeleaSegura = TriggerZonaPelea(Source, dest) = TRIGGER6_PERMITE
     End If
 End Function
+
+Private Sub AvisarSeguroClanSinGrupo(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer)
+    On Error GoTo AvisarSeguroClanSinGrupo_Err
+    With UserList(AttackerIndex)
+        If .GuildIndex > 0 Then
+            If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= RequiredGuildLevelSafe Then
+                If .GuildIndex = UserList(VictimIndex).GuildIndex Then
+                    If Not (.Grupo.Id > 0 And .Grupo.Id = UserList(VictimIndex).Grupo.Id) Then
+                        'Msg2264= Tu seguro de clan no te protege de un miembro de tu clan si no estás en su mismo grupo.
+                        Call WriteLocaleMsg(AttackerIndex, MSG_SEGURO_CLAN_REQUIERE_GRUPO, e_FontTypeNames.FONTTYPE_New_Blanco)
+                    End If
+                End If
+            End If
+        End If
+    End With
+    Exit Sub
+AvisarSeguroClanSinGrupo_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AvisarSeguroClanSinGrupo", Erl)
+End Sub
 
 Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
     On Error GoTo UserDañoEspecial_Err
