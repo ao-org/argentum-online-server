@@ -7861,7 +7861,7 @@ End Sub
 
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleRepeatMacro_Err:
-    Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " repitio el paquete click o u. Tick: " & GetTickCount)
+    Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " repitio el paquete click o u. Tick: " & GetTickCountRaw)
     Exit Sub
 HandleRepeatMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
