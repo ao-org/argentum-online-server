@@ -665,7 +665,7 @@ ValidateChr_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal md5 As String) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String) As Boolean
     On Error GoTo EntrarCuenta_Err
     Dim adminIdx          As Integer
     Dim laCuentaEsDeAdmin As Boolean
@@ -682,12 +682,6 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
             Exit Function
         End If
     End If
-    #If DEBUGGING = 0 Then
-        If LCase$(Md5Cliente) <> LCase$(md5) Then
-            Call WriteShowMessageBox(UserIndex, 1771, vbNullString) 'Msg1771=Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.
-            Exit Function
-        End If
-    #End If
     If Not CheckMailString(CuentaEmail) Then
         Call WriteShowMessageBox(UserIndex, 1772, vbNullString) 'Msg1772=Email inválido.
         Exit Function

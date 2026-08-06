@@ -412,12 +412,12 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
             End If
             If ObjData(obj.ObjIndex).Destruye = 0 Then
                 Dim Suma As Long
-                Suma = num + MapData(.pos.Map, x, y).ObjInfo.amount
+                Suma = num + MapData(Map, x, y).ObjInfo.amount
                 'Check objeto en el suelo
-                If MapData(.pos.Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(.pos.Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(.pos.Map, x, y).ObjInfo.ElementalTags = _
+                If MapData(Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = _
                         obj.ElementalTags And Suma <= GetMaxInvOBJ()) Then
                     If Suma > GetMaxInvOBJ() Then
-                        num = GetMaxInvOBJ() - MapData(.pos.Map, x, y).ObjInfo.amount
+                        num = GetMaxInvOBJ() - MapData(Map, x, y).ObjInfo.amount
                     End If
                     ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
                     If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
@@ -581,10 +581,14 @@ HayLugarEnInventario_err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.HayLugarEnInventario", Erl)
 End Function
 
-Sub PickObj(ByVal UserIndex As Integer)
+Public Sub PickObj(ByVal UserIndex As Integer)
+    With UserList(UserIndex).pos
+        Call PickObjAt(UserIndex, .Map, .x, .y)
+    End With
+End Sub
+
+Public Sub PickObjAt(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo PickObj_Err
-    Dim x     As Integer
-    Dim y     As Integer
     Dim Slot  As Byte
     Dim obj   As t_ObjData
     Dim MiObj As t_Obj
@@ -593,9 +597,9 @@ Sub PickObj(ByVal UserIndex As Integer)
         Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CANNOT_DROP_ITEMS_IN_JAIL, vbNullString, e_FontTypeNames.FONTTYPE_INFO))
         Exit Sub
     End If
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
+    If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
-        If ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex).Agarrable <> 1 Then
+        If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Agarrable <> 1 Then
             If UserList(UserIndex).flags.Montado = 1 Then
                 ' Msg672=Debes descender de tu montura para agarrar objetos del suelo.
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_AGARRAR_OBJETOS_SUELO, e_FontTypeNames.FONTTYPE_INFO)
@@ -604,24 +608,22 @@ Sub PickObj(ByVal UserIndex As Integer)
             If Not UserCanPickUpItem(UserIndex) Then
                 Exit Sub
             End If
-            x = UserList(UserIndex).pos.x
-            y = UserList(UserIndex).pos.y
             If UserList(UserIndex).flags.jugando_captura = 1 Then
                 If Not InstanciaCaptura Is Nothing Then
-                    If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ObjIndex) Then
+                    If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex) Then
                         Exit Sub
                     End If
                 End If
             End If
-            obj = ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex)
-            MiObj.amount = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.amount
-            MiObj.ObjIndex = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ObjIndex
-            MiObj.ElementalTags = MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.ElementalTags
+            obj = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex)
+            MiObj.amount = MapData(Map, x, y).ObjInfo.amount
+            MiObj.ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
+            MiObj.ElementalTags = MapData(Map, x, y).ObjInfo.ElementalTags
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                 'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Quitamos el objeto
-                Call EraseObj(MapData(UserList(UserIndex).pos.Map, x, y).ObjInfo.amount, UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
+                Call EraseObj(MapData(Map, x, y).ObjInfo.amount, Map, x, y)
                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.User Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData( _
                         MiObj.ObjIndex).name)
                 'Si el obj es oro (12), se muestra la cantidad que agarro arriba del personaje
@@ -637,13 +639,13 @@ Sub PickObj(ByVal UserIndex As Integer)
                     End If
                 End If
                 If BusquedaTesoroActiva Then
-                    If UserList(UserIndex).pos.Map = TesoroNumMapa And UserList(UserIndex).pos.x = TesoroX And UserList(UserIndex).pos.y = TesoroY Then
+                    If Map = TesoroNumMapa And x = TesoroX And y = TesoroY Then
                         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_TREASURE, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 encontró el tesoro ¡Felicitaciones!
                         BusquedaTesoroActiva = False
                     End If
                 End If
                 If BusquedaRegaloActiva Then
-                    If UserList(UserIndex).pos.Map = RegaloNumMapa And UserList(UserIndex).pos.x = RegaloX And UserList(UserIndex).pos.y = RegaloY Then
+                    If Map = RegaloNumMapa And x = RegaloX And y = RegaloY Then
                         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_FOUND_MAGIC_ITEM, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_TALK)) 'Msg1640=Eventos> ¬1 fue el valiente que encontró el gran ítem mágico ¡Felicitaciones!
                         BusquedaRegaloActiva = False
                     End If
@@ -658,7 +660,7 @@ Sub PickObj(ByVal UserIndex As Integer)
     End If
     Exit Sub
 PickObj_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObjAt", Erl)
 End Sub
 
 Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
