@@ -658,7 +658,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
-                If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentPower < Hechizos(HechizoIndex).RequiereInstrumento Then
+                If ObjData(.invent.EquippedRingAccesoryObjIndex).Power < Hechizos(HechizoIndex).RequiereInstrumento Then
                     Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_MAS_PODEROSO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
