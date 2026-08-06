@@ -1004,7 +1004,6 @@ Command4_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 End Sub
 
-
 Private Sub Command6_Click()
     On Error GoTo Command6_Click_Err
     Call LoadIntervalos
