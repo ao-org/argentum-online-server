@@ -1463,7 +1463,6 @@ EcharPjsNoPrivilegiados_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
 End Sub
 
-
 Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal head As Integer) As Boolean
     Select Case UserSexo
         Case e_Genero.Hombre
