@@ -997,13 +997,13 @@ Private Sub Command4_Click()
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
-    Call Sleep(200)
     GuardarYCerrar = True
     Unload frmMain
     Exit Sub
 Command4_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 End Sub
+
 
 Private Sub Command6_Click()
     On Error GoTo Command6_Click_Err
