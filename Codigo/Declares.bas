@@ -217,7 +217,6 @@ Public Enum e_SoundIndex
 End Enum
 
 Public SvrConfig            As ServerConfig
-Public Md5Cliente           As String
 Public PrivateKey           As String
 Public HoraActual           As Integer
 Public UltimoChar           As String

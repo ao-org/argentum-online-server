@@ -1045,7 +1045,6 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     Dim encrypted_session_token As String
     Dim char_id As Long
-    Dim md5 As String
     Dim Version As String
     Dim CuentaEmail As String
     Dim UserIndex As Integer
@@ -1061,7 +1060,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim t_query As Long, t_map As Long, t_assign As Long, t_entrar As Long, t_connect As Long
     Dim totalMs As Long
     Dim outcome As String
-    Dim tokenLen As Long, md5Len As Long
+    Dim tokenLen As Long
     Dim rsCount As Long
 
     outcome = "ok"
@@ -1074,11 +1073,9 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     char_id = reader.ReadInt32
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8
     t_read = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
     tokenLen = Len(encrypted_session_token)
-    md5Len = Len(md5)
 
     ' ----------------------------
     ' Validate
@@ -1198,7 +1195,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     ' ----------------------------
     Call PerformanceTestStart(stepTimer)
 
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         outcome = "fail_entrar_cuenta"
         Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
         Call CloseSocket(UserIndex)
@@ -1230,7 +1227,6 @@ FinallyLog:
             " | email: " & CuentaEmail & _
             " | ver: " & Version & _
             " | tokenLen: " & tokenLen & _
-            " | md5Len: " & md5Len & _
             " | rsCount: " & rsCount & _
             " | outcome: " & outcome & _
             " | read: " & t_read & "ms" & _
@@ -1275,7 +1271,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim username                As String
     Dim CuentaEmail             As String
     Dim Version                 As String
-    Dim md5                     As String
     Dim encrypted_session_token As String
     Dim encrypted_username      As String
     Dim race                    As e_Raza
@@ -1288,7 +1283,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     encrypted_username = reader.ReadString8
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8()
     race = reader.ReadInt8()
     gender = reader.ReadInt8()
     Class = reader.ReadInt8()
@@ -1393,7 +1387,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
         End If
     End If
     UserList(UserIndex).AccountID = -1
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
@@ -1829,6 +1823,10 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandlePickUp(ByVal UserIndex As Integer)
     On Error GoTo HandlePickUp_Err
+    Dim TargetX As Byte
+    Dim TargetY As Byte
+    TargetX = reader.ReadInt8()
+    TargetY = reader.ReadInt8()
     With UserList(UserIndex)
         'If dead, it can't pick up objects
         If .flags.Muerto = 1 Then
@@ -1842,7 +1840,8 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TOMAR_NINGUN_OBJETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Call PickObj(UserIndex)
+        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
+        Call PickObjAt(UserIndex, .pos.Map, TargetX, TargetY)
     End With
     Exit Sub
 HandlePickUp_Err:
@@ -2072,10 +2071,14 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     Dim amount        As Long
     Dim PacketCounter As Long
     Dim Packet_ID     As Long
+    Dim TargetX       As Byte
+    Dim TargetY       As Byte
     With UserList(UserIndex)
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
         PacketCounter = reader.ReadInt32
+        TargetX = reader.ReadInt8()
+        TargetY = reader.ReadInt8()
         Packet_ID = PacketNames.Drop
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
@@ -2087,6 +2090,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
+        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
         If amount <= 0 Then Exit Sub
         'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
@@ -2103,6 +2107,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
+            If TargetX <> .pos.x Or TargetY <> .pos.y Then Exit Sub
             If amount > 100000 Then amount = 100000
             Call TirarOro(amount, UserIndex)
         Else
@@ -2121,7 +2126,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                     ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                            Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                            Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
                         End If
                         Exit Sub
                     End If
@@ -2145,7 +2150,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             'Only drop valid slots
             If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                 If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
             End If
         End If
     End With
