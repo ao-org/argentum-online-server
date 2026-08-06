@@ -2705,7 +2705,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
                         If DummyInt <> 0 Then
                             'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-                            If consumirMunicion And Not IsConsumableFreeZone(UserIndex) Then
+                            If consumirMunicion And Not IsConsumableFreeZone(UserIndex, .Object(DummyInt).ObjIndex) Then
                                 Call QuitarUserInvItem(UserIndex, DummyInt, 1)
                             End If
                             If .Object(DummyInt).amount > 0 Then

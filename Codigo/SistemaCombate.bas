@@ -2311,7 +2311,7 @@ Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex
             End If
         End If
     End With
-    If DidConsumeAmunition And Not IsConsumableFreeZone(UserIndex) Then
+    If DidConsumeAmunition And Not IsConsumableFreeZone(UserIndex, UserList(UserIndex).invent.EquippedMunitionObjIndex) Then
         Call ConsumeAmunition(UserIndex)
     End If
 End Sub

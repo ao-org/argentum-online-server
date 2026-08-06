@@ -1895,7 +1895,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsConsumableFreeZone(UserIndex) Then
+                        If Not IsConsumableFreeZone(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1909,7 +1909,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsConsumableFreeZone(UserIndex) Then
+                        If Not IsConsumableFreeZone(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1932,7 +1932,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         ' Modifica la salud del jugador
                         Call UserMod.ModifyHealth(UserIndex, HealingAmount)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsConsumableFreeZone(UserIndex) Then
+                        If Not IsConsumableFreeZone(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -1949,7 +1949,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
-                        If Not IsConsumableFreeZone(UserIndex) Then
+                        If Not IsConsumableFreeZone(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -2002,7 +2002,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
                         'Quitamos del inv el item
-                        If Not IsConsumableFreeZone(UserIndex) Then
+                        If Not IsConsumableFreeZone(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             ' Quitamos el ítem del inventario
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                         End If
@@ -2767,17 +2767,11 @@ hErr:
     LogError "Error en useinvitem Usuario: " & UserList(UserIndex).name & " item:" & obj.name & " index: " & UserList(UserIndex).invent.Object(Slot).ObjIndex
 End Sub
 
-'**************************************************************
-' Description: Determines whether the user is in a map zone
-'              where potions are not consumed upon use.
-'
-' Parameters:  UserIndex      - Index of the user
-'              triggerStatus  - Current trigger status of the user
-'
-' Returns:     Boolean - True if the user is in a potion-free zone
-'                       False if the potion should be consumed
-'**************************************************************
-Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
+Public Function IsConsumableFreeZone(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+    ' El objeto debe estar marcado explícitamente como exento de consumo en estas zonas
+    If ObjIndex <= 0 Then Exit Function
+    If Not IsSet(ObjData(ObjIndex).ObjFlags, e_ObjFlags.e_NoConsumeInCombatZones) Then Exit Function
+
     Dim currentMap     As Integer
     Dim isTriggerZone  As Boolean
     Dim isTierUser     As Boolean
@@ -2808,7 +2802,7 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     isArena = (currentMap = MAP_ARENA_LINDOS And isTriggerZone)
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
-    ' Si esta en alguna de las zonas anteriores, no se consume la poción
+    ' Si esta en alguna de las zonas anteriores, no se consume el objeto
     IsConsumableFreeZone = (isHouseZone Or isSpecialZone Or isTrainingZone Or isArena)
 End Function
 
@@ -3073,7 +3067,7 @@ Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
         Dim ObjIndex As Integer
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
-        If Not IsConsumableFreeZone(UserIndex) Then
+        If Not IsConsumableFreeZone(UserIndex, ObjIndex) Then
             Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
         End If
         Call WriteLocaleMsg(targetUser, MSG_SIDO_RESUCITADO_585, e_FontTypeNames.FONTTYPE_INFO)
