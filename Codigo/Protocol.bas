@@ -1825,8 +1825,10 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
     On Error GoTo HandlePickUp_Err
     Dim TargetX As Byte
     Dim TargetY As Byte
+    Dim DestinationSlot As Byte
     TargetX = reader.ReadInt8()
     TargetY = reader.ReadInt8()
+    DestinationSlot = reader.ReadInt8()
     With UserList(UserIndex)
         'If dead, it can't pick up objects
         If .flags.Muerto = 1 Then
@@ -1841,7 +1843,8 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
-        Call PickObjAt(UserIndex, .pos.Map, TargetX, TargetY)
+        If DestinationSlot > .CurrentInventorySlots Then Exit Sub
+        Call PickObjAt(UserIndex, .pos.Map, TargetX, TargetY, DestinationSlot)
     End With
     Exit Sub
 HandlePickUp_Err:
@@ -2090,7 +2093,6 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
-        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
         If .flags.PescandoEspecial = True Then Exit Sub
         If amount <= 0 Then Exit Sub
         'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
@@ -2111,6 +2113,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             If amount > 100000 Then amount = 100000
             Call TirarOro(amount, UserIndex)
         Else
+            If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
             If Slot <= getMaxInventorySlots(UserIndex) Then
                 '04-05-08 Ladder
                 If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
