@@ -1089,6 +1089,7 @@ Sub LoadOBJData()
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1107,7 +1108,7 @@ Sub LoadOBJData()
                     .ExtraCritAndStabChance = val(Leer.GetValue(ObjKey, "ExtraCritAndStabChance"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
-                    .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
