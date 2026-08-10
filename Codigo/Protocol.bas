@@ -5653,8 +5653,10 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .GuildIndex <> 0 Then
-            If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                Call WriteLocaleChatOverHead(UserIndex, 1404, vbNullString, priest.Char.charindex, vbWhite)  ' Msg1404=Te encuentras en un clan criminal... no puedo aceptar tu donación.
+            Dim ClanAlineacion As e_ALINEACION_GUILD
+            ClanAlineacion = modGuilds.Alineacion(.GuildIndex)
+            If ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                Call WriteLocaleChatOverHead(UserIndex, 1347, vbNullString, priest.Char.charindex, vbWhite) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
                 Exit Sub
             End If
         End If
