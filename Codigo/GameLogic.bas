@@ -838,6 +838,74 @@ LegalPosDestrabar_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosDestrabar", Erl)
 End Function
 
+Public Function CanTransferWorldItemAt(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+    On Error GoTo CanTransferWorldItemAt_Err
+    If UserIndex < 1 Or UserIndex > MaxUsers Then Exit Function
+    With UserList(UserIndex).pos
+        If .Map < 1 Or .Map > NumMaps Then Exit Function
+        If .x < MinXBorder Or .x > MaxXBorder Or .y < MinYBorder Or .y > MaxYBorder Then Exit Function
+        If TargetX < MinXBorder Or TargetX > MaxXBorder Or TargetY < MinYBorder Or TargetY > MaxYBorder Then Exit Function
+        If Abs(.x - TargetX) + Abs(.y - TargetY) > 2 Then Exit Function
+
+        Dim QueueX(0 To 12) As Integer
+        Dim QueueY(0 To 12) As Integer
+        Dim QueueDepth(0 To 12) As Byte
+        Dim VisitedX(0 To 12) As Integer
+        Dim VisitedY(0 To 12) As Integer
+        Dim QueueFront As Integer
+        Dim QueueBack As Integer
+        Dim VisitedCount As Integer
+        QueueX(0) = .x
+        QueueY(0) = .y
+        VisitedX(0) = .x
+        VisitedY(0) = .y
+        VisitedCount = 1
+
+        Do While QueueFront <= QueueBack
+            If QueueX(QueueFront) = TargetX And QueueY(QueueFront) = TargetY Then
+                CanTransferWorldItemAt = True
+                Exit Function
+            End If
+            If QueueDepth(QueueFront) < 2 Then
+                Dim Direction As e_Heading
+                For Direction = e_Heading.NORTH To e_Heading.WEST
+                    Dim NextX As Integer
+                    Dim NextY As Integer
+                    NextX = QueueX(QueueFront)
+                    NextY = QueueY(QueueFront)
+                    Select Case Direction
+                        Case e_Heading.NORTH: NextY = NextY - 1
+                        Case e_Heading.EAST: NextX = NextX + 1
+                        Case e_Heading.SOUTH: NextY = NextY + 1
+                        Case e_Heading.WEST: NextX = NextX - 1
+                    End Select
+                    If LegalWalk(.Map, NextX, NextY, Direction, UserList(UserIndex).flags.Navegando = 1, UserList(UserIndex).flags.Navegando = 0, UserList(UserIndex).flags.Montado = 1, False, UserIndex, True) Then
+                        Dim AlreadyVisited As Boolean
+                        AlreadyVisited = False
+                        Dim i As Integer
+                        For i = 0 To VisitedCount - 1
+                            If VisitedX(i) = NextX And VisitedY(i) = NextY Then AlreadyVisited = True
+                        Next i
+                        If Not AlreadyVisited Then
+                            QueueBack = QueueBack + 1
+                            QueueX(QueueBack) = NextX
+                            QueueY(QueueBack) = NextY
+                            QueueDepth(QueueBack) = QueueDepth(QueueFront) + 1
+                            VisitedX(VisitedCount) = NextX
+                            VisitedY(VisitedCount) = NextY
+                            VisitedCount = VisitedCount + 1
+                        End If
+                    End If
+                Next Direction
+            End If
+            QueueFront = QueueFront + 1
+        Loop
+    End With
+    Exit Function
+CanTransferWorldItemAt_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.CanTransferWorldItemAt", Erl)
+End Function
+
 Function LegalWalk(ByVal Map As Integer, _
                    ByVal x As Integer, _
                    ByVal y As Integer, _
@@ -846,7 +914,8 @@ Function LegalWalk(ByVal Map As Integer, _
                    Optional ByVal PuedeTierra As Boolean = True, _
                    Optional ByVal Montado As Boolean = False, _
                    Optional ByVal PuedeTraslado As Boolean = True, _
-                   Optional ByVal WalkerIndex As Integer) As Boolean
+                   Optional ByVal WalkerIndex As Integer, _
+                   Optional ByVal Silent As Boolean = False) As Boolean
     On Error GoTo LegalWalk_Err
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
@@ -875,7 +944,7 @@ Function LegalWalk(ByVal Map As Integer, _
         If WalkerIndex <> 0 Then
             If TileRequiresPatreon(Map, x, y) Then
                 If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then
-                    If UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
+                    If Not Silent And UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
                         Call WriteLocaleMsg(WalkerIndex, MSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
                         UserList(WalkerIndex).flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
                     End If
