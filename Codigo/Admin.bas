@@ -288,6 +288,7 @@ End Sub
 
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
     On Error GoTo Encarcelar_Err
+    Dim JailIssuer As String
     If EsGM(UserIndex) Then Exit Sub
     UserList(UserIndex).Counters.Pena = minutos
     Call DetenerTrabajoPorCarcel(UserIndex)
@@ -299,6 +300,12 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
     Else
         Call WriteLocaleMsg(UserIndex, MSG_HA_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_FontTypeNames.FONTTYPE_INFO, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
     End If
+    If LenB(GmName) = 0 Then
+        JailIssuer = "el sistema"
+    Else
+        JailIssuer = GmName
+    End If
+    Call LogBanByName(UserList(UserIndex).name, JailIssuer, "Encarcelado durante " & minutos & " minutos")
     Exit Sub
 Encarcelar_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
@@ -406,6 +413,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
     tBan.Baneador = Baneador
     Call Baneos.Add(tBan)
     Call SaveBan(Baneos.count)
+    Call LogBanByName(tBan.name, tBan.Baneador, tBan.Causa)
     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_BANEADO_DURANTE_PROXIMOS_DIAS_MEDIDA_TOMADA, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
     Exit Sub
 BanTemporal_Err:

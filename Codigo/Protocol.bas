@@ -2199,7 +2199,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
         If Iterations >= MaxIterations Then
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
-            'Call LogMacroServidor("El usuario " & GetUserDisplayName(UserIndex) & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
+            Call LogMacroServidor("El usuario " & GetUserDisplayName(UserIndex) & " itero el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & GetUserGMName(UserIndex) & "| Revisar --> " & _
                     PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
@@ -7423,6 +7423,7 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                 Motivo = "Macro de Carteleo."
         End Select
         If Motivo <> "" Then
+            Call LogMacroCliente("El usuario " & username & " | " & Motivo & " | Clicks: " & clicks)
             Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
         End If
     End With
@@ -7856,7 +7857,7 @@ End Sub
 
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleRepeatMacro_Err:
-    'Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " iteró el paquete click o u." & GetTickCount)
+    Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " repitio el paquete click o u. Tick: " & GetTickCountRaw)
     Exit Sub
 HandleRepeatMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)

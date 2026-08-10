@@ -41,6 +41,7 @@ Public Function TirarItemAlPiso(pos As t_WorldPos, obj As t_Obj, Optional PuedeA
     TirarItemAlPiso = NuevaPos
     Exit Function
 ErrHandler:
+    Call Logging.TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.TirarItemAlPiso", Erl)
 End Function
 
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean

@@ -76,11 +76,16 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal username As String, ByRef R
     Call SaveBanDatabase(username, Razon, UserList(BannerIndex).name)
     ' Registramos el baneo en los logs.
     Call LogBanFromName(username, BannerIndex, Razon)
+    Dim tUser As t_UserReference: tUser = NameIndex(username)
+    If IsValidUserRef(tUser) Then
+        Call LogBan(tUser.ArrayIndex, BannerIndex, Razon)
+    Else
+        Call LogBanByName(username, UserList(BannerIndex).name, Razon)
+    End If
     ' Le buchoneamos al mundo.
     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_DEBIDO_1699, UserList(BannerIndex).name & "¬" & username & "¬" & LCase$(Razon), _
             e_FontTypeNames.FONTTYPE_SERVER))  'Msg1699=Servidor » ¬1 ha baneado a ¬2 debido a: ¬3.
     ' Si estaba online, lo echamos.
-    Dim tUser As t_UserReference: tUser = NameIndex(username)
     If IsValidUserRef(tUser) Then
         Call WriteDisconnect(tUser.ArrayIndex)
         Call CloseSocket(tUser.ArrayIndex)
@@ -103,6 +108,7 @@ Public Sub BanPJWithoutGM(ByVal username As String, ByRef Razon As String)
     Call SaveBanDatabase(username, Razon, "el sistema")
     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "BannedBy", "Ban automático (Posible BOT).")
     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "Reason", Razon)
+    Call LogBanByName(username, "el sistema", Razon)
     ' Le buchoneamos al mundo.
     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_DEBIDO, username & "¬" & LCase$(Razon), e_FontTypeNames.FONTTYPE_SERVER))  'Msg1700=Servidor » Ha baneado a ¬1 debido a: ¬2.
     ' Si estaba online, lo echamos.
@@ -129,6 +135,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal username As String, 
     End If
     ' Guardamos el estado de baneado en la base de datos.
     Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).name)
+    Call LogBanByName(username, UserList(BannerIndex).name, Reason)
     ' Le buchoneamos al mundo.
     Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_BANEADO_CUENTA_DEBIDO, UserList(BannerIndex).name & "¬" & username & "¬" & Reason, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1701=Servidor » ¬1 ha baneado la cuenta de ¬2 debido a: ¬3.
     ' Registramos el baneo en los logs.
