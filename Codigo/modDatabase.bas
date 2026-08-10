@@ -559,9 +559,10 @@ ErrorHandler:
     Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountID & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-Public Sub EcharConsejoDatabase(username As String, ByVal Status As Integer)
+Public Sub EcharConsejoDatabase(username As String, ByVal newStatus As Integer)
     On Error GoTo EcharConsejoDatabase_Err
-    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", Status, UCase$(username))
+    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", _
+        newStatus, UCase$(username))
     Exit Sub
 EcharConsejoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
@@ -850,7 +851,7 @@ Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub
 
-
 Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)
 End Sub
+
