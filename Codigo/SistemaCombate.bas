@@ -814,6 +814,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         ' Suena el Golpe en el cliente.
         If NpcList(NpcIndex).flags.Snd2 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
+        ElseIf aType = Ranged Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_FLECHA_IMPACTO, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
         Else
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y))
         End If
@@ -870,6 +872,9 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
     Else
         Call EffectsOverTime.TargetFailedAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
+        If aType = Ranged Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_FLECHA_FALLO, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        End If
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, , , IIf(UserList(UserIndex).flags.invisible + UserList( _
                 UserIndex).flags.Oculto > 0, False, True)))
     End If
@@ -1123,6 +1128,9 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
         Else
             sendto = SendTarget.ToPCAliveArea
         End If
+        If aType = Ranged Then
+            Call SendData(sendto, AtacanteIndex, PrepareMessagePlayWave(SND_FLECHA_FALLO, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
+        End If
         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.charindex, , , IIf(UserList(AtacanteIndex).flags.invisible + UserList( _
                 AtacanteIndex).flags.Oculto > 0, False, True)))
     End If
@@ -1243,7 +1251,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 ' Efecto en pantalla a ambos
                 Call WriteFlashScreen(VictimaIndex, &H3C3CFF, 200, True)
                 Call WriteFlashScreen(AtacanteIndex, &H3C3CFF, 150, True)
-                Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(IIf(aType = Ranged, SND_FLECHA_IMPACTO, SND_IMPACTO), UserList(AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
             End If
             ' Sube skills en apuñalar
             Call SubirSkill(AtacanteIndex, Apuñalar)

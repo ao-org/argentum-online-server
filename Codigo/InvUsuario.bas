@@ -583,11 +583,54 @@ End Function
 
 Public Sub PickObj(ByVal UserIndex As Integer)
     With UserList(UserIndex).pos
-        Call PickObjAt(UserIndex, .Map, .x, .y)
+        Call PickObjAt(UserIndex, .Map, .x, .y, 0)
     End With
 End Sub
 
-Public Sub PickObjAt(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Private Function TryInsertGroundObjectIntoInventorySlot(ByVal UserIndex As Integer, _
+                                                        ByVal DestinationSlot As Byte, _
+                                                        ByRef GroundObj As t_Obj, _
+                                                        ByRef TransferredAmount As Long) As Boolean
+    On Error GoTo TryInsertGroundObjectIntoInventorySlot_Err
+    Dim FreeCapacity As Long
+    Dim MaxStack As Long
+    MaxStack = GetMaxInvOBJ()
+    If DestinationSlot < 1 Or DestinationSlot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
+    If GroundObj.ObjIndex <= 0 Or GroundObj.amount <= 0 Or MaxStack <= 0 Then Exit Function
+    With UserList(UserIndex).invent.Object(DestinationSlot)
+        If .ObjIndex = 0 Then
+            FreeCapacity = MaxStack
+        ElseIf .ObjIndex = GroundObj.ObjIndex And .ElementalTags = GroundObj.ElementalTags Then
+            FreeCapacity = MaxStack - .amount
+        Else
+            Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Function
+        End If
+        If FreeCapacity <= 0 Then Exit Function
+        If GroundObj.amount < FreeCapacity Then
+            TransferredAmount = GroundObj.amount
+        Else
+            TransferredAmount = FreeCapacity
+        End If
+        If TransferredAmount <= 0 Then Exit Function
+        If .ObjIndex = 0 Then
+            .ObjIndex = GroundObj.ObjIndex
+            .ElementalTags = GroundObj.ElementalTags
+            UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
+        End If
+        .amount = .amount + TransferredAmount
+    End With
+    TryInsertGroundObjectIntoInventorySlot = True
+    Exit Function
+TryInsertGroundObjectIntoInventorySlot_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.TryInsertGroundObjectIntoInventorySlot", Erl)
+End Function
+
+Public Sub PickObjAt(ByVal UserIndex As Integer, _
+                     ByVal Map As Integer, _
+                     ByVal x As Integer, _
+                     ByVal y As Integer, _
+                     Optional ByVal DestinationSlot As Byte = 0)
     On Error GoTo PickObj_Err
     Dim Slot  As Byte
     Dim obj   As t_ObjData
@@ -608,6 +651,8 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x A
             If Not UserCanPickUpItem(UserIndex) Then
                 Exit Sub
             End If
+            ' Gold and capture-the-flag objects do not have ordinary slot semantics.
+            If DestinationSlot > 0 And (MapData(Map, x, y).ObjInfo.ObjIndex = 12 Or UserList(UserIndex).flags.jugando_captura = 1) Then Exit Sub
             If UserList(UserIndex).flags.jugando_captura = 1 Then
                 If Not InstanciaCaptura Is Nothing Then
                     If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex) Then
@@ -619,18 +664,33 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x A
             MiObj.amount = MapData(Map, x, y).ObjInfo.amount
             MiObj.ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
             MiObj.ElementalTags = MapData(Map, x, y).ObjInfo.ElementalTags
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            Dim TransferredAmount As Long
+            Dim Inserted As Boolean
+            If DestinationSlot = 0 Then
+                TransferredAmount = MiObj.amount
+                Inserted = MeterItemEnInventario(UserIndex, MiObj)
+            Else
+                Inserted = TryInsertGroundObjectIntoInventorySlot(UserIndex, DestinationSlot, MiObj, TransferredAmount)
+            End If
+            If Not Inserted Then
                 'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
             Else
-                'Quitamos el objeto
-                Call EraseObj(MapData(Map, x, y).ObjInfo.amount, Map, x, y)
+                'Quitamos solamente la cantidad confirmada por el inventario autoritativo.
+                Call EraseObj(TransferredAmount, Map, x, y)
+                If DestinationSlot > 0 Then
+                    Call UpdateUserInv(False, UserIndex, DestinationSlot)
+                    UserList(UserIndex).flags.ModificoInventario = True
+                End If
+                If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+                    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+                End If
                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.User Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData( _
                         MiObj.ObjIndex).name)
                 'Si el obj es oro (12), se muestra la cantidad que agarro arriba del personaje
                 If MiObj.ObjIndex = 12 Then
                     Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiObj.amount), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, RGB(212, 175, 55))
                 Else
-                    Call WriteShowPickUpObj(UserIndex, MiObj.ObjIndex, MiObj.amount)
+                    Call WriteShowPickUpObj(UserIndex, MiObj.ObjIndex, TransferredAmount)
                 End If
                 Call UserDidPickupItem(UserIndex, MiObj.ObjIndex)
                 If UserList(UserIndex).flags.jugando_captura = 1 Then
