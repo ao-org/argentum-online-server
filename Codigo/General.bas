@@ -525,7 +525,6 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
     Call LoadSini
-    Call LoadMD5
     Call LoadPacketRatePolicy
     #If PYMMO = 1 Then
         Call LoadPrivateKey
@@ -787,7 +786,6 @@ Sub Restart()
     Call FreeNPCs
     Call FreeCharIndexes
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Call LoadIntervalos
     Call ResetUserAutoSaveTimer

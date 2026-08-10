@@ -655,13 +655,12 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         If .clase = e_Class.Druid Or .clase = e_Class.Bard Then
             If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
                 If .invent.EquippedRingAccesoryObjIndex = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
+                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
-                Else
-                    If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
-                        Exit Function
-                    End If
+                End If
+                If ObjData(.invent.EquippedRingAccesoryObjIndex).Power < Hechizos(HechizoIndex).RequiereInstrumento Then
+                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_MAS_PODEROSO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
                 End If
             End If
         End If
