@@ -630,7 +630,11 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
     Call Writer.WriteInt16(ServerPacketID.eChangeMap)
     Call Writer.WriteInt16(Map)
     Call Writer.WriteInt16(MapInfo(Map).MapResource)
-    Call Writer.WriteInt8(IIf(MapInfo(map).DropItems, 0, 1))   ' 1 = mapa nodrop
+    If MapInfo(Map).DropItems Then
+        Call Writer.WriteInt8(0)   ' 0 = mapa drop
+    Else
+        Call Writer.WriteInt8(1)   ' 1 = mapa nodrop
+    End If
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteChangeMap_Err:
