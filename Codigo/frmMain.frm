@@ -960,7 +960,6 @@ End Sub
 Private Sub Command11_Click()
     On Error GoTo Command11_Click_Err
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Exit Sub
 Command11_Click_Err:

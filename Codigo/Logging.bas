@@ -111,6 +111,14 @@ Public Sub LogearEventoDeSubasta(s As String)
 ErrHandler:
 End Sub
 
+
+Public Sub LogBanByName(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As String)
+    On Error GoTo ErrHandler
+    Call LogThis(eType_Log.Ban, "[Bans] " & BannedName & " BannedBy " & Baneador & " Reason " & Motivo, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
 Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motivo As String)
     On Error GoTo ErrHandler
     Dim s As String

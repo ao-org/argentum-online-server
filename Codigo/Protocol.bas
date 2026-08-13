@@ -1045,7 +1045,6 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     Dim encrypted_session_token As String
     Dim char_id As Long
-    Dim md5 As String
     Dim Version As String
     Dim CuentaEmail As String
     Dim UserIndex As Integer
@@ -1061,7 +1060,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Dim t_query As Long, t_map As Long, t_assign As Long, t_entrar As Long, t_connect As Long
     Dim totalMs As Long
     Dim outcome As String
-    Dim tokenLen As Long, md5Len As Long
+    Dim tokenLen As Long
     Dim rsCount As Long
 
     outcome = "ok"
@@ -1074,11 +1073,9 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     char_id = reader.ReadInt32
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8
     t_read = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
 
     tokenLen = Len(encrypted_session_token)
-    md5Len = Len(md5)
 
     ' ----------------------------
     ' Validate
@@ -1198,7 +1195,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     ' ----------------------------
     Call PerformanceTestStart(stepTimer)
 
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         outcome = "fail_entrar_cuenta"
         Call LogInfoServidor("HandleLoginExistingChar failed for " & CuentaEmail)
         Call CloseSocket(UserIndex)
@@ -1230,7 +1227,6 @@ FinallyLog:
             " | email: " & CuentaEmail & _
             " | ver: " & Version & _
             " | tokenLen: " & tokenLen & _
-            " | md5Len: " & md5Len & _
             " | rsCount: " & rsCount & _
             " | outcome: " & outcome & _
             " | read: " & t_read & "ms" & _
@@ -1275,7 +1271,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Dim username                As String
     Dim CuentaEmail             As String
     Dim Version                 As String
-    Dim md5                     As String
     Dim encrypted_session_token As String
     Dim encrypted_username      As String
     Dim race                    As e_Raza
@@ -1288,7 +1283,6 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     encrypted_session_token = reader.ReadString8
     encrypted_username = reader.ReadString8
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
-    md5 = reader.ReadString8()
     race = reader.ReadInt8()
     gender = reader.ReadInt8()
     Class = reader.ReadInt8()
@@ -1393,7 +1387,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
         End If
     End If
     UserList(UserIndex).AccountID = -1
-    If Not EntrarCuenta(UserIndex, CuentaEmail, md5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail) Then
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
@@ -1829,6 +1823,12 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandlePickUp(ByVal UserIndex As Integer)
     On Error GoTo HandlePickUp_Err
+    Dim TargetX As Byte
+    Dim TargetY As Byte
+    Dim DestinationSlot As Byte
+    TargetX = reader.ReadInt8()
+    TargetY = reader.ReadInt8()
+    DestinationSlot = reader.ReadInt8()
     With UserList(UserIndex)
         'If dead, it can't pick up objects
         If .flags.Muerto = 1 Then
@@ -1842,7 +1842,9 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TOMAR_NINGUN_OBJETO, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Call PickObj(UserIndex)
+        If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
+        If DestinationSlot > .CurrentInventorySlots Then Exit Sub
+        Call PickObjAt(UserIndex, .pos.Map, TargetX, TargetY, DestinationSlot)
     End With
     Exit Sub
 HandlePickUp_Err:
@@ -2072,10 +2074,14 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     Dim amount        As Long
     Dim PacketCounter As Long
     Dim Packet_ID     As Long
+    Dim TargetX       As Byte
+    Dim TargetY       As Byte
     With UserList(UserIndex)
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
         PacketCounter = reader.ReadInt32
+        TargetX = reader.ReadInt8()
+        TargetY = reader.ReadInt8()
         Packet_ID = PacketNames.Drop
         If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then
             If Slot <> GOLD_SLOT Then
@@ -2103,9 +2109,11 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
         'Are we dropping gold or other items??
         If Slot = FLAGORO Then
+            If TargetX <> .pos.x Or TargetY <> .pos.y Then Exit Sub
             If amount > 100000 Then amount = 100000
             Call TirarOro(amount, UserIndex)
         Else
+            If Not CanTransferWorldItemAt(UserIndex, TargetX, TargetY) Then Exit Sub
             If Slot <= getMaxInventorySlots(UserIndex) Then
                 '04-05-08 Ladder
                 If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
@@ -2121,7 +2129,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                     ElseIf ObjData(.invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                             If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                            Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                            Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
                         End If
                         Exit Sub
                     End If
@@ -2145,7 +2153,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             'Only drop valid slots
             If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
                 If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-                Call DropObj(UserIndex, Slot, amount, .pos.Map, .pos.x, .pos.y)
+                Call DropObj(UserIndex, Slot, amount, .pos.Map, TargetX, TargetY)
             End If
         End If
     End With
@@ -2191,7 +2199,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, _
         If Iterations >= MaxIterations Then
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
-            'Call LogMacroServidor("El usuario " & GetUserDisplayName(UserIndex) & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
+            Call LogMacroServidor("El usuario " & GetUserDisplayName(UserIndex) & " itero el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & GetUserGMName(UserIndex) & "| Revisar --> " & _
                     PacketName & " (Envíos: " & Iterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
@@ -5403,10 +5411,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
 End Sub
 
-''
-' Handles the "CouncilKick" message.
-'
-' @param    UserIndex The index of the user sending the message.
 Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     With UserList(UserIndex)
@@ -5431,18 +5435,16 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
             Else
                 With UserList(tUser.ArrayIndex)
                     If .Faccion.Status = e_Facciones.consejo Then
-                        'Msg1204= Has sido echado del consejo de Banderbill
                         Call WriteLocaleMsg(tUser.ArrayIndex, MSG_SIDO_ECHADO_CONSEJO_BANDERBILL, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Armada
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO)) 'Msg1645=¬1 fue expulsado del Consejo Real de Banderbill.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_REAL_BANDERBILL, username, e_FontTypeNames.FONTTYPE_CONSEJO))
                     End If
                     If .Faccion.Status = e_Facciones.concilio Then
-                        'Msg1205= Has sido echado del consejo de la Legión Oscura
                         Call WriteLocaleMsg(tUser.ArrayIndex, MSG_SIDO_ECHADO_CONSEJO_LEGION_OSCURA, e_FontTypeNames.FONTTYPE_INFO)
                         .Faccion.Status = e_Facciones.Caos
                         Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y)
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1646=¬1 fue expulsado del Consejo de la Legión Oscura.
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_CONSEJO_LEGION_OSCURA, username, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
                     End If
                     Call RefreshCharStatus(tUser.ArrayIndex)
                 End With
@@ -5517,33 +5519,31 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Call LogGM(GetUserRealName(UserIndex), "ECHO DEL CAOS A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
-                    'Me fijo de que alineación es el clan, si es Legion, lo echo
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
                 End If
-                    UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
-                    UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
-                    UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_LEGION_OSCURA_GLOBAL, username, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
-                    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1992=¬1 expulsado de las fuerzas del caos y prohibida la reenlistada.
-                    Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_CAOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1991=¬1 te ha expulsado en forma definitiva de las fuerzas del caos.
+                UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
+                UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
+                UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_LEGION_OSCURA_GLOBAL, username, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO))
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_CAOS, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT))
             Else
                 If PersonajeExiste(username) Then
-                    'Msg1208= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
                     Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Caos Then
                         Call EcharLegionDatabase(username)
-                        'Msg1209= Usuario ¬1
+                        Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1209, e_FontTypeNames.FONTTYPE_INFO, username)
+                    ElseIf Status = e_Facciones.concilio Then
+                        Call EcharLegionDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1209, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
-                        'Msg1210= El personaje no pertenece a la legión.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_LEGION, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-                    'Msg1211= No existe el personaje.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_EXISTE_PERSONAJE_1211, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
@@ -5572,7 +5572,6 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             Call LogGM(GetUserRealName(UserIndex), "ECHO DE LA REAL A: " & username)
             If IsValidUserRef(tUser) Then
                 If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
-                    'Me fijo de que alineación es el clan, si es ARMADA, lo echo
                     If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
                         Call m_EcharMiembroDeClan(UserIndex, UserList(tUser.ArrayIndex).Id)
                     End If
@@ -5581,20 +5580,20 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_ARMADA_REAL_GLOBAL, username, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1990=¬1 expulsado de las fuerzas reales y prohibida la reenlistada.
-                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_REALES, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1989=¬1 te ha expulsado en forma definitiva de las fuerzas reales.
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, username, e_FontTypeNames.FONTTYPE_INFO))
+                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_FORMA_DEFINITIVA_FUERZAS_REALES, GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_FIGHT))
             Else
                 If PersonajeExiste(username) Then
-                    'Msg1213= Usuario offline, echando de la facción
                     Call WriteLocaleMsg(UserIndex, MSG_USUARIO_OFFLINE_ECHANDO_FACCION_1213, e_FontTypeNames.FONTTYPE_INFO)
                     Dim Status As Integer
                     Status = GetDBValue("user", "status", "name", LCase$(username))
                     If Status = e_Facciones.Armada Then
                         Call EcharArmadaDatabase(username)
-                        'Msg1214= Usuario ¬1
+                        Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1214, e_FontTypeNames.FONTTYPE_INFO, username)
+                    ElseIf Status = e_Facciones.consejo Then
+                        Call EcharArmadaDatabase(username)
                         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_1214, e_FontTypeNames.FONTTYPE_INFO, username)
                     Else
-                        'Msg1215= El personaje no pertenece a la armada.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_PERTENECE_ARMADA, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
@@ -5654,8 +5653,10 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .GuildIndex <> 0 Then
-            If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                Call WriteLocaleChatOverHead(UserIndex, 1404, vbNullString, priest.Char.charindex, vbWhite)  ' Msg1404=Te encuentras en un clan criminal... no puedo aceptar tu donación.
+            Dim ClanAlineacion As e_ALINEACION_GUILD
+            ClanAlineacion = modGuilds.Alineacion(.GuildIndex)
+            If ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                Call WriteLocaleChatOverHead(UserIndex, 1347, vbNullString, priest.Char.charindex, vbWhite) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
                 Exit Sub
             End If
         End If
@@ -7422,6 +7423,7 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                 Motivo = "Macro de Carteleo."
         End Select
         If Motivo <> "" Then
+            Call LogMacroCliente("El usuario " & username & " | " & Motivo & " | Clicks: " & clicks)
             Call SendData(sendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & username & "| Revisar --> " & Motivo & ".", e_FontTypeNames.FONTTYPE_INFO))
         End If
     End With
@@ -7855,7 +7857,7 @@ End Sub
 
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleRepeatMacro_Err:
-    'Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " iteró el paquete click o u." & GetTickCount)
+    Call LogMacroCliente("El usuario " & GetUserDisplayName(UserIndex) & " repitio el paquete click o u. Tick: " & GetTickCountRaw)
     Exit Sub
 HandleRepeatMacro_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)

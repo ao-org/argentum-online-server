@@ -217,7 +217,6 @@ Public Enum e_SoundIndex
 End Enum
 
 Public SvrConfig            As ServerConfig
-Public Md5Cliente           As String
 Public PrivateKey           As String
 Public HoraActual           As Integer
 Public UltimoChar           As String
@@ -1496,6 +1495,8 @@ Public Const SND_IMPACTO         As Byte = 10
 Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
+Public Const SND_FLECHA_IMPACTO  As Byte = 229
+Public Const SND_FLECHA_FALLO    As Byte = 228
 Public Const SND_RESURRECCION    As Byte = 117
 
 

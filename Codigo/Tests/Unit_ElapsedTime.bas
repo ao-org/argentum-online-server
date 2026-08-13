@@ -9,14 +9,22 @@ Option Explicit
 ' ==========================================================================
 Public Function test_suite_elapsed_time() As Boolean
     Call UnitTesting.RunTest("test_ticks_elapsed_simple", test_ticks_elapsed_simple())
-    Call UnitTesting.RunTest("test_ticks_elapsed_wrap", test_ticks_elapsed_wrap())
+    Call UnitTesting.RunTest("test_ticks_elapsed_signed_boundary", test_ticks_elapsed_signed_boundary())
+    Call UnitTesting.RunTest("test_ticks_elapsed_true_wrap", test_ticks_elapsed_true_wrap())
+    Call UnitTesting.RunTest("test_ticks_elapsed_direct_subtraction_overflow", test_ticks_elapsed_direct_subtraction_overflow())
     Call UnitTesting.RunTest("test_tick_after_basic", test_tick_after_basic())
+    Call UnitTesting.RunTest("test_tick_after_signed_boundary", test_tick_after_signed_boundary())
+    Call UnitTesting.RunTest("test_tick_after_true_wrap", test_tick_after_true_wrap())
     Call UnitTesting.RunTest("test_pos_mod_positive", test_pos_mod_positive())
     Call UnitTesting.RunTest("test_pos_mod_negative", test_pos_mod_negative())
     Call UnitTesting.RunTest("test_pos_mod_zero_modulus", test_pos_mod_zero_modulus())
     Call UnitTesting.RunTest("test_add_mod32_simple", test_add_mod32_simple())
+    Call UnitTesting.RunTest("test_add_mod32_signed_boundary", test_add_mod32_signed_boundary())
+    Call UnitTesting.RunTest("test_add_mod32_true_wrap", test_add_mod32_true_wrap())
     Call UnitTesting.RunTest("test_deadline_passed_zero", test_deadline_passed_zero())
     Call UnitTesting.RunTest("test_deadline_passed_normal", test_deadline_passed_normal())
+    Call UnitTesting.RunTest("test_deadline_passed_signed_boundary", test_deadline_passed_signed_boundary())
+    Call UnitTesting.RunTest("test_deadline_passed_true_wrap", test_deadline_passed_true_wrap())
     test_suite_elapsed_time = True
 End Function
 
@@ -25,62 +33,86 @@ End Function
 Private Function test_ticks_elapsed_simple() As Boolean
     On Error GoTo Err_Handler
     test_ticks_elapsed_simple = True
-    ' Started at tick 100, now at tick 200: 200 - 100 = 100 elapsed
     If TicksElapsed(100, 200) <> 100 Then test_ticks_elapsed_simple = False: Exit Function
-    ' Started at tick 0, now at tick 1000: 1000 elapsed
     If TicksElapsed(0, 1000) <> 1000 Then test_ticks_elapsed_simple = False: Exit Function
-    ' Same start and current tick: 0 elapsed
     If TicksElapsed(500, 500) <> 0 Then test_ticks_elapsed_simple = False: Exit Function
     Exit Function
 Err_Handler:
     test_ticks_elapsed_simple = False
 End Function
 
-' Verifies TicksElapsed() handles tick counter wrap-around correctly.
-' When current < start (counter overflowed), elapsed should still be positive.
-Private Function test_ticks_elapsed_wrap() As Boolean
+' Crossing &H7FFFFFFF -> &H80000000 is the signed Long representation boundary,
+' not the real modulo-2^32 timer wrap.
+Private Function test_ticks_elapsed_signed_boundary() As Boolean
     On Error GoTo Err_Handler
-    test_ticks_elapsed_wrap = True
-    ' Simulate wrap-around: start was near Long.MaxValue, current is 100
-    ' This happens when GetTickCount overflows past 2^31. Elapsed must still be positive.
-    Dim elapsed As Double
-    elapsed = TicksElapsed(&H7FFFFFFF, 100)
-    If elapsed <= 0 Then test_ticks_elapsed_wrap = False: Exit Function
+    test_ticks_elapsed_signed_boundary = True
+    If TicksElapsed(&H7FFFFFF0, &H80000010) <> 32 Then test_ticks_elapsed_signed_boundary = False: Exit Function
     Exit Function
 Err_Handler:
-    test_ticks_elapsed_wrap = False
+    test_ticks_elapsed_signed_boundary = False
 End Function
 
-' Verifies TickAfter(a, b): True when a >= b, False when a < b.
-' Also checks the edge case where both are 0.
+' Crossing &HFFFFFFFF -> &H00000000 is the real modulo-2^32 timer wrap.
+Private Function test_ticks_elapsed_true_wrap() As Boolean
+    On Error GoTo Err_Handler
+    test_ticks_elapsed_true_wrap = True
+    If TicksElapsed(&HFFFFFFF0, &H10) <> 32 Then test_ticks_elapsed_true_wrap = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_ticks_elapsed_true_wrap = False
+End Function
+
+' Verifies cases where direct signed Long subtraction would overflow before CDbl().
+Private Function test_ticks_elapsed_direct_subtraction_overflow() As Boolean
+    On Error GoTo Err_Handler
+    test_ticks_elapsed_direct_subtraction_overflow = True
+    If TicksElapsed(&H80000010, &H7FFFFFF0) <> 4294967264# Then test_ticks_elapsed_direct_subtraction_overflow = False: Exit Function
+    If TicksElapsed(&H7FFFFFF0, &H80000010) <> 32 Then test_ticks_elapsed_direct_subtraction_overflow = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_ticks_elapsed_direct_subtraction_overflow = False
+End Function
+
+' Verifies TickAfter(a, b): True when a is at-or-after b, False when a is before b.
 Private Function test_tick_after_basic() As Boolean
     On Error GoTo Err_Handler
     test_tick_after_basic = True
-    ' 100 is after 50 (100 >= 50)
     If Not TickAfter(100, 50) Then test_tick_after_basic = False: Exit Function
-    ' 100 is at-or-after 100 (equal counts as "after")
     If Not TickAfter(100, 100) Then test_tick_after_basic = False: Exit Function
-    ' 50 is NOT after 100 (50 < 100)
     If TickAfter(50, 100) Then test_tick_after_basic = False: Exit Function
-    ' 0 is at-or-after 0 (edge case: both zero)
     If Not TickAfter(0, 0) Then test_tick_after_basic = False: Exit Function
     Exit Function
 Err_Handler:
     test_tick_after_basic = False
 End Function
 
+Private Function test_tick_after_signed_boundary() As Boolean
+    On Error GoTo Err_Handler
+    test_tick_after_signed_boundary = True
+    If Not TickAfter(&H80000010, &H7FFFFFF0) Then test_tick_after_signed_boundary = False: Exit Function
+    If TickAfter(&H7FFFFFF0, &H80000010) Then test_tick_after_signed_boundary = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_tick_after_signed_boundary = False
+End Function
+
+Private Function test_tick_after_true_wrap() As Boolean
+    On Error GoTo Err_Handler
+    test_tick_after_true_wrap = True
+    If Not TickAfter(&H10, &HFFFFFFF0) Then test_tick_after_true_wrap = False: Exit Function
+    If TickAfter(&HFFFFFFF0, &H10) Then test_tick_after_true_wrap = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_tick_after_true_wrap = False
+End Function
+
 ' Verifies PosMod() with positive inputs returns the standard remainder.
-' 10 mod 3 = 1, 9 mod 3 = 0, 0 mod 5 = 0, 7 mod 7 = 0.
 Private Function test_pos_mod_positive() As Boolean
     On Error GoTo Err_Handler
     test_pos_mod_positive = True
-    ' 10 / 3 = remainder 1
     If PosMod(10, 3) <> 1 Then test_pos_mod_positive = False: Exit Function
-    ' 9 / 3 = remainder 0 (evenly divisible)
     If PosMod(9, 3) <> 0 Then test_pos_mod_positive = False: Exit Function
-    ' 0 mod anything = 0
     If PosMod(0, 5) <> 0 Then test_pos_mod_positive = False: Exit Function
-    ' 7 mod 7 = 0 (evenly divisible)
     If PosMod(7, 7) <> 0 Then test_pos_mod_positive = False: Exit Function
     Exit Function
 Err_Handler:
@@ -88,15 +120,11 @@ Err_Handler:
 End Function
 
 ' Verifies PosMod() with negative inputs wraps to a positive result.
-' -1 mod 3 = 2, -3 mod 3 = 0, -7 mod 5 = 3.
 Private Function test_pos_mod_negative() As Boolean
     On Error GoTo Err_Handler
     test_pos_mod_negative = True
-    ' -1 mod 3: VB Mod gives -1, but PosMod wraps to 2 (positive result)
     If PosMod(-1, 3) <> 2 Then test_pos_mod_negative = False: Exit Function
-    ' -3 mod 3 = 0 (evenly divisible, even when negative)
     If PosMod(-3, 3) <> 0 Then test_pos_mod_negative = False: Exit Function
-    ' -7 mod 5: VB Mod gives -2, PosMod wraps to 3
     If PosMod(-7, 5) <> 3 Then test_pos_mod_negative = False: Exit Function
     Exit Function
 Err_Handler:
@@ -107,9 +135,7 @@ End Function
 Private Function test_pos_mod_zero_modulus() As Boolean
     On Error GoTo Err_Handler
     test_pos_mod_zero_modulus = True
-    ' Modulus of 0 is undefined; PosMod returns 0 as a safe fallback
     If PosMod(10, 0) <> 0 Then test_pos_mod_zero_modulus = False: Exit Function
-    ' Negative modulus is also invalid; returns 0
     If PosMod(10, -1) <> 0 Then test_pos_mod_zero_modulus = False: Exit Function
     Exit Function
 Err_Handler:
@@ -120,47 +146,76 @@ End Function
 Private Function test_add_mod32_simple() As Boolean
     On Error GoTo Err_Handler
     test_add_mod32_simple = True
-    ' Simple addition: 10 + 20 = 30
     If AddMod32(10, 20) <> 30 Then test_add_mod32_simple = False: Exit Function
-    ' Zero + zero = zero
     If AddMod32(0, 0) <> 0 Then test_add_mod32_simple = False: Exit Function
-    ' Adding zero is identity: 100 + 0 = 100
     If AddMod32(100, 0) <> 100 Then test_add_mod32_simple = False: Exit Function
     Exit Function
 Err_Handler:
     test_add_mod32_simple = False
 End Function
 
+Private Function test_add_mod32_signed_boundary() As Boolean
+    On Error GoTo Err_Handler
+    test_add_mod32_signed_boundary = True
+    If AddMod32(&H7FFFFFF0, &H20) <> &H80000010 Then test_add_mod32_signed_boundary = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_add_mod32_signed_boundary = False
+End Function
+
+Private Function test_add_mod32_true_wrap() As Boolean
+    On Error GoTo Err_Handler
+    test_add_mod32_true_wrap = True
+    If AddMod32(&HFFFFFFF0, &H20) <> &H10 Then test_add_mod32_true_wrap = False: Exit Function
+    If AddMod32(&HFFFFFFFF, 1) <> 0 Then test_add_mod32_true_wrap = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_add_mod32_true_wrap = False
+End Function
+
 ' Verifies DeadlinePassed() treats deadline=0 as "always passed" regardless
-' of the current tick value (even negative).
+' of the current tick value.
 Private Function test_deadline_passed_zero() As Boolean
     On Error GoTo Err_Handler
     test_deadline_passed_zero = True
-    ' A deadline of 0 is treated as "no deadline" / "already passed"
-    ' regardless of what the current tick is
     If Not DeadlinePassed(0, 0) Then test_deadline_passed_zero = False: Exit Function
     If Not DeadlinePassed(100, 0) Then test_deadline_passed_zero = False: Exit Function
-    ' Even a negative tick still counts as passed when deadline is 0
     If Not DeadlinePassed(-1, 0) Then test_deadline_passed_zero = False: Exit Function
     Exit Function
 Err_Handler:
     test_deadline_passed_zero = False
 End Function
 
-' Verifies DeadlinePassed() for normal cases: now >= deadline means passed,
-' now < deadline means not passed.
+' Verifies DeadlinePassed() for normal cases: now at-or-after deadline means passed.
 Private Function test_deadline_passed_normal() As Boolean
     On Error GoTo Err_Handler
     test_deadline_passed_normal = True
-    ' now=100, deadline=50: we're past the deadline
     If Not DeadlinePassed(100, 50) Then test_deadline_passed_normal = False: Exit Function
-    ' now=100, deadline=100: exactly at the deadline counts as passed
     If Not DeadlinePassed(100, 100) Then test_deadline_passed_normal = False: Exit Function
-    ' now=50, deadline=100: we haven't reached the deadline yet
     If DeadlinePassed(50, 100) Then test_deadline_passed_normal = False: Exit Function
     Exit Function
 Err_Handler:
     test_deadline_passed_normal = False
+End Function
+
+Private Function test_deadline_passed_signed_boundary() As Boolean
+    On Error GoTo Err_Handler
+    test_deadline_passed_signed_boundary = True
+    If Not DeadlinePassed(&H80000010, &H7FFFFFF0) Then test_deadline_passed_signed_boundary = False: Exit Function
+    If DeadlinePassed(&H7FFFFFF0, &H80000010) Then test_deadline_passed_signed_boundary = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_deadline_passed_signed_boundary = False
+End Function
+
+Private Function test_deadline_passed_true_wrap() As Boolean
+    On Error GoTo Err_Handler
+    test_deadline_passed_true_wrap = True
+    If Not DeadlinePassed(&H10, &HFFFFFFF0) Then test_deadline_passed_true_wrap = False: Exit Function
+    If DeadlinePassed(&HFFFFFFF0, &H10) Then test_deadline_passed_true_wrap = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_deadline_passed_true_wrap = False
 End Function
 
 #End If
