@@ -45,6 +45,15 @@ Public Function IsValidCity(ByVal CityId As e_City) As Boolean
     End With
 End Function
 
+Public Function IsValidCharacterCreationCity(ByVal CityId As e_City) As Boolean
+    If Not IsValidCity(CityId) Then Exit Function
+
+    Select Case CityId
+        Case cUllathorpe, cNix, cArghal, cForgat, cEldoria, cPenthar, cMorgrim
+            IsValidCharacterCreationCity = True
+    End Select
+End Function
+
 Public Sub goHome(ByVal UserIndex As Integer)
     On Error GoTo goHome_Err
     With UserList(UserIndex)
