@@ -557,6 +557,8 @@ Sub Main()
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
     Call LoadOBJData
+    frmCargando.Label1(2).Caption = "Cargando Equipamiento Inicial"
+    Call CargarEquipamientoInicial
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
     Call CargarHechizos
     frmCargando.Label1(2).Caption = "Cargando EffectsOverTime.Dat"
