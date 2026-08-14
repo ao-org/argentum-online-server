@@ -463,7 +463,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         ' Género válido
         If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
         ' Ciudad válida
-        If Hogar <= 0 Or Hogar > CITY_COUNT Then Exit Function
+        If Not IsValidCharacterCreationCity(Hogar) Then Exit Function
         ' Cabeza válida
 #If LOGIN_STRESS_TEST = 0 Then
         If Not ValidarCabeza(UserRaza, UserSexo, head) Then Exit Function
@@ -491,7 +491,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .raza = UserRaza
         .Char.head = head
         .genero = UserSexo
-        .Hogar = cForgat
+        .Hogar = Hogar
         '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
         .Stats.SkillPts = 10
         .Char.Heading = e_Heading.SOUTH
