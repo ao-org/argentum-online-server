@@ -1882,7 +1882,7 @@ Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal killerIndex 
         TargetPos = Min(.flags.LastKillerIndex, MaxRecentKillToStore)
         Dim i As Integer
         For i = 0 To TargetPos
-            If .flags.RecentKillers(i).UserId = UserList(killerIndex).Id And (GlobalFrameTime - .flags.RecentKillers(i).KillTime) < FactionReKillTime Then
+            If .flags.RecentKillers(i).UserId = UserList(killerIndex).Id And (TicksElapsed(.flags.RecentKillers(i).KillTime, GlobalFrameTime)) < FactionReKillTime Then
                 AlreadyKilledBy = True
                 Exit Function
             End If
@@ -1968,13 +1968,13 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
         If Score > 20 Then
             Score = 20
         End If
-        If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
+        If TicksElapsed(.flags.LastHelpByTime, GlobalFrameTime) < AssistHelpValidTime Then
             If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
             End If
         End If
-        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+        If TicksElapsed(UserList(TargetIndex).flags.LastAttackedByUserTime, GlobalFrameTime) < AssistDamageValidTime Then
             If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)

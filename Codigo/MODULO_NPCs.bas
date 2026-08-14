@@ -2416,7 +2416,7 @@ End Function
 
 Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackInterval As Long)
     With NpcList(NpcIndex)
-        CanPerformAttackAction = GlobalFrameTime - .Contadores.IntervaloLanzarHechizo > AttackInterval And GlobalFrameTime - .Contadores.IntervaloAtaque > AttackInterval
+        CanPerformAttackAction = TicksElapsed(.Contadores.IntervaloLanzarHechizo, GlobalFrameTime) > AttackInterval And TicksElapsed(.Contadores.IntervaloAtaque, GlobalFrameTime) > AttackInterval
     End With
 End Function
 
@@ -2447,7 +2447,7 @@ Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
     GetOwnedBy = 0
     With NpcList(NpcIndex).flags
         If .AttackedBy = vbNullString Then Exit Function
-        If GlobalFrameTime - .AttackedTime > IntervaloNpcOwner Then Exit Function
+        If TicksElapsed(.AttackedTime, GlobalFrameTime) > IntervaloNpcOwner Then Exit Function
         Dim Attacker As t_UserReference: Attacker = NameIndex(.AttackedBy)
         If Not IsValidUserRef(Attacker) Then Exit Function
         GetOwnedBy = Attacker.ArrayIndex
