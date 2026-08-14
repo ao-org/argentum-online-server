@@ -407,7 +407,7 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
             Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
             Call MatchCompleted
         End If
-        If GlobalFrameTime - UserList(deadIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+        If TicksElapsed(UserList(deadIndex).flags.LastAttackedByUserTime, GlobalFrameTime) < AssistDamageValidTime Then
             If IsValidUserRef(UserList(deadIndex).flags.LastAttacker) And UserList(deadIndex).flags.LastAttacker.ArrayIndex <> killerIndex Then
                 If Board.UpdatePlayerScore(UserList(deadIndex).flags.LastAttacker.ArrayIndex, 1) >= TargetScore Then
                     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
