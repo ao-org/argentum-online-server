@@ -1246,6 +1246,7 @@ Sub LoadOBJData()
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otMinerals
                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                 Case e_OBJType.otUsableOntarget
