@@ -569,11 +569,30 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
         Dim tmpByte As Byte
         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
         If Not toMap Then
+            Dim HayFinalizada As Boolean
+            Dim HayDisponible As Boolean
+            Dim HayPendiente  As Boolean
+
+            'Quests que este NPC recibe vía TalkTo (independiente de NumQuest,
+            'que solo controla las quests que el NPC OFRECE / lista en su panel).
+            Dim qi As Long
+            For qi = 1 To UBound(QuestList)
+                If QuestList(qi).TalkTo > 0 And QuestList(qi).TalkTo = .Numero Then
+                    tmpByte = TieneQuest(sndIndex, qi)
+                    If tmpByte Then
+                        If FinishQuestCheck(sndIndex, qi, tmpByte) Then
+                            Simbolo = 3
+                            HayFinalizada = True
+                        Else
+                            HayPendiente = True
+                            Simbolo = 4
+                        End If
+                    End If
+                End If
+            Next qi
+
             If .NumQuest > 0 Then
-                Dim q             As Byte
-                Dim HayFinalizada As Boolean
-                Dim HayDisponible As Boolean
-                Dim HayPendiente  As Boolean
+                Dim q As Byte
                 For q = 1 To .NumQuest
                     tmpByte = TieneQuest(sndIndex, .QuestNumber(q))
                     If tmpByte Then
@@ -588,7 +607,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         Dim validClass As Boolean
                         Dim i As Integer
                         validClass = False
-                        
+
                         If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
                             For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
                                 If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
@@ -597,7 +616,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                                 End If
                             Next i
                         End If
-                        
+
                         If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
                                 QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
                             Simbolo = 2
@@ -607,18 +626,20 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         End If
                     End If
                 Next q
-                'Para darle prioridad a ciertos simbolos
-                If HayDisponible Then
-                    Simbolo = 1
-                End If
-                If HayPendiente Then
-                    Simbolo = 4
-                End If
-                If HayFinalizada Then
-                    Simbolo = 3
-                End If
-                'Para darle prioridad a ciertos simbolos
             End If
+
+            'Para darle prioridad a ciertos simbolos
+            If HayDisponible Then
+                Simbolo = 1
+            End If
+            If HayPendiente Then
+                Simbolo = 4
+            End If
+            If HayFinalizada Then
+                Simbolo = 3
+            End If
+            'Para darle prioridad a ciertos simbolos
+
             Dim body As Integer
             'Si está muerto el usuario y en zona insegura
             If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
