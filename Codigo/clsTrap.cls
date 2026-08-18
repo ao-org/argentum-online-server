@@ -229,6 +229,13 @@ End Function
 
 Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     trigger = False
+    If TargetType = eNpc Then
+        If EffectOverTime(mDotInfo.EotId).SubType = e_TrapTypes.eParalice Then
+            If NpcList(TargetIndex).flags.AfectaParalisis = 1 Then
+                Exit Function
+            End If
+        End If
+    End If
     Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, _
             False))
     If EffectOverTime(mDotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave( _
