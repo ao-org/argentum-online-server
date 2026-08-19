@@ -240,19 +240,23 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     End If
     ' Confirmamos que SI tienen los objetos a comerciar, procedemos con el cambio.
     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
-        If Not MeterItemEnInventario(UserIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i)) Then
-            Call TirarItemAlPiso(UserList(UserIndex).pos, UserList(OtroUserIndex).ComUsu.itemsAenviar(i))
+        objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
+        If Not MeterItemEnInventario(UserIndex, objOfrecido) Then
+            Call TirarItemAlPiso(UserList(UserIndex).pos, objOfrecido)
         End If
-        Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ObjIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex, UserList( _
-                OtroUserIndex).ComUsu.itemsAenviar(i).ElementalTags)
+        If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.ElementalTags) Then
+            Call LogSafeCommerceTransfer(GetUserRealName(OtroUserIndex), GetUserRealName(UserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.ElementalTags)
+        End If
     Next i
     Dim j As Long
     For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
-        If MeterItemEnInventario(OtroUserIndex, UserList(UserIndex).ComUsu.itemsAenviar(j)) = False Then
-            Call TirarItemAlPiso(UserList(OtroUserIndex).pos, UserList(UserIndex).ComUsu.itemsAenviar(j))
+        objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(j)
+        If MeterItemEnInventario(OtroUserIndex, objOfrecido) = False Then
+            Call TirarItemAlPiso(UserList(OtroUserIndex).pos, objOfrecido)
         End If
-        Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex, UserList( _
-                UserIndex).ComUsu.itemsAenviar(j).ElementalTags)
+        If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.ElementalTags) Then
+            Call LogSafeCommerceTransfer(GetUserRealName(UserIndex), GetUserRealName(OtroUserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.ElementalTags)
+        End If
     Next j
     Call UpdateUserInv(True, UserIndex, 0)
     Call UpdateUserInv(True, OtroUserIndex, 0)
