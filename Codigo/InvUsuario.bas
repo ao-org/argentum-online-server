@@ -1810,6 +1810,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If AddSkin(UserIndex, .invent.Object(Slot).ObjIndex) Then
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             Call UpdateSingleItemInv(UserIndex, Slot, False)
+                            Call LogSkinConsumption(.Id, .name, ObjIndex, 1)
                         End If
                     Else
                         Call WriteLocaleMsg(UserIndex, MSG_TIENES_SKIN, e_FontTypeNames.FONTTYPE_INFO) 'Msg2101=Ya tienes este skin.
