@@ -54,7 +54,7 @@ Public Function IsValidCharacterCreationCity(ByVal CityId As e_City) As Boolean
     End Select
 End Function
 
-Public Sub goHome(ByVal UserIndex As Integer)
+Public Sub goHome(ByVal UserIndex As Integer, ByVal HomeCostGLD As Long)
     On Error GoTo goHome_Err
     With UserList(UserIndex)
         If .flags.Muerto = 1 Then
@@ -74,7 +74,9 @@ Public Sub goHome(ByVal UserIndex As Integer)
             End If
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, .Counters.TimerBarra * 100, False, , .pos.x, .pos.y))
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
+            Dim HomeMessageExtra As String
+            HomeMessageExtra = .Counters.TimerBarra & Chr$(172) & HomeCostGLD
+            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, HomeMessageExtra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos. Se descontaron ¬2 monedas de oro.
             .Accion.Particula = e_GraphicEffects.Runa
             .Accion.AccionPendiente = True
             .Accion.TipoAccion = e_AccionBarra.Hogar
