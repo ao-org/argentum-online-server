@@ -111,6 +111,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "MaxJailTime", CLng(val(reader.GetValue("CONFIGURACIONES", "MaxJailTime", "8640")))
     mSettings.Add "DropMult", CInt(val(reader.GetValue("CONFIGURACIONES", "DropMult", 1)))
     mSettings.Add "TrapParaliceDuration", CLng(val(reader.GetValue("CONFIGURACIONES", "TrapParaliceDuration", "10")))
+    mSettings.Add "TrapPlacementRange", CLng(val(reader.GetValue("CONFIGURACIONES", "TrapPlacementRange", "6")))
     mSettings.Add "CardBronceQuantity", CLng(val(reader.GetValue("COLLECTIBLECARDS", "CardBronceQuantity", "1")))
     mSettings.Add "CardSilverQuantity", CLng(val(reader.GetValue("COLLECTIBLECARDS", "CardSilverQuantity", "3")))
     mSettings.Add "CardGoldQuantity", CLng(val(reader.GetValue("COLLECTIBLECARDS", "CardGoldQuantity", "5")))
