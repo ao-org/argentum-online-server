@@ -812,10 +812,12 @@ Sub LoadBalance()
     BalanceIni.Initialize DatPath & "Balance.dat"
     Dim i, j As Long
     Dim SearchVar As String
+    Dim Class As e_Class
     'Modificadores de Clase
     For i = 1 To NUMCLASES
-        SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
-        With ModClase(i)
+        Class = ClassMaskFromIndex(i)
+        SearchVar = Replace$(Tilde(ListaClases(Class)), " ", vbNullString)
+        With ModClase(Class)
             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
@@ -1319,6 +1321,7 @@ Sub LoadOBJData()
             .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
             .def = (.MinDef + .MaxDef) / 2
             .ClaseTipo = val(Leer.GetValue(ObjKey, "ClaseTipo"))
+            .PermittedClasses = CLng(val(Leer.GetValue(ObjKey, "PermittedClasses")))
             .RazaEnana = val(Leer.GetValue(ObjKey, "RazaEnana"))
             .RazaDrow = val(Leer.GetValue(ObjKey, "RazaDrow"))
             .RazaElfa = val(Leer.GetValue(ObjKey, "RazaElfa"))
@@ -1346,14 +1349,7 @@ Sub LoadOBJData()
             For i = 1 To NUMRAZAS
                 ListaRazasObjDat(i) = RaceToString(i)
             Next i
-            For i = 1 To NUMCLASES
-                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
-                n = 1
-                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
-                    n = n + 1
-                Loop
-                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
-            Next i
+
             For i = 1 To NUMRAZAS
                 s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
@@ -1496,7 +1492,7 @@ Sub LoadMapData()
     #Else
         If RunningInVB() Then
             'VB runs out of memory when debugging
-            NumMaps = 550
+            NumMaps = 400
         Else
             NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
