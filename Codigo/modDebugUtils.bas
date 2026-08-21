@@ -625,6 +625,8 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eLobbyCommand"
         Case ClientPacketID.eFeatureToggle
             PacketID_to_string = "eFeatureToggle"
+        Case ClientPacketID.eHooClientCapabilities
+            PacketID_to_string = "eHooClientCapabilities"
         Case ClientPacketID.eActionOnGroupFrame
             PacketID_to_string = "eActionOnGroupFrame"
         Case ClientPacketID.eSetHotkeySlot

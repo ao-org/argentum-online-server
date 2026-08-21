@@ -269,6 +269,7 @@ End Function
 
 Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByVal name As String)
     On Error GoTo Prepare_ConnectUser_Err
+    Call ResetHooClientCapabilities(UserIndex)
     With UserList(UserIndex)
         .flags.Escondido = 0
         Call ClearNpcRef(.flags.TargetNPC)
