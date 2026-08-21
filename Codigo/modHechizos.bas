@@ -2603,7 +2603,7 @@ Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal ski
             Call SendData( _
                SendTarget.ToPCAliveArea, TargetIndex, _
                PrepareMessageParticleFXWithDestino( _
-               UserList(TargetIndex).Char.charindex, _
+               UserList(UserIndex).Char.charindex, _
                UserList(TargetIndex).Char.charindex, _
                Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
                Hechizos(h).TimeParticula, Hechizos(h).wav, 0, _
@@ -2654,19 +2654,17 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
         If dead Then
             If Hechizos(h).ParticleViaje > 0 Then
                 If skin > 0 Then
-                    Call SendData( _
-                        SendTarget.ToNPCAliveArea, TargetIndex, _
-                        PrepareMessageFxPiso( _
-                            skin, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+                    fxId = skin
                 Else
-                    Call SendData( _
-                        SendTarget.ToNPCAliveArea, TargetIndex, _
-                        PrepareMessageParticleFXWithDestinoXY( _
-                            NpcList(TargetIndex).Char.charindex, _
-                            Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, _
-                            Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
-                            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+                    fxId = Hechizos(h).FXgrh
                 End If
+                Call SendData( _
+                    SendTarget.ToNPCAliveArea, TargetIndex, _
+                    PrepareMessageParticleFXWithDestinoXY( _
+                        UserList(UserIndex).Char.charindex, _
+                        Hechizos(h).ParticleViaje, fxId, _
+                        Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
+                        UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
             Else
                 If skin > 0 Then
                     fxId = skin
@@ -2681,19 +2679,17 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
         Else
             If Hechizos(h).ParticleViaje > 0 Then
                 If skin > 0 Then
-                    Call SendData( _
-                        SendTarget.ToNPCAliveArea, TargetIndex, _
-                        PrepareMessageCreateFX( _
-                            NpcList(TargetIndex).Char.charindex, skin, Hechizos(h).loops))
+                    fxId = skin
                 Else
-                    Call SendData( _
-                        SendTarget.ToNPCAliveArea, TargetIndex, _
-                        PrepareMessageParticleFXWithDestino( _
-                            NpcList(TargetIndex).Char.charindex, _
-                            NpcList(TargetIndex).Char.charindex, _
-                            Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, _
-                            Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+                    fxId = Hechizos(h).FXgrh
                 End If
+                Call SendData( _
+                    SendTarget.ToNPCAliveArea, TargetIndex, _
+                    PrepareMessageParticleFXWithDestino( _
+                        UserList(UserIndex).Char.charindex, _
+                        NpcList(TargetIndex).Char.charindex, _
+                        Hechizos(h).ParticleViaje, fxId, _
+                        Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
             Else
                 If skin > 0 Then
                     fxId = skin
@@ -2714,7 +2710,7 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
             Call SendData( _
                 SendTarget.ToNPCAliveArea, TargetIndex, _
                 PrepareMessageParticleFXWithDestinoXY( _
-                    NpcList(TargetIndex).Char.charindex, _
+                    UserList(UserIndex).Char.charindex, _
                     Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
                     Hechizos(h).TimeParticula, Hechizos(h).wav, 0, _
                     NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
@@ -2723,7 +2719,7 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
                 Call SendData( _
                     SendTarget.ToNPCAliveArea, TargetIndex, _
                     PrepareMessageParticleFXWithDestino( _
-                        NpcList(TargetIndex).Char.charindex, _
+                        UserList(UserIndex).Char.charindex, _
                         NpcList(TargetIndex).Char.charindex, _
                         Hechizos(h).ParticleViaje, Hechizos(h).Particle, _
                         Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
