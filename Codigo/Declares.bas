@@ -2974,6 +2974,16 @@ End Type
 
 Public Const HotKeyCount As Integer = 10
 
+Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
+Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
+Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
+
+Public Type t_HooClientCapabilities
+    Negotiated As Boolean
+    ProtocolVersion As Byte
+    CapabilityMask As Long
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
     name As String
@@ -3009,6 +3019,7 @@ Public Type t_User
     Invent_Skins                As tSkinInventario
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
+    HooCapabilities As t_HooClientCapabilities
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters

@@ -269,6 +269,7 @@ End Function
 
 Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByVal name As String)
     On Error GoTo Prepare_ConnectUser_Err
+    Call ResetHooClientCapabilities(UserIndex)
     With UserList(UserIndex)
         .flags.Escondido = 0
         Call ClearNpcRef(.flags.TargetNPC)
@@ -1921,7 +1922,8 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
             If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then
                 UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
             End If
-            If AttackerStatus = e_Facciones.Ciudadano Or AttackerStatus = e_Facciones.Armada Or AttackerStatus = e_Facciones.consejo Then
+            If AttackerStatus = e_Facciones.Ciudadano Or AttackerStatus = e_Facciones.Armada Or AttackerStatus = e_Facciones.consejo _
+                Or (Status(Muerto) = e_Facciones.Criminal And (AttackerStatus = e_Facciones.Criminal Or AttackerStatus = e_Facciones.Caos Or AttackerStatus = e_Facciones.concilio)) Then
                 Call HandleFactionScoreForKill(Atacante, Muerto)
             End If
         End If
@@ -1957,6 +1959,15 @@ Private Function ShouldApplyFactionBonus(ByVal attackerIndex As Integer, ByVal T
     ShouldApplyFactionBonus = caosVsArmadaOrConsejo Or concilioVsArmadaOrConsejo Or armadaVsCaosOrConcilio Or consejoVsCaosOrConcilio
 End Function
 
+Private Function ShouldApplyCriminalTargetPenalty(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    Dim AttackerStatus As Byte
+    Dim TargetStatus   As Byte
+    AttackerStatus = UserList(attackerIndex).faccion.Status
+    TargetStatus = UserList(TargetIndex).faccion.Status
+    ShouldApplyCriminalTargetPenalty = (TargetStatus = e_Facciones.Criminal) And _
+        (AttackerStatus = e_Facciones.Criminal Or AttackerStatus = e_Facciones.Caos Or AttackerStatus = e_Facciones.concilio)
+End Function
+
 Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
     On Error GoTo HandleFactionScoreForKill_Err
     Dim Score As Integer
@@ -1964,6 +1975,8 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
         Score = CalculateBaseFactionScore(UserIndex, TargetIndex)
         If ShouldApplyFactionBonus(UserIndex, TargetIndex) Then
             Score = Int(Score * 1.5)
+        ElseIf ShouldApplyCriminalTargetPenalty(UserIndex, TargetIndex) Then
+            Score = Int(Score * 0.5)
         End If
         If Score > 20 Then
             Score = 20

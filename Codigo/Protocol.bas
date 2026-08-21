@@ -909,6 +909,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleAntiMacroMessage(UserIndex)
         Case ClientPacketID.eModifyCastleWhiteList
             Call HandleModifyCastleWhiteList(UserIndex)
+        Case ClientPacketID.eHooClientCapabilities
+            Call HandleHooClientCapabilities(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -943,6 +945,59 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketID_to_string(PacketId), 100)
     HandleIncomingData = True
 End Function
+
+Public Sub ResetHooClientCapabilities(ByVal UserIndex As Integer)
+    With UserList(UserIndex).HooCapabilities
+        .Negotiated = False
+        .ProtocolVersion = 0
+        .CapabilityMask = 0
+    End With
+End Sub
+
+Public Function UserSupportsHooCapability(ByVal UserIndex As Integer, ByVal Capability As Long) As Boolean
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Function
+    With UserList(UserIndex).HooCapabilities
+        UserSupportsHooCapability = .Negotiated And ((.CapabilityMask And Capability) = Capability)
+    End With
+End Function
+
+Public Function UserSupportsAdjacentCharacters(ByVal UserIndex As Integer) As Boolean
+    UserSupportsAdjacentCharacters = IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_ADJACENT_CHARACTERS_V1)
+End Function
+
+Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
+    If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
+    If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
+        AcceptedHooCapabilityMask = RequestedMask And HOO_CAP_ADJACENT_CHARACTERS_V1
+    End If
+End Function
+
+Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
+    On Error GoTo HandleHooClientCapabilities_Err
+    Dim ProtocolVersion As Byte
+    Dim RequestedMask As Long
+    Dim AcceptedMask As Long
+    ProtocolVersion = reader.ReadInt8
+    RequestedMask = reader.ReadInt32
+    Call ResetHooClientCapabilities(UserIndex)
+    If ProtocolVersion = HOO_CAP_PROTOCOL_VERSION Then
+        AcceptedMask = AcceptedHooCapabilityMask(ProtocolVersion, RequestedMask)
+        With UserList(UserIndex).HooCapabilities
+            .Negotiated = True
+            .ProtocolVersion = ProtocolVersion
+            .CapabilityMask = AcceptedMask
+        End With
+    End If
+    Call LogInfoServidor("HOO capabilities: user=" & CStr(UserIndex) & _
+        " protocol=" & CStr(ProtocolVersion) & _
+        " requested=" & CStr(RequestedMask) & _
+        " accepted=" & CStr(AcceptedMask))
+    Exit Sub
+HandleHooClientCapabilities_Err:
+    Call ResetHooClientCapabilities(UserIndex)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooClientCapabilities", Erl)
+End Sub
 
 #If PYMMO = 0 Then
     Private Sub HandleCreateAccount(ByVal ConnectionID As Long)
