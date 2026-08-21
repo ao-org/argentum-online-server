@@ -593,9 +593,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1
-        Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
-        Hechizos(Hechizo).RequiereInstrumento = val(Leer.GetValue("Hechizo" & Hechizo, "RequiereInstrumento"))
-        Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
+        Hechizos(Hechizo).MagicPowerNeeded = val(Leer.GetValue("Hechizo" & Hechizo, "MagicPowerNeeded"))
         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
         Hechizos(Hechizo).MaxLevelCasteable = val(Leer.GetValue("Hechizo" & Hechizo, "MaxLevelCasteable"))
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
@@ -1026,7 +1024,6 @@ Sub LoadOBJData()
             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
             .MaxLEV = val(Leer.GetValue(ObjKey, "MaxLEV"))
-            .InstrumentoRequerido = val(Leer.GetValue(ObjKey, "InstrumentoRequerido"))
             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))
@@ -1089,6 +1086,7 @@ Sub LoadOBJData()
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1107,7 +1105,7 @@ Sub LoadOBJData()
                     .ExtraCritAndStabChance = val(Leer.GetValue(ObjKey, "ExtraCritAndStabChance"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
-                    .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
@@ -1248,6 +1246,7 @@ Sub LoadOBJData()
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otMinerals
                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                 Case e_OBJType.otUsableOntarget
@@ -1803,13 +1802,6 @@ Sub LoadPrivateKey()
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
-End Sub
-
-Sub LoadMD5()
-    Open IniPath & "ClienteMD5.txt" For Input As #1
-    Line Input #1, Md5Cliente
-    Close #1
-    Md5Cliente = Replace(Md5Cliente, " ", "")
 End Sub
 
 Sub LoadSini()

@@ -37,15 +37,13 @@ Public Enum e_QuestPermittedFactions
     ChaosCouncil = 32
 End Enum
  
-
-'Constantes de las quests
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
     On Error GoTo TieneQuest_Err
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Devuelve el slot de UserQuests en que tiene la quest QuestNumber. En caso contrario devuelve 0.
-    'Last modified: 27/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i As Integer
+    If QuestNumber <= 0 Then
+        TieneQuest = 0
+        Exit Function
+    End If
     For i = 1 To MAXUSERQUESTS
         If UserList(UserIndex).QuestStats.Quests(i).QuestIndex = QuestNumber Then
             TieneQuest = i
@@ -490,39 +488,42 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     On Error GoTo EnviarQuest_Err
     Dim NpcIndex As Integer
     Dim tmpByte  As Byte
+    Dim i As Long, j As Long
+    Dim q As Byte
+
     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then Exit Sub
     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
+
     'Esta el personaje en la distancia correcta?
     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
-        ' Msg8=Estas demasiado lejos.
         Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
-    'El NPC hace quests?
-    If NpcList(NpcIndex).NumQuest = 0 Then
-        Call WriteLocaleChatOverHead(UserIndex, "1341", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1341=No tengo ninguna misión para ti.
-        Exit Sub
-    End If
-    'Hago un for para chequear si alguna de las misiones que da el NPC ya se completo.
-    Dim q As Byte
-    Dim i As Long, j As Long
+
+    'PRIMERO: chequeamos si este NPC es el TalkTo de alguna quest que el jugador tenga activa.
+    'Esto es independiente de NumQuest: NumQuest solo indica cuántas misiones OFRECE el NPC
+    'para mostrar en el panel, no si puede recibir la entrega de una quest de otro NPC.
     For i = 1 To UBound(QuestList)
         If QuestList(i).TalkTo > 0 And QuestList(i).TalkTo = NpcList(NpcIndex).Numero Then
             tmpByte = TieneQuest(UserIndex, i)
             If tmpByte > 0 Then
-                For j = 1 To MAXUSERQUESTS
-                    If FinishQuestCheck(UserIndex, i, tmpByte) Then
-                        Call FinishQuest(UserIndex, i, tmpByte)
-                        Exit Sub
-                    End If
-                Next j
+                If FinishQuestCheck(UserIndex, i, tmpByte) Then
+                    Call FinishQuest(UserIndex, i, tmpByte)
+                    Exit Sub
+                End If
             End If
         End If
     Next i
+
+    'El NPC ofrece quests propias?
+    If NpcList(NpcIndex).NumQuest = 0 Then
+        Call WriteLocaleChatOverHead(UserIndex, "1341", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1341=No tengo ninguna misión para ti.
+        Exit Sub
+    End If
+
     For q = 1 To NpcList(NpcIndex).NumQuest
         tmpByte = TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q))
         If tmpByte Then
-            'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
             If FinishQuestCheck(UserIndex, NpcList(NpcIndex).QuestNumber(q), tmpByte) Then
                 Call FinishQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q), tmpByte)
                 Exit Sub

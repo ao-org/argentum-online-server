@@ -1682,7 +1682,18 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     UserList(UserIndex).Stats.SkillDirty(Skill) = True
-    Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(Skill) & "¬" & UserList(UserIndex).Stats.UserSkills(Skill))
+    Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(skill) & Chr$(172) & UserList(UserIndex).Stats.UserSkills(skill))
+
+    With UserList(UserIndex)
+        If .Char.charindex > 0 Then
+            If IsVisible(UserList(UserIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbYellow))
+            Else
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar("+1 " & SkillsNames(skill), .Char.charindex, vbYellow))
+            End If
+        End If
+    End With
+
     Dim BonusExp As Long
     BonusExp = 5& * SvrConfig.GetValue("ExpMult")
     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
@@ -1871,7 +1882,7 @@ Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal killerIndex 
         TargetPos = Min(.flags.LastKillerIndex, MaxRecentKillToStore)
         Dim i As Integer
         For i = 0 To TargetPos
-            If .flags.RecentKillers(i).UserId = UserList(killerIndex).Id And (GlobalFrameTime - .flags.RecentKillers(i).KillTime) < FactionReKillTime Then
+            If .flags.RecentKillers(i).UserId = UserList(killerIndex).Id And (TicksElapsed(.flags.RecentKillers(i).KillTime, GlobalFrameTime)) < FactionReKillTime Then
                 AlreadyKilledBy = True
                 Exit Function
             End If
@@ -1969,13 +1980,13 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
         If Score > 20 Then
             Score = 20
         End If
-        If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
+        If TicksElapsed(.flags.LastHelpByTime, GlobalFrameTime) < AssistHelpValidTime Then
             If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
             End If
         End If
-        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+        If TicksElapsed(UserList(TargetIndex).flags.LastAttackedByUserTime, GlobalFrameTime) < AssistDamageValidTime Then
             If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)

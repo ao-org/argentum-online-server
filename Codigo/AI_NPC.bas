@@ -1385,7 +1385,7 @@ UsuarioAtacableConMelee_Err:
 End Function
 
 Private Function CanCastSpell(ByRef Npc As t_Npc, ByVal Slot As Integer) As Boolean
-    CanCastSpell = GlobalFrameTime - Npc.Spells(Slot).lastUse > (Npc.Spells(Slot).Cd * 1000)
+    CanCastSpell = TicksElapsed(Npc.Spells(Slot).lastUse, GlobalFrameTime) > (Npc.Spells(Slot).Cd * 1000)
 End Function
 
 Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long

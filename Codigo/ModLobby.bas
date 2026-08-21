@@ -597,7 +597,7 @@ End Function
 Public Function WaitForPlayersTimeUp(ByRef instance As t_Lobby) As Boolean
     'global events waiting time is handled by game masters
     If instance.IsGlobal Then Exit Function
-    WaitForPlayersTimeUp = GlobalFrameTime - instance.MapOpenTime > WaitingForPlayersTime
+    WaitForPlayersTimeUp = TicksElapsed(instance.MapOpenTime, GlobalFrameTime) > WaitingForPlayersTime
 End Function
 
 Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_Lobby)
@@ -611,7 +611,7 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
                     If IsValidUserRef(instance.Players(i).User) Then
                         Dim Seconds As Long
                         Dim Minutes As Long
-                        Seconds = (WaitingForPlayersTime - (GlobalFrameTime - instance.MapOpenTime)) / 1000
+                        Seconds = (WaitingForPlayersTime - (TicksElapsed(instance.MapOpenTime, GlobalFrameTime))) / 1000
                         Minutes = Seconds / 60
                         Seconds = Seconds - (Minutes * 60)
                         Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_ESPERANDO_JUGADORES_PARTIDA_INICIARA_CUANDO_LLENE_SALA, GetTimeString(Minutes, Seconds), _

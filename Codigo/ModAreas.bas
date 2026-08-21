@@ -30,10 +30,10 @@ Option Explicit
 
 '>>>>>>AREAS>>>>>AREAS>>>>>>>>AREAS>>>>>>>AREAS>>>>>>>>>>
 Public Type t_AreaInfo
-    AreaPerteneceX As Integer
-    AreaPerteneceY As Integer
-    AreaReciveX As Integer
-    AreaReciveY As Integer
+    AreaPerteneceX As Long
+    AreaPerteneceY As Long
+    AreaReciveX As Long
+    AreaReciveY As Long
     MinX As Integer '-!!!
     MinY As Integer '-!!!
     AreaID As Long
@@ -52,13 +52,26 @@ End Type
 
 Public Const USER_NUEVO               As Byte = 255
 Private Const AREA_DIM                As Byte = 12
+#If PYMMO = 1 Then
+    Private Const AREA_RADIUS_X       As Byte = 4
+    Private Const AREA_RADIUS_Y       As Byte = 3
+#Else
+    Private Const AREA_RADIUS_X       As Byte = 1
+    Private Const AREA_RADIUS_Y       As Byte = 1
+#End If
+Private Const AREA_CELLS_X            As Byte = AREA_RADIUS_X * 2 + 1
+Private Const AREA_CELLS_Y            As Byte = AREA_RADIUS_Y * 2 + 1
+Private Const AREA_TILE_WIDTH         As Integer = AREA_DIM * AREA_CELLS_X
+Private Const AREA_TILE_HEIGHT        As Integer = AREA_DIM * AREA_CELLS_Y
+Private Const MAX_AREA_CELL           As Byte = 8
 'Cuidado:
 ' ¡¡¡LAS AREAS ESTÁN HARDCODEADAS!!!
 Private CurDay                        As Byte
 Private CurHour                       As Byte
 Private AreasInfo(1 To 100, 1 To 100) As Byte
 Private PosToArea(1 To 100)           As Byte
-Private AreasRecive(10)               As Integer
+Private AreasReciveX(0 To MAX_AREA_CELL) As Long
+Private AreasReciveY(0 To MAX_AREA_CELL) As Long
 Public ConnGroups()                   As t_ConnGroup
  
 Public Sub InitAreas()
@@ -66,8 +79,9 @@ Public Sub InitAreas()
     Dim LoopC As Long
     Dim LoopX As Long
     ' Setup areas...
-    For LoopC = 0 To 9
-        AreasRecive(LoopC) = (2 ^ LoopC) Or IIf(LoopC <> 0, 2 ^ (LoopC - 1), 0) Or IIf(LoopC <> AREA_DIM, 2 ^ (LoopC + 1), 0)
+    For LoopC = 0 To MAX_AREA_CELL
+        AreasReciveX(LoopC) = BuildAreaReceiveMask(LoopC, AREA_RADIUS_X)
+        AreasReciveY(LoopC) = BuildAreaReceiveMask(LoopC, AREA_RADIUS_Y)
     Next LoopC
     For LoopC = 1 To 100
         For LoopX = 1 To 100
@@ -89,6 +103,19 @@ Public Sub InitAreas()
 InitAreas_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 End Sub
+
+Private Function BuildAreaReceiveMask(ByVal CenterCell As Long, ByVal Radius As Long) As Long
+    Dim Cell As Long
+    Dim FirstCell As Long
+    Dim LastCell As Long
+    FirstCell = CenterCell - Radius
+    If FirstCell < 0 Then FirstCell = 0
+    LastCell = CenterCell + Radius
+    If LastCell > MAX_AREA_CELL Then LastCell = MAX_AREA_CELL
+    For Cell = FirstCell To LastCell
+        BuildAreaReceiveMask = BuildAreaReceiveMask Or CLng(2 ^ Cell)
+    Next Cell
+End Function
  
 Public Sub AreasOptimizacion()
     On Error GoTo AreasOptimizacion_Err
@@ -130,38 +157,38 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         If head = e_Heading.NORTH Then
             MaxY = MinY - 1
             MinY = MinY - AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = e_Heading.SOUTH Then
-            MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
-            MinY = MinY + AREA_DIM * 3 '+ 27
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MaxY = MinY + AREA_TILE_HEIGHT + AREA_DIM - 1
+            MinY = MinY + AREA_TILE_HEIGHT
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
+            .AreasInfo.MinY = CInt(MinY - AREA_TILE_HEIGHT + AREA_DIM)
         ElseIf head = e_Heading.WEST Then
             MaxX = MinX - 1
             MinX = MinX - AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = e_Heading.EAST Then
-            MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
-            MinX = MinX + AREA_DIM * 3 '+ 27
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2) '- 18)
+            MaxX = MinX + AREA_TILE_WIDTH + AREA_DIM - 1
+            MinX = MinX + AREA_TILE_WIDTH
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
+            .AreasInfo.MinX = CInt(MinX - AREA_TILE_WIDTH + AREA_DIM)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = USER_NUEVO Then
             'Esto pasa por cuando cambiamos de mapa o logeamos...
-            MinY = ((.pos.y \ AREA_DIM) - 1) * AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            MinX = ((.pos.x \ AREA_DIM) - 1) * AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MinY = ((.pos.y \ AREA_DIM) - AREA_RADIUS_Y) * AREA_DIM
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
+            MinX = ((.pos.x \ AREA_DIM) - AREA_RADIUS_X) * AREA_DIM
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = 5 Then
-            MaxX = MinX + AREA_DIM * 3 - 1
-            MaxY = MinY + AREA_DIM * 3 - 1
+            MaxX = MinX + AREA_TILE_WIDTH - 1
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
         End If
         If MinY < 1 Then MinY = 1
         If MinX < 1 Then MinX = 1
@@ -210,10 +237,10 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         Next x
         'Precalculados :P
         TempInt = .pos.x \ AREA_DIM
-        .AreasInfo.AreaReciveX = AreasRecive(TempInt)
+        .AreasInfo.AreaReciveX = AreasReciveX(TempInt)
         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
         TempInt = .pos.y \ AREA_DIM
-        .AreasInfo.AreaReciveY = AreasRecive(TempInt)
+        .AreasInfo.AreaReciveY = AreasReciveY(TempInt)
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
     End With
@@ -258,33 +285,33 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
         If head = e_Heading.NORTH Then
             MaxY = MinY - 1
             MinY = MinY - AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = e_Heading.SOUTH Then
-            MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
-            MinY = MinY + AREA_DIM * 3 '+ 27
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MaxY = MinY + AREA_TILE_HEIGHT + AREA_DIM - 1
+            MinY = MinY + AREA_TILE_HEIGHT
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
+            .AreasInfo.MinY = CInt(MinY - AREA_TILE_HEIGHT + AREA_DIM)
         ElseIf head = e_Heading.WEST Then
             MaxX = MinX - 1
             MinX = MinX - AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = e_Heading.EAST Then
-            MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
-            MinX = MinX + AREA_DIM * 3 '+ 27
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2) '- 18)
+            MaxX = MinX + AREA_TILE_WIDTH + AREA_DIM - 1
+            MinX = MinX + AREA_TILE_WIDTH
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
+            .AreasInfo.MinX = CInt(MinX - AREA_TILE_WIDTH + AREA_DIM)
             .AreasInfo.MinY = CInt(MinY)
         ElseIf head = USER_NUEVO Then
             'Esto pasa por cuando cambiamos de mapa o logeamos...
-            MinY = ((.pos.y \ AREA_DIM) - 1) * AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            MinX = ((.pos.x \ AREA_DIM) - 1) * AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+            MinY = ((.pos.y \ AREA_DIM) - AREA_RADIUS_Y) * AREA_DIM
+            MaxY = MinY + AREA_TILE_HEIGHT - 1
+            MinX = ((.pos.x \ AREA_DIM) - AREA_RADIUS_X) * AREA_DIM
+            MaxX = MinX + AREA_TILE_WIDTH - 1
             .AreasInfo.MinX = CInt(MinX)
             .AreasInfo.MinY = CInt(MinY)
             appear = 0
@@ -303,10 +330,10 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
         End If
         'Precalculados :P
         TempInt = .pos.x \ AREA_DIM
-        .AreasInfo.AreaReciveX = AreasRecive(TempInt)
+        .AreasInfo.AreaReciveX = AreasReciveX(TempInt)
         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
         TempInt = .pos.y \ AREA_DIM
-        .AreasInfo.AreaReciveY = AreasRecive(TempInt)
+        .AreasInfo.AreaReciveY = AreasReciveY(TempInt)
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
     End With

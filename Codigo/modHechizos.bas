@@ -436,6 +436,7 @@ Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
     Next
     Exit Function
 ErrHandler:
+    Call Logging.TraceError(Err.Number, Err.Description, "modHechizos.TieneHechizo", Erl)
 End Function
 
 Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
@@ -638,33 +639,36 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             Exit Function
         End If
-        If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
-            If Hechizos(HechizoIndex).NeedStaff > 0 Then
-                If .invent.EquippedWeaponObjIndex = 0 Then
-                    'Msg781= Necesitás un báculo para lanzar este hechizo.
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BACULO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
-                End If
-                If ObjData(.invent.EquippedWeaponObjIndex).Power < Hechizos(HechizoIndex).NeedStaff Then
-                    'Msg782= Necesitás un báculo más poderoso para lanzar este hechizo.
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BACULO_MAS_PODEROSO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Function
-                End If
+        
+        If Not IsFeatureEnabled("remove-staff-requirements") Then
+            If Hechizos(HechizoIndex).MagicPowerNeeded > 0 Then
+                Select Case .clase
+                    Case e_Class.Mage
+                         If .invent.EquippedWeaponObjIndex = 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BACULO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Function
+                        End If
+                         If ObjData(.invent.EquippedWeaponObjIndex).Power < Hechizos(HechizoIndex).MagicPowerNeeded Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BACULO_MAS_PODEROSO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Function
+                         End If
+                
+                    Case e_Class.Druid, e_Class.Bard
+                        If .invent.EquippedRingAccesoryObjIndex = 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Function
+                        End If
+                         If ObjData(.invent.EquippedRingAccesoryObjIndex).Power < Hechizos(HechizoIndex).MagicPowerNeeded Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BACULO_MAS_PODEROSO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Function
+                         End If
+                    
+                    Case Else
+                        'nothing
+                End Select
             End If
         End If
-        If .clase = e_Class.Druid Or .clase = e_Class.Bard Then
-            If Hechizos(HechizoIndex).RequiereInstrumento > 0 Then
-                If .invent.EquippedRingAccesoryObjIndex = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
-                    Exit Function
-                Else
-                    If ObjData(.invent.EquippedRingAccesoryObjIndex).InstrumentoRequerido <> 1 Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_INSTRUMENTO_LANZAR_HECHIZO, e_FontTypeNames.FONTTYPE_INFO) 'Msg2250=Necesitás un instrumento musical para lanzar este hechizo.
-                        Exit Function
-                    End If
-                End If
-            End If
-        End If
+        
         If Hechizos(HechizoIndex).RequireWeaponType > 0 Then
             If .invent.EquippedWeaponObjIndex = 0 Then
                 Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
