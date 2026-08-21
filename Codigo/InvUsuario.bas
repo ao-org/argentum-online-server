@@ -3158,7 +3158,7 @@ End Sub
 
 Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     With UserList(UserIndex)
-        If Distance(TileX, TileY, .pos.x, .pos.y) > 3 Then
+        If Distance(TileX, TileY, .pos.x, .pos.y) > SvrConfig.GetValue("TrapPlacementRange") Then
             Call WriteLocaleMsg(UserIndex, MsgToFar, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
