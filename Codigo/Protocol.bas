@@ -978,7 +978,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
     Dim ProtocolVersion As Byte
     Dim RequestedMask As Long
     Dim AcceptedMask As Long
-    ProtocolVersion = reader.ReadByte
+    ProtocolVersion = reader.ReadInt8
     RequestedMask = reader.ReadInt32
     Call ResetHooClientCapabilities(UserIndex)
     If ProtocolVersion = HOO_CAP_PROTOCOL_VERSION Then
