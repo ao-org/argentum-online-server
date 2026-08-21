@@ -321,18 +321,19 @@ Public Enum e_PlayerType
 End Enum
 
 Public Enum e_Class
-    Mage = 1    'Mago
-    Cleric      'Clérigo
-    Warrior     'Guerrero
-    Assasin     'Asesino
-    Bard        'Bardo
-    Druid       'Druida
-    Paladin     'Paladín
-    Hunter      'Cazador
-    Trabajador  'Trabajador
-    Pirat       'Pirata
-    Thief       'Ladron
-    Bandit      'Bandido
+    Mage = &H1
+    Cleric = &H2
+    Warrior = &H4
+    Assasin = &H8
+    Bard = &H10
+    Druid = &H20
+    Paladin = &H40
+    Hunter = &H80
+    Trabajador = &H100
+    Pirat = &H200
+    Thief = &H400
+    Bandit = &H800
+    AllClasses = &HFFF
 End Enum
 
 Public Enum e_City
@@ -2126,7 +2127,7 @@ Public Type t_Quest
     NextQuest As String
     DescFinal As String
     RequiredLevel As Byte
-    RequiredClass() As Byte
+    RequiredClass() As Long
     RequiredClassesCount As Byte
     LimitLevel As Byte
     RequiredQuest As Integer 'Changed in order to develop more than 255 quests
@@ -2389,8 +2390,8 @@ Public Type t_ObjData
     SkHerreria As Integer
     SkCarpinteria As Integer
     texto As String
-    'Clases que no tienen permitido usar este obj
-    ClaseProhibida(1 To NUMCLASES) As e_Class
+    'Mascara de clases que tienen permitido usar este obj
+    PermittedClasses As Long
     'Razas que no tienen permitido usar este obj
     RazaProhibida(1 To NUMRAZAS) As e_Raza
     ClasePermitida As String
@@ -3570,7 +3571,7 @@ Public ULTIMAVERSION                          As String
 Public backup                                 As Boolean ' TODO: Se usa esta variable ?
 Public ListaRazas(1 To NUMRAZAS)              As String
 Public SkillsNames(1 To NUMSKILLS)            As String
-Public ListaClases(1 To NUMCLASES)            As String
+Public ListaClases(1 To e_Class.Bandit)       As String
 Public WeaponTypeNames(1 To eWeaponTypeCount) As String
 Public ListaAtributos(1 To NUMATRIBUTOS)      As String
 Public RecordUsuarios                         As Long
@@ -3651,7 +3652,7 @@ Public PecesEspeciales()                      As t_Obj
 Public PesoPeces()                            As Long
 Public RangosFaccion()                        As t_RangoFaccion
 Public RecompensasFaccion()                   As t_RecompensaFaccion
-Public ModClase(1 To NUMCLASES)               As t_ModClase
+Public ModClase(1 To e_Class.Bandit)          As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
 Public Crafteos                               As New Dictionary
 Public PoderCanas()                           As Integer

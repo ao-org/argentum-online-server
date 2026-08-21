@@ -1125,13 +1125,13 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                 Call WriteUpdateUserStats(UserIndex)
             Case e_EditOptions.eo_Class
                 For LoopC = 1 To NUMCLASES
-                    If Tilde(ListaClases(LoopC)) = Tilde(Arg1) Then Exit For
+                    If Tilde(ListaClases(ClassMaskFromIndex(LoopC))) = Tilde(Arg1) Then Exit For
                 Next LoopC
                 If LoopC > NUMCLASES Then
                     ' Msg543=Clase desconocida. Intente nuevamente.
                     Call WriteLocaleMsg(UserIndex, MSG_CLASE_DESCONOCIDA_INTENTE_NUEVAMENTE, e_FontTypeNames.FONTTYPE_INFO)
                 Else
-                    UserList(tUser.ArrayIndex).clase = LoopC
+                    UserList(tUser.ArrayIndex).clase = ClassMaskFromIndex(LoopC)
                 End If
             Case e_EditOptions.eo_Skills
                 If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero)) Then Exit Sub
