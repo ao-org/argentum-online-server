@@ -412,7 +412,7 @@ Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vb
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, vbNullString) ' Msg1844=Comercio cancelado por el otro usuario.
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
@@ -570,7 +570,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
@@ -639,7 +639,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUserByID", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
 End Function
@@ -651,14 +651,14 @@ Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
     ' Pick the font/type you prefer. Examples used in this codebase include FONTTYPE_INFO or FONTTYPE_GUILD.
     ' If your helper uses a different enum or function name, keep the same idea:
     '   SendData(ToUser, UserIndex, PrepareMessageConsoleMsg(msg, e_FontTypeNames.FONTTYPE_INFO))
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_FontTypeNames.FONTTYPE_INFO))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO))
 End Sub
 
 Sub SendMOTD(ByVal UserIndex As Integer)
     On Error GoTo SendMOTD_Err
     Dim j As Long
     For j = 1 To MaxLines
-        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
+        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
     Next j
     Call SendWelcomeUptime(UserIndex)
     Exit Sub

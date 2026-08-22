@@ -170,7 +170,7 @@ Sub IniciarInvasion(ByVal Index As Integer)
         .TiempoDeInicio = GetTickCountRaw()
         ' Enviamos info sobre la invasión a los usuarios en estos mapas
         Call EnviarInfoInvasion(Index)
-        Call MensajeGlobal(.Desc, e_FontTypeNames.FONTTYPE_New_Eventos)
+        Call MensajeGlobal(.Desc, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(150, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub
@@ -179,11 +179,11 @@ Sub FinalizarInvasion(ByVal Index As Integer)
     With Invasiones(Index)
         Dim Ganaron As Boolean
         If .VidaMuralla > 0 Then
-            Call MensajeGlobal(.MensajeGanaron, e_FontTypeNames.FONTTYPE_New_Eventos)
+            Call MensajeGlobal(.MensajeGanaron, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
             Ganaron = True
         Else
-            Call MensajeGlobal(.MensajePerdieron, e_FontTypeNames.FONTTYPE_New_Eventos)
+            Call MensajeGlobal(.MensajePerdieron, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         End If
         ' Limpiamos flags
@@ -215,7 +215,7 @@ Sub FinalizarInvasion(ByVal Index As Integer)
                         tUser = NameIndex(.username)
                         If IsValidUserRef(tUser) Then
                             ' Le damos el oro
-                            Call WriteConsoleMsg(tUser.ArrayIndex, PremioStr, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                            Call WriteConsoleMsg(tUser.ArrayIndex, PremioStr, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                             UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + OroGanado
                             Call WriteUpdateGold(tUser.ArrayIndex)
                         End If

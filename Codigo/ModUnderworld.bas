@@ -40,7 +40,7 @@ Public Sub MaybeSpawnUnderworldPortals()
                 DestinationPosition.y = UnderworldMapPool(i).y
                 Call CreateUnderworldTp(SourcePosition, DestinationPosition)
             Next i
-                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
+                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN))
                 Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Flames, 50, 50))
                 ALREADY_OPENED_PORTALS = True
         End If

@@ -244,7 +244,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     mDotInfo.RemoveEffect = True
     If mDotInfo.TargetRef.RefType = eUser Then
         If UserList(mDotInfo.TargetRef.ArrayIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(mDotInfo.TargetRef.ArrayIndex, MsgFallIntoTrap, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(mDotInfo.TargetRef.ArrayIndex, MsgFallIntoTrap, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Select Case EffectOverTime(mDotInfo.EotId).SubType
@@ -256,7 +256,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                                 TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                         trigger = True
                         If UserList(TargetIndex).ChatCombate = 1 Then
-                            Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                            Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
                         End If
                         If TargetType = eUser Then
                             Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
@@ -303,7 +303,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                 If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList( _
                         TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                 If UserList(TargetIndex).ChatCombate = 1 Then
-                    Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                    Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_VENENO, GetName(mDotInfo.TargetRef))
                 End If
                 If TargetType = eUser Then
                     Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)

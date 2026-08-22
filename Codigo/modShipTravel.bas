@@ -86,9 +86,9 @@ Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
         If UserList(tempIndex).ConnectionDetails.ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList( _
                 tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
             If Not GetPassSlot(tempIndex) > 0 Then
-                Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Else
-                Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         End If
     Next LoopC
@@ -119,7 +119,7 @@ Private Sub UpdateBarcoForgatNix()
             If User > 0 Then
                 ' Enviar usuario a Nix
                 Call WarpToLegalPos(User, NixDock.Map, NixDock.DestX, NixDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(User, MsgThanksForTravelNix, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         Next TileY
     Next TileX
@@ -133,12 +133,12 @@ Private Sub UpdateBarcoForgatNix()
                 ' Sacarle el pasaje y moverlo al barco navegando
                 PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgPassForgat, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                     Call QuitarUserInvItem(User, PassSlot, 1)
                     Call UpdateUserInv(False, User, PassSlot)
                     Call WarpToLegalPos(User, BarcoNavegandoForgatNix.Map, BarcoNavegandoForgatNix.DestX, BarcoNavegandoForgatNix.DestY, True)
                 Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
             End If
         Next TileY
@@ -168,7 +168,7 @@ Private Sub UpdateBarcoNixArghal()
             If User > 0 Then
                 ' Enviar al usuario a Arghal
                 Call WarpToLegalPos(User, ArghalDock.Map, ArghalDock.DestX, ArghalDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelArghal, e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(User, MsgThanksForTravelArghal, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         Next TileY
     Next TileX
@@ -182,12 +182,12 @@ Private Sub UpdateBarcoNixArghal()
                 ' Sacarle el pasaje y moverlo al barco navegando
                 PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgPassNix, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                     Call QuitarUserInvItem(User, PassSlot, 1)
                     Call UpdateUserInv(False, User, PassSlot)
                     Call WarpToLegalPos(User, BarcoNavegandoNixArghal.Map, BarcoNavegandoNixArghal.DestX, BarcoNavegandoNixArghal.DestY, True)
                 Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
             End If
         Next TileY
@@ -217,7 +217,7 @@ Private Sub UpdateBarcoArghalForgat()
             If User > 0 Then
                 ' Enviar al usuario a Forgat
                 Call WarpToLegalPos(User, ForgatDock.Map, ForgatDock.DestX, ForgatDock.DestY, True)
-                Call WriteLocaleMsg(User, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                Call WriteLocaleMsg(User, MsgThanksForTravelForgat, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         Next TileY
     Next TileX
@@ -231,12 +231,12 @@ Private Sub UpdateBarcoArghalForgat()
                 ' Sacarle el pasaje y moverlo al barco navegando
                 PassSlot = GetPassSlot(User)
                 If PassSlot > 0 Then
-                    Call WriteLocaleMsg(User, MsgPassArghal, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgPassArghal, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                     Call QuitarUserInvItem(User, PassSlot, 1)
                     Call UpdateUserInv(False, User, PassSlot)
                     Call WarpToLegalPos(User, BarcoNavegandoArghalForgat.Map, BarcoNavegandoArghalForgat.DestX, BarcoNavegandoArghalForgat.DestY, True)
                 Else
-                    Call WriteLocaleMsg(User, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    Call WriteLocaleMsg(User, MsgInvalidPass, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
             End If
         Next TileY
