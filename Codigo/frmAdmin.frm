@@ -108,7 +108,7 @@ Private Sub Command1_Click()
     Dim uUser As t_UserReference
     uUser = NameIndex(cboPjs.Text)
     If IsValidUserRef(uUser) Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_SIDO_ECHADO, UserList(uUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1641=Servidor » ¬1 ha sido echado.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_SIDO_ECHADO, UserList(uUser.ArrayIndex).name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1641=Servidor » ¬1 ha sido echado.
         Call CloseSocket(uUser.ArrayIndex)
     End If
     Exit Sub

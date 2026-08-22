@@ -610,7 +610,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal usernam
     If RS Is Nothing Then Exit Sub
     If Not RS.RecordCount = 0 Then
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             RS.MoveNext
         Wend
     End If
@@ -739,7 +739,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal username 
     Dim GuildRequestHistory As String
     Dim GuildHistory        As String
     If RS Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     GuildRequestHistory = GetUserGuildPedidosDatabase(username)

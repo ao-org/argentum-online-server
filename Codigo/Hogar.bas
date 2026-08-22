@@ -74,12 +74,12 @@ Public Sub goHome(ByVal UserIndex As Integer)
             End If
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, .Counters.TimerBarra * 100, False, , .pos.x, .pos.y))
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
+            Call WriteLocaleMsg(UserIndex, MSG_VOLVERAS_HOGAR_SEGUNDOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris, .Counters.TimerBarra) ' Msg1994=Volverás a tu hogar en ¬1 segundos.
             .Accion.Particula = e_GraphicEffects.Runa
             .Accion.AccionPendiente = True
             .Accion.TipoAccion = e_AccionBarra.Hogar
         Else
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_DEBES_ESTAR_MUERTO_PODER_UTILIZAR_COMANDO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_MUERTO_PODER_UTILIZAR_COMANDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1995=Debes estar muerto para poder utilizar este comando.
         End If
     End With
     Exit Sub
@@ -139,7 +139,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         End If
         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_HAS_REGRESADO_CIUDAD_ORIGEN, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.
+        Call WriteLocaleMsg(UserIndex, MSG_HAS_REGRESADO_CIUDAD_ORIGEN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, vbNullString) ' Msg1996=Has regresado a tu ciudad de origen.
         .flags.Traveling = 0
         .Counters.goHome = 0
     End With
