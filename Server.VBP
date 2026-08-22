@@ -108,6 +108,7 @@ Module=Unit_Crafting; Codigo\Tests\Unit_Crafting.bas
 Module=Unit_GameStatus; Codigo\Tests\Unit_GameStatus.bas
 Module=Unit_IniManager; Codigo\Tests\Unit_IniManager.bas
 Module=Unit_WorldTime; Codigo\Tests\Unit_WorldTime.bas
+Module=Unit_Weather; Codigo\Tests\Unit_Weather.bas
 Module=Unit_TimeFormat; Codigo\Tests\Unit_TimeFormat.bas
 Module=Unit_StringUtils; Codigo\Tests\Unit_StringUtils.bas
 Module=Unit_Spawn; Codigo\Tests\Unit_Spawn.bas

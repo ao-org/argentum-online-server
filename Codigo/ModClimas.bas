@@ -35,14 +35,43 @@ Public ServidorNublado     As Boolean
 Public ProbabilidadNublar  As Byte
 Public ProbabilidadLLuvia  As Byte
 
-Public Sub ResetMeteo()
+Public Function IsAtmosphericFogActive() As Boolean
+    IsAtmosphericFogActive = ServidorNublado Or Nieblando
+End Function
+
+Public Sub DetermineInitialWeatherSynchronization(ByRef SendRain As Boolean, ByRef SendSnow As Boolean, ByRef ToggleFog As Boolean)
+    SendRain = Lloviendo
+    SendSnow = Nebando
+    ToggleFog = IsAtmosphericFogActive()
+End Sub
+
+Public Sub DetermineWeatherResetNotifications(ByVal WasRaining As Boolean, ByVal WasSnowing As Boolean, ByVal WasFogActive As Boolean, ByRef NotifyRain As Boolean, ByRef NotifySnow As Boolean, ByRef NotifyFog As Boolean)
+    NotifyRain = WasRaining
+    NotifySnow = WasSnowing
+    NotifyFog = WasFogActive
+End Sub
+
+Public Sub ResetMeteo(Optional ByVal NotifyClients As Boolean = False)
     On Error GoTo ResetMeteo_Err
+    Dim NotifyRain As Boolean
+    Dim NotifySnow As Boolean
+    Dim NotifyFog As Boolean
+    Call DetermineWeatherResetNotifications(Lloviendo, Nebando, IsAtmosphericFogActive(), NotifyRain, NotifySnow, NotifyFog)
     Call AgregarAConsola("Servidor > Meteorologia reseteada")
     frmMain.TimerMeteorologia.Enabled = True
     frmMain.Truenos.Enabled = False
     TimerMeteorologico = 30
     ServidorNublado = False
+    Nieblando = False
     Lloviendo = False
+    Nebando = False
+    If NotifyClients Then
+        ' Fog has no explicit state in its packet: only toggle clients that
+        ' were known to have atmospheric fog active before this reset.
+        If NotifyFog Then Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
+        If NotifyRain Then Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
+        If NotifySnow Then Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
+    End If
     Exit Sub
 ResetMeteo_Err:
     Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
