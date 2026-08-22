@@ -100,7 +100,8 @@ Private Sub fTestWriteLoginExcistingChar()
 End Sub
 
 Private Sub fTestWriteLoginNewChar()
-    Dim app_major, app_minor, app_revision, race, gender, Class, body, head, home As Byte
+    Dim app_major, app_minor, app_revision, race, gender, body, head, home As Byte
+    Dim Class As e_Class
         
     app_major = 2
     app_minor = 0

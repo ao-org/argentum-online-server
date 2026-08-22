@@ -402,6 +402,26 @@ ErrHandler:
     Call LogError("Error producido al apagar las fogatas de " & x & "-" & y & " del mapa: " & MapaActual & "    -" & Err.Description)
 End Sub
 
+Public Function ClassMaskFromIndex(ByVal ClassIndex As Byte) As e_Class
+    On Error GoTo ClassMaskFromIndex_Err
+    If ClassIndex < 1 Or ClassIndex > NUMCLASES Then Exit Function
+    ClassMaskFromIndex = CLng(2 ^ (ClassIndex - 1))
+    Exit Function
+ClassMaskFromIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "General.ClassMaskFromIndex", Erl)
+End Function
+
+Public Function IsValidClass(ByVal Class As e_Class) As Boolean
+    On Error GoTo IsValidClass_Err
+    Select Case Class
+        Case e_Class.Mage, e_Class.Cleric, e_Class.Warrior, e_Class.Assasin, e_Class.Bard, e_Class.Druid, e_Class.Paladin, e_Class.Hunter, e_Class.Trabajador, e_Class.Pirat, e_Class.Thief, e_Class.Bandit
+            IsValidClass = True
+    End Select
+    Exit Function
+IsValidClass_Err:
+    Call TraceError(Err.Number, Err.Description, "General.IsValidClass", Erl)
+End Function
+
 Private Sub InicializarConstantes()
     On Error GoTo InicializarConstantes_Err
     LastBackup = Format$(Now, "Short Time")

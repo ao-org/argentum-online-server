@@ -78,7 +78,7 @@ Type t_Lobby
     Players() As PlayerInLobby
     SummonCoordinates As t_WorldPos
     RegisteredPlayers As Integer
-    ClassFilter As Integer 'check for e_Class or <= 0 for no filter
+    ClassFilter As Long 'check for e_Class or <= 0 for no filter
     State As e_LobbyState
     SummonAfterInscription As Boolean
     Scenario As IBaseScenario
@@ -245,7 +245,7 @@ Public Sub SetMaxLevel(ByRef instance As t_Lobby, ByVal level As Byte)
     instance.MaxLevel = level
 End Sub
 
-Public Sub SetClassFilter(ByRef instance As t_Lobby, ByVal Class As Integer)
+Public Sub SetClassFilter(ByRef instance As t_Lobby, ByVal Class As Long)
     instance.ClassFilter = Class
 End Sub
 

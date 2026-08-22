@@ -122,10 +122,12 @@ Public Sub CargarEquipamientoInicial()
     Set Ini = New clsIniManager
     Call Ini.Initialize(DatPath & "EquipamientoInicial.dat")
     Call LoadEquipSet(Ini, "COMMON", EquipoInicialComun)
-    ReDim EquipoInicialClase(1 To NUMCLASES)
+    ReDim EquipoInicialClase(1 To e_Class.Bandit)
     Dim ClaseId As Integer
+    Dim Class As e_Class
     For ClaseId = 1 To NUMCLASES
-        Call LoadEquipSet(Ini, "CLASS" & CStr(ClaseId), EquipoInicialClase(ClaseId))
+        Class = ClassMaskFromIndex(ClaseId)
+        Call LoadEquipSet(Ini, "CLASS" & CStr(ClaseId), EquipoInicialClase(Class))
     Next ClaseId
     Set Ini = Nothing
     AgregarAConsola "Se carg? el equipamiento inicial (EquipamientoInicial.dat)"
@@ -331,7 +333,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .flags.Casado = 0
         .flags.SpouseId = 0
         .name = name
-        .clase = Min(max(0, UserClase), NUMCLASES)
+        If Not IsValidClass(UserClase) Then Exit Function
+        .clase = UserClase
         .raza = UserRaza
         .Char.head = head
         .genero = UserSexo

@@ -53,7 +53,7 @@ End Function
                 Call Writer.WriteString8(.nombre)
                 Call Writer.WriteInt(.cuerpo)
                 Call Writer.WriteInt(.Cabeza)
-                Call Writer.WriteInt(.clase)
+                Call Writer.WriteInt32(.clase)
                 Call Writer.WriteInt(.Mapa)
                 Call Writer.WriteInt(.PosX)
                 Call Writer.WriteInt(.PosY)
@@ -1336,7 +1336,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
     Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
     Call Writer.WriteInt32(ExpLevelUp(UserList(UserIndex).Stats.ELV))
     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
-    Call Writer.WriteInt8(UserList(UserIndex).clase)
+    Call Writer.WriteInt32(UserList(UserIndex).clase)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteUpdateUserStats_Err:
@@ -2040,7 +2040,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
     Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)
     Call Writer.WriteInt8(UserList(UserIndex).Faccion.Status)
     Call Writer.WriteInt32(UserList(UserIndex).Stats.NPCsMuertos)
-    Call Writer.WriteInt8(UserList(UserIndex).clase)
+    Call Writer.WriteInt32(UserList(UserIndex).clase)
     Call Writer.WriteInt32(UserList(UserIndex).Counters.Pena)
     Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)
     Call Writer.WriteInt8(UserList(UserIndex).genero)
@@ -2341,7 +2341,7 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
     Call Writer.WriteInt8(gender)
     Call Writer.WriteString8(CharName)
     Call Writer.WriteInt8(race)
-    Call Writer.WriteInt8(Class)
+    Call Writer.WriteInt32(Class)
     Call Writer.WriteInt8(level)
     Call Writer.WriteInt32(gold)
     Call Writer.WriteInt32(bank)
@@ -2832,7 +2832,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClassesCount)
     If QuestList(QuestIndex).RequiredClassesCount > 0 Then
         For i = 1 To QuestList(QuestIndex).RequiredClassesCount
-            Call Writer.WriteInt8(QuestList(QuestIndex).RequiredClass(i))
+            Call Writer.WriteInt32(QuestList(QuestIndex).RequiredClass(i))
         Next i
     End If
     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
@@ -2924,11 +2924,11 @@ WriteQuestListSend_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestListSend", Erl)
 End Sub
-Private Sub GetSafeRequiredClasses(ByVal QuestIndex As Integer, ByRef safeClasses() As Byte, ByRef safeCount As Byte)
+Private Sub GetSafeRequiredClasses(ByVal QuestIndex As Integer, ByRef safeClasses() As Long, ByRef safeCount As Byte)
     On Error GoTo ErrHandler
 
     Dim i As Integer
-    Dim classId As Byte
+    Dim Class As e_Class
     Dim declaredCount As Integer
 
     safeCount = 0
@@ -2940,11 +2940,11 @@ Private Sub GetSafeRequiredClasses(ByVal QuestIndex As Integer, ByRef safeClasse
     ReDim safeClasses(1 To declaredCount)
 
     For i = 1 To declaredCount
-        classId = QuestList(QuestIndex).RequiredClass(i)
+        Class = QuestList(QuestIndex).RequiredClass(i)
 
-        If classId >= 1 And classId <= NUMCLASES Then
+        If IsValidClass(Class) Then
             safeCount = safeCount + 1
-            safeClasses(safeCount) = classId
+            safeClasses(safeCount) = Class
         End If
     Next i
 
@@ -2970,7 +2970,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
     Dim validQuestCount As Integer
     Dim validQuestIndexes() As Integer
 
-    Dim safeClasses() As Byte
+    Dim safeClasses() As Long
     Dim safeClassesCount As Byte
     Dim safeCount As Byte
 
@@ -3014,7 +3014,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Call Writer.WriteInt8(safeClassesCount)
         If safeClassesCount > 0 Then
             For i = 1 To safeClassesCount
-                Call Writer.WriteInt8(safeClasses(i))
+                Call Writer.WriteInt32(safeClasses(i))
             Next i
         End If
 

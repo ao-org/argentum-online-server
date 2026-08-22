@@ -101,8 +101,7 @@ TieneObjetosRobables_Err:
 End Function
 
 Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
-    On Error GoTo manejador
-    Dim Flag As Boolean
+    On Error GoTo ClasePuedeUsarItem_Err
     If Slot <> 0 Then
         If UserList(UserIndex).invent.Object(Slot).Equipped Then
             ClasePuedeUsarItem = True
@@ -113,17 +112,10 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
         ClasePuedeUsarItem = True
         Exit Function
     End If
-    Dim i As Integer
-    For i = 1 To NUMCLASES
-        If ObjData(ObjIndex).ClaseProhibida(i) = UserList(UserIndex).clase Then
-            ClasePuedeUsarItem = False
-            Exit Function
-        End If
-    Next i
-    ClasePuedeUsarItem = True
+    ClasePuedeUsarItem = IsSet(ObjData(ObjIndex).PermittedClasses, UserList(UserIndex).clase)
     Exit Function
-manejador:
-    LogError ("Error en ClasePuedeUsarItem")
+ClasePuedeUsarItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ClasePuedeUsarItem", Erl)
 End Function
 
 Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
@@ -1699,35 +1691,6 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
     Next Index
     inventory.Object(Slot).Equipped = 1
 End Sub
-
-Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
-    On Error GoTo ErrHandler
-    If EsGM(UserIndex) Then
-        CheckClaseTipo = True
-        Exit Function
-    End If
-    Select Case ObjData(ItemIndex).ClaseTipo
-        Case 0
-            CheckClaseTipo = True
-            Exit Function
-        Case 2
-            If UserList(UserIndex).clase = e_Class.Mage Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Druid Then CheckClaseTipo = True
-            Exit Function
-        Case 1
-            If UserList(UserIndex).clase = e_Class.Warrior Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Assasin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Bard Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Cleric Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Paladin Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Trabajador Then CheckClaseTipo = True
-            If UserList(UserIndex).clase = e_Class.Hunter Then CheckClaseTipo = True
-            Exit Function
-    End Select
-    Exit Function
-ErrHandler:
-    Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
-End Function
 
 Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
     Dim ObjIndex As Integer

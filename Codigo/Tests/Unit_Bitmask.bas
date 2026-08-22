@@ -14,6 +14,7 @@ Public Function test_suite_bitmask() As Boolean
     
     Call UnitTesting.RunTest("test_set_mask", test_set_mask())
     Call UnitTesting.RunTest("test_is_set", test_is_set())
+    Call UnitTesting.RunTest("test_class_masks", test_class_masks())
     Call UnitTesting.RunTest("test_unset_mask", test_unset_mask())
     Call UnitTesting.RunTest("test_reset_mask", test_reset_mask())
     Call UnitTesting.RunTest("test_shift_left_right", test_shift_left_right())
@@ -77,6 +78,21 @@ test_is_set_Err:
     test_is_set = False
 End Function
 
+' Verifies class enum values and compact-index conversion use the same masks.
+Private Function test_class_masks() As Boolean
+    On Error GoTo test_class_masks_Err
+    test_class_masks = True
+
+    If (e_Class.Mage Or e_Class.Cleric) <> 3 Then test_class_masks = False: Exit Function
+    If e_Class.AllClasses <> 4095 Then test_class_masks = False: Exit Function
+    If ClassMaskFromIndex(1) <> e_Class.Mage Then test_class_masks = False: Exit Function
+    If ClassMaskFromIndex(NUMCLASES) <> e_Class.Bandit Then test_class_masks = False: Exit Function
+    If Not IsValidClass(e_Class.Bandit) Then test_class_masks = False: Exit Function
+    If IsValidClass(e_Class.Mage Or e_Class.Cleric) Then test_class_masks = False: Exit Function
+    Exit Function
+test_class_masks_Err:
+    test_class_masks = False
+End Function
 ' Verifies UnsetMask() clears a single bit without affecting others.
 ' With bits 1, 4, 8 set: unsetting bit 4 leaves only 1 and 8.
 Private Function test_unset_mask() As Boolean

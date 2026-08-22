@@ -380,7 +380,7 @@ Public Sub LoadQuests()
             If .RequiredClassesCount > 0 Then
                 ReDim .RequiredClass(1 To .RequiredClassesCount)
                 For j = 1 To .RequiredClassesCount
-                    .RequiredClass(j) = CByte(val(reader.GetValue("QUEST" & i, "RequiredClass" & j)))
+                    .RequiredClass(j) = ClassMaskFromIndex(CByte(val(reader.GetValue("QUEST" & i, "RequiredClass" & j))))
                 Next j
             End If
             

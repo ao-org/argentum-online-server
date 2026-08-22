@@ -120,7 +120,7 @@ Public Type t_PersonajeCuenta
     cuerpo As Integer
     Cabeza As Integer
     Status As Byte
-    clase As Byte
+    clase As Long
     Arma As Integer
     Escudo As Integer
     Casco As Integer
@@ -1340,7 +1340,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
     Version = CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8()) & "." & CStr(reader.ReadInt8())
     race = reader.ReadInt8()
     gender = reader.ReadInt8()
-    Class = reader.ReadInt8()
+    Class = reader.ReadInt32()
     head = reader.ReadInt16()
     Hogar = reader.ReadInt8()
 
@@ -1490,7 +1490,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         name = reader.ReadString8
 110     race = reader.ReadInt()
 112     gender = reader.ReadInt()
-113     Class = reader.ReadInt()
+113     Class = reader.ReadInt32()
 116     head = reader.ReadInt()
 118     Hogar = reader.ReadInt()
 
