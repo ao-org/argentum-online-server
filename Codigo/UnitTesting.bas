@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 35
+    Private Const SUITE_COUNT As Integer = 36
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -277,6 +277,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
 #If DIRECT_PLAY = 0 Then
         Case 35: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
+        Case 36: RunSuite = Unit_Weather.test_suite_weather()
         Case Else
             RunSuite = False
     End Select
