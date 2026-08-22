@@ -3653,6 +3653,11 @@ Public RangosFaccion()                        As t_RangoFaccion
 Public RecompensasFaccion()                   As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)               As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
+Public Const HOME_COST_TIER_COUNT              As Byte = 6
+Public HomeCostTierMinLevel(1 To HOME_COST_TIER_COUNT) As Byte
+Public HomeCostTierMaxLevel(1 To HOME_COST_TIER_COUNT) As Byte
+Public HomeCostTierFloorGLD(1 To HOME_COST_TIER_COUNT) As Long
+Public HomeCostTierCapGLD(1 To HOME_COST_TIER_COUNT) As Long
 Public Crafteos                               As New Dictionary
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long

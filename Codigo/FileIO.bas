@@ -899,6 +899,13 @@ Sub LoadBalance()
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
     Next
+        ' Costo de /hogar por tramos de nivel
+    For i = 1 To HOME_COST_TIER_COUNT
+        HomeCostTierMinLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MinLevel", "0")))
+        HomeCostTierMaxLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MaxLevel", "0")))
+        HomeCostTierFloorGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "FloorGLD", "0")))
+        HomeCostTierCapGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "CapGLD", "0")))
+    Next i
     'ElementalMatrixForNpcs
     Dim vals() As String
     Dim row    As String
