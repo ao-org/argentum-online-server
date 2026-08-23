@@ -2553,6 +2553,7 @@ Public Type t_UserStats
     NumObj_PezEspecial As Integer
     Creditos As Long
     JineteLevel As Byte
+    RemortCount As Long
 End Type
 
 'Sistema de Barras

@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 36
+    Private Const SUITE_COUNT As Integer = 37
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -278,6 +278,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 35: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
         Case 36: RunSuite = Unit_Weather.test_suite_weather()
+        Case 37: RunSuite = test_suite_remort_persistence()
         Case Else
             RunSuite = False
     End Select
@@ -331,6 +332,58 @@ End Sub
 
 Public Function GetFailedTests() As Integer
     GetFailedTests = FailedTests
+End Function
+
+Private Function test_suite_remort_persistence() As Boolean
+    Call RunTest("remort_count migration default", test_remort_count_migration_default())
+    Call RunTest("remort_count load validation", test_remort_count_load_validation())
+    Call RunTest("remort_count normal save SQL", test_remort_count_normal_save_sql())
+    test_suite_remort_persistence = True
+End Function
+
+Private Function test_remort_count_migration_default() As Boolean
+    On Error GoTo TestError
+
+    Dim RS As ADODB.Recordset
+    Set RS = Query("PRAGMA table_info(user)")
+    If RS Is Nothing Then Exit Function
+
+    Do While Not RS.EOF
+        If LCase$(CStr(RS.Fields("name").value)) = "remort_count" Then
+            Dim defaultValue As String
+            defaultValue = Replace$(CStr(RS.Fields("dflt_value").value), "(", vbNullString)
+            defaultValue = Replace$(defaultValue, ")", vbNullString)
+            test_remort_count_migration_default = _
+                    CLng(RS.Fields("notnull").value) = 1 And defaultValue = "0"
+            Exit Function
+        End If
+        RS.MoveNext
+    Loop
+    Exit Function
+
+TestError:
+    test_remort_count_migration_default = False
+End Function
+
+Private Function test_remort_count_load_validation() As Boolean
+    On Error GoTo TestError
+
+    If NormalizeRemortCount(0) <> 0 Then Exit Function
+    If NormalizeRemortCount(3) <> 3 Then Exit Function
+    If NormalizeRemortCount(-1) <> 0 Then Exit Function
+    If NormalizeRemortCount(2147483648#) <> 0 Then Exit Function
+
+    test_remort_count_load_validation = True
+    Exit Function
+
+TestError:
+    test_remort_count_load_validation = False
+End Function
+
+Private Function test_remort_count_normal_save_sql() As Boolean
+    test_remort_count_normal_save_sql = _
+            InStr(1, QUERY_LOAD_MAINPJ, "remort_count", vbTextCompare) > 0 And _
+            InStr(1, QUERY_UPDATE_MAINPJ, "remort_count = ?", vbTextCompare) > 0
 End Function
 
 #End If
