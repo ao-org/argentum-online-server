@@ -1261,6 +1261,15 @@ WriteRainToggle_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRainToggle", Erl)
 End Sub
 
+Public Sub WriteNieveToggle(ByVal UserIndex As Integer)
+    On Error GoTo WriteNieveToggle_Err
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNevarToggle())
+    Exit Sub
+WriteNieveToggle_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNieveToggle", Erl)
+End Sub
+
 Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
     On Error GoTo WriteNubesToggle_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNieblandoToggle(IntensidadDeNubes))
@@ -1268,6 +1277,22 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 WriteNubesToggle_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
+End Sub
+
+' Initial synchronization only. A newly initialized client starts with
+' atmospheric fog disabled, so sending the fog toggle here enables it safely.
+Public Sub WriteCurrentWeatherState(ByVal UserIndex As Integer)
+    On Error GoTo WriteCurrentWeatherState_Err
+    Dim SendRain As Boolean
+    Dim SendSnow As Boolean
+    Dim ToggleFog As Boolean
+    Call DetermineInitialWeatherSynchronization(SendRain, SendSnow, ToggleFog)
+    If SendRain Then Call WriteRainToggle(UserIndex)
+    If SendSnow Then Call WriteNieveToggle(UserIndex)
+    If ToggleFog Then Call WriteNubesToggle(UserIndex)
+    Exit Sub
+WriteCurrentWeatherState_Err:
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCurrentWeatherState", Erl)
 End Sub
 
 ''

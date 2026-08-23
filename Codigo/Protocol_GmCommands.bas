@@ -3465,7 +3465,7 @@ Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Call LogGM(GetUserRealName(UserIndex), "/NIEBLA")
-        Call ResetMeteo
+        Call ResetMeteo(True)
     End With
     Exit Sub
 HandleNieblaToggle_Err:
