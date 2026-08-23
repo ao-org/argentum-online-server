@@ -1421,19 +1421,17 @@ Private Sub TimerMeteorologia_Timer()
         ProbabilidadNublar = RandomNumber(1, 3)
         If ProbabilidadNublar = 1 Then
             IntensidadDeNubes = RandomNumber(10, 45)
-            ServidorNublado = True
-            'Enviar Nubes a todos
             Nieblando = True
             ServidorNublado = True
+            'Enviar Nubes a todos
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
             Call AgregarAConsola("Servidor » Empezaron las nubes")
             TimerMeteorologico = TimerMeteorologico - 1
         Else
-            ServidorNublado = False
             ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", e_FontTypeNames.FONTTYPE_SERVER))
             Call AgregarAConsola("Servidor » Tranquilo, no hay nubes ni va a llover.")
-            Call ResetMeteo
+            Call ResetMeteo(True)
             Exit Sub
         End If
     End If
@@ -1458,13 +1456,8 @@ Private Sub TimerMeteorologia_Timer()
             Call AgregarAConsola("Servidor » Lloviendo.")
             TimerMeteorologico = TimerMeteorologico - 1
         Else
-            Nieblando = False
-            Lloviendo = False
-            ServidorNublado = False
-            Truenos.Enabled = False
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             Call AgregarAConsola("Servidor » Truenos y nubes desactivados.")
-            Call ResetMeteo
+            Call ResetMeteo(True)
             Exit Sub
         End If
     End If
@@ -1474,15 +1467,8 @@ Private Sub TimerMeteorologia_Timer()
     End If
     If TimerMeteorologico = 0 Then
         'dejar de llover y sacar nubes
-        Nieblando = False
-        Lloviendo = False
-        Truenos.Enabled = False
-        Nebando = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
         Call AgregarAConsola("Servidor >Lluvia desactivada.")
-        Call ResetMeteo
+        Call ResetMeteo(True)
         Exit Sub
     End If
     Exit Sub

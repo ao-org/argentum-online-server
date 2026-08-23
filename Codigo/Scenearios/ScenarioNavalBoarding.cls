@@ -649,7 +649,7 @@ Private Sub RespawnPlayers()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
         Set RespawnInfo = PlayerRespawn.Item(key)
-        If currentTime - RespawnInfo.RespawnTime > PlayerMinRespawnTime Then
+        If TicksElapsed(RespawnInfo.RespawnTime, currentTime) > PlayerMinRespawnTime Then
             Call Respawn(key)
             For i = 0 To RespawnInfo.EquipedElementCount - 1
                 Call EquiparInvItem(key, RespawnInfo.GetActiveSlot(i))
