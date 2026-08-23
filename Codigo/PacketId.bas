@@ -225,6 +225,7 @@ Public Enum ServerPacketID
     eChangeSkinSlot
     eGuildConfig
     eShowPickUpObj
+    eRemortState
     eMaxPacket
     [PacketCount]
 End Enum

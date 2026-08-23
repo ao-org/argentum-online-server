@@ -966,11 +966,59 @@ Public Function UserSupportsAdjacentCharacters(ByVal UserIndex As Integer) As Bo
         UserSupportsHooCapability(UserIndex, HOO_CAP_ADJACENT_CHARACTERS_V1)
 End Function
 
+Public Function UserSupportsRemortState(ByVal UserIndex As Integer) As Boolean
+    UserSupportsRemortState = IsFeatureEnabled(HOO_FEATURE_REMORT_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_REMORT_V1)
+End Function
+
+Public Function UserHasActiveRemortQuest(ByVal UserIndex As Integer) As Boolean
+    Dim QuestSlot As Integer
+    For QuestSlot = 1 To MAXUSERQUESTS
+        If UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex <> 0 Then
+            UserHasActiveRemortQuest = True
+            Exit Function
+        End If
+    Next QuestSlot
+End Function
+
+Public Function GetRemortEligibility(ByVal UserIndex As Integer) As e_RemortEligibilityReason
+    GetRemortEligibility = eRemortEligibility_BelowRequiredLevel
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Function
+    With UserList(UserIndex)
+        If .Stats.ELV <> STAT_MAXELV Then Exit Function
+        If .flags.Muerto <> 0 Then
+            GetRemortEligibility = eRemortEligibility_Dead
+            Exit Function
+        End If
+        If UserHasActiveRemortQuest(UserIndex) Then
+            GetRemortEligibility = eRemortEligibility_ActiveQuest
+            Exit Function
+        End If
+        If .Grupo.EnGrupo Then
+            GetRemortEligibility = eRemortEligibility_InParty
+            Exit Function
+        End If
+    End With
+    GetRemortEligibility = eRemortEligibility_Eligible
+End Function
+
+Public Sub MaybeSendRemortState(ByVal UserIndex As Integer)
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Sub
+    If Not UserList(UserIndex).flags.UserLogged Then Exit Sub
+    If Not UserSupportsRemortState(UserIndex) Then Exit Sub
+    Call WriteRemortState(UserIndex, GetRemortEligibility(UserIndex))
+End Sub
+
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
     If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
+    Dim SupportedMask As Long
     If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
-        AcceptedHooCapabilityMask = RequestedMask And HOO_CAP_ADJACENT_CHARACTERS_V1
+        SupportedMask = SupportedMask Or HOO_CAP_ADJACENT_CHARACTERS_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_REMORT_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_REMORT_V1
+    End If
+    AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
 Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
@@ -993,6 +1041,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " protocol=" & CStr(ProtocolVersion) & _
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
+    Call MaybeSendRemortState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
