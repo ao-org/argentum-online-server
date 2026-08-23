@@ -192,7 +192,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
     'Controlamos no pasar el maximo de usuarios
     If NumUsers >= MaxUsers Then
         failureReason = "Maximum number of users reached."
-        Call WriteShowMessageBox(UserIndex, 1759, vbNullString) 'Msg1759=El servidor ha alcanzado el máximo de usuarios soportado, por favor vuelva a intentarlo más tarde.
+        Call WriteShowMessageBox(UserIndex, MSG_EL_SERVIDOR_HA_ALCANZADO_EL_MAXIMO_DE_USUARIOS_SOPORTADO_POR_FAVOR_VUELVA_A_INTENTARLO_MAS_TARDE, vbNullString) 'Msg1759=El servidor ha alcanzado el máximo de usuarios soportado, por favor vuelva a intentarlo más tarde.
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -210,17 +210,17 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
             If Not IsValidUserRef(tIndex) Then
                 Call CloseSocket(tIndex.ArrayIndex)
             ElseIf IsFeatureEnabled("override_same_ip_connection") And .ConnectionDetails.IP = UserList(tIndex.ArrayIndex).ConnectionDetails.IP Then
-                Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
+                Call WriteShowMessageBox(tIndex.ArrayIndex, MSG_ALGUIEN_ESTA_INGRESANDO_CON_TU_PERSONAJE_SI_NO_HAS_SIDO_TU_POR_FAVOR_CAMBIA_LA_CONTRASENA_DE_TU_CUENTA, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
                 Call CloseSocket(tIndex.ArrayIndex)
             Else
                 If UserList(tIndex.ArrayIndex).Counters.Saliendo Then
                     failureReason = "Character is logging out."
-                    Call WriteShowMessageBox(UserIndex, 1762, vbNullString) 'Msg1762=El personaje está saliendo.
+                    Call WriteShowMessageBox(UserIndex, MSG_EL_PERSONAJE_ESTA_SALIENDO, vbNullString) 'Msg1762=El personaje está saliendo.
                 Else
                     failureReason = "Character is already connected."
-                    Call WriteShowMessageBox(UserIndex, 1763, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
+                    Call WriteShowMessageBox(UserIndex, MSG_EL_PERSONAJE_YA_ESTA_CONECTADO_ESPERE_MIENTRAS_ES_DESCONECTADO, vbNullString) 'Msg1763=El personaje ya está conectado. Espere mientras es desconectado.
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
-                    Call WriteShowMessageBox(tIndex.ArrayIndex, 1761, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
+                    Call WriteShowMessageBox(tIndex.ArrayIndex, MSG_ALGUIEN_ESTA_INGRESANDO_CON_TU_PERSONAJE_SI_NO_HAS_SIDO_TU_POR_FAVOR_CAMBIA_LA_CONTRASENA_DE_TU_CUENTA, vbNullString) 'Msg1761=Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.
                 End If
                 Call CloseSocket(UserIndex)
                 Exit Function
@@ -236,9 +236,9 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
                         failureReason = "Account has reached the maximum number of simultaneous users (" & MaxUsersPorCuenta & ")."
                     End If
                     If MaxUsersPorCuenta = 1 Then
-                        Call WriteShowMessageBox(UserIndex, 1764, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
+                        Call WriteShowMessageBox(UserIndex, MSG_YA_HAY_UN_USUARIO_CONECTADO_CON_ESTA_CUENTA, vbNullString) 'Msg1764=Ya hay un usuario conectado con esta cuenta.
                     Else
-                        Call WriteShowMessageBox(UserIndex, 1765, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
+                        Call WriteShowMessageBox(UserIndex, MSG_LA_CUENTA_YA_ALCANZO_EL_MAXIMO_DE_USUARIOS_CONECTADOS, MaxUsersPorCuenta) 'Msg1765=La cuenta ya alcanzó el máximo de ¬1 usuarios conectados.
                     End If
                     Call CloseSocket(UserIndex)
                     Exit Function
@@ -251,7 +251,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByVal name As Stri
         End If
         If Not EsGM(UserIndex) And ServerSoloGMs > 0 Then
             failureReason = "Server restricted to administrators."
-            Call WriteShowMessageBox(UserIndex, 1760, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
+            Call WriteShowMessageBox(UserIndex, MSG_SERVIDOR_RESTRINGIDO_A_ADMINISTRADORES_POR_FAVOR_REINTENTE_EN_UNOS_MOMENTOS, vbNullString) 'Msg1760=Servidor restringido a administradores. Por favor reintente en unos momentos.
             Call CloseSocket(UserIndex)
             Exit Function
         End If
@@ -482,7 +482,7 @@ Dim tStr                        As String
         '   FIN - INFORMACION INICIAL DEL PERSONAJE
         ' -----------------------------------------------------------------------
         If Not ValidateChr(UserIndex) Then
-            Call WriteShowMessageBox(UserIndex, 1766, vbNullString) 'Msg1766=Error en el personaje. Comuniquese con el staff.
+            Call WriteShowMessageBox(UserIndex, MSG_ERROR_EN_EL_PERSONAJE_COMUNIQUESE_CON_EL_STAFF, vbNullString) 'Msg1766=Error en el personaje. Comuniquese con el staff.
             Call CloseSocket(UserIndex)
             Exit Function
         End If
@@ -713,7 +713,7 @@ Dim tStr                        As String
             End If
         End If
         If LenB(.LastGuildRejection) <> 0 Then
-            Call WriteShowMessageBox(UserIndex, 1767, .LastGuildRejection) 'Msg1767=Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: ¬1
+            Call WriteShowMessageBox(UserIndex, MSG_TU_SOLICITUD_DE_INGRESO_AL_CLAN_HA_SIDO_RECHAZADA_EL_CLAN_TE_EXPLICA_QUE, .LastGuildRejection) 'Msg1767=Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: ¬1
             .LastGuildRejection = vbNullString
             Call SaveUserGuildRejectionReason(.name, vbNullString)
         End If
@@ -772,9 +772,9 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
         Call WriteUpdateExp(attackerIndex)
         Call CheckUserLevel(attackerIndex)
     End If
-    Call WriteLocaleMsg(attackerIndex, "76", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(VictimIndex))
-    Call WriteLocaleMsg(attackerIndex, "140", e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, DaExp)
-    Call WriteLocaleMsg(VictimIndex, "185", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(attackerIndex))
+    Call WriteLocaleMsg(attackerIndex, MSG_HAS_MATADO_A, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(VictimIndex))
+    Call WriteLocaleMsg(attackerIndex, MSG_GANADO_PUNTOS_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, DaExp)
+    Call WriteLocaleMsg(VictimIndex, MSG_TE_HA_MATADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetUserDisplayName(attackerIndex))
     If Not PeleaSegura(VictimIndex, attackerIndex) Then
         EraCriminal = Status(attackerIndex)
         If EraCriminal = 2 And Status(attackerIndex) < 2 Then
@@ -1458,7 +1458,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserStatsTxt_Err
     Dim GuildI As Integer
     'Msg1295= Estadisticas de: ¬1
-    Call WriteLocaleMsg(sendIndex, "1295", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+    Call WriteLocaleMsg(sendIndex, MSG_ESTADISTICAS_DE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
     Call WriteLocaleMsg(sendIndex, MSG_USER_LEVEL_EXP, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
             UserIndex).Stats.ELV)) ' Msg1857=Nivel: ¬1  EXP: ¬2/¬3
     Call WriteLocaleMsg(sendIndex, MSG_USER_HEALTH_MANA_STAMINA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Stats.MinHp & "¬" & UserList(UserIndex).Stats.MaxHp & "¬" & UserList( _
@@ -1480,38 +1480,38 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         End If
     Else
         'Msg1098= (CUERPO) Min Def/Max Def: 0
-        Call WriteLocaleMsg(sendIndex, "1098", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(sendIndex, MSG_CUERPO_MIN_DEF_MAX_DEF_0, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     End If
     If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
         Call WriteLocaleMsg(sendIndex, MSG_USER_HEAD_DEFENSE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).invent.EquippedHelmetObjIndex).MinDef & "¬" & ObjData(UserList( _
                 UserIndex).invent.EquippedHelmetObjIndex).MaxDef) ' Msg1862=(CABEZA) Min Def/Max Def: ¬1/¬2
     Else
         'Msg1099= (CABEZA) Min Def/Max Def: 0
-        Call WriteLocaleMsg(sendIndex, "1099", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(sendIndex, MSG_CABEZA_MIN_DEF_MAX_DEF_0, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     End If
     GuildI = UserList(UserIndex).GuildIndex
     If GuildI > 0 Then
         'Msg1296= Clan: ¬1
-        Call WriteLocaleMsg(sendIndex, "1296", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
+        Call WriteLocaleMsg(sendIndex, MSG_CLAN_1296, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, modGuilds.GuildName(GuildI))
         If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
             'Msg1100= Status: Líder
-            Call WriteLocaleMsg(sendIndex, "1100", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(sendIndex, MSG_STATUS_LIDER, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
         'guildpts no tienen objeto
     End If
     Call LoadPatronCreditsFromDB(UserIndex)
     'Msg1298= Oro: ¬1
-    Call WriteLocaleMsg(sendIndex, "1298", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
+    Call WriteLocaleMsg(sendIndex, MSG_ORO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.GLD)
     'Msg1299= Veces que Moriste: ¬1
-    Call WriteLocaleMsg(sendIndex, "1299", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
+    Call WriteLocaleMsg(sendIndex, MSG_VECES_QUE_MORISTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).flags.VecesQueMoriste)
     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(UserIndex).Faccion.FactionScore)
     'Msg1300= Creditos Patreon: ¬1
-    Call WriteLocaleMsg(sendIndex, "1300", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
+    Call WriteLocaleMsg(sendIndex, MSG_CREDITOS_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.Creditos)
     'Msg2078 = Nivel de Jinete:¬1
     Call WriteLocaleMsg(sendIndex, MSG_RIDER_LEVEL_REQUIREMENT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.JineteLevel)
     ' Mostramos el tiempo de cárcel restante (en memoria) para /info de usuarios online.
     'Msg1307= Pena: ¬1
-    Call WriteLocaleMsg(sendIndex, "1307", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Pena)
+    Call WriteLocaleMsg(sendIndex, MSG_PENA_RESTANTE_MINUTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Pena)
 
 ' ========================
 ' Show current home
@@ -1543,27 +1543,27 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     '*************************************************
     With UserList(UserIndex)
         'Msg1301= Pj: ¬1
-        Call WriteLocaleMsg(sendIndex, "1301", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
+        Call WriteLocaleMsg(sendIndex, MSG_PJ, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
         'Msg1302= Ciudadanos Matados: ¬1
-        Call WriteLocaleMsg(sendIndex, "1302", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Faccion.ciudadanosMatados)
+        Call WriteLocaleMsg(sendIndex, MSG_CIUDADANOS_MATADOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Faccion.ciudadanosMatados)
         'Msg1303= Criminales Matados: ¬1
-        Call WriteLocaleMsg(sendIndex, "1303", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Faccion.CriminalesMatados)
+        Call WriteLocaleMsg(sendIndex, MSG_CRIMINALES_MATADOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Faccion.CriminalesMatados)
         'Msg1304= UsuariosMatados: ¬1
-        Call WriteLocaleMsg(sendIndex, "1304", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.UsuariosMatados)
+        Call WriteLocaleMsg(sendIndex, MSG_USUARIOSMATADOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.UsuariosMatados)
         'Msg1305= NPCsMuertos: ¬1
-        Call WriteLocaleMsg(sendIndex, "1305", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.NPCsMuertos)
+        Call WriteLocaleMsg(sendIndex, MSG_NPCSMUERTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.NPCsMuertos)
         'Msg1306= Clase: ¬1
-        Call WriteLocaleMsg(sendIndex, "1306", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ListaClases(.clase))
+        Call WriteLocaleMsg(sendIndex, MSG_CLASE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ListaClases(.clase))
         'Msg1307= Pena: ¬1
-        Call WriteLocaleMsg(sendIndex, "1307", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Pena)
+        Call WriteLocaleMsg(sendIndex, MSG_PENA_RESTANTE_MINUTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Pena)
         If .GuildIndex > 0 Then
             'Msg1308= Clan: ¬1
-            Call WriteLocaleMsg(sendIndex, "1308", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GuildName(.GuildIndex))
+            Call WriteLocaleMsg(sendIndex, MSG_CLAN_1308, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GuildName(.GuildIndex))
         End If
         'Msg1309= Oro en billetera: ¬1
-        Call WriteLocaleMsg(sendIndex, "1309", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.GLD)
+        Call WriteLocaleMsg(sendIndex, MSG_ORO_EN_BILLETERA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.GLD)
         'Msg1310= Oro en banco: ¬1
-        Call WriteLocaleMsg(sendIndex, "1310", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.Banco)
+        Call WriteLocaleMsg(sendIndex, MSG_ORO_EN_BANCO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Stats.Banco)
     End With
     Exit Sub
 SendUserMiniStatsTxt_Err:
@@ -1575,7 +1575,7 @@ Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     Dim j As Long
     Call WriteConsoleMsg(sendIndex, GetUserDisplayName(UserIndex), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     'Msg1311= Tiene ¬1 objetos.
-    Call WriteLocaleMsg(sendIndex, "1311", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).invent.NroItems)
+    Call WriteLocaleMsg(sendIndex, MSG_TIENE_OBJETOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).invent.NroItems)
     For j = 1 To UserList(UserIndex).CurrentInventorySlots
         If UserList(UserIndex).invent.Object(j).ObjIndex > 0 Then
             Call WriteLocaleMsg(sendIndex, MSG_USER_INVENTORY_ITEM, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, j & "¬" & ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).name & "¬" & UserList( _
@@ -1595,7 +1595,7 @@ Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Call WriteConsoleMsg(sendIndex, SkillsNames(j) & " = " & UserList(UserIndex).Stats.UserSkills(j), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     Next
     'Msg1312=  SkillLibres:¬1
-    Call WriteLocaleMsg(sendIndex, "1312", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.SkillPts)
+    Call WriteLocaleMsg(sendIndex, MSG_SKILLLIBRES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.SkillPts)
     Exit Sub
 SendUserSkillsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
@@ -2170,7 +2170,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
                     'Msg1101= Comercio cancelado por el otro usuario
-                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, "1101", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_POR_EL_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
@@ -2813,7 +2813,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
     If UserList(attackerIndex).flags.jugando_captura = 1 And UserList(TargetIndex).flags.jugando_captura = 1 Then
         If UserList(attackerIndex).flags.CurrentTeam = UserList(TargetIndex).flags.CurrentTeam Then
             'Msg1102= ¡No puedes atacar a miembros de tu propio equipo!
-            Call WriteLocaleMsg(attackerIndex, "1102", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(attackerIndex, MSG_NO_PUEDES_ATACAR_A_MIEMBROS_DE_TU_PROPIO_EQUIPO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             CanAttackUser = eSameTeam
             Exit Function
         End If
@@ -2965,7 +2965,7 @@ End Function
 
 Public Sub ResurrectUser(ByVal targetUserIndex As Integer, Optional ByVal CasterUserIndex As Integer)
     ' Msg585=¡Has sido resucitado!
-    Call WriteLocaleMsg(targetUserIndex, "585", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+    Call WriteLocaleMsg(targetUserIndex, MSG_SIDO_RESUCITADO_585, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessageParticleFX(UserList(targetUserIndex).Char.charindex, e_ParticleEffects.Resucitar, 250, True))
     Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessagePlayWave(117, UserList(targetUserIndex).pos.x, UserList(targetUserIndex).pos.y))
     Call RevivirUsuario(targetUserIndex, True, CasterUserIndex)

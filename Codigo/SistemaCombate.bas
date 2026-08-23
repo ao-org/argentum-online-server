@@ -1061,7 +1061,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Else
             Call WriteLocaleMsg(VictimaIndex, MSG_ATACO_FALLO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name) ' Msg1930=¡¬1 te atacó y falló!
             'Msg1043= ¡Has fallado el golpe!
-            Call WriteLocaleMsg(AtacanteIndex, "1043", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(AtacanteIndex, MSG_HAS_FALLADO_EL_GOLPE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Exit Function
@@ -1074,7 +1074,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
     Dim sendto As SendTarget
     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
     If Distancia(UserList(AtacanteIndex).pos, UserList(VictimaIndex).pos) > MAXDISTANCIAARCO Then
-        Call WriteLocaleMsg(AtacanteIndex, "8", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(AtacanteIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Exit Sub
     End If
     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
@@ -1233,10 +1233,10 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 DamageStr = PonerPuntos(BonusDamage)
                 ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-                    Call WriteLocaleMsg(AtacanteIndex, "210", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DamageStr)
+                    Call WriteLocaleMsg(AtacanteIndex, MSG_HAS_APUNALADO_A_POR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DamageStr)
                 End If
                 ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
-                Call WriteLocaleMsg(VictimaIndex, "211", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(VictimaIndex, MSG_TE_HA_APUNALADO_POR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 'Fx de apuñalar
                 Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FX_STABBING, 0, UserList( _
                         AtacanteIndex).pos.x, UserList(AtacanteIndex).pos.y))
@@ -1407,7 +1407,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     If UserList(attackerIndex).flags.EnReto Then
         If Retos.Salas(UserList(attackerIndex).flags.SalaReto).TiempoItems > 0 Then
             'Msg1044= No podés atacar en este momento.
-            Call WriteLocaleMsg(attackerIndex, "1044", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_EN_ESTE_MOMENTO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             PuedeAtacar = False
             Exit Function
         End If
@@ -1415,46 +1415,46 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     'No podes atacar a alguien muerto
     If UserList(VictimIndex).flags.Muerto = 1 Then
         'Msg1045= No podés atacar a un espiritu.
-        Call WriteLocaleMsg(attackerIndex, "1045", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_A_UN_ESPIRITU, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     If UserList(attackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And UserList(attackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
         'Msg1046= No podés atacar a un miembro de tu grupo.
-        Call WriteLocaleMsg(attackerIndex, "1046", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_A_UN_MIEMBRO_DE_TU_GRUPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     ' No podes atacar si estas en consulta
     If UserList(attackerIndex).flags.EnConsulta Then
         'Msg1047= No podés atacar usuarios mientras estás en consulta.
-        Call WriteLocaleMsg(attackerIndex, "1047", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_ESTAS_EN_CONSULTA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     ' No podes atacar si esta en consulta
     If UserList(VictimIndex).flags.EnConsulta Then
         'Msg1048= No podés atacar usuarios mientras estan en consulta.
-        Call WriteLocaleMsg(attackerIndex, "1048", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_ESTAN_EN_CONSULTA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     If UserList(attackerIndex).flags.Maldicion = 1 Then
         'Msg1049= ¡Estás maldito! No podes atacar.
-        Call WriteLocaleMsg(attackerIndex, "1049", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_ESTAS_MALDITO_NO_PODES_ATACAR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     If UserList(attackerIndex).flags.Montado = 1 Then
         'Msg1050= No podés atacar usando una montura.
-        Call WriteLocaleMsg(attackerIndex, "1050", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_USANDO_UNA_MONTURA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
     If Not MapInfo(UserList(VictimIndex).pos.Map).FriendlyFire And UserList(VictimIndex).flags.CurrentTeam > 0 And UserList(VictimIndex).flags.CurrentTeam = UserList( _
             attackerIndex).flags.CurrentTeam Then
         'Msg1051= No podes atacar un miembro de tu equipo.
-        Call WriteLocaleMsg(attackerIndex, "1051", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_UN_MIEMBRO_DE_TU_EQUIPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
@@ -1462,7 +1462,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
     If (UserList(VictimIndex).flags.Privilegios And rank) > (UserList(attackerIndex).flags.Privilegios And rank) Then
         'Msg1053= El ser es demasiado poderoso
-        Call WriteLocaleMsg(attackerIndex, "1053", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_EL_SER_ES_DEMASIADO_PODEROSO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
@@ -1488,7 +1488,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= RequiredGuildLevelSafe Then
             If UserList(attackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
                 'Msg1054= No podes atacar a un miembro de tu clan.
-                Call WriteLocaleMsg(attackerIndex, "1054", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_A_UN_MIEMBRO_DE_TU_CLAN, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 PuedeAtacar = False
                 Exit Function
             End If
@@ -1499,13 +1499,13 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         ' Si ataca otro armada
         If esArmada(VictimIndex) Then
             'Msg1055= Los miembros del Ejercito Real tienen prohibido atacarse entre sí.
-            Call WriteLocaleMsg(attackerIndex, "1055", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACARSE_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             PuedeAtacar = False
             Exit Function
             ' Si ataca un ciudadano
         ElseIf esCiudadano(VictimIndex) Then
             'Msg1056= Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.
-            Call WriteLocaleMsg(attackerIndex, "1056", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACAR_CIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             PuedeAtacar = False
             Exit Function
         End If
@@ -1516,12 +1516,12 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             If (UserList(attackerIndex).flags.Seguro) Then
                 If esCiudadano(VictimIndex) Then
                     'Msg1057= No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.
-                    Call WriteLocaleMsg(attackerIndex, "1057", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_CIUDADANOS_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = False
                     Exit Function
                 ElseIf esArmada(VictimIndex) Then
                     'Msg1058= No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.
-                    Call WriteLocaleMsg(attackerIndex, "1058", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_MIEMBROS_DEL_EJERCITO_REAL_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = False
                     Exit Function
                 End If
@@ -1531,7 +1531,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
                 PuedeAtacar = True
             ElseIf MapInfo(UserList(VictimIndex).pos.Map).Seguro <> 1 Then
                 'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
-                Call WriteLocaleMsg(attackerIndex, "1059", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DE_LA_LEGION_OSCURA_NO_SE_PUEDEN_ATACAR_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 PuedeAtacar = False
                 Exit Function
             End If
@@ -1543,7 +1543,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
                 If UserList(VictimIndex).pos.Map = 58 Or UserList(VictimIndex).pos.Map = 59 Or UserList(VictimIndex).pos.Map = 60 Then
                     'Msg1060= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-                    Call WriteLocaleMsg(VictimIndex, "1060", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(VictimIndex, MSG_HUYE_DE_LA_CIUDAD_UN_MIEMBRO_DE_LA_ARMADA_REAL_TE_ESTA_ATACANDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                     Exit Function
                 End If
@@ -1553,14 +1553,14 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
                 If UserList(VictimIndex).pos.Map = 195 Or UserList(VictimIndex).pos.Map = 196 Then
                     'Msg1061= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
-                    Call WriteLocaleMsg(VictimIndex, "1061", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(VictimIndex, MSG_HUYE_DE_LA_CIUDAD_UN_MIEMBRO_DE_LA_LEGION_OSCURA_TE_ESTA_ATACANDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                     Exit Function
                 End If
             End If
         End If
         'Msg1062= Esta es una zona segura, aqui no podes atacar otros usuarios.
-        Call WriteLocaleMsg(attackerIndex, "1062", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_ESTA_ES_UNA_ZONA_SEGURA_NO_PODES_ATACAR_OTROS_USUARIOS_AQUI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
@@ -1568,7 +1568,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     If MapData(UserList(VictimIndex).pos.Map, UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
             attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
         'Msg1063= No podes pelear aqui.
-        Call WriteLocaleMsg(attackerIndex, "1063", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_PELEAR_EN_ESTA_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
     End If
@@ -1710,7 +1710,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                     ' Enviar el mensaje solo si el miembro no está muerto y tiene el chat de combate activado
                     If UserList(Index).flags.Muerto = 0 And UserList(Index).ChatCombate = 1 Then
                         'Msg1437=El líder del grupo está demasiado lejos, su experiencia se pierde.
-                        Call WriteLocaleMsg(Index, "1437", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(Index, MSG_EL_LIDER_DEL_GRUPO_ESTA_DEMASIADO_LEJOS_SU_EXPERIENCIA_SE_PIERDE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
                 End If
             Next i
@@ -1741,7 +1741,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                             Dim PorcentajeFinal As Integer
                                             PorcentajeFinal = Penalty * 100
                                             'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                                            Call WriteLocaleMsg(Index, "1467", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PorcentajeFinal)
+                                            Call WriteLocaleMsg(Index, MSG_DEBIDO_NIVEL_OBTIENES_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PorcentajeFinal)
                                         End If
                                     End If
                                 End If
@@ -1764,20 +1764,20 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                 End If
                                 If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
                                 If UserList(Index).ChatCombate = 1 Then
-                                    Call WriteLocaleMsg(Index, "141", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, ExpUser)
+                                    Call WriteLocaleMsg(Index, MSG_EL_GRUPO_HA_GANADO_PUNTOS_DE_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, ExpUser)
                                 End If
                                 Call WriteUpdateExp(Index)
                                 Call CheckUserLevel(Index)
                             End If
                         Else
                             If UserList(Index).ChatCombate = 1 Then
-                                Call WriteLocaleMsg(Index, "69", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                                Call WriteLocaleMsg(Index, MSG_ADVERTENCIA_TU_GRUPO_ESTA_DEMASIADO_LEJOS_NO_HAS_GANADO_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                             End If
                         End If
                     Else
                         If UserList(Index).ChatCombate = 1 Then
                             'Msg1064= Estás muerto, no has ganado experencia del grupo.
-                            Call WriteLocaleMsg(Index, "1064", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                            Call WriteLocaleMsg(Index, MSG_ESTAS_MUERTO_NO_HAS_GANADO_EXPERENCIA_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                         End If
                     End If
                 End If

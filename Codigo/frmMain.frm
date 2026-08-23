@@ -706,7 +706,7 @@ Sub CheckIdleUser()
             'Actualiza el contador de inactividad
             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
             If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-                Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
+                Call WriteShowMessageBox(iUserIndex, MSG_DEMASIADO_TIEMPO_INACTIVO_HAS_SIDO_DESCONECTADO, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
                 'mato los comercios seguros
                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
@@ -1517,7 +1517,7 @@ Private Sub tPiqueteC_Timer()
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 ' Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
-                    Call WriteLocaleMsg(i, "70", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(i, MSG_ESTAS_OBSTRUYENDO_EL_PASO_MUEVETE_O_SERAS_DESCONECTADO_DEL_JUEGO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0

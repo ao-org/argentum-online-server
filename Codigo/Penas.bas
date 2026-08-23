@@ -143,7 +143,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal username As String, 
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).AccountID = CuentaID Then
-            Call WriteShowMessageBox(i, 1785, Reason) 'Msg1785=Has sido baneado del servidor. Motivo: ¬1
+            Call WriteShowMessageBox(i, MSG_HAS_SIDO_BANEADO_DEL_SERVIDOR_MOTIVO, Reason) 'Msg1785=Has sido baneado del servidor. Motivo: ¬1
             Call WriteDisconnect(i)
             Call CloseSocket(i)
         End If

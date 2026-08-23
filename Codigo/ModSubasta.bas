@@ -152,7 +152,7 @@ Public Sub FinalizarSubasta()
             Call TirarItemAlPiso(UserList(tUser.ArrayIndex).pos, ObjVendido)
         End If
         Call LogearEventoDeSubasta("Se entrego el item en mano.")
-        Call WriteLocaleMsg(tUser.ArrayIndex, "1440", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA) ' Msg1440=Felicitaciones, has ganado la subasta.
+        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_FELICITACIONES_HAS_GANADO_LA_SUBASTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA) ' Msg1440=Felicitaciones, has ganado la subasta.
     End If
     Dim Descuento As Long
     Descuento = Subasta.MejorOferta / 100 * 5
@@ -167,7 +167,7 @@ Public Sub FinalizarSubasta()
                 "Subastador te ha dejado un mensaje: ¡Has vendido tu item! Te deposite el oro en el sistema de finanzas Goliath.")
     Else
         UserList(Subastador.ArrayIndex).Stats.GLD = UserList(Subastador.ArrayIndex).Stats.GLD + Subasta.MejorOferta
-        Call WriteLocaleMsg(Subastador.ArrayIndex, "1441", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Subasta.MejorOferta)) ' Msg1441=Felicitaciones, has ganado ¬1 monedas de oro de tú subasta.
+        Call WriteLocaleMsg(Subastador.ArrayIndex, MSG_FELICITACIONES_HAS_GANADO_MONEDAS_DE_ORO_DE_TU_SUBASTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Subasta.MejorOferta)) ' Msg1441=Felicitaciones, has ganado ¬1 monedas de oro de tú subasta.
         Call WriteUpdateGold(Subastador.ArrayIndex)
         Call LogearEventoDeSubasta("Oro entregado en la billetera")
     End If

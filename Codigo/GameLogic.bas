@@ -103,12 +103,12 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
                         'Msg1104= Comercio cancelado. El otro usuario se ha desconectado.
-                        Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "1104", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+                        Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_EL_OTRO_USUARIO_SE_HA_DESCONECTADO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                     End If
                     'Lo sacamos.
                     If UserList(OtherUserIndex).flags.UserLogged Then
                         Call FinComerciarUsu(OtherUserIndex)
-                        Call WriteShowMessageBox(OtherUserIndex, 1758, vbNullString) 'Msg1758=Alguien se ha conectado donde te encontrabas, por favor reconéctate...
+                        Call WriteShowMessageBox(OtherUserIndex, MSG_ALGUIEN_SE_HA_CONECTADO_DONDE_TE_ENCONTRABAS_POR_FAVOR_RECONECTATE, vbNullString) 'Msg1758=Alguien se ha conectado donde te encontrabas, por favor reconéctate...
                     End If
                 End If
                 Call CloseSocket(OtherUserIndex)
@@ -1256,7 +1256,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
                                         Call FinishQuest(UserIndex, .QuestIndex, i)
                                         Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-                                        Call WriteLocaleChatOverHead(UserIndex, 1353, "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
+                                        Call WriteLocaleChatOverHead(UserIndex, MSG_QUEST_FINALIZADA_1353, "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
                                         ' Msg494=Quest Finalizada!
                                         Call WriteLocaleMsg(UserIndex, MSG_QUEST_FINALIZADA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP)
                                     End If

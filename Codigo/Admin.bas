@@ -181,7 +181,7 @@ End Sub
 Sub WorldSave()
     On Error GoTo Handler
     Dim LoopX As Integer
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_INICIANDO_WORLDSAVE, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
     Dim j As Integer, k As Integer
     For j = 1 To NumMaps
@@ -214,7 +214,7 @@ Public Sub PurgarPenas()
                     UserList(i).Counters.Pena = 0
                     Call WarpUserChar(i, Libertad.Map, Libertad.x, Libertad.y, True)
                     'Msg1103= Has sido liberado.
-                    Call WriteLocaleMsg(i, "1103", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteLocaleMsg(i, MSG_HAS_SIDO_LIBERADO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                 End If
             End If
         End If

@@ -196,13 +196,13 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
         ElseIf Distancia(NpcList(NpcIndex).pos, .pos) > 10 Then
             Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         ElseIf NpcList(NpcIndex).npcType <> e_NPCType.Timbero Then
-            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENGO_NINGUN_INTERES_EN_APOSTAR, vbNullString, charindex, vbWhite)
         ElseIf amount < 1 Then
-            Call WriteLocaleChatOverHead(UserIndex, 1323, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_EL_MINIMO_DE_APUESTA_ES_1_MONEDA, vbNullString, charindex, vbWhite)
         ElseIf amount > 5000 Then
-            Call WriteLocaleChatOverHead(UserIndex, 1324, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_EL_MAXIMO_DE_APUESTA_ES_5_000_MONEDAS, vbNullString, charindex, vbWhite)
         ElseIf .Stats.GLD < amount Then
-            Call WriteLocaleChatOverHead(UserIndex, 1325, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_1325, vbNullString, charindex, vbWhite)
         Else
             If RandomNumber(1, 100) <= 10 Then
                 ' GANADOR
@@ -263,9 +263,9 @@ Public Sub HandleMapPriceEntrance(ByVal UserIndex As Integer)
         ElseIf Distancia(NpcList(NpcIndex).pos, .pos) > 10 Then
             Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         ElseIf .Stats.GLD < entryPrice Then
-            Call WriteLocaleChatOverHead(UserIndex, 2040, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_LA_CANTIDAD_DE_ORO_NECESARIA_PARA_INGRESAR_A_LA_ARENA_DE_LINDOS, vbNullString, charindex, vbWhite)
         ElseIf NpcList(NpcIndex).npcType <> e_NPCType.ArenaGuard Then
-            Call WriteLocaleChatOverHead(UserIndex, 1322, vbNullString, charindex, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENGO_NINGUN_INTERES_EN_APOSTAR, vbNullString, charindex, vbWhite)
         Else
             .Stats.GLD = .Stats.GLD - entryPrice
             Call WriteUpdateGold(UserIndex)
@@ -658,13 +658,13 @@ Public Sub HandleSilence(ByVal UserIndex As Integer)
                     Call SavePenaDatabase(username, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
                     Call SendData(SendTarget.ToGM, 0, PrepareMessageLocaleMsg(MSG_ADMINISTRACION_SILENCIADO_MINUTOS, .name & "Â¬" & UserList(tUser.ArrayIndex).name & "Â¬" & minutos, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1829=AdministraciÃ³n Â» Â¬1 ha silenciado a Â¬2 por Â¬3 minutos.
                     'Msg949= Has sido silenciado por los administradores, no podrÃ¡s hablar con otros usuarios. Utilice /GM para pedir ayuda.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, "949", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_SIDO_SILENCIADO_POR_LOS_ADMINISTRADORES_NO_PODRAS_HABLAR_CON_OTROS_USUARIOS_UTILICE_GM_PARA_PEDIR, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                     Call LogGM(GetUserRealName(UserIndex), "Silenciar a " & UserList(tUser.ArrayIndex).name & " por " & minutos & " minutos.")
                 Else
                     UserList(tUser.ArrayIndex).flags.Silenciado = 1
                     Call SendData(SendTarget.ToGM, 0, PrepareMessageLocaleMsg(MSG_ADMINISTRACION_DESILENCIADO, .name & "Â¬" & UserList(tUser.ArrayIndex).name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1830=AdministraciÃ³n Â» Â¬1 ha desilenciado a Â¬2.
                     'Msg950= Has sido desilenciado.
-                    Call WriteLocaleMsg(tUser.ArrayIndex, "950", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_SIDO_DESILENCIADO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                     Call LogGM(GetUserRealName(UserIndex), "Desilenciar a " & UserList(tUser.ArrayIndex).name & ".")
                 End If
             Else
@@ -991,8 +991,8 @@ Public Sub HandleWarnUser(ByVal UserIndex As Integer)
                 ' Actualizo el valor en la memoria.
                 UserList(tUser.ArrayIndex).Stats.Advertencias = UserList(tUser.ArrayIndex).Stats.Advertencias + 1
                 ' Para el usuario advertido
-                Call WriteLocaleMsg(tUser.ArrayIndex, "1479", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, .name)  ' Msg1479=Has sido advertido por Â¬1
-                Call WriteLocaleMsg(tUser.ArrayIndex, "1480", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, UserList(tUser.ArrayIndex).Stats.Advertencias)   ' Msg1480=TenÃ©s Â¬1 advertencias actualmente.
+                Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_SIDO_ADVERTIDO_POR, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, .name)  ' Msg1479=Has sido advertido por Â¬1
+                Call WriteLocaleMsg(tUser.ArrayIndex, MSG_TENES_ADVERTENCIAS_ACTUALMENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, UserList(tUser.ArrayIndex).Stats.Advertencias)   ' Msg1480=TenÃ©s Â¬1 advertencias actualmente.
                 ' Cuando acumulas cierta cantidad de advertencias...
                 Select Case UserList(tUser.ArrayIndex).Stats.Advertencias
                     Case 3
@@ -1663,27 +1663,27 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, 1342, vbNullString, priest.Char.charindex, vbWhite) ' Msg1342=Tu alma ya esta libre de pecados hijo mio.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TU_ALMA_YA_ESTA_LIBRE_DE_PECADOS_HIJO_MIO, vbNullString, priest.Char.charindex, vbWhite) ' Msg1342=Tu alma ya esta libre de pecados hijo mio.
             Exit Sub
         End If
         If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, 1343, vbNullString, priest.Char.charindex, vbWhite) ' Msg1343=Â¡Â¡Dios no te perdonarÃ¡ mientras seas fiel al Demonio!!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_TE_PERDONARA_MIENTRAS_SEAS_FIEL_AL_DEMONIO, vbNullString, priest.Char.charindex, vbWhite) ' Msg1343=Â¡Â¡Dios no te perdonarÃ¡ mientras seas fiel al Demonio!!
             Exit Sub
         End If
         If .GuildIndex <> 0 Then
             If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                Call WriteLocaleChatOverHead(UserIndex, 1344, vbNullString, priest.Char.charindex, vbWhite) ' Msg1344=Te encuentras en un clan criminal... debes retirarte para que pueda perdonarte.
+                Call WriteLocaleChatOverHead(UserIndex, MSG_TE_ENCUENTRAS_EN_UN_CLAN_CRIMINAL_DEBES_RETIRARTE_PARA_QUE_PUEDA_PERDONARTE, vbNullString, priest.Char.charindex, vbWhite) ' Msg1344=Te encuentras en un clan criminal... debes retirarte para que pueda perdonarte.
                 Exit Sub
             End If
         End If
         If .Faccion.ciudadanosMatados > 0 Then
             Dim Donacion As Long
             Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
-            Call WriteLocaleChatOverHead(UserIndex, "1345", Donacion, priest.Char.charindex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donaciÃ³n de, digamos, Â¬1 monedas de oro, tal vez cambie de opiniÃ³n...
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_MATADO_A_CIUDADANOS_INOCENTES_DIOS_NO_PUEDE_PERDONARTE_LO_QUE_HAS_HECHO_PERO_SI_HACES_UNA_GENEROSA, Donacion, priest.Char.charindex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donaciÃ³n de, digamos, Â¬1 monedas de oro, tal vez cambie de opiniÃ³n...
             Exit Sub
         Else
             Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
-            Call WriteLocaleChatOverHead(UserIndex, 1346, Donacion, priest.Char.charindex, vbWhite)  ' Msg1346=Para volver a ser un ciudadano deberÃ¡s Donar Â¬1 monedas de oro.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_VOLVER_A_SER_UN_CIUDADANO_DEBERAS_DONAR_MONEDAS_DE_ORO, Donacion, priest.Char.charindex, vbWhite)  ' Msg1346=Para volver a ser un ciudadano deberÃ¡s Donar Â¬1 monedas de oro.
             Exit Sub
         End If
         Dim permitePerdon As Boolean
@@ -1695,10 +1695,10 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
             permitePerdon = True
         End If
         If Not permitePerdon Then
-            Call WriteLocaleChatOverHead(UserIndex, "1347", "", priest.Char.charindex, vbYellow) ' Msg1347=No podrÃ¡s ser perdonado perteneciendo a un clan de alineaciÃ³n Criminal o de AlineaciÃ³n Oscura.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, "", priest.Char.charindex, vbYellow) ' Msg1347=No podrÃ¡s ser perdonado perteneciendo a un clan de alineaciÃ³n Criminal o de AlineaciÃ³n Oscura.
             Exit Sub
         End If
-        Call WriteLocaleChatOverHead(UserIndex, "1348", "", priest.Char.charindex, vbYellow) ' Msg1348=Con estas palabras, te libero de todo tipo de pecados. Â¡Que Dios te acompaÃ±e hijo mÃ­o!
+        Call WriteLocaleChatOverHead(UserIndex, MSG_CON_ESTAS_PALABRAS_TE_LIBERO_DE_TODO_TIPO_DE_PECADOS_QUE_DIOS_TE_ACOMPANE_HIJO_MIO, "", priest.Char.charindex, vbYellow) ' Msg1348=Con estas palabras, te libero de todo tipo de pecados. Â¡Que Dios te acompaÃ±e hijo mÃ­o!
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call VolverCiudadano(UserIndex)

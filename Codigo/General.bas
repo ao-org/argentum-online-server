@@ -1436,7 +1436,7 @@ Sub PasarSegundo()
                         .flags.Silenciado = 0
                         .flags.MinutosRestantes = 0
                         'Msg1018= Has sido liberado del silencio.
-                        Call WriteLocaleMsg(i, "1018", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteLocaleMsg(i, MSG_HAS_SIDO_LIBERADO_DEL_SILENCIO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                     End If
                 End If
                 If .flags.Muerto = 0 Then
@@ -1472,7 +1472,7 @@ Sub PasarSegundo()
                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris)
                     Else
                         'Msg1019= >>> YA! <<<
-                        Call WriteLocaleMsg(i, "1019", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(i, MSG_YA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                         Call WriteStopped(i, False)
                     End If
                     .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
@@ -1524,10 +1524,10 @@ Sub PasarSegundo()
                 'Cerrar usuario
                 If .Counters.Saliendo Then
                     .Counters.Salir = .Counters.Salir - 1
-                    Call WriteLocaleMsg(i, "203", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+                    Call WriteLocaleMsg(i, MSG_GAME_CLOSING_IN_SECONDS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
                     If .Counters.Salir <= 0 Then
                         'Msg1020= Gracias por jugar Argentum 20.
-                        Call WriteLocaleMsg(i, "1020", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(i, MSG_GRACIAS_POR_JUGAR_ARGENTUM_20, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteDisconnect(i)
                         Call CloseSocket(i)
                     End If

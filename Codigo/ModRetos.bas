@@ -485,7 +485,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 If IsValidUserRef(tUser) Then
                     UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + Oro
                     Call WriteUpdateGold(tUser.ArrayIndex)
-                    Call WriteLocaleMsg(tUser.ArrayIndex, "29", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_GANADO_MONEDAS_DE_ORO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
                     Call RevivirYLimpiar(tUser.ArrayIndex)
                     Call DevolverPosAnterior(tUser.ArrayIndex)
                     ' Reset flags
@@ -532,7 +532,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If UserList(tUser.ArrayIndex).flags.EquipoReto = Ganador Then
                         UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + Oro
                         Call WriteUpdateGold(tUser.ArrayIndex)
-                        Call WriteLocaleMsg(tUser.ArrayIndex, "29", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
+                        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_GANADO_MONEDAS_DE_ORO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
                         If .CaenItems Then
                             Call WarpToLegalPos(tUser.ArrayIndex, .PosIzquierda.Map, .PosIzquierda.x, .PosIzquierda.y, True)
                         Else

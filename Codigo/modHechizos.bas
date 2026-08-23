@@ -4021,7 +4021,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
             Call UsuarioAtacadoPorUsuario(UserIndex, NpcIndex)
         End If
         'Msg823= Has sido paralizado.
-        Call WriteLocaleMsg(NpcIndex, "823", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_PARALIZADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).Counters.Paralisis = Hechizos(h2).Duration
         If UserList(NpcIndex).flags.Paralizado = 0 Then
             UserList(NpcIndex).flags.Paralizado = 1
@@ -4037,7 +4037,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
             Call UsuarioAtacadoPorUsuario(UserIndex, NpcIndex)
         End If
         'Msg824= Has sido inmovilizado.
-        Call WriteLocaleMsg(NpcIndex, "824", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_INMOVILIZADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).Counters.Inmovilizado = Hechizos(h2).Duration
         If UserList(NpcIndex).flags.Inmovilizado = 0 Then
             UserList(NpcIndex).flags.Inmovilizado = 1
@@ -4056,7 +4056,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         UserList(NpcIndex).flags.Ceguera = 1
         UserList(NpcIndex).Counters.Ceguera = Hechizos(h2).Duration
         'Msg825= Te han cegado.
-        Call WriteLocaleMsg(NpcIndex, "825", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_TE_HAN_CEGADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Call WriteBlind(NpcIndex)
     End If
     If Hechizos(h2).velocidad > 0 Then
@@ -4082,18 +4082,18 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
             Call UsuarioAtacadoPorUsuario(UserIndex, NpcIndex)
         End If
         'Msg826= Ahora estas maldito. No podras Atacar
-        Call WriteLocaleMsg(NpcIndex, "826", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_AHORA_ESTAS_MALDITO_NO_PODRAS_ATACAR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.Maldicion = 1
         UserList(NpcIndex).Counters.Maldicion = Hechizos(h2).Duration
     End If
     If IsSet(Hechizos(h2).Effects, e_SpellEffects.RemoveCurse) Then
         'Msg827= Te han removido la maldicion.
-        Call WriteLocaleMsg(NpcIndex, "827", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_TE_HAN_REMOVIDO_LA_MALDICION, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.Maldicion = 0
     End If
     If IsSet(Hechizos(h2).Effects, e_SpellEffects.PreciseHit) Then
         'Msg828= Tu proximo golpe sera certero.
-        Call WriteLocaleMsg(NpcIndex, "828", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_TU_PROXIMO_GOLPE_SERA_CERTERO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.GolpeCertero = 1
     End If
     If IsSet(Hechizos(h2).Effects, e_SpellEffects.Incinerate) Then
@@ -4106,11 +4106,11 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         End If
         UserList(NpcIndex).flags.Incinerado = 1
         'Msg829= Has sido Incinerado.
-        Call WriteLocaleMsg(NpcIndex, "829", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_INCINERADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
     End If
     If IsSet(Hechizos(h2).Effects, e_SpellEffects.Invisibility) Then
         'Msg830= Ahora sos invisible.
-        Call WriteLocaleMsg(NpcIndex, "830", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_AHORA_SOS_INVISIBLE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.invisible = 1
         UserList(NpcIndex).Counters.Invisibilidad = Hechizos(h2).Duration
         Call WriteContadores(NpcIndex)
@@ -4118,7 +4118,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
     End If
     If Hechizos(h2).Sanacion = 1 Then
         'Msg831= Has sido sanado.
-        Call WriteLocaleMsg(NpcIndex, "831", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_SANADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.Envenenado = 0
         UserList(NpcIndex).flags.Incinerado = 0
         If UserList(NpcIndex).Counters.velocidad <> 0 Then
@@ -4129,7 +4129,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
     End If
     If IsSet(Hechizos(h2).Effects, e_SpellEffects.RemoveParalysis) Then
         'Msg832= Has sido removido.
-        Call WriteLocaleMsg(NpcIndex, "832", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_REMOVIDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
             UserList(NpcIndex).Counters.Inmovilizado = 0
             UserList(NpcIndex).flags.Inmovilizado = 0
@@ -4151,7 +4151,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
     End If
     If Hechizos(h2).desencantar = 1 Then
         'Msg833= Has sido desencantado.
-        Call WriteLocaleMsg(NpcIndex, "833", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_DESENCANTADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).flags.Envenenado = 0
         UserList(NpcIndex).Counters.Veneno = 0
         UserList(NpcIndex).flags.Incinerado = 0

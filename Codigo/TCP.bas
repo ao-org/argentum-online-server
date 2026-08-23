@@ -293,13 +293,13 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Exit Function
         End If
         If Not NombrePermitido(name) Then
-            Call WriteShowMessageBox(UserIndex, 1768, vbNullString) 'Msg1768=El nombre no está permitido.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_NOMBRE_NO_ESTA_PERMITIDO, vbNullString) 'Msg1768=El nombre no está permitido.
             Exit Function
         End If
 #End If
         '¿Existe el personaje?
         If PersonajeExiste(name) Then
-            Call WriteShowMessageBox(UserIndex, 1769, vbNullString) 'Msg1769=Ya existe el personaje.
+            Call WriteShowMessageBox(UserIndex, MSG_YA_EXISTE_EL_PERSONAJE, vbNullString) 'Msg1769=Ya existe el personaje.
             Exit Function
         End If
         ' Raza válida
@@ -522,12 +522,12 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String) A
             End If
         Next adminIdx
         If Not laCuentaEsDeAdmin Then
-            Call WriteShowMessageBox(UserIndex, 1770, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_SERVIDOR_SE_ENCUENTRA_HABILITADO_SOLO_PARA_ADMINISTRADORES_POR_EL_MOMENTO, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
             Exit Function
         End If
     End If
     If Not CheckMailString(CuentaEmail) Then
-        Call WriteShowMessageBox(UserIndex, 1772, vbNullString) 'Msg1772=Email inválido.
+        Call WriteShowMessageBox(UserIndex, MSG_EMAIL_INVALIDO, vbNullString) 'Msg1772=Email inválido.
         Exit Function
     End If
     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail)
@@ -559,7 +559,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
                     ConnectUser = True
                 End If
             Else
-                Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString) 'Msg1773=No se puede cargar el personaje.
                 Call CloseSocket(UserIndex)
             End If
         End If
@@ -586,14 +586,14 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Call PerformanceTestStart(PerformanceTimer)
 
     If CharID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
 
     ' Ensure we have an account loaded
     If UserList(UserIndex).AccountID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -603,7 +603,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Set RS = Query("select name from user where id=" & CStr(CharID) & " and account_id=" & CStr(UserList(UserIndex).AccountID))
 
     If RS Is Nothing Or RS.EOF Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -630,7 +630,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
             ConnectUserByID = True
         End If
     Else
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
     End If
 

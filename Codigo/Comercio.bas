@@ -49,7 +49,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_BANEADO_SISTEMA_ANTI_CHEATS, UserList(UserIndex).name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
             Call Ban(UserList(UserIndex).name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
             UserList(UserIndex).flags.Ban = 1
-            Call WriteShowMessageBox(UserIndex, 1757, vbNullString) 'Msg1751=Has sido baneado por el Sistema AntiCheat.
+            Call WriteShowMessageBox(UserIndex, MSG_HAS_SIDO_BANEADO_POR_EL_SISTEMA_ANTICHEAT, vbNullString) 'Msg1751=Has sido baneado por el Sistema AntiCheat.
             Call CloseSocket(UserIndex)
             Exit Sub
         ElseIf Not NpcList(NpcIndex).invent.Object(Slot).amount > 0 Then

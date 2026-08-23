@@ -828,7 +828,7 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
-' @param    Channel Semantic channel reserved for the future protocol field.
+' @param    Channel Semantic text channel sent to the client.
 ' @param    FontIndex Index of the FONTTYPE structure to use.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByVal Channel As e_TextChannel, ByVal FontIndex As e_FontTypeNames)
@@ -3381,7 +3381,7 @@ End Function
 ' Prepares the "ConsoleMsg" message and returns it.
 '
 ' @param    Chat Text to be displayed over the char's head.
-' @param    Channel Semantic channel reserved for the future protocol field.
+' @param    Channel Semantic text channel sent to the client.
 ' @param    FontIndex Index of the FONTTYPE structure to use.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -3390,6 +3390,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal Channel As 
     Debug.Assert Channel >= TEXTCHANNEL_SYSTEM And Channel < TEXTCHANNEL_MAX
     Call Writer.WriteInt16(ServerPacketID.eConsoleMsg)
     Call Writer.WriteString8(chat)
+    Call Writer.WriteInt8(Channel)
     Call Writer.WriteInt8(FontIndex)
     Exit Function
 PrepareMessageConsoleMsg_Err:
@@ -3507,6 +3508,7 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
     Call Writer.WriteInt16(Id)
     Call Writer.WriteString8(chat)
+    Call Writer.WriteInt8(Channel)
     Call Writer.WriteInt8(FontIndex)
     Exit Function
 PrepareMessageLocaleMsg_Err:

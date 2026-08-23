@@ -1212,12 +1212,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
     If MapInfo(UserList(VictimaIndex).pos.Map).Seguro = 1 Then Exit Sub
     If Not UserMod.CanMove(UserList(VictimaIndex).flags, UserList(VictimaIndex).Counters) Then
         'Msg1028= No podes robarle a objetivos inmovilizados.
-        Call WriteLocaleMsg(LadronIndex, "1028", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Call WriteLocaleMsg(LadronIndex, MSG_NO_PODES_ROBARLE_A_OBJETIVOS_INMOVILIZADOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Exit Sub
     End If
     If UserList(VictimaIndex).flags.EnConsulta Then
         'Msg1029= ¡No puedes robar a usuarios en consulta!
-        Call WriteLocaleMsg(LadronIndex, "1029", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(LadronIndex, MSG_NO_PUEDES_ROBAR_A_USUARIOS_EN_CONSULTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     Dim Penable As Boolean
@@ -1225,19 +1225,19 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         If esCiudadano(LadronIndex) Then
             If (.flags.Seguro) Then
                 'Msg1030= Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real
-                Call WriteLocaleMsg(LadronIndex, "1030", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(LadronIndex, MSG_DEBES_QUITARTE_EL_SEGURO_PARA_ROBARLE_A_OTRO_PERSONAJE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
         ElseIf esArmada(LadronIndex) Then ' Armada robando a armada or ciudadano?
             If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
                 'Msg1031= Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real
-                Call WriteLocaleMsg(LadronIndex, "1031", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(LadronIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_NO_TIENEN_PERMITIDO_ROBARLE_A_CIUDADANOS_O_A_OTROS_MIEMBROS_DEL_EJERCITO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
         ElseIf esCaos(LadronIndex) Then ' Caos robando a caos?
             If (esCaos(VictimaIndex)) Then
                 'Msg1032= No puedes robar a otros miembros de la Legión Oscura.
-                Call WriteLocaleMsg(LadronIndex, "1032", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(LadronIndex, MSG_NO_PUEDES_ROBAR_A_OTROS_MIEMBROS_DE_LA_LEGION_OSCURA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
         End If
@@ -1247,7 +1247,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             If esCiudadano(LadronIndex) And GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                 If PersonajeEsLeader(.Id) Then
                     'Msg1033= No puedes robar siendo lider de un clan ciudadano.
-                    Call WriteLocaleMsg(LadronIndex, "1033", e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(LadronIndex, MSG_NO_PUEDES_ROBAR_SIENDO_LIDER_DE_UN_CLAN_CIUDADANO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
             End If
@@ -1259,12 +1259,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 'Msg2129=¡No tengo energía!
                 Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1034= Estás muy cansado para robar.
-                Call WriteLocaleMsg(LadronIndex, "1034", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(LadronIndex, MSG_ESTAS_MUY_CANSADO_PARA_ROBAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 'Msg2129=¡No tengo energía!
                 Call SendData(SendTarget.ToIndex, LadronIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(LadronIndex).Char.charindex, vbWhite))
                 'Msg1035= Estás muy cansada para robar.
-                Call WriteLocaleMsg(LadronIndex, "1035", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(LadronIndex, MSG_ESTAS_MUY_CANSADA_PARA_ROBAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             End If
             Exit Sub
         End If
@@ -1272,7 +1272,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= RequiredGuildLevelSafe Then
                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
                     'Msg1036= No podes robarle a un miembro de tu clan.
-                    Call WriteLocaleMsg(LadronIndex, "1036", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(LadronIndex, MSG_NO_PODES_ROBARLE_A_UN_MIEMBRO_DE_TU_CLAN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
@@ -1312,9 +1312,9 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu.ArrayIndex
                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
                         'Msg1037= Comercio cancelado, ¡te están robando!
-                        Call WriteLocaleMsg(VictimaIndex, "1037", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+                        Call WriteLocaleMsg(VictimaIndex, MSG_COMERCIO_CANCELADO_TE_ESTAN_ROBANDO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                         'Msg1038= Comercio cancelado, al otro usuario le robaron.
-                        Call WriteLocaleMsg(OtroUserIndex, "1038", e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+                        Call WriteLocaleMsg(OtroUserIndex, MSG_COMERCIO_CANCELADO_AL_OTRO_USUARIO_LE_ROBARON, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                         Call LimpiarComercioSeguro(VictimaIndex)
                     End If
                 End If
@@ -1370,8 +1370,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                         End If
                         .Stats.GLD = .Stats.GLD + n
                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
-                        Call WriteLocaleMsg(LadronIndex, "1458", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, PonerPuntos(n) & "¬" & UserList(VictimaIndex).name) ' Msg1458=Le has robado ¬1 monedas de oro a ¬2
-                        Call WriteLocaleMsg(VictimaIndex, "1530", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & PonerPuntos(n)) 'Msg1530=¬1 te ha robado ¬2 monedas de oro.
+                        Call WriteLocaleMsg(LadronIndex, MSG_LE_HAS_ROBADO_MONEDAS_DE_ORO_A, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, PonerPuntos(n) & "¬" & UserList(VictimaIndex).name) ' Msg1458=Le has robado ¬1 monedas de oro a ¬2
+                        Call WriteLocaleMsg(VictimaIndex, MSG_TE_HA_ROBADO_MONEDAS_DE_ORO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & PonerPuntos(n)) 'Msg1530=¬1 te ha robado ¬2 monedas de oro.
                         Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
                     Else
@@ -1381,8 +1381,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 Call SubirSkill(LadronIndex, e_Skill.Robar)
             Else
                 'Msg1039= ¡No has logrado robar nada!
-                Call WriteLocaleMsg(LadronIndex, "1039", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(VictimaIndex, "1459", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1459=¡¬1 ha intentado robarte!
+                Call WriteLocaleMsg(LadronIndex, MSG_NO_HAS_LOGRADO_ROBAR_NADA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(VictimaIndex, MSG_HA_INTENTADO_ROBARTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1459=¡¬1 ha intentado robarte!
                 Call SubirSkill(LadronIndex, e_Skill.Robar)
             End If
             If Status(LadronIndex) = Ciudadano Then Call VolverCriminal(LadronIndex)
@@ -1465,15 +1465,15 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 Call TirarItemAlPiso(UserList(LadronIndex).pos, MiObj)
             End If
             If UserList(LadronIndex).clase = e_Class.Thief Then
-                Call WriteLocaleMsg(LadronIndex, "1460", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1460=Has robado ¬1 ¬2
-                Call WriteLocaleMsg(VictimaIndex, "1531", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & MiObj.Amount & "¬" & ObjData( _
+                Call WriteLocaleMsg(LadronIndex, MSG_HAS_ROBADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1460=Has robado ¬1 ¬2
+                Call WriteLocaleMsg(VictimaIndex, MSG_TE_HA_ROBADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, UserList(LadronIndex).name & "¬" & MiObj.Amount & "¬" & ObjData( _
                         MiObj.ObjIndex).name) 'Msg1531=¬1 te ha robado ¬2 ¬3.
             Else
-                Call WriteLocaleMsg(LadronIndex, "1461", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1461=Has hurtado ¬1 ¬2
+                Call WriteLocaleMsg(LadronIndex, MSG_HAS_HURTADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon, MiObj.Amount & "¬" & ObjData(MiObj.ObjIndex).name)  ' Msg1461=Has hurtado ¬1 ¬2
             End If
         Else
             'Msg1040= No has logrado robar ningun objeto.
-            Call WriteLocaleMsg(LadronIndex, "1040", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(LadronIndex, MSG_NO_HAS_LOGRADO_ROBAR_NINGUN_OBJETO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
         'If exiting, cancel de quien es robado
         Call CancelExit(VictimaIndex)

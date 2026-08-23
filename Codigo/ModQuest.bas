@@ -90,7 +90,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RequiredOBJs > 0 Then
             For i = 1 To .RequiredOBJs
                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1336", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_HAS_CONSEGUIDO_TODOS_LOS_OBJETOS_QUE_TE_HE_PEDIDO, "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1336=No has conseguido todos los objetos que te he pedido.
                     Exit Sub
                 End If
             Next i
@@ -100,7 +100,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RequiredNPCs > 0 Then
             For i = 1 To .RequiredNPCs
                 If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1337", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1337=No has matado todas las criaturas que te he pedido.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_HAS_MATADO_TODAS_LAS_CRIATURAS_QUE_TE_HE_PEDIDO, "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1337=No has matado todas las criaturas que te he pedido.
                     Exit Sub
                 End If
             Next i
@@ -108,7 +108,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RequiredSpellCount > 0 Then
             For i = 1 To .RequiredSpellCount
                 If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1338", Hechizos(.RequiredSpellList(i)).nombre, NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1338=Necesitas aprender el hechizo: {0}.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NECESITAS_APRENDER_EL_HECHIZO, Hechizos(.RequiredSpellList(i)).nombre, NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1338=Necesitas aprender el hechizo: {0}.
                     Exit Sub
                 End If
             Next i
@@ -117,7 +117,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RequiredTargetNPCs > 0 Then
             For i = 1 To .RequiredTargetNPCs
                 If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
-                    Call WriteLocaleChatOverHead(UserIndex, "1339", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1339=No has visitado al npc que te pedi.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_HAS_VISITADO_AL_NPC_QUE_TE_PEDI, "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1339=No has visitado al npc que te pedi.
                     Exit Sub
                 End If
             Next i
@@ -138,7 +138,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             Next i
             'Nos fijamos si entra
             If InvSlotsLibres < .RewardOBJs Then
-                Call WriteLocaleChatOverHead(UserIndex, "1340", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1340=No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_SUFICIENTE_ESPACIO_EN_EL_INVENTARIO_PARA_RECIBIR_LA_RECOMPENSA_VUELVE_CUANDO_HAYAS_HECHO_MAS, "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1340=No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.
                 Exit Sub
             End If
         End If
@@ -517,7 +517,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 
     'El NPC ofrece quests propias?
     If NpcList(NpcIndex).NumQuest = 0 Then
-        Call WriteLocaleChatOverHead(UserIndex, "1341", "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1341=No tengo ninguna misión para ti.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENGO_NINGUNA_MISION_PARA_TI, "", NpcList(NpcIndex).Char.charindex, vbYellow) ' Msg1341=No tengo ninguna misión para ti.
         Exit Sub
     End If
 

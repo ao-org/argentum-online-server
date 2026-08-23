@@ -772,7 +772,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     If Connection.State = adStateClosed Then
-        Call WriteShowMessageBox(UserIndex, 1784, vbNullString) 'Msg1784=Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!
+        Call WriteShowMessageBox(UserIndex, MSG_HA_OCURRIDO_UN_ERROR_INTERNO_EN_EL_SERVIDOR_ESTAMOS_TRATANDO_DE_RESOLVERLO, vbNullString) 'Msg1784=Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!
         Exit Function
     End If
     UserList(UserIndex).AccountID = RS!Id

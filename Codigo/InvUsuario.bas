@@ -1394,7 +1394,7 @@ Dim Ropaje                      As Integer
                     Case e_MagicItemEffect.eTalkToDead
                         Call SetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
                         ' Msg675=Entras al mundo de los muertos, ahora podrás comunicarte con ellos.
-                        Call WriteLocaleMsg(UserIndex, "675", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteLocaleMsg(UserIndex, MSG_ENTRAS_AL_MUNDO_DE_LOS_MUERTOS_AHORA_PODRAS_COMUNICARTE_CON_ELLOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                         Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
                 End Select
                 'Sonido
@@ -1435,7 +1435,7 @@ Dim Ropaje                      As Integer
                 End If
                 If Ropaje = 0 Then
                     ' Msg676=Hay un error con este objeto. Infórmale a un administrador.
-                    Call WriteLocaleMsg(UserIndex, "676", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 'Si esta equipado lo quita
@@ -2728,16 +2728,16 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Exit Sub
                 End If
                 If .pos.Map <> obj.DesdeMap Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1354, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_EL_PASAJE_NO_LO_COMPRASTE_AQUI_LARGATE, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1354=El pasaje no lo compraste aquí! Largate!
                     Exit Sub
                 End If
                 If Not MapaValido(obj.HastaMap) Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1355, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1355=El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_EL_PASAJE_LLEVA_HACIA_UN_MAPA_QUE_YA_NO_ESTA_DISPONIBLE_DISCULPA_LAS_MOLESTIAS, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1355=El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.
                     Exit Sub
                 End If
                 If obj.NecesitaNave > 0 Then
                     If .Stats.UserSkills(e_Skill.Navegacion) < 80 Then
-                        Call WriteLocaleChatOverHead(UserIndex, 1356, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1356=Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_DEBIDO_A_LA_PELIGROSIDAD_DEL_VIAJE_NO_PUEDO_LLEVARTE_YA_QUE_AL_MENOS_NECESITAS_SABER_MANEJAR_UNA_BARCA, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1356=Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.
                         Exit Sub
                     End If
                 End If

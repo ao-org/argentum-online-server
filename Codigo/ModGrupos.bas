@@ -95,7 +95,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
             .flags.pregunta = 1
             Call SetUserRef(.Grupo.Lider, UserIndex)
         End With
-        Call WritePreguntaBox(InvitadoIndex, 1595, Remitente.name) 'Msg1595= ¬1 te invito a unirse a su grupo. ¿Deseas unirte?
+        Call WritePreguntaBox(InvitadoIndex, MSG_TE_INVITO_A_UNIRSE_A_SU_GRUPO_DESEAS_UNIRTE, Remitente.name) 'Msg1595= ¬1 te invito a unirse a su grupo. ¿Deseas unirte?
         UserList(InvitadoIndex).flags.RespondiendoPregunta = True
     Else
         Call WriteLocaleMsg(UserIndex, MSG_USUARIO_TIENE_SOLICITUD_PENDIENTE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2050="El usuario tiene una solicitud pendiente."
@@ -154,7 +154,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     
     With UserList(UserIndexEchar)
         Call WriteLocaleMsg(UserIndex, MSG_FUE_EXPULSADO_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, .Name)
-        Call WriteLocaleMsg(UserIndexEchar, "37", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
+        Call WriteLocaleMsg(UserIndexEchar, MSG_REMOVED_FROM_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
         .Grupo.EnGrupo = False
         Call SetUserRef(.Grupo.Lider, 0)
         Call SetUserRef(.Grupo.PropuestaDe, 0)
@@ -349,9 +349,9 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
         Next a
-        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "202", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
+        Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_USER_LEFT_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
+            Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_GROUP_DISBANDED_ALL_MEMBERS_LEFT, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False
             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Lider, 0)
@@ -465,7 +465,7 @@ CompartirUbicacion_Err:
 End Sub
 
 Public Sub GroupCreateSuccess(ByVal LiderIndex As Integer)
-    Call WriteLocaleMsg(LiderIndex, "36", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
+    Call WriteLocaleMsg(LiderIndex, MSG_EL_GRUPO_HA_SIDO_CREADO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
     With UserList(LiderIndex)
         .Grupo.EnGrupo = True
         .Grupo.Id = GetNextId()
@@ -486,9 +486,9 @@ Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As I
     UserList(UserIndex).Grupo.EnGrupo = True
     UserList(UserIndex).Grupo.Id = UserList(GroupLiderIndex).Grupo.Id
     For Index = 2 To UserList(GroupLiderIndex).Grupo.CantidadMiembros - 1
-        Call WriteLocaleMsg(UserList(GroupLiderIndex).Grupo.Miembros(Index).ArrayIndex, "40", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
+        Call WriteLocaleMsg(UserList(GroupLiderIndex).Grupo.Miembros(Index).ArrayIndex, MSG_HA_INGRESADO_AL_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
     Next Index
-    Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, "40", e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
+    Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, MSG_HA_INGRESADO_AL_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
     Call WriteLocaleMsg(UserIndex, MSG_SIDO_ANADIDO_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2066="¡Has sido añadido al grupo!"
     Call RefreshCharStatus(GroupLiderIndex)
     Call RefreshCharStatus(UserIndex)

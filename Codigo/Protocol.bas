@@ -1029,7 +1029,7 @@ End Sub
         Dim UserIndex As Integer
         UserIndex = MapConnectionToUser(ConnectionID)
         If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR)) ', "No hay slot disponibles para el usuario."))
             Call KickConnection(ConnectionID)
             Exit Sub
         End If
@@ -1063,7 +1063,7 @@ Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
     Dim UserIndex As Integer
     UserIndex = MapConnectionToUser(ConnectionID)
     If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094)) ', "No hay slot disponibles para el usuario."))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR)) ', "No hay slot disponibles para el usuario."))
         Call KickConnection(ConnectionID)
         Exit Sub
     End If
@@ -1166,7 +1166,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     If tokenLen <> 88 Or char_id <= 0 Then
         outcome = "kick_invalid_token_len"
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Call KickConnection(ConnectionID)
         GoTo FinallyLog
     End If
@@ -1190,7 +1190,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     If Not IsBase64(decrypted_session_token) Then
         outcome = "kick_decrypt_not_base64"
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Call KickConnection(ConnectionID)
         t_base64 = CLng(TicksElapsed(stepTimer, GetTickCountRaw()))
         GoTo FinallyLog
@@ -1221,7 +1221,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     If RS Is Nothing Or rsCount = 0 Then
         outcome = "kick_token_not_found"
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2093))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_INVALID_SESSION_TOKEN))
         Call KickConnection(ConnectionID)
         GoTo FinallyLog
     End If
@@ -1230,7 +1230,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     If CStr(RS!encrypted_token) <> encrypted_session_token Then
         outcome = "kick_token_mismatch"
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2092))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CLIENT_UPDATE_REQUIRED))
         Call KickConnection(ConnectionID)
         GoTo FinallyLog
     End If
@@ -1246,7 +1246,7 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
 
     If UserIndex < 1 Then
         outcome = "kick_no_userindex"
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(2094))
+        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR))
         Call KickConnection(ConnectionID)
         GoTo FinallyLog
     End If
@@ -1516,7 +1516,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(UserIndex, 1781, vbNullString) 'Msg1781=Has creado demasiados personajes.
+134         Call WriteShowMessageBox(UserIndex, MSG_HAS_CREADO_DEMASIADOS_PERSONAJES, vbNullString) 'Msg1781=Has creado demasiados personajes.
 
 136         Call CloseSocket(UserIndex)
             Exit Sub
@@ -2442,7 +2442,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleUseSpellMacro_Err
     With UserList(UserIndex)
         Call SendData(SendTarget.ToAdminsYDioses, UserIndex, PrepareMessageConsoleMsg(GetUserGMName(UserIndex) & " fue expulsado por Anti-macro de hechizos", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_WARNING))
-        Call WriteShowMessageBox(UserIndex, 1782, vbNullString) 'Msg1782=Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros.
+        Call WriteShowMessageBox(UserIndex, MSG_HAS_SIDO_EXPULSADO_POR_USAR_MACRO_DE_HECHIZOS_RECOMENDAMOS_LEER_EL_REGLAMENTO_SOBRE_EL_TEMA_MACROS, vbNullString) 'Msg1782=Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros.
         Call CloseSocket(UserIndex)
     End With
     Exit Sub
@@ -3970,7 +3970,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             Dim expulsado As t_UserReference
             expulsado = NameIndex(username)
             'Msg1152= Has sido expulsado del clan.
-            Call WriteLocaleMsg(expulsado.ArrayIndex, "1152", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(expulsado.ArrayIndex, MSG_HAS_SIDO_EXPULSADO_DEL_CLAN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageLocaleMsg(MSG_EXPULSADO_CLAN, username, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1810=¬1 fue expulsado del clan.
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         Else
@@ -4146,7 +4146,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         End If
         Select Case NpcList(.flags.TargetNPC.ArrayIndex).npcType
             Case e_NPCType.Banquero
-                Call WriteLocaleChatOverHead(UserIndex, 1433, "", str$(PonerPuntos(.Stats.Banco)), vbWhite) ' Msg1433=Tenes ¬1 monedas de oro en tu cuenta.
+                Call WriteLocaleChatOverHead(UserIndex, MSG_TENES_MONEDAS_DE_ORO_EN_TU_CUENTA_1433, "", str$(PonerPuntos(.Stats.Banco)), vbWhite) ' Msg1433=Tenes ¬1 monedas de oro en tu cuenta.
             Case e_NPCType.Timbero
                 If Not .flags.Privilegios And e_PlayerType.User Then
                     earnings = Apuestas.Ganancias - Apuestas.Perdidas
@@ -4577,7 +4577,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             'Does the NPC want to trade??
             If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
                 If LenB(NpcList(.flags.TargetNPC.ArrayIndex).Desc) <> 0 Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1434, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1434=No tengo ningún interés en comerciar.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENGO_NINGUN_INTERES_EN_COMERCIAR, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1434=No tengo ningún interés en comerciar.
                 End If
                 Exit Sub
             End If
@@ -4701,16 +4701,16 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
             If .Faccion.Status <> e_Facciones.Armada Or .Faccion.Status <> e_Facciones.consejo Then
-                Call WriteLocaleChatOverHead(UserIndex, 1389, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1389=No perteneces a las tropas reales!!!
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PERTENECES_A_LAS_TROPAS_REALES, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1389=No perteneces a las tropas reales!!!
                 Exit Sub
             End If
-            Call WriteLocaleChatOverHead(UserIndex, 1390, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1390=Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TU_DEBER_ES_COMBATIR_CRIMINALES_CADA_100_CRIMINALES_QUE_DERROTES_TE_DARI_UNA_RECOMPENSA, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1390=Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.
         Else
             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
-                Call WriteLocaleChatOverHead(UserIndex, 1391, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1391=No perteneces a la legión oscura!!!
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PERTENECES_A_LA_LEGION_OSCURA, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1391=No perteneces a la legión oscura!!!
                 Exit Sub
             End If
-            Call WriteLocaleChatOverHead(UserIndex, 1392, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1392=Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TU_DEBER_ES_SEMBRAR_EL_CAOS_Y_LA_DESESPERANZA_CADA_100_CIUDADANOS_QUE_DERROTES_TE_DARI_UNA_RECOMPENSA, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1392=Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.
         End If
     End With
     Exit Sub
@@ -4738,13 +4738,13 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         End If
         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
             If .Faccion.Status <> e_Facciones.Armada And .Faccion.Status <> e_Facciones.consejo Then
-                Call WriteLocaleChatOverHead(UserIndex, 1393, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1393=No perteneces a las tropas reales!!!
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PERTENECES_A_LAS_TROPAS_REALES_1393, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1393=No perteneces a las tropas reales!!!
                 Exit Sub
             End If
             Call RecompensaArmadaReal(UserIndex)
         Else
             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
-                Call WriteLocaleChatOverHead(UserIndex, 1394, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1394=No perteneces a la legión oscura!!!
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PERTENECES_A_LA_LEGION_OSCURA_1394, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1394=No perteneces a la legión oscura!!!
                 Exit Sub
             End If
             Call RecompensaCaos(UserIndex)
@@ -4926,11 +4926,11 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         If amount > 0 And amount <= .Stats.Banco Then
             .Stats.Banco = .Stats.Banco - amount
             .Stats.GLD = .Stats.GLD + amount
-            Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TENES_MONEDAS_DE_ORO_EN_TU_CUENTA, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
             Call WriteUpdateGold(UserIndex)
             Call WriteUpdateBankGld(UserIndex)
         Else
-            Call WriteLocaleChatOverHead(UserIndex, 1395, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1395=No tenés esa cantidad.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENES_ESA_CANTIDAD, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1395=No tenés esa cantidad.
         End If
     End With
     Exit Sub
@@ -4984,16 +4984,16 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                         Else
                             'Me fijo si está en un clan armada, en ese caso no lo dejo salir de la facción
                             If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                                Call WriteLocaleChatOverHead(UserIndex, 1396, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1396=Para dejar la facción primero deberás ceder el liderazgo del clan
+                                Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_DEJAR_LA_FACCION_PRIMERO_DEBERAS_CEDER_EL_LIDERAZGO_DEL_CLAN, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1396=Para dejar la facción primero deberás ceder el liderazgo del clan
                                 Exit Sub
                             End If
                         End If
                     End If
                     Call ExpulsarFaccionReal(UserIndex)
-                    Call WriteLocaleChatOverHead(UserIndex, 1397, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1397=Serás bienvenido a las fuerzas imperiales si deseas regresar.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_SERAS_BIENVENIDO_A_LAS_FUERZAS_IMPERIALES_SI_DESEAS_REGRESAR, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1397=Serás bienvenido a las fuerzas imperiales si deseas regresar.
                     Exit Sub
                 Else
-                    Call WriteLocaleChatOverHead(UserIndex, 1398, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1398=¡¡¡Sal de aquí bufón!!!
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_SAL_DE_AQUI_BUFON, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1398=¡¡¡Sal de aquí bufón!!!
                 End If
                 'Quit the Chaos Legion??
             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
@@ -5011,18 +5011,18 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                         Else
                             'Me fijo si está en un clan CAOS, en ese caso no lo dejo salir de la facción
                             If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                                Call WriteLocaleChatOverHead(UserIndex, 1399, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1399=Para dejar la facción primero deberás ceder el liderazgo del clan
+                                Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_DEJAR_LA_FACCION_PRIMERO_DEBERAS_CEDER_EL_LIDERAZGO_DEL_CLAN_1399, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1399=Para dejar la facción primero deberás ceder el liderazgo del clan
                                 Exit Sub
                             End If
                         End If
                     End If
                     Call ExpulsarFaccionCaos(UserIndex)
-                    Call WriteLocaleChatOverHead(UserIndex, 1400, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1400=Ya volverás arrastrandote.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_YA_VOLVERAS_ARRASTRANDOTE, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1400=Ya volverás arrastrandote.
                 Else
-                    Call WriteLocaleChatOverHead(UserIndex, 1401, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1401=Sal de aquí maldito criminal
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_SAL_DE_AQUI_MALDITO_CRIMINAL, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1401=Sal de aquí maldito criminal
                 End If
             Else
-                Call WriteLocaleChatOverHead(UserIndex, 1402, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1402=¡No perteneces a ninguna facción!
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PERTENECES_A_NINGUNA_FACCION, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1402=¡No perteneces a ninguna facción!
             End If
         End If
     End With
@@ -5056,11 +5056,11 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
             'substract first in case there is overflow we don't dup gold
             .Stats.GLD = .Stats.GLD - amount
             .Stats.Banco = .Stats.Banco + amount
-            Call WriteLocaleChatOverHead(UserIndex, 1418, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TENES_MONEDAS_DE_ORO_EN_TU_CUENTA, .Stats.Banco, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1418=Tenés ¬1 monedas de oro en tu cuenta.
             Call WriteUpdateGold(UserIndex)
             Call WriteUpdateBankGld(UserIndex)
         Else
-            Call WriteLocaleChatOverHead(UserIndex, 1419, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1419=No tenés esa cantidad.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TENES_ESA_CANTIDAD_1419, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1419=No tenés esa cantidad.
         End If
     End With
     Exit Sub
@@ -5723,14 +5723,14 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         End If
         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or _
                 .Faccion.Status = e_Facciones.Caos Then
-            Call WriteLocaleChatOverHead(UserIndex, 1377, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1377=No puedo aceptar tu donación en este momento...
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDO_ACEPTAR_TU_DONACION_EN_ESTE_MOMENTO, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1377=No puedo aceptar tu donación en este momento...
             Exit Sub
         End If
         If .GuildIndex <> 0 Then
             Dim ClanAlineacion As e_ALINEACION_GUILD
             ClanAlineacion = modGuilds.Alineacion(.GuildIndex)
             If ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                Call WriteLocaleChatOverHead(UserIndex, 1347, vbNullString, priest.Char.charindex, vbWhite) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
+                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, vbNullString, priest.Char.charindex, vbWhite) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
                 Exit Sub
             End If
         End If
@@ -5746,14 +5746,14 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
         End If
         If Oro < Donacion Then
-            Call WriteLocaleChatOverHead(UserIndex, 1405, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1405=Dios no puede perdonarte si eres una persona avara.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_PUEDE_PERDONARTE_SI_ERES_UNA_PERSONA_AVARA, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1405=Dios no puede perdonarte si eres una persona avara.
             Exit Sub
         End If
         .Stats.GLD = .Stats.GLD - Oro
         Call WriteUpdateGold(UserIndex)
         'Msg1219= Has donado ¬1
         Call WriteLocaleMsg(UserIndex, MSG_DONADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
-        Call WriteLocaleChatOverHead(UserIndex, 1406, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
+        Call WriteLocaleChatOverHead(UserIndex, MSG_GRACIAS_POR_TU_GENEROSA_DONACION_CON_ESTAS_PALABRAS_TE_LIBERO_DE_TODO_TIPO_DE_PECADOS_QUE_DIOS_TE_ACOMPANE, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 80, 100, False))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(100, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call VolverCiudadano(UserIndex)
@@ -5988,7 +5988,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Exit Sub
         End If
         If .flags.Subastando = False Then
-            Call WriteLocaleChatOverHead(UserIndex, 1407, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1407=Oye amigo, tu no podés decirme cual es la oferta inicial.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_OYE_AMIGO_TU_NO_PODES_DECIRME_CUAL_ES_LA_OFERTA_INICIAL, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1407=Oye amigo, tu no podés decirme cual es la oferta inicial.
             Exit Sub
         End If
         If Subasta.HaySubastaActiva = False And .flags.Subastando = False Then
@@ -6163,7 +6163,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         tUser = NameIndex(username)
         ' Enviar a vos mismo?
         If tUser.ArrayIndex = UserIndex Then
-            Call WriteLocaleChatOverHead(UserIndex, 1408, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1408=¡No puedo enviarte oro a vos mismo!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDO_ENVIARTE_ORO_A_VOS_MISMO, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1408=¡No puedo enviarte oro a vos mismo!
             Exit Sub
         End If
         If Not EsGM(UserIndex) Then
@@ -6173,7 +6173,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 If TicksElapsed(.Counters.LastTransferGold, nowRaw) >= 10000 Then
                     If PersonajeExiste(username) Then
                         If Not AddOroBancoDatabase(username, Cantidad) Then
-                            Call WriteLocaleChatOverHead(UserIndex, 1409, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1409=Error al realizar la operación.
+                            Call WriteLocaleChatOverHead(UserIndex, MSG_ERROR_AL_REALIZAR_LA_OPERACION, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1409=Error al realizar la operación.
                             Exit Sub
                         Else
                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
@@ -6181,11 +6181,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                         Call LogBankTransfer(GetUserRealName(UserIndex), username, Cantidad, False)
                         .Counters.LastTransferGold = nowRaw
                     Else
-                        Call WriteLocaleChatOverHead(UserIndex, 1410, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1410=El usuario no existe.
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_EL_USUARIO_NO_EXISTE, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1410=El usuario no existe.
                         Exit Sub
                     End If
                 Else
-                    Call WriteLocaleChatOverHead(UserIndex, 1411, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1411=Espera un momento.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_ESPERA_UN_MOMENTO, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1411=Espera un momento.
                     Exit Sub
                 End If
             Else
@@ -6193,9 +6193,9 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 Call LogBankTransfer(GetUserRealName(UserIndex), username, Cantidad, True)
             End If
-            Call WriteLocaleChatOverHead(UserIndex, 1435, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
+            Call WriteLocaleChatOverHead(UserIndex, MSG_EL_ENVIO_SE_HA_REALIZADO_CON_EXITO_GRACIAS_POR_UTILIZAR_LOS_SERVICIOS_DE_FINANZAS_GOLIATH, "", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite) ' Msg1435=¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath
         Else
-            Call WriteLocaleChatOverHead(UserIndex, 1413, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_LOS_ADMINISTRADORES_NO_PUEDEN_TRANSFERIR_ORO, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1413=Los administradores no pueden transferir oro.
             Call LogGM(GetUserRealName(UserIndex), "Quizo transferirle oro a: " & username)
         End If
     End With
@@ -6530,10 +6530,10 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
                             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SACERDOTE_CELEBRA_CASAMIENTO_ENTRE, GetMapName(.pos.Map) & "¬" & GetUserDisplayName(UserIndex) & "¬" & GetUserDisplayName( _
                                     tUser.ArrayIndex), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1651=El sacerdote de ¬1 celebra el casamiento entre ¬2 y ¬3.
-                            Call WriteLocaleChatOverHead(UserIndex, 1414, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
-                            Call WriteLocaleChatOverHead(tUser.ArrayIndex, 1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
+                            Call WriteLocaleChatOverHead(UserIndex, MSG_LOS_DECLARO_UNIDOS_EN_LEGAL_MATRIMONIO_FELICIDADES, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1414=Los declaro unidos en legal matrimonio ¡Felicidades!
+                            Call WriteLocaleChatOverHead(tUser.ArrayIndex, MSG_LOS_DECLARO_UNIDOS_EN_LEGAL_MATRIMONIO_FELICIDADES_1415, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1415=Los declaro unidos en legal matrimonio ¡Felicidades!
                         Else
-                            Call WriteLocaleChatOverHead(UserIndex, 1420, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
+                            Call WriteLocaleChatOverHead(UserIndex, MSG_LA_SOLICITUD_DE_CASAMIENTO_A_SIDO_ENVIADA_A, username, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1420=La solicitud de casamiento a sido enviada a ¬1.
                             Call WriteLocaleMsg(tUser.ArrayIndex, MSG_DESEA_CASARSE_CONTIGO_PERMITIRLO_HAZ_CLICK_SACERDOTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex)) ' Msg1956=¬1 desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER ¬1.
                             .flags.Candidato = tUser
                         End If
@@ -6770,7 +6770,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         DeDonde = CityNames(e_City.cUllathorpe)
                     End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                        Call WriteLocaleChatOverHead(UserIndex, 1421, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_GRACIAS_AHORA_PERTENECES_A_LA_CIUDAD_DE, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
                                 UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1421=¡Gracias ¬1! Ahora perteneces a la ciudad de ¬2.
                     Else
                         'Msg1244= ¡Gracias ¬1
@@ -6824,7 +6824,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         Dim charindexstr As Integer
                         charindexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex)
                         If charindexstr > 0 Then
-                            Call WriteLocaleChatOverHead(UserIndex, 1422, .Stats.PuntosPesca, charindexstr, &HFFFF00) ' Msg1422=¡Felicitaciones! Ahora tienes un total de ¬1 puntos de pesca.
+                            Call WriteLocaleChatOverHead(UserIndex, MSG_FELICITACIONES_AHORA_TIENES_UN_TOTAL_DE_PUNTOS_DE_PESCA, .Stats.PuntosPesca, charindexstr, &HFFFF00) ' Msg1422=¡Felicitaciones! Ahora tienes un total de ¬1 puntos de pesca.
                         End If
                         .flags.pregunta = 0
                     End With
@@ -6839,7 +6839,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
                         'Msg1245= El usuario no esta interesado en formar parte del grupo.
-                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, "1245", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, MSG_EL_USUARIO_NO_ESTA_INTERESADO_EN_FORMAR_PARTE_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                     Call SetUserRef(UserList(UserIndex).Grupo.PropuestaDe, 0)
                     'Msg1246= Has rechazado la propuesta.
@@ -6859,7 +6859,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         DeDonde = CityNames(e_City.cUllathorpe)
                     End If
                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-                        Call WriteLocaleChatOverHead(UserIndex, 1423, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
+                        Call WriteLocaleChatOverHead(UserIndex, MSG_NO_HAY_PROBLEMA_SOS_BIENVENIDO_EN_CUANDO_GUSTES, GetUserDisplayName(UserIndex) & "¬" & DeDonde, NpcList(UserList( _
                                 UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1423=¡No hay problema ¬1! Sos bienvenido en ¬2 cuando gustes.
                     End If
                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
@@ -6867,7 +6867,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Log = "Repuesta negativa 4"
                     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
                         'Msg1248= El usuario no desea comerciar en este momento.
-                        Call WriteLocaleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, "1248", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, MSG_EL_USUARIO_NO_DESEA_COMERCIAR_EN_ESTE_MOMENTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Case 5
                     Log = "Repuesta negativa 5"
@@ -7159,7 +7159,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     End If
     QuestSlot = FreeQuestSlot(UserIndex)
     If QuestSlot = 0 Then
-        Call WriteLocaleChatOverHead(UserIndex, 1417, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_DEBES_COMPLETAR_LAS_MISIONES_EN_CURSO_PARA_PODER_ACEPTAR_MAS_MISIONES, vbNullString, NpcList(NpcIndex).Char.charindex, vbYellow)  ' Msg1417=Debes completar las misiones en curso para poder aceptar más misiones.
         Exit Sub
     End If
     'Agregamos la quest.

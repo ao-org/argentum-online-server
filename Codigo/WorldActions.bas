@@ -326,17 +326,17 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
     Gobernador = NpcList(NpcIndex)
 
     If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-        Call WriteLocaleChatOverHead(UserIndex, 1349, "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_YA_PERTENECES_A_ESTA_CIUDAD_GRACIAS_POR_SER_UNO_MAS_DE_NOSOTROS, "", Gobernador.Char.charindex, vbWhite) ' Msg1349=Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.
         Exit Sub
     End If
 
     If (UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2) And Gobernador.GobernadorDe = e_City.cBanderbill Then
-        Call WriteLocaleChatOverHead(UserIndex, "1350", "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_AQUI_NO_ACEPTAMOS_CRIMINALES, "", Gobernador.Char.charindex, vbWhite) ' Msg1350=Aquí no aceptamos criminales.
         Exit Sub
     End If
 
     If (UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1) And Gobernador.GobernadorDe = e_City.cArkhein Then
-        Call WriteLocaleChatOverHead(UserIndex, "1351", "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
+        Call WriteLocaleChatOverHead(UserIndex, MSG_SAL_DE_AQUI_CIUDADANO_ASQUEROSO, "", Gobernador.Char.charindex, vbWhite) ' Msg1351=¡¡Sal de aquí ciudadano asqueroso!!
         Exit Sub
     End If
 
@@ -349,7 +349,7 @@ Private Sub HandleGovernorNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIn
     If LenB(DeDonde) = 0 Then DeDonde = CityNames(e_City.cUllathorpe)
     If LenB(DeDonde) = 0 Then DeDonde = "Ullathorpe"
     UserList(UserIndex).flags.pregunta = 3
-    Call WritePreguntaBox(UserIndex, 1592, DeDonde)
+    Call WritePreguntaBox(UserIndex, MSG_TE_GUSTARIA_SER_CIUDADANO_DE, DeDonde)
 End Sub
 
 Private Sub HandleFishingDeliveryNpcInteraction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
@@ -365,11 +365,11 @@ Private Sub HandleFishingDeliveryNpcInteraction(ByVal UserIndex As Integer, ByVa
 
     If PuntosTotales > 0 Then
         UserList(UserIndex).flags.pregunta = 5
-        Call WritePreguntaBox(UserIndex, 1593, PuntosTotales & "¿" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¿1 puntos y ¿2 monedas de oro para reclamar, ¿Deseas aceptar?
+        Call WritePreguntaBox(UserIndex, MSG_TIENES_UN_TOTAL_DE_PUNTOS_Y_MONEDAS_DE_ORO_PARA_RECLAMAR_DESEAS_ACEPTAR, PuntosTotales & "¿" & PonerPuntos(OroTotal * 1.2)) 'Msg1593= Tienes un total de ¿1 puntos y ¿2 monedas de oro para reclamar, ¿Deseas aceptar?
     Else
         Dim charindexstr As Integer
         charindexstr = str$(NpcList(NpcIndex).Char.charindex)
-        Call WriteLocaleChatOverHead(UserIndex, "1352", "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
+        Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_NINGUN_TROFEO_DE_PESCA_PARA_ENTREGAR, "", charindexstr, &HFFFF00) ' Msg1352=No tienes ningún trofeo de pesca para entregar.
     End If
 End Sub
 
