@@ -21,6 +21,7 @@ Public Function test_suite_elapsed_time() As Boolean
     Call UnitTesting.RunTest("test_add_mod32_simple", test_add_mod32_simple())
     Call UnitTesting.RunTest("test_add_mod32_signed_boundary", test_add_mod32_signed_boundary())
     Call UnitTesting.RunTest("test_add_mod32_true_wrap", test_add_mod32_true_wrap())
+    Call UnitTesting.RunTest("test_add_mod32_modular_subtraction", test_add_mod32_modular_subtraction())
     Call UnitTesting.RunTest("test_deadline_passed_zero", test_deadline_passed_zero())
     Call UnitTesting.RunTest("test_deadline_passed_normal", test_deadline_passed_normal())
     Call UnitTesting.RunTest("test_deadline_passed_signed_boundary", test_deadline_passed_signed_boundary())
@@ -171,6 +172,18 @@ Private Function test_add_mod32_true_wrap() As Boolean
     Exit Function
 Err_Handler:
     test_add_mod32_true_wrap = False
+End Function
+
+' Verifies callers can create an earlier raw timestamp without signed Long
+' subtraction overflowing at either the sign boundary or the true wrap.
+Private Function test_add_mod32_modular_subtraction() As Boolean
+    On Error GoTo Err_Handler
+    test_add_mod32_modular_subtraction = True
+    If AddMod32(&H80000010, -32) <> &H7FFFFFF0 Then test_add_mod32_modular_subtraction = False: Exit Function
+    If AddMod32(&H10, -32) <> &HFFFFFFF0 Then test_add_mod32_modular_subtraction = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_add_mod32_modular_subtraction = False
 End Function
 
 ' Verifies DeadlinePassed() treats deadline=0 as "always passed" regardless
