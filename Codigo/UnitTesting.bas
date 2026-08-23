@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 37
+    Private Const SUITE_COUNT As Integer = 38
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -279,6 +279,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
 #End If
         Case 36: RunSuite = Unit_Weather.test_suite_weather()
         Case 37: RunSuite = test_suite_remort_persistence()
+        Case 38: RunSuite = test_suite_remort_capability_state()
         Case Else
             RunSuite = False
     End Select
@@ -384,6 +385,129 @@ Private Function test_remort_count_normal_save_sql() As Boolean
     test_remort_count_normal_save_sql = _
             InStr(1, QUERY_LOAD_MAINPJ, "remort_count", vbTextCompare) > 0 And _
             InStr(1, QUERY_UPDATE_MAINPJ, "remort_count = ?", vbTextCompare) > 0
+End Function
+
+Private Function test_suite_remort_capability_state() As Boolean
+    Call RunTest("remort eligibility and priority", test_remort_eligibility_and_priority())
+    Call RunTest("remort eligibility is read-only", test_remort_eligibility_is_read_only())
+    Call RunTest("remort capability bit and reset", test_remort_capability_bit_and_reset())
+    Call RunTest("remort packet is appended", CInt(ServerPacketID.eRemortState) = CInt(ServerPacketID.eShowPickUpObj) + 1)
+    test_suite_remort_capability_state = True
+End Function
+
+Private Function test_remort_eligibility_and_priority() As Boolean
+    On Error GoTo TestError
+    Dim OriginalLevel As Byte
+    Dim OriginalDead As Byte
+    Dim OriginalInParty As Boolean
+    Dim OriginalQuests(1 To MAXUSERQUESTS) As Integer
+    Dim QuestSlot As Integer
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalDead = UserList(1).flags.Muerto
+    OriginalInParty = UserList(1).Grupo.EnGrupo
+    For QuestSlot = 1 To MAXUSERQUESTS
+        OriginalQuests(QuestSlot) = UserList(1).QuestStats.Quests(QuestSlot).QuestIndex
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = 0
+    Next QuestSlot
+
+    UserList(1).Stats.ELV = STAT_MAXELV - 1
+    UserList(1).flags.Muerto = 1
+    If GetRemortEligibility(1) <> eRemortEligibility_BelowRequiredLevel Then GoTo TestDone
+
+    UserList(1).Stats.ELV = STAT_MAXELV
+    If GetRemortEligibility(1) <> eRemortEligibility_Dead Then GoTo TestDone
+
+    UserList(1).flags.Muerto = 0
+    UserList(1).QuestStats.Quests(1).QuestIndex = 1
+    UserList(1).Grupo.EnGrupo = True
+    If GetRemortEligibility(1) <> eRemortEligibility_ActiveQuest Then GoTo TestDone
+
+    UserList(1).QuestStats.Quests(1).QuestIndex = 0
+    If GetRemortEligibility(1) <> eRemortEligibility_InParty Then GoTo TestDone
+
+    UserList(1).Grupo.EnGrupo = False
+    If GetRemortEligibility(1) <> eRemortEligibility_Eligible Then GoTo TestDone
+    test_remort_eligibility_and_priority = True
+
+TestDone:
+    UserList(1).Stats.ELV = OriginalLevel
+    UserList(1).flags.Muerto = OriginalDead
+    UserList(1).Grupo.EnGrupo = OriginalInParty
+    For QuestSlot = 1 To MAXUSERQUESTS
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = OriginalQuests(QuestSlot)
+    Next QuestSlot
+    Exit Function
+TestError:
+    test_remort_eligibility_and_priority = False
+    Resume TestDone
+End Function
+
+Private Function test_remort_eligibility_is_read_only() As Boolean
+    On Error GoTo TestError
+    Dim OriginalRemortCount As Long
+    Dim OriginalLevel As Byte
+    Dim OriginalExp As Long
+    Dim OriginalSkillPts As Integer
+    Dim OriginalHp As Integer
+    Dim OriginalSkill As Byte
+    OriginalRemortCount = UserList(1).Stats.RemortCount
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalExp = UserList(1).Stats.Exp
+    OriginalSkillPts = UserList(1).Stats.SkillPts
+    OriginalHp = UserList(1).Stats.MinHp
+    OriginalSkill = UserList(1).Stats.UserSkills(1)
+
+    Call GetRemortEligibility(1)
+    test_remort_eligibility_is_read_only = _
+        UserList(1).Stats.RemortCount = OriginalRemortCount And _
+        UserList(1).Stats.ELV = OriginalLevel And _
+        UserList(1).Stats.Exp = OriginalExp And _
+        UserList(1).Stats.SkillPts = OriginalSkillPts And _
+        UserList(1).Stats.MinHp = OriginalHp And _
+        UserList(1).Stats.UserSkills(1) = OriginalSkill
+    Exit Function
+TestError:
+    test_remort_eligibility_is_read_only = False
+End Function
+
+Private Function test_remort_capability_bit_and_reset() As Boolean
+    On Error GoTo TestError
+    Dim OriginalNegotiated As Boolean
+    Dim OriginalVersion As Byte
+    Dim OriginalMask As Long
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalNegotiated = UserList(1).HooCapabilities.Negotiated
+    OriginalVersion = UserList(1).HooCapabilities.ProtocolVersion
+    OriginalMask = UserList(1).HooCapabilities.CapabilityMask
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_REMORT_V1)
+
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_REMORT_V1) <> HOO_CAP_REMORT_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION + 1, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
+    Call ResetHooClientCapabilities(1)
+    If UserSupportsHooCapability(1, HOO_CAP_REMORT_V1) Then GoTo TestDone
+    UserList(1).HooCapabilities.Negotiated = True
+    UserList(1).HooCapabilities.ProtocolVersion = HOO_CAP_PROTOCOL_VERSION
+    UserList(1).HooCapabilities.CapabilityMask = HOO_CAP_ADJACENT_CHARACTERS_V1 Or HOO_CAP_REMORT_V1
+    If Not UserSupportsHooCapability(1, HOO_CAP_REMORT_V1) Then GoTo TestDone
+    If Not UserSupportsHooCapability(1, HOO_CAP_ADJACENT_CHARACTERS_V1) Then GoTo TestDone
+    Call ResetHooClientCapabilities(1)
+    If UserList(1).HooCapabilities.Negotiated Then GoTo TestDone
+    If UserList(1).HooCapabilities.CapabilityMask <> 0 Then GoTo TestDone
+    test_remort_capability_bit_and_reset = (HOO_CAP_REMORT_V1 = &H2&)
+
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, OriginalFeatureEnabled)
+    UserList(1).HooCapabilities.Negotiated = OriginalNegotiated
+    UserList(1).HooCapabilities.ProtocolVersion = OriginalVersion
+    UserList(1).HooCapabilities.CapabilityMask = OriginalMask
+    Exit Function
+TestError:
+    test_remort_capability_bit_and_reset = False
+    Resume TestDone
 End Function
 
 #End If
