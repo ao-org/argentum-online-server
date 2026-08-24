@@ -121,6 +121,19 @@ WriteRemortState_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortState", Erl)
 End Sub
 
+Public Sub WriteRemortResult(ByVal UserIndex As Integer, ByVal Success As Boolean, ByVal Reason As e_RemortEligibilityReason)
+    On Error GoTo WriteRemortResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eRemortResult)
+    Call Writer.WriteBool(Success)
+    Call Writer.WriteInt8(CByte(Reason))
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.RemortCount)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteRemortResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortResult", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
