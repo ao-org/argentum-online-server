@@ -2987,6 +2987,8 @@ Public Enum e_RemortEligibilityReason
     eRemortEligibility_Dead = 2
     eRemortEligibility_ActiveQuest = 3
     eRemortEligibility_InParty = 4
+    eRemortEligibility_InvalidEquipment = 5
+    eRemortEligibility_RemortLimitReached = 6
 End Enum
 
 Public Type t_HooClientCapabilities
