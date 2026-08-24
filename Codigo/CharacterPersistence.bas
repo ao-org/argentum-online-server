@@ -317,6 +317,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.PuntosPesca = RS!puntos_pesca
         .Stats.ELO = RS!ELO
         .Stats.JineteLevel = RS!jinete_level
+        .Stats.RemortCount = NormalizeRemortCount(RS!remort_count)
         .Counters.Pena = RS!counter_pena
         .ChatGlobal = RS!chat_global
         .ChatCombate = RS!chat_combate
@@ -597,7 +598,7 @@ End Sub
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(61)
+    ReDim Params(62)
     Dim i As Integer
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
@@ -660,6 +661,7 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Params(post_increment(i)) = U.flags.ReturnPos.y
     Params(post_increment(i)) = U.Stats.JineteLevel
     Params(post_increment(i)) = U.Char.BackpackAnim
+    Params(post_increment(i)) = U.Stats.RemortCount
     ' WHERE block
     Params(post_increment(i)) = U.Id
     Debug.Assert i = UBound(Params) + 1
@@ -667,6 +669,23 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Call Execute(QUERY_UPDATE_MAINPJ, Params)
     Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
 End Sub
+
+Public Function NormalizeRemortCount(ByVal PersistedValue As Variant) As Long
+    On Error GoTo InvalidValue
+
+    If IsNull(PersistedValue) Or IsEmpty(PersistedValue) Then Exit Function
+    If Not IsNumeric(PersistedValue) Then Exit Function
+
+    Dim numericValue As Double
+    numericValue = CDbl(PersistedValue)
+    If numericValue < 0# Or numericValue > 2147483647# Then Exit Function
+
+    NormalizeRemortCount = CLng(numericValue)
+    Exit Function
+
+InvalidValue:
+    NormalizeRemortCount = 0
+End Function
 
 Private Sub SaveCharacterSpellsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
     Dim QueryTimer As Long

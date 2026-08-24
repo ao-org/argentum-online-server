@@ -2553,6 +2553,7 @@ Public Type t_UserStats
     NumObj_PezEspecial As Integer
     Creditos As Long
     JineteLevel As Byte
+    RemortCount As Long
 End Type
 
 'Sistema de Barras
@@ -2976,7 +2977,19 @@ Public Const HotKeyCount As Integer = 10
 
 Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
 Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
+Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
+Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
+
+Public Enum e_RemortEligibilityReason
+    eRemortEligibility_Eligible = 0
+    eRemortEligibility_BelowRequiredLevel = 1
+    eRemortEligibility_Dead = 2
+    eRemortEligibility_ActiveQuest = 3
+    eRemortEligibility_InParty = 4
+    eRemortEligibility_InvalidEquipment = 5
+    eRemortEligibility_RemortLimitReached = 6
+End Enum
 
 Public Type t_HooClientCapabilities
     Negotiated As Boolean

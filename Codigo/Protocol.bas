@@ -931,6 +931,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleModifyCastleWhiteList(UserIndex)
         Case ClientPacketID.eHooClientCapabilities
             Call HandleHooClientCapabilities(UserIndex)
+        Case ClientPacketID.eRequestRemort
+            Call HandleRequestRemort(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -986,11 +988,132 @@ Public Function UserSupportsAdjacentCharacters(ByVal UserIndex As Integer) As Bo
         UserSupportsHooCapability(UserIndex, HOO_CAP_ADJACENT_CHARACTERS_V1)
 End Function
 
+Public Function UserSupportsRemortState(ByVal UserIndex As Integer) As Boolean
+    UserSupportsRemortState = IsFeatureEnabled(HOO_FEATURE_REMORT_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_REMORT_V1)
+End Function
+
+Public Function UserHasActiveRemortQuest(ByVal UserIndex As Integer) As Boolean
+    Dim QuestSlot As Integer
+    For QuestSlot = 1 To MAXUSERQUESTS
+        If UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex <> 0 Then
+            UserHasActiveRemortQuest = True
+            Exit Function
+        End If
+    Next QuestSlot
+End Function
+
+Public Function IsRemortCompatibleEquipment(ByVal ObjIndex As Integer) As Boolean
+    If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
+
+    With ObjData(ObjIndex)
+        If .MinELV > 1 Then Exit Function
+        If .MaxLEV > 0 And 1 > .MaxLEV Then Exit Function
+        If .SkillIndex > 0 And .SkillRequerido > 0 Then Exit Function
+    End With
+
+    IsRemortCompatibleEquipment = True
+End Function
+
+Public Function UserHasInvalidRemortEquipment(ByVal UserIndex As Integer) As Boolean
+    Dim Slot As Integer
+    For Slot = 1 To MAX_INVENTORY_SLOTS
+        With UserList(UserIndex).invent.Object(Slot)
+            If .Equipped <> 0 And Not IsRemortCompatibleEquipment(.ObjIndex) Then
+                UserHasInvalidRemortEquipment = True
+                Exit Function
+            End If
+        End With
+    Next Slot
+End Function
+
+Public Function GetRemortEligibility(ByVal UserIndex As Integer) As e_RemortEligibilityReason
+    GetRemortEligibility = eRemortEligibility_BelowRequiredLevel
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Function
+    With UserList(UserIndex)
+        If .Stats.ELV <> STAT_MAXELV Then Exit Function
+        If .flags.Muerto <> 0 Then
+            GetRemortEligibility = eRemortEligibility_Dead
+            Exit Function
+        End If
+        If UserHasActiveRemortQuest(UserIndex) Then
+            GetRemortEligibility = eRemortEligibility_ActiveQuest
+            Exit Function
+        End If
+        If .Grupo.EnGrupo Then
+            GetRemortEligibility = eRemortEligibility_InParty
+            Exit Function
+        End If
+        If UserHasInvalidRemortEquipment(UserIndex) Then
+            GetRemortEligibility = eRemortEligibility_InvalidEquipment
+            Exit Function
+        End If
+        If .Stats.RemortCount = 2147483647 Then
+            GetRemortEligibility = eRemortEligibility_RemortLimitReached
+            Exit Function
+        End If
+    End With
+    GetRemortEligibility = eRemortEligibility_Eligible
+End Function
+
+Public Function ApplyRemortProgression(ByVal UserIndex As Integer) As Boolean
+    If GetRemortEligibility(UserIndex) <> eRemortEligibility_Eligible Then Exit Function
+
+    Dim TargetMaxHp As Integer
+    Dim TargetMaxMana As Integer
+    Dim TargetMaxStamina As Integer
+    Dim SkillIndex As Integer
+
+    With UserList(UserIndex)
+        TargetMaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
+        TargetMaxMana = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+        TargetMaxStamina = 60
+
+        .Stats.ELV = 1
+        .Stats.Exp = 0
+        For SkillIndex = 1 To NUMSKILLS
+            .Stats.UserSkills(SkillIndex) = 0
+            .Stats.SkillDirty(SkillIndex) = True
+        Next SkillIndex
+        .Stats.SkillPts = 10
+        .flags.ModificoSkills = True
+
+        .Stats.MaxHp = TargetMaxHp
+        .Stats.MinHp = TargetMaxHp
+        .Stats.shield = 0
+        .Stats.MaxMAN = TargetMaxMana
+        .Stats.MinMAN = TargetMaxMana
+        .Stats.MaxSta = TargetMaxStamina
+        .Stats.MinSta = TargetMaxStamina
+        .Stats.MinHIT = 1
+        .Stats.MaxHit = 2
+        .Stats.MaxAGU = 100
+        .Stats.MinAGU = 100
+        .Stats.MaxHam = 100
+        .Stats.MinHam = 100
+        .Stats.RemortCount = .Stats.RemortCount + 1
+    End With
+
+    ApplyRemortProgression = True
+End Function
+
+Public Sub MaybeSendRemortState(ByVal UserIndex As Integer)
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Sub
+    If Not UserList(UserIndex).flags.UserLogged Then Exit Sub
+    If Not UserSupportsRemortState(UserIndex) Then Exit Sub
+    Call WriteRemortState(UserIndex, GetRemortEligibility(UserIndex))
+End Sub
+
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
     If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
+    Dim SupportedMask As Long
     If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
-        AcceptedHooCapabilityMask = RequestedMask And HOO_CAP_ADJACENT_CHARACTERS_V1
+        SupportedMask = SupportedMask Or HOO_CAP_ADJACENT_CHARACTERS_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_REMORT_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_REMORT_V1
+    End If
+    AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
 Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
@@ -1013,10 +1136,52 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " protocol=" & CStr(ProtocolVersion) & _
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
+    Call MaybeSendRemortState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooClientCapabilities", Erl)
+End Sub
+
+Private Sub HandleRequestRemort(ByVal UserIndex As Integer)
+    On Error GoTo HandleRequestRemort_Err
+
+    If Not UserSupportsRemortState(UserIndex) Then Exit Sub
+
+    Dim Reason As e_RemortEligibilityReason
+    Reason = GetRemortEligibility(UserIndex)
+    If Reason <> eRemortEligibility_Eligible Then
+        Call WriteRemortResult(UserIndex, False, Reason)
+        Call MaybeSendRemortState(UserIndex)
+        Exit Sub
+    End If
+
+    Dim OldLevel As Byte
+    Dim OldRemortCount As Long
+    OldLevel = UserList(UserIndex).Stats.ELV
+    OldRemortCount = UserList(UserIndex).Stats.RemortCount
+
+    If Not ApplyRemortProgression(UserIndex) Then
+        Reason = GetRemortEligibility(UserIndex)
+        Call WriteRemortResult(UserIndex, False, Reason)
+        Call MaybeSendRemortState(UserIndex)
+        Exit Sub
+    End If
+
+    Call WriteUpdateUserStats(UserIndex)
+    Call WriteUpdateHungerAndThirst(UserIndex)
+    Call WriteSendSkills(UserIndex)
+    Call WriteLevelUp(UserIndex, UserList(UserIndex).Stats.SkillPts)
+    Call WriteRemortResult(UserIndex, True, eRemortEligibility_Eligible)
+    Call MaybeSendRemortState(UserIndex)
+    Call LogInfoServidor("Remort: character=" & GetUserRealName(UserIndex) & _
+        " old_level=" & CStr(OldLevel) & _
+        " old_count=" & CStr(OldRemortCount) & _
+        " new_count=" & CStr(UserList(UserIndex).Stats.RemortCount))
+    Exit Sub
+
+HandleRequestRemort_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestRemort", Erl)
 End Sub
 
 #If PYMMO = 0 Then
