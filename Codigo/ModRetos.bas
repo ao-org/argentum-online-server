@@ -80,18 +80,18 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         If UBound(Jugadores) > TamanoReal - 1 Or UBound(Jugadores) Mod 2 = 1 Then Exit Sub
         Dim MaxIndexEquipo As Integer: MaxIndexEquipo = UBound(Jugadores) \ 2
         If Apuesta < Retos.ApuestaMinima Or Apuesta > APUESTA_MAXIMA Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_APUESTA_MINIMA_MONEDAS_ORO, PonerPuntos(Retos.ApuestaMinima), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1958=La apuesta mínima es de ¬1 monedas de oro.
+            Call WriteLocaleMsg(UserIndex, MSG_APUESTA_MINIMA_MONEDAS_ORO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PonerPuntos(Retos.ApuestaMinima)) ' Msg1958=La apuesta mínima es de ¬1 monedas de oro.
             Exit Sub
         End If
         If Not PuedeRetoConMensaje(UserIndex) Then Exit Sub
         If .Stats.GLD < Apuesta Then
             ' Msg588=No tienes el oro suficiente.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
         End If
         If PocionesMaximas >= 0 Then
             If TieneObjetos(38, PocionesMaximas + 1, UserIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA_1443, e_FontTypeNames.FONTTYPE_INFO, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
+                Call WriteLocaleMsg(UserIndex, MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA_1443, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                 Exit Sub
             End If
         End If
@@ -106,16 +106,16 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
                     If EsGmChar(Jugadores(i)) Then
-                        Call WriteLocaleMsg(UserIndex, MSG_PUEDES_JUGAR_RETOS_ADMINISTRADORES, e_FontTypeNames.FONTTYPE_INFO) ' Msg1444=¡No puedes jugar retos con administradores!
+                        Call WriteLocaleMsg(UserIndex, MSG_PUEDES_JUGAR_RETOS_ADMINISTRADORES, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg1444=¡No puedes jugar retos con administradores!
                         Exit Sub
                     End If
                     tIndex = NameIndex(Jugadores(i))
                     If Not IsValidUserRef(tIndex) Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_PUEDE_JUGAR_RETO_MOMENTO, e_FontTypeNames.FONTTYPE_INFO, Jugadores(i)) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_PUEDE_JUGAR_RETO_MOMENTO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, Jugadores(i)) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
                         Exit Sub
                     End If
                     If Not PuedeReto(tIndex.ArrayIndex) Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_PUEDE_JUGAR_RETO_MOMENTO, e_FontTypeNames.FONTTYPE_INFO, UserList(tIndex.ArrayIndex).name) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_PUEDE_JUGAR_RETO_MOMENTO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, UserList(tIndex.ArrayIndex).name) ' Msg1445=El usuario ¬1 no puede jugar un reto en este momento.
                         Exit Sub
                     End If
                     .CurIndex = tIndex
@@ -141,16 +141,16 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             End If
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
-                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto1, e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto2, e_FontTypeNames.FONTTYPE_New_Naranja)
-                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto3, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto1, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                    Call WriteConsoleMsg(.CurIndex.ArrayIndex, Texto3, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End With
             Next
             .Estado = e_SolicitudRetoEstado.Enviada
         End With
-        Call WriteLocaleMsg(UserIndex, MSG_ENVIADO_SOLICITUD_SIGUIENTE_RETO, e_FontTypeNames.FONTTYPE_INFO) ' Msg1446=Has enviado una solicitud para el siguiente reto:
-        Call WriteConsoleMsg(UserIndex, Texto2, e_FontTypeNames.FONTTYPE_New_Naranja)
-        Call WriteLocaleMsg(UserIndex, MSG_ESCRIBE_CANCELAR_ANULAR_SOLICITUD, e_FontTypeNames.FONTTYPE_New_Gris) ' Msg1447=Escribe /CANCELAR para anular la solicitud.
+        Call WriteLocaleMsg(UserIndex, MSG_ENVIADO_SOLICITUD_SIGUIENTE_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg1446=Has enviado una solicitud para el siguiente reto:
+        Call WriteConsoleMsg(UserIndex, Texto2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+        Call WriteLocaleMsg(UserIndex, MSG_ESCRIBE_CANCELAR_ANULAR_SOLICITUD, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos) ' Msg1447=Escribe /CANCELAR para anular la solicitud.
     End With
     Exit Sub
 ErrHandler:
@@ -168,29 +168,29 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         End If
     End With
     If EsGmChar(OferenteName) Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDES_JUGAR_RETOS_ADMINISTRADORES, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1959=¡No puedes jugar retos con administradores!
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_JUGAR_RETOS_ADMINISTRADORES, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1959=¡No puedes jugar retos con administradores!
         Exit Sub
     End If
     Dim Oferente As t_UserReference
     Oferente = NameIndex(OferenteName)
     If Not IsValidUserRef(Oferente) Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_CONECTADO, OferenteName, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1960=¬1 no está conectado.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_CONECTADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OferenteName) ' Msg1960=¬1 no está conectado.
         Exit Sub
     End If
     With UserList(Oferente.ArrayIndex).flags.SolicitudReto
         Dim JugadorIndex As Integer
         JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente.ArrayIndex)
         If JugadorIndex < 0 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_INVITADO_NINGUN_RETO_SIDO_CANCELADO, UserList(Oferente.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1961=¬1 no te ha invitado a ningún reto o ha sido cancelado.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_INVITADO_NINGUN_RETO_SIDO_CANCELADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, UserList(Oferente.ArrayIndex).name) ' Msg1961=¬1 no te ha invitado a ningún reto o ha sido cancelado.
             Exit Sub
         End If
         If UserList(UserIndex).Stats.GLD < .Apuesta Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NECESITAS_MONEDAS_ORO_ACEPTAR_RETO, PonerPuntos(.Apuesta), e_FontTypeNames.FONTTYPE_INFO)) ' Msg1962=Necesitas al menos ¬1 monedas de oro para aceptar este reto.
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MONEDAS_ORO_ACEPTAR_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PonerPuntos(.Apuesta)) ' Msg1962=Necesitas al menos ¬1 monedas de oro para aceptar este reto.
             Exit Sub
         End If
         If .PocionesMaximas >= 0 Then
             If TieneObjetos(38, .PocionesMaximas + 1, UserIndex) Then
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA, .PocionesMaximas, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1963=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
+                Call WriteLocaleMsg(UserIndex, MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, .PocionesMaximas) ' Msg1963=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                 Exit Sub
             End If
         End If
@@ -198,7 +198,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         .Jugadores(JugadorIndex).Aceptado = True
         Call SetUserRef(.Jugadores(JugadorIndex).CurIndex, UserIndex)
         UserList(UserIndex).flags.AceptoReto = Oferente
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_HAS_ACEPTADO_RETO, UserList(Oferente.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1964=Has aceptado el reto de ¬1.
+        Call WriteLocaleMsg(UserIndex, MSG_HAS_ACEPTADO_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, UserList(Oferente.ArrayIndex).name) ' Msg1964=Has aceptado el reto de ¬1.
         Dim FaltanAceptar As String
         Dim i             As Integer
         For i = 0 To UBound(.Jugadores)
@@ -231,16 +231,16 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, mensaje As String)
         For i = 0 To UBound(.Jugadores)
             tUser = NameIndex(.Jugadores(i).nombre)
             If IsValidUserRef(tUser) Then
-                Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_FontTypeNames.FONTTYPE_WARNING)
-                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_RETO_SIDO_CANCELADO, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1965=El reto ha sido cancelado.
+                Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                Call WriteLocaleMsg(tUser.ArrayIndex, MSG_RETO_SIDO_CANCELADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1965=El reto ha sido cancelado.
                 If .Jugadores(i).Aceptado Then
                     Call SetUserRef(UserList(tUser.ArrayIndex).flags.AceptoReto, 0)
                 End If
             End If
         Next
         ' Y al oferente por separado
-        Call WriteConsoleMsg(Oferente, mensaje, e_FontTypeNames.FONTTYPE_WARNING)
-        Call WriteConsoleMsg(Oferente, PrepareMessageLocaleMsg(MSG_RETO_SIDO_CANCELADO, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1965=El reto ha sido cancelado.
+        Call WriteConsoleMsg(Oferente, mensaje, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+        Call WriteLocaleMsg(Oferente, MSG_RETO_SIDO_CANCELADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1965=El reto ha sido cancelado.
     End With
     Exit Sub
 ErrHandler:
@@ -320,7 +320,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             ' Le cobramos
             UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD - Apuesta
             Call WriteUpdateGold(tUser.ArrayIndex)
-            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_OTORGAS_MONEDAS_ORO_POZO_RETO, ApuestaStr, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)) ' Msg1966=Otorgas ¬1 monedas de oro al pozo del reto.
+            Call WriteLocaleMsg(tUser.ArrayIndex, MSG_OTORGAS_MONEDAS_ORO_POZO_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, ApuestaStr) ' Msg1966=Otorgas ¬1 monedas de oro al pozo del reto.
             ' Desmontamos
             If UserList(tUser.ArrayIndex).flags.Montado <> 0 Then
                 Call DoMontar(tUser.ArrayIndex, ObjData(UserList(tUser.ArrayIndex).invent.EquippedSaddleObjIndex), UserList(tUser.ArrayIndex).invent.EquippedSaddleSlot)
@@ -337,8 +337,8 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
                 ' Guardar posición
                 .LastPos = UserList(tUser.ArrayIndex).pos
             End With
-            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMENZADO_RETO, vbNullString, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)) ' Msg1967=¡Ha comenzado el reto!
-            Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_ADMITIR_DERROTA_ESCRIBE_ABANDONAR, vbNullString, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1968=Para admitir la derrota escribe /ABANDONAR.
+            Call WriteLocaleMsg(tUser.ArrayIndex, MSG_COMENZADO_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1967=¡Ha comenzado el reto!
+            Call WriteLocaleMsg(tUser.ArrayIndex, MSG_ADMITIR_DERROTA_ESCRIBE_ABANDONAR, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1968=Para admitir la derrota escribe /ABANDONAR.
         Next
     End With
     Retos.SalasLibres = Retos.SalasLibres - 1
@@ -370,7 +370,7 @@ Private Sub iniciarRonda(ByVal Sala As Integer)
                     ' Lo stoppeamos
                     Call WriteStopped(tUser.ArrayIndex, True)
                 End If
-                Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMIENZA_RONDA_N, .Ronda, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1969=Comienza la ronda Nº¬1
+                Call WriteLocaleMsg(tUser.ArrayIndex, MSG_COMIENZA_RONDA_N, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, .Ronda) ' Msg1969=Comienza la ronda Nº¬1
             End If
         Next
     End With
@@ -436,8 +436,8 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As e_EquipoR
         ' Informamos el ganador de esta ronda
         For i = 0 To UBound(.Jugadores)
             If .Jugadores(i).ArrayIndex <> 0 Then
-                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, PrepareMessageLocaleMsg(MSG_RONDA, nombres, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1970=Esta ronda es para ¬1.
-                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, "", 0) ' Dejamos un espacio vertical
+                Call WriteLocaleMsg(.Jugadores(i).ArrayIndex, MSG_RONDA, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, nombres) ' Msg1970=Esta ronda es para ¬1.
+                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, "", e_TextChannel.TEXTCHANNEL_EVENT, 0) ' Dejamos un espacio vertical
             End If
         Next
         ' Iniciamos la próxima ronda
@@ -485,7 +485,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 If IsValidUserRef(tUser) Then
                     UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + Oro
                     Call WriteUpdateGold(tUser.ArrayIndex)
-                    Call WriteLocaleMsg(tUser.ArrayIndex, "29", e_FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
+                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_GANADO_MONEDAS_DE_ORO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
                     Call RevivirYLimpiar(tUser.ArrayIndex)
                     Call DevolverPosAnterior(tUser.ArrayIndex)
                     ' Reset flags
@@ -508,7 +508,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 End If
             Next
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_VS_NINGUNO_PUDO_VENCER_RIVAL, Equipo1 & "¬" & Equipo2, e_FontTypeNames.FONTTYPE_INFO)) 'Msg1670=Retos » ¬1 vs ¬2. Ninguno pudo vencer a su rival.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_VS_NINGUNO_PUDO_VENCER_RIVAL, Equipo1 & "¬" & Equipo2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1670=Retos » ¬1 vs ¬2. Ninguno pudo vencer a su rival.
             Call SalaLiberada(Sala)
             ' Hubo un ganador
         Else
@@ -532,7 +532,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If UserList(tUser.ArrayIndex).flags.EquipoReto = Ganador Then
                         UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + Oro
                         Call WriteUpdateGold(tUser.ArrayIndex)
-                        Call WriteLocaleMsg(tUser.ArrayIndex, "29", e_FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
+                        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_HAS_GANADO_MONEDAS_DE_ORO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, OroStr) ' Has ganado X monedas de oro
                         If .CaenItems Then
                             Call WarpToLegalPos(tUser.ArrayIndex, .PosIzquierda.Map, .PosIzquierda.x, .PosIzquierda.y, True)
                         Else
@@ -550,7 +550,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     ' Reset flags
                     UserList(tUser.ArrayIndex).Counters.CuentaRegresiva = -1
                     If TiempoAgotado Then
-                        Call WriteConsoleMsg(tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_AGOTADO_TIEMPO_RETO, vbNullString, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1971=Se ha agotado el tiempo del reto.
+                        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_AGOTADO_TIEMPO_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1971=Se ha agotado el tiempo del reto.
                     End If
                     ' Nombres
                     If i Mod 2 Then
@@ -573,11 +573,9 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             equipoPerdedor = IIf(Ganador = e_EquipoReto.Izquierda, Equipo2, Equipo1)
             ' Anuncio global
             If UBound(.Jugadores) > 1 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_EQUIPO_VENCIO_EQUIPO_QUEDO_BOTIN_MONEDAS, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta), _
-                        e_FontTypeNames.FONTTYPE_INFO)) 'Msg1671=Retos » El equipo ¬1 venció al equipo ¬2 y se quedó con el botín de: ¬3 monedas de oro.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_EQUIPO_VENCIO_EQUIPO_QUEDO_BOTIN_MONEDAS, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1671=Retos » El equipo ¬1 venció al equipo ¬2 y se quedó con el botín de: ¬3 monedas de oro.
             Else ' 1 vs 1
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_VENCIO_QUEDO_BOTIN_MONEDAS_ORO, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta), _
-                        e_FontTypeNames.FONTTYPE_INFO)) 'Msg1672=Retos » ¬1 venció a ¬2 y se quedó con el botín de: ¬3 monedas de oro.
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_RETOS_VENCIO_QUEDO_BOTIN_MONEDAS_ORO, equipoGanador & "¬" & equipoPerdedor & "¬" & PonerPuntos(.Apuesta), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1672=Retos » ¬1 venció a ¬2 y se quedó con el botín de: ¬3 monedas de oro.
             End If
             If .CaenItems Then
                 Call IniciarDepositoItems(Sala)
@@ -598,16 +596,16 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         eloDiff = winsDerecha * (eloTotalIzquierda * 0.1)
                     End If
                     If eloDiff > 0 Then
-                        Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_HAS_GANADO_PUNTOS_ELO, Abs(eloDiff), e_FontTypeNames.FONTTYPE_ROSA)) 'Msg1695=Has ganado ¬1 puntos de ELO!
+                        Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_HAS_GANADO_PUNTOS_ELO, Abs(eloDiff), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1695=Has ganado ¬1 puntos de ELO!
                     Else
                         If UserList(tUser.ArrayIndex).Stats.ELO < Abs(eloDiff) Then
                             eloDiff = -UserList(tUser.ArrayIndex).Stats.ELO
                         End If
-                        Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_HAS_PERDIDO_PUNTOS_ELO, Abs(eloDiff), e_FontTypeNames.FONTTYPE_ROSA)) 'Msg1696=Has perdido ¬1 puntos de ELO!
+                        Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_HAS_PERDIDO_PUNTOS_ELO, Abs(eloDiff), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1696=Has perdido ¬1 puntos de ELO!
                     End If
                     UserList(tUser.ArrayIndex).Stats.ELO = UserList(tUser.ArrayIndex).Stats.ELO + eloDiff
                 Else ' Alguno es menor a level 33
-                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_PARTICIPANTE_RETO_TIENE_NIVEL_MENOR_ELO_PERMANECE, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) 'Msg1697=Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.
+                    Call SendData(SendTarget.ToIndex, tUser.ArrayIndex, PrepareMessageLocaleMsg(MSG_PARTICIPANTE_RETO_TIENE_NIVEL_MENOR_ELO_PERMANECE, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1697=Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.
                 End If
             End If
         Next i
@@ -665,7 +663,7 @@ Public Sub IniciarDepositoItems(ByVal Sala As Integer)
         End If
         For i = 0 To UBound(.Jugadores)
             If UserList(.Jugadores(i).ArrayIndex).flags.EquipoReto = Ganador Then
-                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, PrepareMessageLocaleMsg(MSG_TIENES_MINUTO_LEVANTAR_ITEMS_PISO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1972=Tienes 1 minuto para levantar los items del piso.
+                Call WriteLocaleMsg(.Jugadores(i).ArrayIndex, MSG_TIENES_MINUTO_LEVANTAR_ITEMS_PISO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1972=Tienes 1 minuto para levantar los items del piso.
             End If
         Next i
         Dim pos As t_WorldPos
@@ -737,7 +735,7 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
             Exit Sub
         End If
         If Not Desconexion Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_HAS_ABANDONADO_RETO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1973=Has abandonado el reto.
+            Call WriteLocaleMsg(UserIndex, MSG_HAS_ABANDONADO_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1973=Has abandonado el reto.
         End If
         ' Restamos un miembro al equipo y si llega a cero entonces procesamos la derrota
         If Equipo = e_EquipoReto.Izquierda Then
@@ -770,7 +768,7 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
             If .Jugadores(i).ArrayIndex = UserIndex Then
                 Call SetUserRef(.Jugadores(i), 0)
             Else
-                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, texto, e_FontTypeNames.FONTTYPE_New_Gris)
+                Call WriteConsoleMsg(.Jugadores(i).ArrayIndex, texto, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             End If
         Next
     End With
@@ -806,27 +804,27 @@ End Function
 Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
         If .flags.EnReto Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ENCUENTRAS_RETO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1974=Ya te encuentras en un reto.
+            Call WriteLocaleMsg(UserIndex, MSG_ENCUENTRAS_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1974=Ya te encuentras en un reto.
             Exit Function
         End If
         If .flags.EnConsulta Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDES_ACCEDER_RETO_CONSULTA, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1975=No puedes acceder a un reto si estás en consulta.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_ACCEDER_RETO_CONSULTA, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1975=No puedes acceder a un reto si estás en consulta.
             Exit Function
         End If
         If .flags.jugando_captura = 1 Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDES_JUGAR_RETO_ESTANDO_EVENTO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1976=No puedes jugar un reto estando en un evento.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_JUGAR_RETO_ESTANDO_EVENTO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1976=No puedes jugar un reto estando en un evento.
             Exit Function
         End If
         If Not esCiudad(.pos.Map) Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDES_PARTICIPAR_RETO_MAPA_INSEGURO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1977=No puedes participar de un reto en un mapa inseguro.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_PARTICIPAR_RETO_MAPA_INSEGURO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1977=No puedes participar de un reto en un mapa inseguro.
             Exit Function
         End If
         If .flags.EnTorneo Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PUEDES_IR_RETO_PARTICIPAS_TORNEO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1978=No puedes ir a un reto si participas de un torneo.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_IR_RETO_PARTICIPAS_TORNEO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1978=No puedes ir a un reto si participas de un torneo.
             Exit Function
         End If
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ENCARCELADO, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1979=¡Estás encarcelado!
+            Call WriteLocaleMsg(UserIndex, MSG_ENCARCELADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1979=¡Estás encarcelado!
             Exit Function
         End If
     End With
@@ -852,10 +850,10 @@ Private Sub MensajeATodosSolicitud(ByVal Oferente As Integer, mensaje As String,
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
             If .Jugadores(i).Aceptado Then
-                Call WriteConsoleMsg(.Jugadores(i).CurIndex.ArrayIndex, mensaje, Fuente)
+                Call WriteConsoleMsg(.Jugadores(i).CurIndex.ArrayIndex, mensaje, e_TextChannel.TEXTCHANNEL_EVENT, Fuente)
             End If
         Next
-        Call WriteConsoleMsg(Oferente, mensaje, Fuente)
+        Call WriteConsoleMsg(Oferente, mensaje, e_TextChannel.TEXTCHANNEL_EVENT, Fuente)
     End With
 End Sub
 

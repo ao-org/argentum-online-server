@@ -36,8 +36,8 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
     'Si ambos pusieron /comerciar entonces
     If UserList(Origen).ComUsu.DestUsu.ArrayIndex = Destino And UserList(Destino).ComUsu.DestUsu.ArrayIndex = Origen Then
         If UserList(Origen).pos.Map <> UserList(Destino).pos.Map Then
-            Call WriteLocaleMsg(Origen, MSG_NO_COMERCIO_CANCEL_PORQUE_ESTN_MISMO_MAPA, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
-            Call WriteLocaleMsg(Destino, MSG_NO_COMERCIO_CANCEL_PORQUE_ESTN_MISMO_MAPA, e_FontTypeNames.FONTTYPE_INFO) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
+            Call WriteLocaleMsg(Origen, MSG_NO_COMERCIO_CANCEL_PORQUE_ESTN_MISMO_MAPA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
+            Call WriteLocaleMsg(Destino, MSG_NO_COMERCIO_CANCEL_PORQUE_ESTN_MISMO_MAPA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg2108= El comercio se cancel porque ya no estn en el mismo mapa.
             Call FinComerciarUsu(Origen, True)
             Call FinComerciarUsu(Destino, True)
             IniciarComercioConUsuario = False
@@ -64,7 +64,7 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
         'Call WriteConsoleMsg(Destino, UserList(Origen).Name & " desea comerciar. Si deseas aceptar, Escribe /COMERCIAR.", e_FontTypeNames.FONTTYPE_TALK)
         Call SetUserRef(UserList(Destino).flags.TargetUser, Origen)
         UserList(Destino).flags.pregunta = 4
-        Call WritePreguntaBox(Destino, 1594, UserList(Origen).name) 'Msg1594= ¬1 desea comerciar contigo. ¿Aceptás?
+        Call WritePreguntaBox(Destino, MSG_DESEA_COMERCIAR_CONTIGO_ACEPTAS, UserList(Origen).name) 'Msg1594= ¬1 desea comerciar contigo. ¿Aceptás?
     End If
     IniciarComercioConUsuario = True
     Exit Function
@@ -84,7 +84,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
             UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
         Else
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1936=No tienes esa cantidad disponible para agregar.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1936=No tienes esa cantidad disponible para agregar.
             Exit Sub
         End If
     Else
@@ -98,7 +98,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         Next j
         cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
         If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex, ObjAEnviar.ElementalTags) Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR_1997, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1997=No tienes esa cantidad disponible para agregar.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR_1997, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1997=No tienes esa cantidad disponible para agregar.
             Exit Sub
         End If
         'Si es un item recorro todo el array para ver si ese elemento ya está agregado y de paso me guardo la primer posición vacía
@@ -142,7 +142,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
             ElseIf FirstEmptyPos = 0 And nada = False Then
                 'le aviso que no le entran los items
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, vbNullString, e_FontTypeNames.FONTTYPE_INFO)) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
+                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
             End If
         End With
     End If
@@ -197,16 +197,16 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     UserList(UserIndex).ComUsu.Acepto = True
     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
-        Call WriteLocaleMsg(UserIndex, MSG_NO_OTRO_USUARIO_AUN_HA_ACEPTADO_OFERTA, e_FontTypeNames.FONTTYPE_TALK) 'Msg1596= El otro usuario aún no ha aceptado tu oferta.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_OTRO_USUARIO_AUN_HA_ACEPTADO_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1596= El otro usuario aún no ha aceptado tu oferta.
         Exit Sub
     End If
     If UserList(UserIndex).ComUsu.Oro > UserList(UserIndex).Stats.GLD Then
         'Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)'ver ReyarB
-        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_1597, e_FontTypeNames.FONTTYPE_TALK) 'Msg1597= No tienes esa cantidad.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_1597, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1597= No tienes esa cantidad.
         TerminarAhora = True
     End If
     If UserList(OtroUserIndex).ComUsu.Oro > UserList(OtroUserIndex).Stats.GLD Then
-        Call WriteConsoleMsg(OtroUserIndex, PrepareMessageLocaleMsg(MSG_NO_TIENES_ESA_CANTIDAD, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1999=No tienes esa cantidad.
+        Call WriteLocaleMsg(OtroUserIndex, MSG_NO_TIENES_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1999=No tienes esa cantidad.
         GoTo FinalizarComercio
     End If
     ' Verificamos que si tiene los objetos JUSTO ANTES de intercambiarlos
@@ -214,12 +214,12 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.ElementalTags) Then
-            Call WriteLocaleMsg(OtroUserIndex, MSG_NO_OTRO_USUARIO_TIENE_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_FontTypeNames.FONTTYPE_INFO) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
+            Call WriteLocaleMsg(OtroUserIndex, MSG_NO_OTRO_USUARIO_TIENE_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.ElementalTags) Then
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_FontTypeNames.FONTTYPE_INFO) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
     Next i

@@ -293,13 +293,13 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Exit Function
         End If
         If Not NombrePermitido(name) Then
-            Call WriteShowMessageBox(UserIndex, 1768, vbNullString) 'Msg1768=El nombre no está permitido.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_NOMBRE_NO_ESTA_PERMITIDO, vbNullString) 'Msg1768=El nombre no está permitido.
             Exit Function
         End If
 #End If
         '¿Existe el personaje?
         If PersonajeExiste(name) Then
-            Call WriteShowMessageBox(UserIndex, 1769, vbNullString) 'Msg1769=Ya existe el personaje.
+            Call WriteShowMessageBox(UserIndex, MSG_YA_EXISTE_EL_PERSONAJE, vbNullString) 'Msg1769=Ya existe el personaje.
             Exit Function
         End If
         ' Raza válida
@@ -412,7 +412,7 @@ Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vb
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, vbNullString) ' Msg1844=Comercio cancelado por el otro usuario.
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
@@ -522,12 +522,12 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String) A
             End If
         Next adminIdx
         If Not laCuentaEsDeAdmin Then
-            Call WriteShowMessageBox(UserIndex, 1770, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_SERVIDOR_SE_ENCUENTRA_HABILITADO_SOLO_PARA_ADMINISTRADORES_POR_EL_MOMENTO, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
             Exit Function
         End If
     End If
     If Not CheckMailString(CuentaEmail) Then
-        Call WriteShowMessageBox(UserIndex, 1772, vbNullString) 'Msg1772=Email inválido.
+        Call WriteShowMessageBox(UserIndex, MSG_EMAIL_INVALIDO, vbNullString) 'Msg1772=Email inválido.
         Exit Function
     End If
     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail)
@@ -559,7 +559,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
                     ConnectUser = True
                 End If
             Else
-                Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString) 'Msg1773=No se puede cargar el personaje.
                 Call CloseSocket(UserIndex)
             End If
         End If
@@ -570,7 +570,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
@@ -586,14 +586,14 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Call PerformanceTestStart(PerformanceTimer)
 
     If CharID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
 
     ' Ensure we have an account loaded
     If UserList(UserIndex).AccountID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -603,7 +603,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Set RS = Query("select name from user where id=" & CStr(CharID) & " and account_id=" & CStr(UserList(UserIndex).AccountID))
 
     If RS Is Nothing Or RS.EOF Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -630,7 +630,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
             ConnectUserByID = True
         End If
     Else
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
     End If
 
@@ -639,7 +639,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUserByID", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
 End Function
@@ -651,14 +651,14 @@ Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
     ' Pick the font/type you prefer. Examples used in this codebase include FONTTYPE_INFO or FONTTYPE_GUILD.
     ' If your helper uses a different enum or function name, keep the same idea:
     '   SendData(ToUser, UserIndex, PrepareMessageConsoleMsg(msg, e_FontTypeNames.FONTTYPE_INFO))
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_FontTypeNames.FONTTYPE_INFO))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO))
 End Sub
 
 Sub SendMOTD(ByVal UserIndex As Integer)
     On Error GoTo SendMOTD_Err
     Dim j As Long
     For j = 1 To MaxLines
-        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
+        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
     Next j
     Call SendWelcomeUptime(UserIndex)
     Exit Sub
