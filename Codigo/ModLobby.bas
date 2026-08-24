@@ -414,7 +414,7 @@ Public Function AddPlayerOrGroup(ByRef instance As t_Lobby, ByVal UserIndex As I
                 If IsValidUserRef(.Grupo.Miembros(i)) Then
                     AddPlayerOrGroup = CanPlayerJoin(instance, .Grupo.Miembros(i).ArrayIndex)
                     If Not AddPlayerOrGroup.Success Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_TEAM_MEMBER_CANNOT_PARTICIPATE_REASON, e_TextChannel.TEXTCHANNEL_EVENT, UserList(.Grupo.Miembros(i).ArrayIndex).name, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_TEAM_MEMBER_CANNOT_PARTICIPATE_REASON, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro, UserList(.Grupo.Miembros(i).ArrayIndex).name) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
                         Call WriteLocaleMsg(UserIndex, AddPlayerOrGroup.Message, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                         Exit Function
                     End If

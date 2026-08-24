@@ -42,7 +42,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
     ' skillsNecesarios = 15 - Remitente.Stats.UserAtributos(e_Atributos.Carisma) \ 2
     skillsNecesarios = 0
     If Remitente.Stats.UserSkills(e_Skill.liderazgo) < skillsNecesarios Then
-        Call WriteLocaleMsg(UserIndex, MSG_FALTAN_PUNTOS_LIDERAZGO_LIDERAR_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo)), e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2041="Te faltan ¬1 puntos en Liderazgo para liderar un grupo."
+        Call WriteLocaleMsg(UserIndex, MSG_FALTAN_PUNTOS_LIDERAZGO_LIDERAR_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, (skillsNecesarios - Remitente.Stats.UserSkills(e_Skill.liderazgo))) ' Msg2041="Te faltan ¬1 puntos en Liderazgo para liderar un grupo."
         Exit Sub
     End If
     'HarThaoS: Si invita a un gm no lo dejo
@@ -60,7 +60,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         Exit Sub
     End If
     If Remitente.Grupo.CantidadMiembros >= UBound(Remitente.Grupo.Miembros) Then
-        Call WriteLocaleMsg(UserIndex, MSG_PUEDES_INVITAR_MAS_PERSONAS_LIMITE, e_TextChannel.TEXTCHANNEL_GROUP, CStr(UBound(Remitente.Grupo.Miembros)), e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2045="No puedes invitar a mas personas. (Límite: ¬1)"
+        Call WriteLocaleMsg(UserIndex, MSG_PUEDES_INVITAR_MAS_PERSONAS_LIMITE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, CStr(UBound(Remitente.Grupo.Miembros))) ' Msg2045="No puedes invitar a mas personas. (Límite: ¬1)"
         Exit Sub
     End If
     If (Status(UserIndex) = 0 And Status(InvitadoIndex) = 1) Or (Status(UserIndex) = 1 And Status(InvitadoIndex) = 0) Or (Status(UserIndex) = 1 And Status(InvitadoIndex) = 2) Or _

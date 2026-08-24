@@ -3415,8 +3415,8 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal Channel As 
     Debug.Assert Channel >= TEXTCHANNEL_SYSTEM And Channel < TEXTCHANNEL_MAX
     Call Writer.WriteInt16(ServerPacketID.eConsoleMsg)
     Call Writer.WriteString8(chat)
-    Call Writer.WriteInt8(Channel)
     Call Writer.WriteInt8(FontIndex)
+    Call Writer.WriteInt8(Channel)
     Exit Function
 PrepareMessageConsoleMsg_Err:
     Call Writer.Clear
@@ -3446,9 +3446,11 @@ End Function
 '   1) A locale message ID
 '   2) A parameter string
 '   3) A font/style identifier
+'   4) A semantic text channel
 '
-' Channel is required by the server API but is not serialized yet. This keeps
-' the legacy packet layout stable until the versioned channel field is added.
+' Channel is appended after the legacy packet fields. Older clients keep reading
+' the original FontIndex position and discard the trailing channel byte, while
+' channel-aware clients read it and default to TEXTCHANNEL_SYSTEM when absent.
 '
 ' The client then resolves the final message using its own locale files.
 '
@@ -3458,6 +3460,7 @@ End Function
 '   [Int16 MessageID]
 '   [String8 Parameters]
 '   [Int8 FontIndex]
+'   [Int8 Channel]
 '
 ' Where:
 '
@@ -3504,7 +3507,7 @@ End Function
 '
 '       Server code:
 '
-'           PrepareMessageLocaleMsg(1639, "Pablo", FONTTYPE_TALK)
+'           PrepareMessageLocaleMsg(1639, "Pablo", TEXTCHANNEL_EVENT, FONTTYPE_TALK)
 '
 '       Client locale resource:
 '
@@ -3533,8 +3536,8 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
     Call Writer.WriteInt16(Id)
     Call Writer.WriteString8(chat)
-    Call Writer.WriteInt8(Channel)
     Call Writer.WriteInt8(FontIndex)
+    Call Writer.WriteInt8(Channel)
     Exit Function
 PrepareMessageLocaleMsg_Err:
     Call Writer.Clear
