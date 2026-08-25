@@ -18,6 +18,7 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc spatial transition retains existing target only", test_target_retention())
     Call UnitTesting.RunTest("npc combat rejects targets on another map", test_cross_map_combat_guard())
     Call UnitTesting.RunTest("npc cross-map route keeps AI active on empty map", test_route_keeps_ai_active())
+    Call UnitTesting.RunTest("npc respawn keeps original spawn map", test_respawn_uses_original_map())
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = True
 End Function
@@ -37,6 +38,13 @@ Private Function test_safe_destination_allowed() As Boolean
 
 Cleanup:
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, originalToggle)
+End Function
+
+Private Function test_respawn_uses_original_map() As Boolean
+    Dim npc As t_Npc
+    npc.Orig.Map = 34
+    npc.pos.Map = 35
+    test_respawn_uses_original_map = (NpcRespawnMap(npc) = 34)
 End Function
 
 Private Function test_safe_destination_blocked() As Boolean
