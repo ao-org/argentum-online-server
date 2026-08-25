@@ -10,13 +10,56 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc topology routes multiple hops", test_topology_multi_hop())
     Call UnitTesting.RunTest("npc topology reports disconnected maps", test_topology_disconnected())
     Call UnitTesting.RunTest("npc topology validates spatial exit geometry", test_spatial_exit_geometry())
+    Call UnitTesting.RunTest("npc spatial pursuit allows safe destination maps", test_safe_destination_allowed())
     Call UnitTesting.RunTest("npc topology rejects malformed reciprocity", test_topology_rejects_invalid())
     Call UnitTesting.RunTest("npc topology checked-in manifest loads", test_checked_in_manifest())
     Call UnitTesting.RunTest("npc topology feature toggle disables routing", test_feature_toggle())
     Call UnitTesting.RunTest("npc spatial transition retains existing target only", test_target_retention())
     Call UnitTesting.RunTest("npc combat rejects targets on another map", test_cross_map_combat_guard())
+    Call UnitTesting.RunTest("npc cross-map route keeps AI active on empty map", test_route_keeps_ai_active())
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = True
+End Function
+
+Private Function test_safe_destination_allowed() As Boolean
+    Dim originalToggle As Boolean
+    Dim destination As t_WorldPos
+
+    originalToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE)
+    Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
+    If MapInfo(1).Seguro = 0 Then GoTo Cleanup
+
+    destination.Map = 1
+    destination.x = 31
+    destination.y = 11
+    test_safe_destination_allowed = IsVerifiedNpcSpatialTransition(5, 31, 91, destination, False)
+
+Cleanup:
+    Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, originalToggle)
+End Function
+
+Private Function test_route_keeps_ai_active() As Boolean
+    Dim npcIndex As Integer
+    Dim originalUsers As Integer
+    Dim originalForceUpdate As Boolean
+
+    npcIndex = UBound(NpcList)
+    originalUsers = MapInfo(34).NumUsers
+    originalForceUpdate = MapInfo(34).ForceUpdate
+    NpcList(npcIndex).pos.Map = 34
+    MapInfo(34).NumUsers = 0
+    MapInfo(34).ForceUpdate = False
+
+    Call ResetNpcCrossMapRoute(npcIndex)
+    If NpcRequiresAiUpdate(npcIndex) Then GoTo Cleanup
+    NpcList(npcIndex).CrossMapRoute.Mode = eNpcCrossMapRouteChase
+    test_route_keeps_ai_active = NpcRequiresAiUpdate(npcIndex)
+
+Cleanup:
+    Call ResetNpcCrossMapRoute(npcIndex)
+    NpcList(npcIndex).pos.Map = 0
+    MapInfo(34).NumUsers = originalUsers
+    MapInfo(34).ForceUpdate = originalForceUpdate
 End Function
 
 Private Function test_target_retention() As Boolean
@@ -34,7 +77,7 @@ Private Function test_target_retention() As Boolean
     UserList(userIndex).VersionId = 32000
     UserList(userIndex).flags.UserLogged = True
     UserList(userIndex).pos.Map = 35
-    NpcList(npcIndex).pos.Map = 34
+    NpcList(npcIndex).pos.Map = 35
     NpcList(npcIndex).Orig.Map = 34
     NpcList(npcIndex).Hostile = 1
     NpcList(npcIndex).Movement = e_TipoAI.MueveAlAzar
@@ -45,8 +88,14 @@ Private Function test_target_retention() As Boolean
 
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
     Call RetainNpcPursuitForSpatialTransition(userIndex, 34, 35)
+    If NpcList(npcIndex).CrossMapRoute.Mode <> eNpcCrossMapRouteNone Then GoTo Cleanup
+
+    NpcList(npcIndex).pos.Map = 34
+    Call RetainNpcPursuitForSpatialTransition(userIndex, 34, 35)
     If NpcList(npcIndex).CrossMapRoute.Mode <> eNpcCrossMapRouteChase Then GoTo Cleanup
     If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then GoTo Cleanup
+    If NpcList(npcIndex).CrossMapRoute.NextMap <> 35 Then GoTo Cleanup
+    If NpcList(npcIndex).CrossMapRoute.ExitX = 0 Or NpcList(npcIndex).CrossMapRoute.ExitY = 0 Then GoTo Cleanup
 
     Call ClearUserRef(NpcList(npcIndex).TargetUser)
     Call ResetNpcCrossMapRoute(npcIndex)

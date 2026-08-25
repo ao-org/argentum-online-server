@@ -14,7 +14,6 @@ Public Function IsVerifiedNpcSpatialTransition(ByVal FromMap As Integer, _
     If Not IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then Exit Function
     If Not AdjacentTopologyAvailable() Then Exit Function
     If Destination.Map <= 0 Or Destination.Map > NumMaps Then Exit Function
-    If MapInfo(Destination.Map).Seguro <> 0 Then Exit Function
     IsVerifiedNpcSpatialTransition = SpatialTransitionMatchesEdge(FromMap, ExitX, ExitY, Destination.Map, Destination.x, Destination.y)
 End Function
 
@@ -24,11 +23,23 @@ Public Sub RetainNpcPursuitForSpatialTransition(ByVal UserIndex As Integer, _
     On Error GoTo RetainFailed
     If Not NpcCrossMapPursuitEnabled() Then Exit Sub
     Dim NpcIndex As Integer
+    Dim matchingTargets As Integer
+    Dim sourceMapTargets As Integer
+    Dim retainedTargets As Integer
     For NpcIndex = 1 To LastNPC
-        If NpcList(NpcIndex).pos.Map > 0 Then
+        If IsValidUserRef(NpcList(NpcIndex).TargetUser) Then
+            If NpcList(NpcIndex).TargetUser.ArrayIndex = UserIndex Then
+                matchingTargets = matchingTargets + 1
+                If NpcList(NpcIndex).pos.Map = FromMap Then sourceMapTargets = sourceMapTargets + 1
+            End If
+        End If
+        'Only NPCs already pursuing from the map being left may retain aggro.
+        'Destination-map NPCs can acquire the user while WarpUserChar rebuilds visibility.
+        If NpcList(NpcIndex).pos.Map = FromMap Then
             If IsValidUserRef(NpcList(NpcIndex).TargetUser) Then
                 If NpcList(NpcIndex).TargetUser.ArrayIndex = UserIndex Then
                     If NpcCanPursueAcrossMaps(NpcIndex) Then
+                        retainedTargets = retainedTargets + 1
                         With NpcList(NpcIndex).CrossMapRoute
                             .Mode = eNpcCrossMapRouteChase
                             .TargetMap = ToMap
@@ -41,11 +52,18 @@ Public Sub RetainNpcPursuitForSpatialTransition(ByVal UserIndex As Integer, _
                         End With
                         NpcList(NpcIndex).pathFindingInfo.PathLength = 0
                         Call LogNpcCrossMap(NpcIndex, "chase retained fromMap=" & FromMap & " targetMap=" & ToMap)
+                        'Prime the first hop while the transition context is still known. The AI loop
+                        'will continue the route after the source map becomes empty.
+                        If Not PrepareNpcNextHop(NpcIndex, ToMap, True) Then
+                            Call ClearUserRef(NpcList(NpcIndex).TargetUser)
+                            Call BeginNpcReturnHome(NpcIndex, "initial route unavailable")
+                        End If
                     End If
                 End If
             End If
         End If
     Next NpcIndex
+    Call LogInfoServidor("NPC cross-map retention scan user=" & UserIndex & " fromMap=" & FromMap & " toMap=" & ToMap & " matchingTargets=" & matchingTargets & " sourceMapTargets=" & sourceMapTargets & " retained=" & retainedTargets)
     Exit Sub
 RetainFailed:
     Call TraceError(Err.Number, Err.Description, "modNpcCrossMapPursuit.RetainNpcPursuitForSpatialTransition", Erl)
@@ -232,16 +250,27 @@ Private Function PrepareNpcNextHop(ByVal NpcIndex As Integer, ByVal TargetMap As
     Dim nextMap As Integer
     If IsChase Then
         Dim originHop As Integer
-        If MapInfo(TargetMap).Seguro <> 0 Then Exit Function
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).Orig.Map, TargetMap, originHop, NPC_CROSS_MAP_MAX_CHASE_HOPS, True) Then Exit Function
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap, NPC_CROSS_MAP_MAX_CHASE_HOPS, True) Then Exit Function
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).Orig.Map, TargetMap, originHop, NPC_CROSS_MAP_MAX_CHASE_HOPS) Then
+            Call LogNpcCrossMap(NpcIndex, "route rejected reason=origin-leash originMap=" & NpcList(NpcIndex).Orig.Map & " targetMap=" & TargetMap)
+            Exit Function
+        End If
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap, NPC_CROSS_MAP_MAX_CHASE_HOPS) Then
+            Call LogNpcCrossMap(NpcIndex, "route rejected reason=no-route fromMap=" & NpcList(NpcIndex).pos.Map & " targetMap=" & TargetMap)
+            Exit Function
+        End If
     Else
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap) Then Exit Function
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap) Then
+            Call LogNpcCrossMap(NpcIndex, "route rejected reason=no-return-route fromMap=" & NpcList(NpcIndex).pos.Map & " targetMap=" & TargetMap)
+            Exit Function
+        End If
     End If
 
     With NpcList(NpcIndex).CrossMapRoute
         If .NextMap <> nextMap Or .ExitX = 0 Or .ExitY = 0 Then
-            If Not ResolveNpcSpatialExit(NpcIndex, nextMap) Then Exit Function
+            If Not ResolveNpcSpatialExit(NpcIndex, nextMap) Then
+                Call LogNpcCrossMap(NpcIndex, "route rejected reason=no-valid-spatial-exit fromMap=" & NpcList(NpcIndex).pos.Map & " nextMap=" & nextMap)
+                Exit Function
+            End If
             .NextMap = nextMap
             .PathFailures = 0
             NpcList(NpcIndex).pathFindingInfo.PathLength = 0
@@ -330,7 +359,6 @@ Private Function NpcTargetAllowsRetainedChase(ByVal UserIndex As Integer) As Boo
         If .flags.Muerto <> 0 Or .flags.EnConsulta <> 0 Then Exit Function
         If EsGM(UserIndex) And Not .flags.AdminPerseguible Then Exit Function
         If .pos.Map <= 0 Or .pos.Map > NumMaps Then Exit Function
-        If MapInfo(.pos.Map).Seguro <> 0 Then Exit Function
     End With
     NpcTargetAllowsRetainedChase = True
 End Function
@@ -340,6 +368,7 @@ Private Sub BeginNpcReturnHome(ByVal NpcIndex As Integer, ByVal reason As String
         .pathFindingInfo.PathLength = 0
         .pathFindingInfo.NextPathRecomputeAt = 0
         If .pos.Map = .Orig.Map Then
+            Call LogNpcCrossMap(NpcIndex, "chase cancelled reason=" & reason & " alreadyOnOriginMap=" & .Orig.Map)
             Call ResetNpcCrossMapRoute(NpcIndex)
         Else
             .CrossMapRoute.Mode = eNpcCrossMapRouteReturnHome

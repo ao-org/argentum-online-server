@@ -386,16 +386,19 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         destPos.y = MapData(Map, x, y).TileExit.y
                     End If
                     preserveNpcPursuit = IsVerifiedNpcSpatialTransition(Map, x, y, MapData(Map, x, y).TileExit, EsTeleport)
+                    If IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
+                        Call LogInfoServidor("NPC cross-map transition fromMap=" & Map & " exit=(" & x & "," & y & ") toMap=" & destPos.Map & " destination=(" & destPos.x & "," & destPos.y & ") teleport=" & CStr(EsTeleport) & " verified=" & CStr(preserveNpcPursuit))
+                    End If
                     If .flags.Navegando Then
                         Call ClosestLegalPos(destPos, nPos, True)
                     Else
                         Call ClosestLegalPos(destPos, nPos)
                     End If
                     If nPos.x <> 0 And nPos.y <> 0 Then
-                        Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
-                        If preserveNpcPursuit And UserList(UserIndex).pos.Map = nPos.Map Then
+                        If preserveNpcPursuit Then
                             Call RetainNpcPursuitForSpatialTransition(UserIndex, Map, nPos.Map)
                         End If
+                        Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
                     End If
                 End If
                 preserveNpcPursuit = preserveNpcPursuit And UserList(UserIndex).pos.Map = MapData(Map, x, y).TileExit.Map
