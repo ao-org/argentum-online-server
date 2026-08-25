@@ -156,6 +156,7 @@ Public Function LoadSettings(ByVal Filename As String) As Long
     mSettings.Add "NPC_VISION_RANGE_Y", CInt(val(reader.GetValue("AI", "NPCVisionRangeY", DEFAULT_NPC_VISION_RANGE_Y)))
     mSettings.Add "NPC_PATHFINDING_MAX_STEPS", Min(MAX_PATH_LENGTH, CInt(val(reader.GetValue("AI", "NPCMaxStepsPathFinding", MAX_PATH_LENGTH))))
     mSettings.Add "NPC_PATHFINDING_NOISE", CSng(val(reader.GetValue("AI", "NPCPathfindingNoise", 0.75)))
+    mSettings.Add "NPC_CROSS_MAP_ALLOW_SAFE_MAPS", (val(reader.GetValue("AI", "NPCCrossMapAllowSafeMaps", "1")) <> 0)
     mSettings.Add "NPC_MAX_VISION_RANGE", Min(DEFAULT_NPC_MAX_VISION_RANGE, CInt(val(reader.GetValue("AI", "NPCMaxVisionRange", DEFAULT_NPC_MAX_VISION_RANGE))))
     mSettings.Add "NPC_ORBIT_REEVALUATE_MS", CLng(val(reader.GetValue("AI", "NPC_ORBIT_REEVALUATE_MS", DEFAULT_ORBIT_REEVALUATE_MS)))
     mSettings.Add "PATH_RECOMPUTE_COOLDOWN_MS", CLng(val(reader.GetValue("AI", "PATH_RECOMPUTE_COOLDOWN_MS", DEFAULT_PATH_RECOMPUTE_COOLDOWN_MS)))

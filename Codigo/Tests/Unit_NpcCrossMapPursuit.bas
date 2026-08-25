@@ -10,7 +10,8 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc topology routes multiple hops", test_topology_multi_hop())
     Call UnitTesting.RunTest("npc topology reports disconnected maps", test_topology_disconnected())
     Call UnitTesting.RunTest("npc topology validates spatial exit geometry", test_spatial_exit_geometry())
-    Call UnitTesting.RunTest("npc spatial pursuit allows safe destination maps", test_safe_destination_allowed())
+    Call UnitTesting.RunTest("npc spatial pursuit allows safe maps when configured", test_safe_destination_allowed())
+    Call UnitTesting.RunTest("npc spatial pursuit blocks safe maps when configured", test_safe_destination_blocked())
     Call UnitTesting.RunTest("npc topology rejects malformed reciprocity", test_topology_rejects_invalid())
     Call UnitTesting.RunTest("npc topology checked-in manifest loads", test_checked_in_manifest())
     Call UnitTesting.RunTest("npc topology feature toggle disables routing", test_feature_toggle())
@@ -36,6 +37,11 @@ Private Function test_safe_destination_allowed() As Boolean
 
 Cleanup:
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, originalToggle)
+End Function
+
+Private Function test_safe_destination_blocked() As Boolean
+    If MapInfo(1).Seguro = 0 Then Exit Function
+    test_safe_destination_blocked = Not NpcCrossMapMapAllowedByPolicy(1, False)
 End Function
 
 Private Function test_route_keeps_ai_active() As Boolean

@@ -14,6 +14,7 @@ Public Function IsVerifiedNpcSpatialTransition(ByVal FromMap As Integer, _
     If Not IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then Exit Function
     If Not AdjacentTopologyAvailable() Then Exit Function
     If Destination.Map <= 0 Or Destination.Map > NumMaps Then Exit Function
+    If Not NpcCrossMapDestinationAllowed(Destination.Map) Then Exit Function
     IsVerifiedNpcSpatialTransition = SpatialTransitionMatchesEdge(FromMap, ExitX, ExitY, Destination.Map, Destination.x, Destination.y)
 End Function
 
@@ -248,18 +249,20 @@ End Sub
 
 Private Function PrepareNpcNextHop(ByVal NpcIndex As Integer, ByVal TargetMap As Integer, ByVal IsChase As Boolean) As Boolean
     Dim nextMap As Integer
+    Dim avoidSafeMaps As Boolean
+    avoidSafeMaps = Not NpcCrossMapSafeMapsAllowed()
     If IsChase Then
         Dim originHop As Integer
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).Orig.Map, TargetMap, originHop, NPC_CROSS_MAP_MAX_CHASE_HOPS) Then
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).Orig.Map, TargetMap, originHop, NPC_CROSS_MAP_MAX_CHASE_HOPS, avoidSafeMaps) Then
             Call LogNpcCrossMap(NpcIndex, "route rejected reason=origin-leash originMap=" & NpcList(NpcIndex).Orig.Map & " targetMap=" & TargetMap)
             Exit Function
         End If
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap, NPC_CROSS_MAP_MAX_CHASE_HOPS) Then
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap, NPC_CROSS_MAP_MAX_CHASE_HOPS, avoidSafeMaps) Then
             Call LogNpcCrossMap(NpcIndex, "route rejected reason=no-route fromMap=" & NpcList(NpcIndex).pos.Map & " targetMap=" & TargetMap)
             Exit Function
         End If
     Else
-        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap) Then
+        If Not TryGetNextSpatialHop(NpcList(NpcIndex).pos.Map, TargetMap, nextMap, , avoidSafeMaps) Then
             Call LogNpcCrossMap(NpcIndex, "route rejected reason=no-return-route fromMap=" & NpcList(NpcIndex).pos.Map & " targetMap=" & TargetMap)
             Exit Function
         End If
@@ -359,8 +362,23 @@ Private Function NpcTargetAllowsRetainedChase(ByVal UserIndex As Integer) As Boo
         If .flags.Muerto <> 0 Or .flags.EnConsulta <> 0 Then Exit Function
         If EsGM(UserIndex) And Not .flags.AdminPerseguible Then Exit Function
         If .pos.Map <= 0 Or .pos.Map > NumMaps Then Exit Function
+        If Not NpcCrossMapDestinationAllowed(.pos.Map) Then Exit Function
     End With
     NpcTargetAllowsRetainedChase = True
+End Function
+
+Public Function NpcCrossMapMapAllowedByPolicy(ByVal MapId As Integer, ByVal AllowSafeMaps As Boolean) As Boolean
+    If MapId <= 0 Or MapId > NumMaps Then Exit Function
+    NpcCrossMapMapAllowedByPolicy = AllowSafeMaps Or MapInfo(MapId).Seguro = 0
+End Function
+
+Private Function NpcCrossMapDestinationAllowed(ByVal MapId As Integer) As Boolean
+    NpcCrossMapDestinationAllowed = NpcCrossMapMapAllowedByPolicy(MapId, NpcCrossMapSafeMapsAllowed())
+End Function
+
+Private Function NpcCrossMapSafeMapsAllowed() As Boolean
+    If SvrConfig Is Nothing Then Exit Function
+    NpcCrossMapSafeMapsAllowed = CBool(SvrConfig.GetValue("NPC_CROSS_MAP_ALLOW_SAFE_MAPS"))
 End Function
 
 Private Sub BeginNpcReturnHome(ByVal NpcIndex As Integer, ByVal reason As String)
