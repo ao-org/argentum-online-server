@@ -2726,6 +2726,13 @@ Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
         FeatureToggles.Remove name
     End If
     Call FeatureToggles.Add(name, State)
+    If name = NPC_CROSS_MAP_PURSUIT_FEATURE Then
+        If State Then
+            Call LoadAdjacentTopology
+        Else
+            Call ResetAdjacentTopology
+        End If
+    End If
 End Sub
 
 Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()

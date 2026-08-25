@@ -372,6 +372,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         .pathFindingInfo.OrbitDirection = 0
         .pathFindingInfo.OrbitReevaluateAt = 0
         .pathFindingInfo.NextPathRecomputeAt = 0
+        Call ResetNpcCrossMapRoute(NpcIndex)
         .Comercia = 0
         .GiveEXP = 0
         .GiveEXPClan = 0
@@ -1900,7 +1901,7 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
 End Sub
 
-Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
+Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
     Dim NuevaPos  As t_WorldPos
     Dim FuturePos As t_WorldPos
     Call EraseNPCChar(NpcIndex)
