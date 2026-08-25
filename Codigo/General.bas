@@ -603,6 +603,7 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
+    Call LoadAdjacentTopology
     frmCargando.Label1(2).Caption = "Cargando donadores"
     Call CargarDonadores
     Call InitPathFinding
@@ -797,6 +798,7 @@ Sub Restart()
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
+    Call LoadAdjacentTopology
     Call CargarHechizos
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."

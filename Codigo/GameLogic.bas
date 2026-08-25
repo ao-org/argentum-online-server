@@ -320,6 +320,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     Dim TelepRadio As Byte
     Dim aN         As Integer
     Dim destPos    As t_WorldPos
+    Dim preserveNpcPursuit As Boolean
     With UserList(UserIndex)
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
@@ -384,17 +385,25 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         destPos.x = MapData(Map, x, y).TileExit.x
                         destPos.y = MapData(Map, x, y).TileExit.y
                     End If
+                    preserveNpcPursuit = IsVerifiedNpcSpatialTransition(Map, x, y, MapData(Map, x, y).TileExit, EsTeleport)
+                    If IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
+                        Call LogInfoServidor("NPC cross-map transition fromMap=" & Map & " exit=(" & x & "," & y & ") toMap=" & destPos.Map & " destination=(" & destPos.x & "," & destPos.y & ") teleport=" & CStr(EsTeleport) & " verified=" & CStr(preserveNpcPursuit))
+                    End If
                     If .flags.Navegando Then
                         Call ClosestLegalPos(destPos, nPos, True)
                     Else
                         Call ClosestLegalPos(destPos, nPos)
                     End If
                     If nPos.x <> 0 And nPos.y <> 0 Then
+                        If preserveNpcPursuit Then
+                            Call RetainNpcPursuitForSpatialTransition(UserIndex, Map, nPos.Map)
+                        End If
                         Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
                     End If
                 End If
-                'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-                Call ClearAttackerNpc(UserIndex)
+                preserveNpcPursuit = preserveNpcPursuit And UserList(UserIndex).pos.Map = MapData(Map, x, y).TileExit.Map
+                'Non-spatial transitions keep the existing target-clearing behavior.
+                Call ClearAttackerNpc(UserIndex, preserveNpcPursuit)
             ElseIf MapData(Map, x, y).TileExit.Map < 0 Then
                 If .flags.ReturnPos.Map <> 0 Then
                     If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
@@ -416,16 +425,19 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, ".DotileEvents", Erl)
 End Sub
 
-Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
+Public Sub ClearAttackerNpc(ByVal UserIndex As Integer, Optional ByVal PreserveSpatialPursuer As Boolean = False)
     On Error GoTo ClearAttackerNpc_err
     With UserList(UserIndex)
         Dim aN As Integer
+        Dim preserveTrackedAttacker As Boolean
+        If Not PreserveSpatialPursuer Then Call CancelNpcCrossMapPursuitForUser(UserIndex)
         If Not IsValidNpcRef(.flags.AtacadoPorNpc) Then
             Call ClearNpcRef(.flags.AtacadoPorNpc)
         Else
             aN = .flags.AtacadoPorNpc.ArrayIndex
+            preserveTrackedAttacker = PreserveSpatialPursuer And ShouldPreserveNpcAttackerReference(aN, UserIndex)
             If aN > 0 Then
-                If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
+                If Not preserveTrackedAttacker And IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
                     Call SetMovement(aN, NpcList(aN).flags.OldMovement)
                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
                     NpcList(aN).flags.AttackedBy = vbNullString
@@ -443,7 +455,7 @@ Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
                 End If
             End If
         End If
-        Call ClearNpcRef(.flags.AtacadoPorNpc)
+        If Not preserveTrackedAttacker Then Call ClearNpcRef(.flags.AtacadoPorNpc)
         Call ClearNpcRef(.flags.NPCAtacado)
     End With
     Exit Sub

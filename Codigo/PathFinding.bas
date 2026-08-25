@@ -70,6 +70,10 @@ Public Sub FollowPath(ByVal NpcIndex As Integer)
         nextPos.Map = .pos.Map
         nextPos.x = .pathFindingInfo.Path(.pathFindingInfo.PathLength).x
         nextPos.y = .pathFindingInfo.Path(.pathFindingInfo.PathLength).y
+        If IsNpcAuthorizedSpatialExit(NpcIndex, nextPos.x, nextPos.y) Then
+            If CrossNpcSpatialExit(NpcIndex, nextPos.x, nextPos.y) Then Exit Sub
+            Exit Sub
+        End If
         Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, nextPos))
         .pathFindingInfo.PathLength = .pathFindingInfo.PathLength - 1
     End With
@@ -108,7 +112,9 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal
         ' Usuario
         If .UserIndex And .UserIndex <> NpcList(NpcIndex).TargetUser.ArrayIndex Then Exit Function
         ' Traslado
-        If .TileExit.Map Then Exit Function
+        If .TileExit.Map Then
+            If Not NpcPathMayUseExit(NpcIndex, x, y) Then Exit Function
+        End If
         ' Agua
         If .Blocked And FLAG_AGUA Then
             If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function

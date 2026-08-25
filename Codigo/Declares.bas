@@ -3221,6 +3221,24 @@ Public Type t_NpcPathFindingInfo
     '  forcing the seek of a new path.
 End Type
 
+Public Enum e_NpcCrossMapRouteMode
+    eNpcCrossMapRouteNone = 0
+    eNpcCrossMapRouteChase = 1
+    eNpcCrossMapRouteReturnHome = 2
+End Enum
+
+Public Type t_NpcCrossMapRoute
+    Mode As e_NpcCrossMapRouteMode
+    TargetMap As Integer
+    NextMap As Integer
+    ExitX As Byte
+    ExitY As Byte
+    DestinationX As Byte
+    DestinationY As Byte
+    HopsCrossed As Byte
+    PathFailures As Byte
+End Type
+
 Public Type t_Caminata
     offset As t_Position
     Espera As Long
@@ -3467,6 +3485,7 @@ Public Type t_Npc
     Mascotas As Integer
     ' New!! Needed for pathfindig
     pathFindingInfo As t_NpcPathFindingInfo
+    CrossMapRoute As t_NpcCrossMapRoute
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
     

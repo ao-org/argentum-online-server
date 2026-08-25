@@ -252,7 +252,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             .RespawnFlag = MiNPC.flags.Respawn
             .NpcNumber = MiNPC.Numero
             .SndRespawn = MiNPC.flags.SndRespawn
-            .SpawnMap = MiNPC.pos.Map
+            .SpawnMap = NpcRespawnMap(MiNPC)
             .Orig = MiNPC.Orig
             .IntervaloRespawn = MiNPC.Contadores.IntervaloRespawn
         End With
@@ -372,6 +372,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         .pathFindingInfo.OrbitDirection = 0
         .pathFindingInfo.OrbitReevaluateAt = 0
         .pathFindingInfo.NextPathRecomputeAt = 0
+        Call ResetNpcCrossMapRoute(NpcIndex)
         .Comercia = 0
         .GiveEXP = 0
         .GiveEXPClan = 0
@@ -892,9 +893,13 @@ SpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
 End Function
 
+Public Function NpcRespawnMap(ByRef npc As t_Npc) As Integer
+    NpcRespawnMap = npc.Orig.Map
+End Function
+
 Sub ReSpawnNpc(MiNPC As t_Npc)
     On Error GoTo ReSpawnNpc_Err
-    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, MiNPC.pos.Map, MiNPC.Orig)
+    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
     Exit Sub
 ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
@@ -1900,7 +1905,7 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
 End Sub
 
-Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
+Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
     Dim NuevaPos  As t_WorldPos
     Dim FuturePos As t_WorldPos
     Call EraseNPCChar(NpcIndex)

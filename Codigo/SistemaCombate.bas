@@ -595,6 +595,8 @@ Public Function NpcDoDamageToUser(ByVal attackerIndex As Integer, _
                                   ByVal Damage As Long, _
                                   ByVal Source As e_DamageSourceType, _
                                   ByVal ObjIndex As Integer) As e_DamageResult
+    If NpcList(attackerIndex).pos.Map <> UserList(TargetIndex).pos.Map Then Exit Function
+
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
     NpcDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
@@ -607,6 +609,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
     On Error GoTo NpcAtacaUser_Err
     If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
     If UserList(UserIndex).flags.Muerto = 1 Then Exit Function
+    If NpcList(NpcIndex).pos.Map <> UserList(UserIndex).pos.Map Then Exit Function
     If (Not UserList(UserIndex).flags.Privilegios And e_PlayerType.User) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
     ' El npc puede atacar ???
     If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
