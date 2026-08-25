@@ -51,6 +51,7 @@ End Sub
 Public Sub NpcAI(ByVal NpcIndex As Integer)
     On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
+        If HandleNpcCrossMapRoute(NpcIndex) Then Exit Sub
         Select Case .Movement
             Case e_TipoAI.Estatico
                 ' Es un NPC estatico, no hace nada.
@@ -406,7 +407,7 @@ End Sub
 ' Guides the NPC toward the supplied waypoint while layering the temporary strafe offset and recompute cooldowns.
 ' It is the integration point that merges the reactive orbit destination, checks whether the cached path is still valid,
 ' and only fires a new A* search when the wrap-safe timer signals the cooldown has elapsed.
-Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
+Public Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
     On Error GoTo AI_CaminarConRumbo_Err
     Dim adjustedRumbo As t_WorldPos
     If NpcList(NpcIndex).TargetUser.ArrayIndex = 0 Then
@@ -417,7 +418,9 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
         Exit Sub
     End If
     adjustedRumbo = rumbo
-    Call ApplyNpcStrafeToDestination(NpcIndex, adjustedRumbo)
+    If NpcList(NpcIndex).CrossMapRoute.Mode = eNpcCrossMapRouteNone Then
+        Call ApplyNpcStrafeToDestination(NpcIndex, adjustedRumbo)
+    End If
     If NpcList(NpcIndex).pos.x = adjustedRumbo.x And NpcList(NpcIndex).pos.y = adjustedRumbo.y Then
         Call NpcClearTargetUnreachable(NpcIndex)
         NpcList(NpcIndex).pathFindingInfo.PathLength = 0
@@ -453,6 +456,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
                         NpcList(NpcIndex).pathFindingInfo.RangoVision = Min(SvrConfig.GetValue("NPC_MAX_VISION_RANGE"), NpcList(NpcIndex).pathFindingInfo.RangoVision + _
                                 PATH_VISION_DELTA)
                     End If
+                    Call RecordNpcCrossMapPathFailure(NpcIndex)
                     If NpcList(NpcIndex).TargetUser.ArrayIndex <> 0 And NpcList(NpcIndex).AttackRange <= 1 And _
                        NpcList(NpcIndex).flags.LanzaSpells = 0 And NpcList(NpcIndex).flags.AttackedBy = vbNullString Then
                         Call NpcMarkTargetUnreachable(NpcIndex)
@@ -618,6 +622,7 @@ End Sub
 Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tIndex As Integer) As Boolean
     NpcLanzaSpellInmovilizado = False
     With NpcList(NpcIndex)
+        If .pos.Map <> UserList(tIndex).pos.Map Then Exit Function
         If Not NPCs.CanMove(.Contadores, .flags) Then
             Select Case .Char.Heading
                 Case e_Heading.NORTH
@@ -705,6 +710,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
     AtacaAlDelFrente = False
     With NpcList(AtackerNpcIndex)
         If Not IsValidUserRef(.TargetUser) Then Exit Sub
+        If .pos.Map <> UserList(.TargetUser.ArrayIndex).pos.Map Then Exit Sub
         EstaPegadoAlUsuario = (Distancia(.pos, UserList(.TargetUser.ArrayIndex).pos) <= 1)
         AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex)
         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex)
@@ -1232,6 +1238,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     Dim Target              As Integer
     Dim PuedeDanarAlUsuario As Boolean
     If Not IsValidUserRef(NpcList(NpcIndex).TargetUser) Then Exit Sub
+    If NpcList(NpcIndex).pos.Map <> UserList(NpcList(NpcIndex).TargetUser.ArrayIndex).pos.Map Then Exit Sub
     Target = NpcList(NpcIndex).TargetUser.ArrayIndex
     ' Compute how far the user is from the npcs
     Dim dst_userx As Integer

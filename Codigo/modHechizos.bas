@@ -30,6 +30,8 @@ Option Explicit
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
     On Error GoTo NpcLanzaSpellSobreUser_Err
+    If NpcList(NpcIndex).pos.Map <> UserList(UserIndex).pos.Map Then Exit Sub
+
     Dim Damage    As Integer
     Dim DamageStr As String
     If Spell = 0 Then Exit Sub
