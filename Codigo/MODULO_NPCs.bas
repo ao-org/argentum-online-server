@@ -252,7 +252,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             .RespawnFlag = MiNPC.flags.Respawn
             .NpcNumber = MiNPC.Numero
             .SndRespawn = MiNPC.flags.SndRespawn
-            .SpawnMap = MiNPC.pos.Map
+            .SpawnMap = NpcRespawnMap(MiNPC)
             .Orig = MiNPC.Orig
             .IntervaloRespawn = MiNPC.Contadores.IntervaloRespawn
         End With
@@ -893,9 +893,13 @@ SpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
 End Function
 
+Public Function NpcRespawnMap(ByRef npc As t_Npc) As Integer
+    NpcRespawnMap = npc.Orig.Map
+End Function
+
 Sub ReSpawnNpc(MiNPC As t_Npc)
     On Error GoTo ReSpawnNpc_Err
-    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, MiNPC.pos.Map, MiNPC.Orig)
+    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
     Exit Sub
 ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
