@@ -3141,6 +3141,7 @@ Public Enum e_BehaviorFlags
     eDisplayCastMessage = 32
     eDontHitVisiblePlayers = 64
     eDebugAi = 128
+    eAttackOnlyHostileNpc = 256
 End Enum
 
 Public Type t_NPCFlags

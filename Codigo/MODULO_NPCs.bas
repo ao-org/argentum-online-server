@@ -1599,6 +1599,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers)
             Case 2
                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc)
+                Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackOnlyHostileNpc)
         End Select
         Select Case Info.RestriccionAyuda
             Case 1
@@ -2385,6 +2386,10 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
             Exit Function
         End If
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) Then
+            CanAttackNpc = eNotEnougthPrivileges
+            Exit Function
+        End If
+        If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackOnlyHostileNpc) And NpcList(TargetIndex).Hostile = 0 Then
             CanAttackNpc = eNotEnougthPrivileges
             Exit Function
         End If
