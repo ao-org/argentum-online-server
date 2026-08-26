@@ -7550,6 +7550,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                 Next i
             End If
         End With
+        Call LogQuestEvent(.Id, .name, .QuestStats.Quests(Slot).QuestIndex, QuestList(.QuestStats.Quests(Slot).QuestIndex).nombre, "Abandoned")
         'Le avisamos que abandono la quest
         'Msg2115=Has abandonado la misión ¬1.
         Call WriteLocaleMsg(UserIndex, MSG_ABANDONADO_MISION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)
