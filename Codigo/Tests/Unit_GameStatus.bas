@@ -25,6 +25,7 @@ Public Function test_suite_gamestatus() As Boolean
     Call UnitTesting.RunTest("test_esgm_no_privs", test_esgm_no_privs())
     Call UnitTesting.RunTest("test_esgm_zero_index", test_esgm_zero_index())
     Call UnitTesting.RunTest("test_esnewbie_threshold_property", test_esnewbie_threshold_property())
+    Call UnitTesting.RunTest("test_non_newbie_can_use_newbie_item", test_non_newbie_can_use_newbie_item())
     test_suite_gamestatus = True
 End Function
 
@@ -440,6 +441,44 @@ Private Function test_esnewbie_threshold_property() As Boolean
 Err_Handler:
     UserList(1).Stats.ELV = origELV
     test_esnewbie_threshold_property = False
+End Function
+
+Private Function test_non_newbie_can_use_newbie_item() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalLevel  As Byte
+    Dim OriginalClass  As e_Class
+    Dim OriginalRace   As e_Raza
+    Dim OriginalGender As e_Genero
+    Dim OriginalObject As t_ObjData
+    Dim TestObject     As t_ObjData
+
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalClass = UserList(1).clase
+    OriginalRace = UserList(1).raza
+    OriginalGender = UserList(1).genero
+    OriginalObject = ObjData(1)
+    UserList(1).Stats.ELV = LimiteNewbie + 1
+    UserList(1).clase = e_Class.Warrior
+    UserList(1).raza = e_Raza.Humano
+    UserList(1).genero = e_Genero.Hombre
+    TestObject.Newbie = 1
+    ObjData(1) = TestObject
+
+    test_non_newbie_can_use_newbie_item = ObjData(1).Newbie = 1 _
+            And Not EsNewbie(1) _
+            And CanUseObject(1, 1) = 0
+
+Clean_Up:
+    UserList(1).Stats.ELV = OriginalLevel
+    UserList(1).clase = OriginalClass
+    UserList(1).raza = OriginalRace
+    UserList(1).genero = OriginalGender
+    ObjData(1) = OriginalObject
+    Exit Function
+Err_Handler:
+    test_non_newbie_can_use_newbie_item = False
+    Resume Clean_Up
 End Function
 
 #End If
