@@ -167,40 +167,6 @@ RazaPuedeUsarItem_Err:
     LogError ("Error en RazaPuedeUsarItem")
 End Function
 
-Sub QuitarNewbieObj(ByVal UserIndex As Integer)
-    On Error GoTo QuitarNewbieObj_Err
-    Dim j As Integer
-    If UserList(UserIndex).CurrentInventorySlots > 0 Then
-        For j = 1 To UserList(UserIndex).CurrentInventorySlots
-            If UserList(UserIndex).invent.Object(j).ObjIndex > 0 Then
-                If ObjData(UserList(UserIndex).invent.Object(j).ObjIndex).Newbie = 1 Then
-                    Call QuitarUserInvItem(UserIndex, j, GetMaxInvOBJ())
-                    Call UpdateUserInv(False, UserIndex, j)
-                End If
-            End If
-        Next j
-    End If
-    ' Eliminar items newbie de la boveda
-    For j = 1 To MAX_BANCOINVENTORY_SLOTS
-        If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-            If ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Newbie = 1 Then
-                UserList(UserIndex).BancoInvent.Object(j).ObjIndex = 0
-                UserList(UserIndex).BancoInvent.Object(j).amount = 0
-                UserList(UserIndex).BancoInvent.Object(j).ElementalTags = 0
-                Call UpdateBanUserInv(False, UserIndex, j, "QuitarNewbieObj")
-            End If
-        End If
-    Next j
-    'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
-    'Mandamos a la Isla de la Fortuna
-    Call WarpUserChar(UserIndex, Renacimiento.Map, Renacimiento.x, Renacimiento.y, True)
-    ' Msg671=Has dejado de ser Newbie.
-    Call WriteLocaleMsg(UserIndex, MSG_DEJADO_NEWBIE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-    Exit Sub
-QuitarNewbieObj_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
-End Sub
-
 Sub LimpiarInventario(ByVal UserIndex As Integer)
     On Error GoTo LimpiarInventario_Err
     Dim j As Integer
@@ -1784,11 +1750,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
         End If
 
-        If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
-            ' Msg679=Solo los newbies pueden usar estos objetos.
-            Call WriteLocaleMsg(UserIndex, MSG_SOLO_NEWBIES_PUEDEN_USAR_OBJETOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Sub
-        End If
         If .Stats.ELV < obj.MinELV Then
             Call WriteLocaleMsg(UserIndex, MSG_ITEM_MIN_LEVEL_REQUIRED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, obj.MinELV)    ' Msg1926=Necesitas ser nivel ¬1 para usar este item.
             Exit Sub
@@ -2969,7 +2930,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And Not ItemNewbieProtegidoAlMorir(UserIndex, ItemIndex) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -3035,6 +2996,10 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
     Exit Function
 ItemNewbie_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
+End Function
+
+Function ItemNewbieProtegidoAlMorir(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+    ItemNewbieProtegidoAlMorir = EsNewbie(UserIndex) And ItemNewbie(ItemIndex)
 End Function
 
 Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean

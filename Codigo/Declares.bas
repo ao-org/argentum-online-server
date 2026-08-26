@@ -1912,7 +1912,7 @@ Public Enum e_DamageResult
     eDead
 End Enum
 
-Public Const MAX_PACKET_COUNTERS As Long = 16
+Public Const MAX_PACKET_COUNTERS As Long = 17
 
 Public Enum PacketNames
     CastSpell = 1
@@ -1931,6 +1931,7 @@ Public Enum PacketNames
     QuestionGM
     ChangeHeading
     Hide
+    TargetedSpellCast
 End Enum
 
 Public Type t_UserOBJ
@@ -2978,8 +2979,19 @@ Public Const HotKeyCount As Integer = 10
 Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
 Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
+Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
+Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
+
+Public Enum e_HooTargetedSpellCastResult
+    eHooTargetedSpellCastResult_Success = 0
+    eHooTargetedSpellCastResult_RateLimited = 1
+    eHooTargetedSpellCastResult_OutOfRange = 2
+    eHooTargetedSpellCastResult_InvalidTarget = 3
+    eHooTargetedSpellCastResult_InvalidSpell = 4
+    eHooTargetedSpellCastResult_Rejected = 5
+End Enum
 
 Public Enum e_RemortEligibilityReason
     eRemortEligibility_Eligible = 0

@@ -933,6 +933,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleHooClientCapabilities(UserIndex)
         Case ClientPacketID.eRequestRemort
             Call HandleRequestRemort(UserIndex)
+        Case ClientPacketID.eHooTargetedSpellCast
+            Call HandleHooTargetedSpellCast(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -991,6 +993,118 @@ End Function
 Public Function UserSupportsRemortState(ByVal UserIndex As Integer) As Boolean
     UserSupportsRemortState = IsFeatureEnabled(HOO_FEATURE_REMORT_V1) And _
         UserSupportsHooCapability(UserIndex, HOO_CAP_REMORT_V1)
+End Function
+
+Public Function UserSupportsHooTargetedSpellCast(ByVal UserIndex As Integer) As Boolean
+    UserSupportsHooTargetedSpellCast = IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_TARGETED_SPELL_CAST_V1)
+End Function
+
+Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
+    If TargetCharacterIndex < LBound(CharList) Or TargetCharacterIndex > UBound(CharList) Then Exit Function
+    Dim NpcIndex As Integer
+    NpcIndex = CharList(TargetCharacterIndex)
+    If NpcIndex < LBound(NpcList) Or NpcIndex > UBound(NpcList) Then Exit Function
+    With NpcList(NpcIndex)
+        If Not .flags.NPCActive Then Exit Function
+        If .Stats.MinHp <= 0 Then Exit Function
+        If .Char.charindex <> TargetCharacterIndex Then Exit Function
+    End With
+    ResolveHooTargetedSpellNpc = NpcIndex
+End Function
+
+Public Function IsHooTargetedSpellEligible(ByVal UserIndex As Integer, ByVal SpellSlot As Integer) As Boolean
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    If SpellSlot < 1 Or SpellSlot > MAXUSERHECHIZOS Then Exit Function
+    Dim SpellIndex As Integer
+    SpellIndex = UserList(UserIndex).Stats.UserHechizos(SpellSlot)
+    If SpellIndex < LBound(Hechizos) Or SpellIndex > UBound(Hechizos) Then Exit Function
+    With Hechizos(SpellIndex)
+        If .AutoLanzar <> 0 Then Exit Function
+        If .AreaRadio <> 0 Or .AreaAfecta <> 0 Then Exit Function
+        If .Target <> e_TargetType.uNPC And .Target <> e_TargetType.uUsuariosYnpc Then Exit Function
+        If .TargetEffectType <> e_TargetEffectType.eNegative Then Exit Function
+        If .Tipo <> e_TipoHechizo.uEstado And .Tipo <> e_TipoHechizo.uPropiedades And _
+                .Tipo <> e_TipoHechizo.uPhysicalSkill Then Exit Function
+    End With
+    IsHooTargetedSpellEligible = True
+End Function
+
+Public Function IsHooTargetedSpellTargetInRange(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
+    With NpcList(NpcIndex).pos
+        If Not InRangoVision(UserIndex, .x, .y) Then Exit Function
+        If Abs(.x - UserList(UserIndex).pos.x) > RANGO_VISION_X Or _
+                Abs(.y - UserList(UserIndex).pos.y) > RANGO_VISION_Y Then Exit Function
+    End With
+    IsHooTargetedSpellTargetInRange = True
+End Function
+
+Private Sub RestoreHooTargetedSpellState(ByVal UserIndex As Integer, ByVal OldSpell As Integer, ByRef OldTargetNpc As t_NpcReference, ByRef OldTargetUser As t_UserReference)
+    With UserList(UserIndex).flags
+        .Hechizo = OldSpell
+        Call ClearNpcRef(.TargetNPC)
+        Call ClearUserRef(.TargetUser)
+        If IsValidNpcRef(OldTargetNpc) Then Call SetNpcRef(.TargetNPC, OldTargetNpc.ArrayIndex)
+        If IsValidUserRef(OldTargetUser) Then Call SetUserRef(.TargetUser, OldTargetUser.ArrayIndex)
+    End With
+End Sub
+
+Public Function ExecuteHooTargetedSpellCast(ByVal UserIndex As Integer, ByVal SpellSlot As Integer, ByVal TargetCharacterIndex As Integer, ByRef RetryAfterMs As Long) As e_HooTargetedSpellCastResult
+    On Error GoTo ExecuteHooTargetedSpellCast_Err
+    ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_InvalidTarget
+    Dim NpcIndex As Integer
+    NpcIndex = ResolveHooTargetedSpellNpc(TargetCharacterIndex)
+    If NpcIndex = 0 Then Exit Function
+    If NpcList(NpcIndex).pos.Map <> UserList(UserIndex).pos.Map Then Exit Function
+    If Not IsHooTargetedSpellEligible(UserIndex, SpellSlot) Then
+        ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_InvalidSpell
+        Exit Function
+    End If
+    If Not IsHooTargetedSpellTargetInRange(UserIndex, NpcIndex) Then
+        ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_OutOfRange
+        Exit Function
+    End If
+    RetryAfterMs = HooTargetedSpellCastRetryAfterMs(UserIndex)
+    If RetryAfterMs > 0 Then
+        ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_RateLimited
+        Exit Function
+    End If
+    If Not IntervaloPermiteUsarArcos(UserIndex, False) Then GoTo RateLimited
+    If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then GoTo RateLimited
+    If Not IntervaloPermiteLanzarSpell(UserIndex) Then GoTo RateLimited
+
+    Dim OldSpell As Integer
+    Dim OldTargetNpc As t_NpcReference
+    Dim OldTargetUser As t_UserReference
+    Dim SnapshotTaken As Boolean
+    OldSpell = UserList(UserIndex).flags.Hechizo
+    OldTargetNpc = UserList(UserIndex).flags.TargetNPC
+    OldTargetUser = UserList(UserIndex).flags.TargetUser
+    SnapshotTaken = True
+    UserList(UserIndex).flags.Hechizo = SpellSlot
+    Call ClearUserRef(UserList(UserIndex).flags.TargetUser)
+    If Not SetNpcRef(UserList(UserIndex).flags.TargetNPC, NpcIndex) Then GoTo RestoreRejected
+    UserList(UserIndex).Counters.controlHechizos.HechizosTotales = UserList(UserIndex).Counters.controlHechizos.HechizosTotales + 1
+    If LanzarHechizo(SpellSlot, UserIndex) Then
+        ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_Success
+    Else
+RestoreRejected:
+        ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_Rejected
+    End If
+    Call RestoreHooTargetedSpellState(UserIndex, OldSpell, OldTargetNpc, OldTargetUser)
+    Exit Function
+
+RateLimited:
+    RetryAfterMs = HooTargetedSpellCastRetryAfterMs(UserIndex)
+    If RetryAfterMs < 1 Then RetryAfterMs = 1
+    ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_RateLimited
+    Exit Function
+ExecuteHooTargetedSpellCast_Err:
+    If SnapshotTaken Then
+        Call RestoreHooTargetedSpellState(UserIndex, OldSpell, OldTargetNpc, OldTargetUser)
+    End If
+    ExecuteHooTargetedSpellCast = eHooTargetedSpellCastResult_Rejected
+    Call TraceError(Err.Number, Err.Description, "Protocol.ExecuteHooTargetedSpellCast", Erl)
 End Function
 
 Public Function UserHasActiveRemortQuest(ByVal UserIndex As Integer) As Boolean
@@ -1113,6 +1227,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_REMORT_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_REMORT_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_TARGETED_SPELL_CAST_V1
+    End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -1141,6 +1258,29 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooClientCapabilities", Erl)
+End Sub
+
+Private Sub HandleHooTargetedSpellCast(ByVal UserIndex As Integer)
+    On Error GoTo HandleHooTargetedSpellCast_Err
+    Dim SpellSlot As Byte
+    Dim TargetCharacterIndex As Integer
+    Dim RequestId As Long
+    SpellSlot = reader.ReadInt8
+    TargetCharacterIndex = reader.ReadInt16
+    RequestId = reader.ReadInt32
+    If Not UserSupportsHooTargetedSpellCast(UserIndex) Then
+        Call LogSecurity("Rejected HOO targeted spell cast without negotiated capability; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    If Not VerifyPacketSequence(RequestId, UserList(UserIndex).PacketCounters(PacketNames.TargetedSpellCast), UserIndex, "HooTargetedSpellCast") Then Exit Sub
+
+    Dim RetryAfterMs As Long
+    Dim Result As e_HooTargetedSpellCastResult
+    Result = ExecuteHooTargetedSpellCast(UserIndex, CInt(SpellSlot), TargetCharacterIndex, RetryAfterMs)
+    Call WriteHooTargetedSpellCastResult(UserIndex, RequestId, Result, RetryAfterMs)
+    Exit Sub
+HandleHooTargetedSpellCast_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooTargetedSpellCast", Erl)
 End Sub
 
 Private Sub HandleRequestRemort(ByVal UserIndex As Integer)

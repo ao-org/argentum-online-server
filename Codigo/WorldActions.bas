@@ -49,10 +49,7 @@ Public Function CanUseObject(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
             Exit Function
         End If
         ' Keep the original priority: first match wins
-        If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
-            CanUseObject = 7
-            msg = "679" ' Only newbies can use this item.
-        ElseIf .Stats.ELV < Objeto.MinELV Then
+        If .Stats.ELV < Objeto.MinELV Then
             CanUseObject = 6
             msg = "1926" ' Need level {0}
             Extra = CStr(Objeto.MinELV)

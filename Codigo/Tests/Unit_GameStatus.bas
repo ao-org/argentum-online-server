@@ -25,7 +25,183 @@ Public Function test_suite_gamestatus() As Boolean
     Call UnitTesting.RunTest("test_esgm_no_privs", test_esgm_no_privs())
     Call UnitTesting.RunTest("test_esgm_zero_index", test_esgm_zero_index())
     Call UnitTesting.RunTest("test_esnewbie_threshold_property", test_esnewbie_threshold_property())
+    Call UnitTesting.RunTest("test_non_newbie_can_use_newbie_item", test_non_newbie_can_use_newbie_item())
+    Call UnitTesting.RunTest("test_newbie_graduation_preserves_character_state", test_newbie_graduation_preserves_character_state())
+    Call UnitTesting.RunTest("test_newbie_item_normal_requirements_still_apply", test_newbie_item_normal_requirements_still_apply())
+    Call UnitTesting.RunTest("test_newbie_bank_deposit_is_rejected", test_newbie_bank_deposit_is_rejected())
+    Call UnitTesting.RunTest("test_normal_bank_deposit_succeeds", test_normal_bank_deposit_succeeds())
+    Call UnitTesting.RunTest("test_newbie_death_drop_protection", test_newbie_death_drop_protection())
     test_suite_gamestatus = True
+End Function
+
+Private Function test_newbie_bank_deposit_is_rejected() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalObject            As t_ObjData
+    Dim OriginalInventory         As t_UserOBJ
+    Dim OriginalBank              As t_UserOBJ
+    Dim OriginalInventorySlots    As Byte
+    Dim OriginalInventoryCount    As Byte
+    Dim OriginalBankCount         As Byte
+    Dim OriginalInventoryModified As Boolean
+    Dim OriginalBankModified      As Boolean
+    Dim DepositedSlot             As Long
+
+    OriginalObject = ObjData(1)
+    With UserList(1)
+        OriginalInventory = .invent.Object(1)
+        OriginalBank = .BancoInvent.Object(1)
+        OriginalInventorySlots = .CurrentInventorySlots
+        OriginalInventoryCount = .invent.NroItems
+        OriginalBankCount = .BancoInvent.NroItems
+        OriginalInventoryModified = .flags.ModificoInventario
+        OriginalBankModified = .flags.ModificoInventarioBanco
+
+        .CurrentInventorySlots = 1
+        .invent.Object(1).ObjIndex = 1
+        .invent.Object(1).amount = 3
+        .invent.Object(1).Equipped = 1
+        .invent.Object(1).ElementalTags = e_ElementalTags.Fire
+        .invent.NroItems = 1
+        .BancoInvent.Object(1).ObjIndex = 0
+        .BancoInvent.Object(1).amount = 0
+        .BancoInvent.Object(1).Equipped = 0
+        .BancoInvent.Object(1).ElementalTags = 0
+        .BancoInvent.NroItems = 0
+        .flags.ModificoInventario = False
+        .flags.ModificoInventarioBanco = False
+    End With
+    ObjData(1).Newbie = 1
+
+    DepositedSlot = UserDejaObj(1, 1, 2, 1)
+
+    With UserList(1)
+        test_newbie_bank_deposit_is_rejected = DepositedSlot = 0 _
+                And .invent.Object(1).ObjIndex = 1 _
+                And .invent.Object(1).amount = 3 _
+                And .invent.Object(1).Equipped = 1 _
+                And .invent.Object(1).ElementalTags = e_ElementalTags.Fire _
+                And .invent.NroItems = 1 _
+                And .BancoInvent.Object(1).ObjIndex = 0 _
+                And .BancoInvent.Object(1).amount = 0 _
+                And .BancoInvent.NroItems = 0 _
+                And Not .flags.ModificoInventario _
+                And Not .flags.ModificoInventarioBanco
+    End With
+
+Clean_Up:
+    ObjData(1) = OriginalObject
+    With UserList(1)
+        .invent.Object(1) = OriginalInventory
+        .BancoInvent.Object(1) = OriginalBank
+        .CurrentInventorySlots = OriginalInventorySlots
+        .invent.NroItems = OriginalInventoryCount
+        .BancoInvent.NroItems = OriginalBankCount
+        .flags.ModificoInventario = OriginalInventoryModified
+        .flags.ModificoInventarioBanco = OriginalBankModified
+    End With
+    Exit Function
+Err_Handler:
+    test_newbie_bank_deposit_is_rejected = False
+    Resume Clean_Up
+End Function
+
+Private Function test_normal_bank_deposit_succeeds() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalObject         As t_ObjData
+    Dim OriginalInventory      As t_UserOBJ
+    Dim OriginalBank           As t_UserOBJ
+    Dim OriginalInventorySlots As Byte
+    Dim OriginalInventoryCount As Byte
+    Dim OriginalBankCount      As Byte
+    Dim OriginalInventoryModified As Boolean
+    Dim OriginalBankModified      As Boolean
+    Dim DepositedSlot          As Long
+
+    OriginalObject = ObjData(1)
+    With UserList(1)
+        OriginalInventory = .invent.Object(1)
+        OriginalBank = .BancoInvent.Object(1)
+        OriginalInventorySlots = .CurrentInventorySlots
+        OriginalInventoryCount = .invent.NroItems
+        OriginalBankCount = .BancoInvent.NroItems
+        OriginalInventoryModified = .flags.ModificoInventario
+        OriginalBankModified = .flags.ModificoInventarioBanco
+
+        .CurrentInventorySlots = 1
+        .invent.Object(1).ObjIndex = 1
+        .invent.Object(1).amount = 3
+        .invent.Object(1).Equipped = 0
+        .invent.Object(1).ElementalTags = e_ElementalTags.Water
+        .invent.NroItems = 1
+        .BancoInvent.Object(1).ObjIndex = 0
+        .BancoInvent.Object(1).amount = 0
+        .BancoInvent.Object(1).Equipped = 0
+        .BancoInvent.Object(1).ElementalTags = 0
+        .BancoInvent.NroItems = 0
+        .flags.ModificoInventario = False
+        .flags.ModificoInventarioBanco = False
+    End With
+    ObjData(1).Newbie = 0
+
+    DepositedSlot = UserDejaObj(1, 1, 2, 1)
+
+    With UserList(1)
+        test_normal_bank_deposit_succeeds = DepositedSlot = 1 _
+                And .invent.Object(1).ObjIndex = 1 _
+                And .invent.Object(1).amount = 1 _
+                And .BancoInvent.Object(1).ObjIndex = 1 _
+                And .BancoInvent.Object(1).amount = 2 _
+                And .BancoInvent.Object(1).ElementalTags = e_ElementalTags.Water _
+                And .BancoInvent.NroItems = 1
+    End With
+
+Clean_Up:
+    ObjData(1) = OriginalObject
+    With UserList(1)
+        .invent.Object(1) = OriginalInventory
+        .BancoInvent.Object(1) = OriginalBank
+        .CurrentInventorySlots = OriginalInventorySlots
+        .invent.NroItems = OriginalInventoryCount
+        .BancoInvent.NroItems = OriginalBankCount
+        .flags.ModificoInventario = OriginalInventoryModified
+        .flags.ModificoInventarioBanco = OriginalBankModified
+    End With
+    Exit Function
+Err_Handler:
+    test_normal_bank_deposit_succeeds = False
+    Resume Clean_Up
+End Function
+
+Private Function test_newbie_death_drop_protection() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalLevel  As Byte
+    Dim OriginalObject As t_ObjData
+
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalObject = ObjData(1)
+    ObjData(1).Newbie = 1
+
+    UserList(1).Stats.ELV = LimiteNewbie
+    If Not ItemNewbieProtegidoAlMorir(1, 1) Then GoTo Clean_Up
+
+    UserList(1).Stats.ELV = LimiteNewbie + 1
+    If ItemNewbieProtegidoAlMorir(1, 1) Then GoTo Clean_Up
+
+    ObjData(1).Newbie = 0
+    If ItemNewbieProtegidoAlMorir(1, 1) Then GoTo Clean_Up
+
+    test_newbie_death_drop_protection = True
+
+Clean_Up:
+    UserList(1).Stats.ELV = OriginalLevel
+    ObjData(1) = OriginalObject
+    Exit Function
+Err_Handler:
+    test_newbie_death_drop_protection = False
+    Resume Clean_Up
 End Function
 
 ' ============================================================
@@ -440,6 +616,194 @@ Private Function test_esnewbie_threshold_property() As Boolean
 Err_Handler:
     UserList(1).Stats.ELV = origELV
     test_esnewbie_threshold_property = False
+End Function
+
+Private Function test_non_newbie_can_use_newbie_item() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalLevel  As Byte
+    Dim OriginalClass  As e_Class
+    Dim OriginalRace   As e_Raza
+    Dim OriginalGender As e_Genero
+    Dim OriginalObject As t_ObjData
+    Dim TestObject     As t_ObjData
+
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalClass = UserList(1).clase
+    OriginalRace = UserList(1).raza
+    OriginalGender = UserList(1).genero
+    OriginalObject = ObjData(1)
+    UserList(1).Stats.ELV = LimiteNewbie + 1
+    UserList(1).clase = e_Class.Warrior
+    UserList(1).raza = e_Raza.Humano
+    UserList(1).genero = e_Genero.Hombre
+    TestObject.Newbie = 1
+    ObjData(1) = TestObject
+
+    test_non_newbie_can_use_newbie_item = ObjData(1).Newbie = 1 _
+            And Not EsNewbie(1) _
+            And CanUseObject(1, 1) = 0
+
+Clean_Up:
+    UserList(1).Stats.ELV = OriginalLevel
+    UserList(1).clase = OriginalClass
+    UserList(1).raza = OriginalRace
+    UserList(1).genero = OriginalGender
+    ObjData(1) = OriginalObject
+    Exit Function
+Err_Handler:
+    test_non_newbie_can_use_newbie_item = False
+    Resume Clean_Up
+End Function
+
+Private Function test_newbie_graduation_preserves_character_state() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalStats            As t_UserStats
+    Dim OriginalCounters         As t_UserCounters
+    Dim OriginalPosition         As t_WorldPos
+    Dim OriginalInventory        As t_UserOBJ
+    Dim OriginalBank             As t_UserOBJ
+    Dim OriginalClass            As e_Class
+    Dim OriginalRace             As e_Raza
+    Dim OriginalGender           As e_Genero
+    Dim OriginalInventorySlots   As Byte
+    Dim OriginalWeaponObjIndex   As Integer
+    Dim OriginalWeaponSlot       As Byte
+    Dim OriginalNaked            As Byte
+
+    With UserList(1)
+        OriginalStats = .Stats
+        OriginalCounters = .Counters
+        OriginalPosition = .pos
+        OriginalInventory = .invent.Object(1)
+        OriginalBank = .BancoInvent.Object(1)
+        OriginalClass = .clase
+        OriginalRace = .raza
+        OriginalGender = .genero
+        OriginalInventorySlots = .CurrentInventorySlots
+        OriginalWeaponObjIndex = .invent.EquippedWeaponObjIndex
+        OriginalWeaponSlot = .invent.EquippedWeaponSlot
+        OriginalNaked = .flags.Desnudo
+
+        .Stats.ELV = LimiteNewbie
+        .Stats.Exp = ExpLevelUp(LimiteNewbie)
+        .Stats.MaxHp = 100
+        .Stats.MinHp = 100
+        .Stats.UserAtributos(e_Atributos.Constitucion) = 18
+        .clase = e_Class.Warrior
+        .raza = e_Raza.Humano
+        .genero = e_Genero.Hombre
+        .pos.Map = 34
+        .pos.x = 50
+        .pos.y = 60
+        .CurrentInventorySlots = 1
+        .invent.Object(1).ObjIndex = 3487
+        .invent.Object(1).amount = 1
+        .invent.Object(1).Equipped = 1
+        .invent.Object(1).ElementalTags = e_ElementalTags.Fire
+        .invent.EquippedWeaponObjIndex = 3487
+        .invent.EquippedWeaponSlot = 1
+        .BancoInvent.Object(1).ObjIndex = 4335
+        .BancoInvent.Object(1).amount = 4
+        .BancoInvent.Object(1).ElementalTags = e_ElementalTags.Water
+        .flags.Desnudo = 0
+
+        Call CheckUserLevel(1)
+
+        test_newbie_graduation_preserves_character_state = .Stats.ELV = LimiteNewbie + 1 _
+                And .pos.Map = 34 And .pos.x = 50 And .pos.y = 60 _
+                And .invent.Object(1).ObjIndex = 3487 _
+                And .invent.Object(1).amount = 1 _
+                And .invent.Object(1).Equipped = 1 _
+                And .invent.Object(1).ElementalTags = e_ElementalTags.Fire _
+                And .invent.EquippedWeaponObjIndex = 3487 _
+                And .invent.EquippedWeaponSlot = 1 _
+                And .BancoInvent.Object(1).ObjIndex = 4335 _
+                And .BancoInvent.Object(1).amount = 4 _
+                And .BancoInvent.Object(1).ElementalTags = e_ElementalTags.Water _
+                And .flags.Desnudo = 0
+    End With
+
+Clean_Up:
+    With UserList(1)
+        .Stats = OriginalStats
+        .Counters = OriginalCounters
+        .pos = OriginalPosition
+        .invent.Object(1) = OriginalInventory
+        .BancoInvent.Object(1) = OriginalBank
+        .clase = OriginalClass
+        .raza = OriginalRace
+        .genero = OriginalGender
+        .CurrentInventorySlots = OriginalInventorySlots
+        .invent.EquippedWeaponObjIndex = OriginalWeaponObjIndex
+        .invent.EquippedWeaponSlot = OriginalWeaponSlot
+        .flags.Desnudo = OriginalNaked
+    End With
+    Exit Function
+Err_Handler:
+    test_newbie_graduation_preserves_character_state = False
+    Resume Clean_Up
+End Function
+
+Private Function test_newbie_item_normal_requirements_still_apply() As Boolean
+    On Error GoTo Err_Handler
+
+    Dim OriginalStats  As t_UserStats
+    Dim OriginalObject As t_ObjData
+    Dim OriginalClass  As e_Class
+    Dim OriginalRace   As e_Raza
+    Dim OriginalGender As e_Genero
+    Dim TestObject     As t_ObjData
+
+    With UserList(1)
+        OriginalStats = .Stats
+        OriginalObject = ObjData(1)
+        OriginalClass = .clase
+        OriginalRace = .raza
+        OriginalGender = .genero
+        .Stats.ELV = LimiteNewbie + 1
+        .clase = e_Class.Warrior
+        .raza = e_Raza.Humano
+        .genero = e_Genero.Hombre
+
+        TestObject.Newbie = 1
+        TestObject.ClaseProhibida(1) = e_Class.Warrior
+        ObjData(1) = TestObject
+        If CanUseObject(1, 1) <> 2 Then GoTo TestDone
+
+        TestObject.ClaseProhibida(1) = 0
+        TestObject.RazaProhibida(1) = e_Raza.Humano
+        ObjData(1) = TestObject
+        If CanUseObject(1, 1) <> 5 Then GoTo TestDone
+
+        TestObject.RazaProhibida(1) = 0
+        TestObject.MinELV = LimiteNewbie + 2
+        ObjData(1) = TestObject
+        If CanUseObject(1, 1) <> 6 Then GoTo TestDone
+
+        TestObject.MinELV = 0
+        TestObject.SkillIndex = 1
+        TestObject.SkillRequerido = 10
+        .Stats.UserSkills(1) = 0
+        ObjData(1) = TestObject
+        If CanUseObject(1, 1) <> 4 Then GoTo TestDone
+
+        test_newbie_item_normal_requirements_still_apply = True
+    End With
+
+TestDone:
+    With UserList(1)
+        .Stats = OriginalStats
+        .clase = OriginalClass
+        .raza = OriginalRace
+        .genero = OriginalGender
+    End With
+    ObjData(1) = OriginalObject
+    Exit Function
+Err_Handler:
+    test_newbie_item_normal_requirements_still_apply = False
+    Resume TestDone
 End Function
 
 #End If

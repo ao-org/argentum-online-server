@@ -394,9 +394,283 @@ Private Function test_suite_remort_capability_state() As Boolean
     Call RunTest("remort capability bit and reset", test_remort_capability_bit_and_reset())
     Call RunTest("remort packet is appended", CInt(ServerPacketID.eRemortState) = CInt(ServerPacketID.eShowPickUpObj) + 1)
     Call RunTest("remort operation packet IDs are appended", CInt(ServerPacketID.eRemortResult) = CInt(ServerPacketID.eRemortState) + 1 And CInt(ClientPacketID.eRequestRemort) = CInt(ClientPacketID.eHooClientCapabilities) + 1)
+    Call RunTest("targeted spell packet IDs are appended", CInt(ServerPacketID.eHooTargetedSpellCastResult) = CInt(ServerPacketID.eRemortResult) + 1 And CInt(ClientPacketID.eHooTargetedSpellCast) = CInt(ClientPacketID.eRequestRemort) + 1)
+    Call RunTest("targeted spell capability and feature gate", test_targeted_spell_capability())
+    Call RunTest("targeted spell retry interval is wrap safe", test_targeted_spell_retry_interval())
+    Call RunTest("targeted spell NPC resolution rejects stale mappings", test_targeted_spell_target_resolution())
+    Call RunTest("targeted spell eligibility rejects unsupported spells", test_targeted_spell_eligibility())
+    Call RunTest("targeted spell range matches legacy vision boundaries", test_targeted_spell_range_boundaries())
+    Call RunTest("targeted spell early rejections are read-only", test_targeted_spell_early_rejections())
     Call RunTest("remort equipment and count eligibility", test_remort_equipment_and_count_eligibility())
     Call RunTest("remort live reset and preservation", test_remort_live_reset_and_preservation())
     test_suite_remort_capability_state = True
+End Function
+
+Private Function test_targeted_spell_range_boundaries() As Boolean
+    On Error GoTo TestError
+    Dim OriginalUserX As Byte
+    Dim OriginalUserY As Byte
+    Dim OriginalNpcX As Byte
+    Dim OriginalNpcY As Byte
+    OriginalUserX = UserList(1).pos.x
+    OriginalUserY = UserList(1).pos.y
+    OriginalNpcX = NpcList(1).pos.x
+    OriginalNpcY = NpcList(1).pos.y
+
+    UserList(1).pos.x = 50
+    UserList(1).pos.y = 50
+
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 50
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 39
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 62
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 38
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    NpcList(1).pos.x = 50: NpcList(1).pos.y = 59
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 41
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 60
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 40
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 59
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 62
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 60
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    test_targeted_spell_range_boundaries = True
+TestDone:
+    UserList(1).pos.x = OriginalUserX
+    UserList(1).pos.y = OriginalUserY
+    NpcList(1).pos.x = OriginalNpcX
+    NpcList(1).pos.y = OriginalNpcY
+    Exit Function
+TestError:
+    test_targeted_spell_range_boundaries = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_early_rejections() As Boolean
+    On Error GoTo TestError
+    Dim OriginalMapping As Integer
+    Dim OriginalActive As Boolean
+    Dim OriginalHp As Integer
+    Dim OriginalCharIndex As Integer
+    Dim OriginalNpcMap As Integer
+    Dim OriginalNpcX As Byte
+    Dim OriginalNpcY As Byte
+    Dim OriginalUserMap As Integer
+    Dim OriginalUserX As Byte
+    Dim OriginalUserY As Byte
+    Dim OriginalSpellIndex As Integer
+    Dim OriginalAuto As Byte
+    Dim OriginalAreaRadio As Long
+    Dim OriginalAreaAfecta As Integer
+    Dim OriginalTarget As e_TargetType
+    Dim OriginalEffect As e_TargetEffectType
+    Dim OriginalType As e_TipoHechizo
+    Dim OriginalBowTimer As Long
+    Dim OriginalHitMagicTimer As Long
+    Dim OriginalMagicTimer As Long
+    OriginalMapping = CharList(1)
+    OriginalActive = NpcList(1).flags.NPCActive
+    OriginalHp = NpcList(1).Stats.MinHp
+    OriginalCharIndex = NpcList(1).Char.charindex
+    OriginalNpcMap = NpcList(1).pos.Map
+    OriginalNpcX = NpcList(1).pos.x
+    OriginalNpcY = NpcList(1).pos.y
+    OriginalUserMap = UserList(1).pos.Map
+    OriginalUserX = UserList(1).pos.x
+    OriginalUserY = UserList(1).pos.y
+    OriginalSpellIndex = UserList(1).Stats.UserHechizos(1)
+    OriginalAuto = Hechizos(1).AutoLanzar
+    OriginalAreaRadio = Hechizos(1).AreaRadio
+    OriginalAreaAfecta = Hechizos(1).AreaAfecta
+    OriginalTarget = Hechizos(1).Target
+    OriginalEffect = Hechizos(1).TargetEffectType
+    OriginalType = Hechizos(1).Tipo
+    OriginalBowTimer = UserList(1).Counters.TimerPuedeUsarArco
+    OriginalHitMagicTimer = UserList(1).Counters.TimerGolpeMagia
+    OriginalMagicTimer = UserList(1).Counters.TimerLanzarSpell
+
+    CharList(1) = 1
+    NpcList(1).flags.NPCActive = True
+    NpcList(1).Stats.MinHp = 10
+    NpcList(1).Char.charindex = 1
+    NpcList(1).pos.Map = 1
+    NpcList(1).pos.x = 20
+    NpcList(1).pos.y = 20
+    UserList(1).pos.Map = 1
+    UserList(1).pos.x = 20
+    UserList(1).pos.y = 20
+    UserList(1).Stats.UserHechizos(1) = 1
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).AreaAfecta = 0
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.eNegative
+    Hechizos(1).Tipo = e_TipoHechizo.uPropiedades
+
+    Dim RetryAfterMs As Long
+    If ExecuteHooTargetedSpellCast(1, 1, 0, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
+    If ExecuteHooTargetedSpellCast(1, 0, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidSpell Then GoTo TestDone
+    NpcList(1).pos.Map = 2
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
+    NpcList(1).pos.Map = 1
+    NpcList(1).pos.x = 100
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_OutOfRange Then GoTo TestDone
+    NpcList(1).pos.x = 20
+    Dim NowRaw As Long
+    NowRaw = GetTickCountRaw()
+    UserList(1).Counters.TimerPuedeUsarArco = NowRaw
+    UserList(1).Counters.TimerGolpeMagia = NowRaw
+    UserList(1).Counters.TimerLanzarSpell = NowRaw
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_RateLimited Then GoTo TestDone
+    If RetryAfterMs <= 0 Then GoTo TestDone
+    If UserList(1).Counters.TimerPuedeUsarArco <> NowRaw Then GoTo TestDone
+    If UserList(1).Counters.TimerGolpeMagia <> NowRaw Then GoTo TestDone
+    If UserList(1).Counters.TimerLanzarSpell <> NowRaw Then GoTo TestDone
+    test_targeted_spell_early_rejections = True
+TestDone:
+    CharList(1) = OriginalMapping
+    NpcList(1).flags.NPCActive = OriginalActive
+    NpcList(1).Stats.MinHp = OriginalHp
+    NpcList(1).Char.charindex = OriginalCharIndex
+    NpcList(1).pos.Map = OriginalNpcMap
+    NpcList(1).pos.x = OriginalNpcX
+    NpcList(1).pos.y = OriginalNpcY
+    UserList(1).pos.Map = OriginalUserMap
+    UserList(1).pos.x = OriginalUserX
+    UserList(1).pos.y = OriginalUserY
+    UserList(1).Stats.UserHechizos(1) = OriginalSpellIndex
+    Hechizos(1).AutoLanzar = OriginalAuto
+    Hechizos(1).AreaRadio = OriginalAreaRadio
+    Hechizos(1).AreaAfecta = OriginalAreaAfecta
+    Hechizos(1).Target = OriginalTarget
+    Hechizos(1).TargetEffectType = OriginalEffect
+    Hechizos(1).Tipo = OriginalType
+    UserList(1).Counters.TimerPuedeUsarArco = OriginalBowTimer
+    UserList(1).Counters.TimerGolpeMagia = OriginalHitMagicTimer
+    UserList(1).Counters.TimerLanzarSpell = OriginalMagicTimer
+    Exit Function
+TestError:
+    test_targeted_spell_early_rejections = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_target_resolution() As Boolean
+    On Error GoTo TestError
+    Dim OriginalMapping As Integer
+    Dim OriginalActive As Boolean
+    Dim OriginalHp As Integer
+    Dim OriginalCharIndex As Integer
+    OriginalMapping = CharList(1)
+    OriginalActive = NpcList(1).flags.NPCActive
+    OriginalHp = NpcList(1).Stats.MinHp
+    OriginalCharIndex = NpcList(1).Char.charindex
+
+    CharList(1) = 1
+    NpcList(1).flags.NPCActive = True
+    NpcList(1).Stats.MinHp = 10
+    NpcList(1).Char.charindex = 1
+    If ResolveHooTargetedSpellNpc(1) <> 1 Then GoTo TestDone
+    NpcList(1).Char.charindex = 2
+    If ResolveHooTargetedSpellNpc(1) <> 0 Then GoTo TestDone
+    NpcList(1).Char.charindex = 1
+    NpcList(1).Stats.MinHp = 0
+    If ResolveHooTargetedSpellNpc(1) <> 0 Then GoTo TestDone
+    test_targeted_spell_target_resolution = True
+TestDone:
+    CharList(1) = OriginalMapping
+    NpcList(1).flags.NPCActive = OriginalActive
+    NpcList(1).Stats.MinHp = OriginalHp
+    NpcList(1).Char.charindex = OriginalCharIndex
+    Exit Function
+TestError:
+    test_targeted_spell_target_resolution = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_eligibility() As Boolean
+    On Error GoTo TestError
+    Dim OriginalSpellIndex As Integer
+    Dim OriginalAuto As Byte
+    Dim OriginalAreaRadio As Long
+    Dim OriginalAreaAfecta As Integer
+    Dim OriginalTarget As e_TargetType
+    Dim OriginalEffect As e_TargetEffectType
+    Dim OriginalType As e_TipoHechizo
+    OriginalSpellIndex = UserList(1).Stats.UserHechizos(1)
+    OriginalAuto = Hechizos(1).AutoLanzar
+    OriginalAreaRadio = Hechizos(1).AreaRadio
+    OriginalAreaAfecta = Hechizos(1).AreaAfecta
+    OriginalTarget = Hechizos(1).Target
+    OriginalEffect = Hechizos(1).TargetEffectType
+    OriginalType = Hechizos(1).Tipo
+
+    UserList(1).Stats.UserHechizos(1) = 1
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).AreaAfecta = 0
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.eNegative
+    Hechizos(1).Tipo = e_TipoHechizo.uPropiedades
+    If Not IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AutoLanzar = 1
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 1
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).Target = e_TargetType.uUsuarios
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.ePositive
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    test_targeted_spell_eligibility = True
+TestDone:
+    UserList(1).Stats.UserHechizos(1) = OriginalSpellIndex
+    Hechizos(1).AutoLanzar = OriginalAuto
+    Hechizos(1).AreaRadio = OriginalAreaRadio
+    Hechizos(1).AreaAfecta = OriginalAreaAfecta
+    Hechizos(1).Target = OriginalTarget
+    Hechizos(1).TargetEffectType = OriginalEffect
+    Hechizos(1).Tipo = OriginalType
+    Exit Function
+TestError:
+    test_targeted_spell_eligibility = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_capability() As Boolean
+    On Error GoTo TestError
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1)
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_TARGETED_SPELL_CAST_V1) <> HOO_CAP_TARGETED_SPELL_CAST_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_TARGETED_SPELL_CAST_V1) <> 0 Then GoTo TestDone
+    test_targeted_spell_capability = (HOO_CAP_TARGETED_SPELL_CAST_V1 = &H4&)
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, OriginalFeatureEnabled)
+    Exit Function
+TestError:
+    test_targeted_spell_capability = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_retry_interval() As Boolean
+    test_targeted_spell_retry_interval = _
+        IntervalRemainingMs(1000, 500, 1250) = 250 And _
+        IntervalRemainingMs(1000, 500, 1500) = 0 And _
+        IntervalRemainingMs(2147483600, 200, -2147483596) = 100
 End Function
 
 Private Function test_remort_eligibility_and_priority() As Boolean
