@@ -519,7 +519,7 @@ Private Function test_targeted_spell_early_rejections() As Boolean
     Hechizos(1).Tipo = e_TipoHechizo.uPropiedades
 
     Dim RetryAfterMs As Long
-    If ExecuteHooTargetedSpellCast(1, 1, 2, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
+    If ExecuteHooTargetedSpellCast(1, 1, 0, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
     If ExecuteHooTargetedSpellCast(1, 0, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidSpell Then GoTo TestDone
     NpcList(1).pos.Map = 2
     If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
