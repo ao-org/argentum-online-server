@@ -2930,7 +2930,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         For i = 1 To .CurrentInventorySlots
             ItemIndex = .invent.Object(i).ObjIndex
             If ItemIndex > 0 Then
-                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
+                If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And Not ItemNewbieProtegidoAlMorir(UserIndex, ItemIndex) Then
                     NuevaPos.x = 0
                     NuevaPos.y = 0
                     MiObj.amount = DropAmmount(.invent, i)
@@ -2996,6 +2996,10 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
     Exit Function
 ItemNewbie_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
+End Function
+
+Function ItemNewbieProtegidoAlMorir(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+    ItemNewbieProtegidoAlMorir = EsNewbie(UserIndex) And ItemNewbie(ItemIndex)
 End Function
 
 Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean
