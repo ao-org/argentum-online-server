@@ -1178,7 +1178,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_GANADO_SKILLPOINTS_DISPONES_PUNTOS_LIBRES_CUIDADOSO_MOMENTO_USARLOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, Pts & "¬" & .Stats.SkillPts)
             End If
             If Not EsNewbie(UserIndex) And WasNewbie Then
-                Call QuitarNewbieObj(UserIndex)
+                ' Msg671=Has dejado de ser Newbie.
+                Call WriteLocaleMsg(UserIndex, MSG_DEJADO_NEWBIE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             ElseIf .Stats.ELV >= MapInfo(.pos.Map).MaxLevel And Not EsGM(UserIndex) Then
                 If MapInfo(.pos.Map).Salida.Map <> 0 Then
                     ' Msg523=Tu nivel no te permite seguir en el mapa.
