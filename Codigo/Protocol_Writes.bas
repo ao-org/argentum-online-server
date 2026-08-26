@@ -134,6 +134,19 @@ WriteRemortResult_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortResult", Erl)
 End Sub
 
+Public Sub WriteHooTargetedSpellCastResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal Result As e_HooTargetedSpellCastResult, ByVal RetryAfterMs As Long)
+    On Error GoTo WriteHooTargetedSpellCastResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eHooTargetedSpellCastResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt8(CByte(Result))
+    Call Writer.WriteInt32(RetryAfterMs)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooTargetedSpellCastResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooTargetedSpellCastResult", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())

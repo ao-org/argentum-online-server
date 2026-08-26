@@ -1326,7 +1326,7 @@ HandleHechizoNPC_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
 End Sub
 
-Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
+Function LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer) As Boolean
     On Error GoTo LanzarHechizo_Err
     Dim uh               As Integer
     Dim SpellCastSuccess As Boolean
@@ -1411,10 +1411,11 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         Call WriteMacroTrabajoToggle(UserIndex, False)
     End If
     If UserList(UserIndex).Counters.Ocultando Then UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
-    Exit Sub
+    LanzarHechizo = SpellCastSuccess
+    Exit Function
 LanzarHechizo_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
-End Sub
+End Function
 
 Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     '***************************************************
