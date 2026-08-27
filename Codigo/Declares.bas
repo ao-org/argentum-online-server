@@ -2980,9 +2980,31 @@ Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
 Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
+Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
+Public Const HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1 As String = "hoo-house-door-actions-v1"
+
+Public Enum e_HooHouseDoorAction
+    eHooHouseDoorAction_Open = 0
+    eHooHouseDoorAction_Close = 1
+    eHooHouseDoorAction_Lock = 2
+    eHooHouseDoorAction_Unlock = 3
+    eHooHouseDoorAction_UnlockAndOpen = 4
+End Enum
+
+Public Enum e_HooHouseDoorActionResult
+    eHooHouseDoorActionResult_Success = 0
+    eHooHouseDoorActionResult_InvalidAction = 1
+    eHooHouseDoorActionResult_InvalidTarget = 2
+    eHooHouseDoorActionResult_TooFarAway = 3
+    eHooHouseDoorActionResult_NotDoor = 4
+    eHooHouseDoorActionResult_InvalidTransition = 5
+    eHooHouseDoorActionResult_NoAccess = 6
+    eHooHouseDoorActionResult_Cooldown = 7
+    eHooHouseDoorActionResult_Unavailable = 8
+End Enum
 
 Public Enum e_HooTargetedSpellCastResult
     eHooTargetedSpellCastResult_Success = 0

@@ -601,6 +601,168 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "WorldActions.HandleDoorAction", Erl)
 End Sub
 
+Private Function IsValidHooDoorObject(ByVal ObjIndex As Integer) As Boolean
+    If ObjIndex < LBound(ObjData) Or ObjIndex > UBound(ObjData) Then Exit Function
+    IsValidHooDoorObject = (ObjData(ObjIndex).OBJType = e_OBJType.otDoors)
+End Function
+
+Private Function ResolveHooDoorDestination(ByVal CurrentObjIndex As Integer, ByVal ActionValue As Integer, ByRef DestinationObjIndex As Integer, ByRef DestinationBlocked As Boolean) As Boolean
+    If Not IsValidHooDoorObject(CurrentObjIndex) Then Exit Function
+    Dim CurrentDoor As t_ObjData
+    CurrentDoor = ObjData(CurrentObjIndex)
+    Select Case ActionValue
+        Case eHooHouseDoorAction_Open
+            If CurrentDoor.Cerrada <> 1 Or CurrentDoor.Llave <> 0 Then Exit Function
+            DestinationObjIndex = CurrentDoor.IndexAbierta
+            DestinationBlocked = False
+        Case eHooHouseDoorAction_Close
+            If CurrentDoor.Cerrada <> 0 Then Exit Function
+            DestinationObjIndex = CurrentDoor.IndexCerrada
+            DestinationBlocked = True
+        Case eHooHouseDoorAction_Lock
+            If CurrentDoor.Cerrada <> 1 Or CurrentDoor.Llave <> 0 Then Exit Function
+            DestinationObjIndex = CurrentDoor.IndexCerradaLlave
+            DestinationBlocked = True
+        Case eHooHouseDoorAction_Unlock
+            If CurrentDoor.Cerrada <> 1 Or CurrentDoor.Llave = 0 Then Exit Function
+            DestinationObjIndex = CurrentDoor.IndexCerrada
+            DestinationBlocked = True
+        Case eHooHouseDoorAction_UnlockAndOpen
+            If CurrentDoor.Cerrada <> 1 Or CurrentDoor.Llave = 0 Then Exit Function
+            DestinationObjIndex = CurrentDoor.IndexAbierta
+            DestinationBlocked = False
+        Case Else
+            Exit Function
+    End Select
+    If Not IsValidHooDoorObject(DestinationObjIndex) Then Exit Function
+    If ObjData(DestinationObjIndex).clave <> CurrentDoor.clave Then Exit Function
+    Select Case ActionValue
+        Case eHooHouseDoorAction_Open, eHooHouseDoorAction_UnlockAndOpen
+            If ObjData(DestinationObjIndex).Cerrada <> 0 Then Exit Function
+        Case eHooHouseDoorAction_Close, eHooHouseDoorAction_Unlock
+            If ObjData(DestinationObjIndex).Cerrada <> 1 Or ObjData(DestinationObjIndex).Llave <> 0 Then Exit Function
+        Case eHooHouseDoorAction_Lock
+            If ObjData(DestinationObjIndex).Cerrada <> 1 Or ObjData(DestinationObjIndex).Llave = 0 Then Exit Function
+    End Select
+    ResolveHooDoorDestination = True
+End Function
+
+Private Function UserHasMatchingHooDoorKey(ByVal UserIndex As Integer, ByVal DoorObjIndex As Integer) As Boolean
+    If ObjData(DoorObjIndex).clave = 0 Then Exit Function
+    Dim Slot As Integer
+    Dim KeyObjIndex As Integer
+    For Slot = 1 To MAXKEYS
+        KeyObjIndex = UserList(UserIndex).Keys(Slot)
+        If KeyObjIndex >= LBound(ObjData) And KeyObjIndex <= UBound(ObjData) Then
+            If ObjData(KeyObjIndex).OBJType = e_OBJType.otKeys And ObjData(KeyObjIndex).clave <> 0 Then
+                If ObjData(KeyObjIndex).clave = ObjData(DoorObjIndex).clave Then
+                    UserHasMatchingHooDoorKey = True
+                    Exit Function
+                End If
+            End If
+        End If
+    Next Slot
+End Function
+
+Private Sub SetHooDoorTileState(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal DestinationObjIndex As Integer, ByVal DestinationBlocked As Boolean)
+    MapData(Map, x, y).ObjInfo.ObjIndex = DestinationObjIndex
+    Call BloquearPuerta(Map, x, y, DestinationBlocked)
+End Sub
+
+Private Sub BroadcastHooDoorTile(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+End Sub
+
+Private Function HooDoorSound(ByVal ObjIndex As Integer) As Integer
+    Select Case ObjData(ObjIndex).GrhIndex
+        Case 11445, 11444, 59878, 59877
+            HooDoorSound = SND_PUERTA_DUCTO
+        Case Else
+            HooDoorSound = SND_PUERTA
+    End Select
+End Function
+
+Public Function ExecuteHooHouseDoorAction(ByVal UserIndex As Integer, ByVal ActionValue As Integer, ByVal x As Byte, ByVal y As Byte) As e_HooHouseDoorActionResult
+    On Error GoTo ExecuteHooHouseDoorAction_Err
+    ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_InvalidAction
+    If ActionValue < eHooHouseDoorAction_Open Or ActionValue > eHooHouseDoorAction_UnlockAndOpen Then Exit Function
+    ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_InvalidTarget
+    Dim Map As Integer
+    Map = UserList(UserIndex).pos.Map
+    If Not InMapBounds(Map, x, y) Then Exit Function
+    If Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y) > 2 Then
+        ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_TooFarAway
+        Exit Function
+    End If
+    Dim CurrentObjIndex As Integer
+    CurrentObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
+    If CurrentObjIndex <= 0 Then Exit Function
+    If Not IsValidHooDoorObject(CurrentObjIndex) Then
+        ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_NotDoor
+        Exit Function
+    End If
+    Dim DestinationObjIndex As Integer
+    Dim DestinationBlocked As Boolean
+    If Not ResolveHooDoorDestination(CurrentObjIndex, ActionValue, DestinationObjIndex, DestinationBlocked) Then
+        ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_InvalidTransition
+        Exit Function
+    End If
+    Dim PairX As Integer
+    Dim PairY As Integer
+    Dim PairCurrentObjIndex As Integer
+    Dim PairDestinationObjIndex As Integer
+    Dim PairDestinationBlocked As Boolean
+    Dim HasLinkedDoor As Boolean
+    HasLinkedDoor = (ObjData(DestinationObjIndex).Subtipo = 1)
+    If HasLinkedDoor Then
+        If ActionValue <> eHooHouseDoorAction_Open And ActionValue <> eHooHouseDoorAction_Close Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
+            Exit Function
+        End If
+        PairX = CInt(x) - 3
+        PairY = CInt(y) + 1
+        If Not InMapBounds(Map, PairX, PairY) Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
+            Exit Function
+        End If
+        PairCurrentObjIndex = MapData(Map, PairX, PairY).ObjInfo.ObjIndex
+        If Not ResolveHooDoorDestination(PairCurrentObjIndex, ActionValue, PairDestinationObjIndex, PairDestinationBlocked) Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
+            Exit Function
+        End If
+    End If
+    If ActionValue >= eHooHouseDoorAction_Lock Then
+        If Not UserHasMatchingHooDoorKey(UserIndex, CurrentObjIndex) Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_NoAccess
+            Exit Function
+        End If
+        If Not IntervaloPermiteUsar(UserIndex, False) Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Cooldown
+            Exit Function
+        End If
+        If Not IntervaloPermiteUsar(UserIndex) Then
+            ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Cooldown
+            Exit Function
+        End If
+    End If
+    Dim DoorSound As Integer
+    DoorSound = HooDoorSound(CurrentObjIndex)
+    Call SetHooDoorTileState(Map, x, y, DestinationObjIndex, DestinationBlocked)
+    If HasLinkedDoor Then
+        Call SetHooDoorTileState(Map, CByte(PairX), CByte(PairY), PairDestinationObjIndex, PairDestinationBlocked)
+    End If
+    Call BroadcastHooDoorTile(Map, x, y)
+    If HasLinkedDoor Then
+        Call BroadcastHooDoorTile(Map, CByte(PairX), CByte(PairY))
+    End If
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(DoorSound, x, y))
+    ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Success
+    Exit Function
+ExecuteHooHouseDoorAction_Err:
+    ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
+    Call TraceError(Err.Number, Err.Description, "WorldActions.ExecuteHooHouseDoorAction", Erl)
+End Function
+
 Sub HandleNpcDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal NpcIndex As Integer)
     On Error GoTo Handler
     Dim puerta As t_ObjData 'ver ReyarB
