@@ -147,6 +147,22 @@ WriteHooTargetedSpellCastResult_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooTargetedSpellCastResult", Erl)
 End Sub
 
+Public Sub WriteHooHouseDoorActionResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal ActionValue As Integer, ByVal Result As e_HooHouseDoorActionResult, ByVal x As Byte, ByVal y As Byte)
+    On Error GoTo WriteHooHouseDoorActionResult_Err
+    If Not UserSupportsHooHouseDoorActions(UserIndex) Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooHouseDoorActionResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt8(CByte(ActionValue))
+    Call Writer.WriteInt8(CByte(Result))
+    Call Writer.WriteInt8(x)
+    Call Writer.WriteInt8(y)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooHouseDoorActionResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooHouseDoorActionResult", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
