@@ -7950,6 +7950,17 @@ Public Function CalculateHomeCostGLD(ByVal ELV As Byte) As Long
     Dim goldRange As Long
     Dim levelOffset As Long
 
+    If Not HomeCostTiersValid Then
+        ' Fallback a la formula anterior si Balance.dat no tiene tramos validos configurados,
+        ' para evitar que /hogar quede gratuito por un despliegue incompleto o fuera de orden.
+        If ELV <= 24 Then
+            CalculateHomeCostGLD = (ELV * 15) + CLng(ELV ^ 1.5)
+        Else
+            CalculateHomeCostGLD = CLng(ELV) ^ 2
+        End If
+        Exit Function
+    End If
+
     For i = 1 To HOME_COST_TIER_COUNT
         If ELV >= HomeCostTierMinLevel(i) And ELV <= HomeCostTierMaxLevel(i) Then
             levelRange = HomeCostTierMaxLevel(i) - HomeCostTierMinLevel(i)

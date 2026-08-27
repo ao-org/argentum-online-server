@@ -76,7 +76,7 @@ Public Sub goHome(ByVal UserIndex As Integer, ByVal HomeCostGLD As Long)
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
             Dim HomeMessageExtra As String
             HomeMessageExtra = .Counters.TimerBarra & Chr$(172) & HomeCostGLD
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, HomeMessageExtra, e_FontTypeNames.FONTTYPE_New_Gris)) ' Msg1994=Volverás a tu hogar en ¬1 segundos. Se descontaron ¬2 monedas de oro.
+            Call WriteLocaleMsg(UserIndex, MSG_VOLVERAS_HOGAR_SEGUNDOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris, HomeMessageExtra) ' Msg1994=Volverás a tu hogar en ¬1 segundos. Se descontaron ¬2 monedas de oro.
             .Accion.Particula = e_GraphicEffects.Runa
             .Accion.AccionPendiente = True
             .Accion.TipoAccion = e_AccionBarra.Hogar

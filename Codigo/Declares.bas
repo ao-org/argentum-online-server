@@ -3724,6 +3724,7 @@ Public HomeCostTierMinLevel(1 To HOME_COST_TIER_COUNT) As Byte
 Public HomeCostTierMaxLevel(1 To HOME_COST_TIER_COUNT) As Byte
 Public HomeCostTierFloorGLD(1 To HOME_COST_TIER_COUNT) As Long
 Public HomeCostTierCapGLD(1 To HOME_COST_TIER_COUNT) As Long
+Public HomeCostTiersValid                   As Boolean
 Public Crafteos                               As New Dictionary
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long
