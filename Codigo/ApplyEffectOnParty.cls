@@ -274,6 +274,7 @@ Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_Refer
         EffectIdToApply = ApplyEffectId
     Else
         EffectIdToApply = SecondaryEffect
+        If EffectIdToApply <= 0 Then Exit Sub
     End If
     If TargetType = eUser Then
         If UserList(TargetId).Stats.MinHp > 0 Then

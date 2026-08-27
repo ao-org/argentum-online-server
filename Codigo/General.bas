@@ -358,11 +358,10 @@ EsArbol_Err:
     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 End Function
 
-Private Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+Public Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayLava_Err
     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
-        If (MapData(Map, x, y).Graphic(1) >= 5837 And MapData(Map, x, y).Graphic(1) <= 5852) _
-        Or (MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116) _
+        If (MapData(Map, x, y).Graphic(1) >= 16101 And MapData(Map, x, y).Graphic(1) <= 16116) _
         Or (MapData(Map, x, y).Graphic(1) >= 26767 And MapData(Map, x, y).Graphic(1) <= 26782) Then
             
             HayLava = True
@@ -485,6 +484,11 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+
+    If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
+        Call RunStringBuilderBenchmark
+        End
+    End If
         
     Call TryInitShard
     
@@ -521,7 +525,6 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
     Call LoadSini
-    Call LoadMD5
     Call LoadPacketRatePolicy
     #If PYMMO = 1 Then
         Call LoadPrivateKey
@@ -554,6 +557,8 @@ Sub Main()
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
     Call LoadOBJData
+    frmCargando.Label1(2).Caption = "Cargando Equipamiento Inicial"
+    Call CargarEquipamientoInicial
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
     Call CargarHechizos
     frmCargando.Label1(2).Caption = "Cargando EffectsOverTime.Dat"
@@ -598,6 +603,7 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
+    Call LoadAdjacentTopology
     frmCargando.Label1(2).Caption = "Cargando donadores"
     Call CargarDonadores
     Call InitPathFinding
@@ -783,7 +789,6 @@ Sub Restart()
     Call FreeNPCs
     Call FreeCharIndexes
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Call LoadIntervalos
     Call ResetUserAutoSaveTimer
@@ -793,6 +798,7 @@ Sub Restart()
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
+    Call LoadAdjacentTopology
     Call CargarHechizos
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
@@ -856,7 +862,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 'Msg2130=¡Tengo mucho frío!
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_TOO_COLD, UserList(UserIndex).Char.charindex, vbWhite))
                 ' Msg512=¡Estás muriendo de frío, abrígate o morirás!
-                Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MURIENDO_FRIO_ABRIGATE_MORIRAS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 '  Sin ropa perdés vida más rápido que con una ropa no-invernal
                 Dim MinDamage As Integer, MaxDamage As Integer
                 If .flags.Desnudo = 0 Then
@@ -871,7 +877,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
                     ' Msg513=¡Has muerto de frío!
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_FRIO, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_FRIO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     Call UserMod.UserDie(UserIndex)
                 End If
             End If
@@ -911,7 +917,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                 Call WriteRestOK(UserIndex)
                 ' Msg514=Has terminado de descansar.
-                Call WriteLocaleMsg(UserIndex, MSG_TERMINADO_DESCANSAR, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_TERMINADO_DESCANSAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                 .flags.Descansar = False
             End If
         End If
@@ -932,10 +938,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Else
             If HayLava(.pos.Map, .pos.x, .pos.y) Then
                 ' Msg515=¡Quítate de la lava, te estás quemando!
-                Call WriteLocaleMsg(UserIndex, MSG_QUITATE_LAVA_QUEMANDO, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_QUITATE_LAVA_QUEMANDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
                     ' Msg516=¡Has muerto quemado!
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_QUEMADO, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO_QUEMADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     Call CustomScenarios.UserDie(UserIndex)
                     Call UserMod.UserDie(UserIndex)
                 End If
@@ -962,7 +968,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Else
             'restore old char
             ' Msg517=Recuperas tu apariencia normal.
-            Call WriteLocaleMsg(UserIndex, MSG_RECUPERAS_APARIENCIA_NORMAL, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_RECUPERAS_APARIENCIA_NORMAL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
             If .flags.Navegando Then
                 Call EquiparBarco(UserIndex)
             Else
@@ -1004,7 +1010,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
                 ' Msg307=Has vuelto a ser visible
-                Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
                 Call WriteContadores(UserIndex)
             End If
@@ -1108,7 +1114,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     Else
         UserList(UserIndex).flags.Maldicion = 0
         ' Msg518=¡La magia perdió su efecto! Ya puedes atacar.
-        Call WriteLocaleMsg(UserIndex, MSG_MAGIA_PERDIO_SU_EFECTO_PUEDES_ATACAR, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+        Call WriteLocaleMsg(UserIndex, MSG_MAGIA_PERDIO_SU_EFECTO_PUEDES_ATACAR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
     End If
     Exit Sub
 EfectoMaldicionUser_Err:
@@ -1227,7 +1233,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Call CancelExit(UserIndex)
         With UserList(UserIndex)
             'Msg47=Estás envenenado, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_ENVENENADO_SI_CURAS_MORIRAS, e_FontTypeNames.FONTTYPE_VENENO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ENVENENADO_SI_CURAS_MORIRAS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_VENENO)
             UserList(UserIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticleEffects.PoisonGas, 30, False, , UserList(UserIndex).pos.x, _
                     UserList(UserIndex).pos.y))
@@ -1237,7 +1243,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
             Damage = (1 + Damage * .Stats.MaxHp \ 100) ' Redondea para arriba
             If .ChatCombate = 1 Then
                 ' "El veneno te ha causado ¬1 puntos de daño."
-                Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_POISON_DEALT_DAMAGE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_VENENO, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1258,12 +1264,12 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         ' 4 Mini intervalitos, dentro del intervalo total de incineracion
         If .Counters.Incineracion Mod (IntervaloIncineracion \ 4) = 0 Then
             ' "Te estás incinerando, si no te curas morirás.
-            Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_ARE_BURNING_HEAL_OR_DIE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             UserList(UserIndex).Counters.timeFx = 3
             Damage = RandomNumber(20, 30)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
             If .ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, MSG_FIRE_DEALT_DAMAGE, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
+                Call WriteLocaleMsg(UserIndex, MSG_FIRE_DEALT_DAMAGE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
             End If
             If UserMod.ModifyHealth(UserIndex, -Damage) Then
                 Call CustomScenarios.UserDie(UserIndex)
@@ -1356,7 +1362,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         UserList(UserIndex).Counters.HPCounter = 0
         Call UserMod.ModifyHealth(UserIndex, mashit)
         ' Msg519=Has sanado.
-        Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SANADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(mashit, UserList(UserIndex).Char.charindex, vbGreen))
         EnviarStats = True
     End If
@@ -1398,9 +1404,9 @@ Sub PasarSegundo()
     If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
     If CuentaRegresivaTimer > 0 Then
         If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1655=¬1 segundos...!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SEGUNDOS, CuentaRegresivaTimer - 1, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1655=¬1 segundos...!
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1656=¡Ya!!
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_COUNTDOWN_GO, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1656=¡Ya!!
         End If
         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
     End If
@@ -1434,7 +1440,7 @@ Sub PasarSegundo()
                         .flags.Silenciado = 0
                         .flags.MinutosRestantes = 0
                         'Msg1018= Has sido liberado del silencio.
-                        Call WriteLocaleMsg(i, "1018", e_FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteLocaleMsg(i, MSG_HAS_SIDO_LIBERADO_DEL_SILENCIO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                     End If
                 End If
                 If .flags.Muerto = 0 Then
@@ -1467,10 +1473,10 @@ Sub PasarSegundo()
                 End If
                 If .Counters.CuentaRegresiva >= 0 Then
                     If .Counters.CuentaRegresiva > 0 Then
-                        Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_FontTypeNames.FONTTYPE_New_Gris)
+                        Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris)
                     Else
                         'Msg1019= >>> YA! <<<
-                        Call WriteLocaleMsg(i, "1019", e_FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteLocaleMsg(i, MSG_YA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                         Call WriteStopped(i, False)
                     End If
                     .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
@@ -1522,10 +1528,10 @@ Sub PasarSegundo()
                 'Cerrar usuario
                 If .Counters.Saliendo Then
                     .Counters.Salir = .Counters.Salir - 1
-                    Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+                    Call WriteLocaleMsg(i, MSG_GAME_CLOSING_IN_SECONDS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
                     If .Counters.Salir <= 0 Then
                         'Msg1020= Gracias por jugar Argentum 20.
-                        Call WriteLocaleMsg(i, "1020", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(i, MSG_GRACIAS_POR_JUGAR_ARGENTUM_20, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteDisconnect(i)
                         Call CloseSocket(i)
                     End If
@@ -1565,7 +1571,7 @@ Sub GuardarUsuarios()
     On Error GoTo GuardarUsuarios_Err
     haciendoBK = True
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_GRABANDO_PERSONAJES, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1657=Servidor » Grabando Personajes
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
@@ -1577,7 +1583,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
@@ -1697,6 +1703,7 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
+    Call SaveCastlesToDb
     'Save stats!!!
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
@@ -1777,8 +1784,8 @@ Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
 End Function
 
 '  Mensaje a todo el mundo
-Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
+Public Sub MensajeGlobal(ByVal texto As String, ByVal Channel As e_TextChannel, ByVal Fuente As e_FontTypeNames)
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Channel, Fuente))
 End Sub
 
 '  Devuelve si X e Y están dentro del Rectangle

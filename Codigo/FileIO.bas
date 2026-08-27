@@ -593,9 +593,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1
-        Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
-        Hechizos(Hechizo).RequiereInstrumento = val(Leer.GetValue("Hechizo" & Hechizo, "RequiereInstrumento"))
-        Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
+        Hechizos(Hechizo).MagicPowerNeeded = val(Leer.GetValue("Hechizo" & Hechizo, "MagicPowerNeeded"))
         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
         Hechizos(Hechizo).MaxLevelCasteable = val(Leer.GetValue("Hechizo" & Hechizo, "MaxLevelCasteable"))
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
@@ -896,6 +894,7 @@ Sub LoadBalance()
     PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
     NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
     PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
+    GuildCallCooldown = val(BalanceIni.GetValue("GUILD", "GuildCallCooldown"))
     ' Exp
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
@@ -1025,7 +1024,6 @@ Sub LoadOBJData()
             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
             .MaxLEV = val(Leer.GetValue(ObjKey, "MaxLEV"))
-            .InstrumentoRequerido = val(Leer.GetValue(ObjKey, "InstrumentoRequerido"))
             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))
@@ -1049,6 +1047,7 @@ Sub LoadOBJData()
             .RepairTo = val(Leer.GetValue(ObjKey, "RepairTo"))
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+            If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
@@ -1092,6 +1091,7 @@ Sub LoadOBJData()
                     .Camouflage = val(Leer.GetValue(ObjKey, "Camouflage")) > 0
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1110,7 +1110,7 @@ Sub LoadOBJData()
                     .ExtraCritAndStabChance = val(Leer.GetValue(ObjKey, "ExtraCritAndStabChance"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
-                    .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
@@ -1227,6 +1227,9 @@ Sub LoadOBJData()
                                 .Item(i).data = 101 - val(Leer.GetValue(ObjKey, "Drop" & i))
                             Next i
                     End Select
+                Case e_OBJType.otCollectibleCard
+                    .CollectibleCardIndex = val(Leer.GetValue(ObjKey, "CollectibleCardIndex"))
+                    .CollectibleCardRarity = val(Leer.GetValue(ObjKey, "CollectibleCardRarity"))
                 Case e_OBJType.otOreDeposit
                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
                     ' Drop gemas yacimientos
@@ -1246,6 +1249,7 @@ Sub LoadOBJData()
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otMinerals
                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                 Case e_OBJType.otUsableOntarget
@@ -1722,8 +1726,10 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
             MapDat.restrict_mode = "0"
         End If
     End If
-    If SailingTiles * 100 / TotalTiles > SvrConfig.GetValue("FISHING_REQUIRED_PERCENT") And Not MapDat.Seguro Then
-        Call AddFishingPoolsToMap(Map)
+    If MapDat.Seguro = 0 And TotalTiles > 0 Then
+        If (CDbl(SailingTiles) / CDbl(TotalTiles)) * 100# > CDbl(SvrConfig.GetValue("FISHING_REQUIRED_PERCENT")) Then
+            Call AddFishingPoolsToMap(Map)
+        End If
     End If
     MapInfo(Map).map_name = MapDat.map_name
     MapInfo(Map).MapResource = Map
@@ -1801,13 +1807,6 @@ Sub LoadPrivateKey()
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
-End Sub
-
-Sub LoadMD5()
-    Open IniPath & "ClienteMD5.txt" For Input As #1
-    Line Input #1, Md5Cliente
-    Close #1
-    Md5Cliente = Replace(Md5Cliente, " ", "")
 End Sub
 
 Sub LoadSini()
@@ -2730,6 +2729,13 @@ Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
         FeatureToggles.Remove name
     End If
     Call FeatureToggles.Add(name, State)
+    If name = NPC_CROSS_MAP_PURSUIT_FEATURE Then
+        If State Then
+            Call LoadAdjacentTopology
+        Else
+            Call ResetAdjacentTopology
+        End If
+    End If
 End Sub
 
 Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()

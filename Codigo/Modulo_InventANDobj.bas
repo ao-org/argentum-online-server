@@ -41,6 +41,7 @@ Public Function TirarItemAlPiso(pos As t_WorldPos, obj As t_Obj, Optional PuedeA
     TirarItemAlPiso = NuevaPos
     Exit Function
 ErrHandler:
+    Call Logging.TraceError(Err.Number, Err.Description, "Modulo_InventANDobj.TirarItemAlPiso", Erl)
 End Function
 
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
@@ -166,13 +167,37 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     If DropMultiplier <= 0 Then
         DropMultiplier = 1
     End If
+
+    Dim CardDropBonus As Single
+    CardDropBonus = GetCardDropBonusForNpc(UserIndex, Npc)
+    
     Dim i As Byte
     For i = 1 To Npc.DropCount
         'long cast on division truncates decimals 5/2 = 2
         Probabilidad = Npc.Drop(i).DropChance / DropMultiplier
+        
+        If IsFeatureEnabled("collectible_cards") Then
+            If CardDropBonus > 1# Then
+                Probabilidad = CLng(Probabilidad / CardDropBonus)
+                ' Asegurar que la probabilidad mínima sea 1
+                If Probabilidad < 1 Then Probabilidad = 1
+            End If
+        End If
+        
         If RandomNumber(1, Probabilidad) = 1 Then
             Dropeo.Amount = RandomNumber(Npc.Drop(i).LowQuantityBound, Npc.Drop(i).HighQuantityBound)
             Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
+            
+            ' ===== APLICAR BONO DE CARTA A LA CANTIDAD DE DROP =====
+            If IsFeatureEnabled("collectible_cards") Then
+                If CardDropBonus > 1# Then
+                    Dropeo.Amount = CInt(Dropeo.Amount * CardDropBonus)
+                    ' Asegurar que la cantidad sea al menos 1
+                    If Dropeo.Amount < 1 Then Dropeo.Amount = 1
+                End If
+            End If
+            ' =======================================================
+            
             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
             Call TirarItemAlPiso(Npc.pos, Dropeo, Npc.flags.AguaValida = 1)
         End If

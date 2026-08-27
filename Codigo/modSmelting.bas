@@ -23,7 +23,7 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
     CanUserSmelt = False
     With UserList(UserIndex)
         If .clase <> e_Class.Trabajador Then
-            Call WriteLocaleMsg(UserIndex, MSG_CLASS_LACKS_KNOWLEDGE_FOR_THIS_ORE, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_CLASS_LACKS_KNOWLEDGE_FOR_THIS_ORE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
@@ -32,7 +32,7 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
             Exit Function
         End If
         If Not CheckResourceDistance(UserIndex, MEDIUM_DISTANCE_EXTRACTION, TargetX, TargetY) Then
-            Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
@@ -60,14 +60,14 @@ Public Sub SmeltMinerals(ByVal UserIndex As Integer)
         Dim RequiredSkill As Integer
         RequiredSkill = ObjData(.flags.TargetObjInvIndex).MinSkill
         If RequiredSkill > 100 Then
-            Call WriteLocaleMsg(UserIndex, MSG_MORTALS_CANNOT_SMELT_THIS_ORE, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MORTALS_CANNOT_SMELT_THIS_ORE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If
         If .Stats.UserSkills(e_Skill.Mineria) >= RequiredSkill Then
             Call CraftIngots(UserIndex)
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_CONOCIMIENTOS_MINERIA_SUFICIENTES_TRABAJAR_MINERAL_NECESITAS_PUNTOS, e_FontTypeNames.FONTTYPE_INFO)  ' Msg1449=No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas ¬1 puntos en minería.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_CONOCIMIENTOS_MINERIA_SUFICIENTES_TRABAJAR_MINERAL_NECESITAS_PUNTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)  ' Msg1449=No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas ¬1 puntos en minería.
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If
@@ -84,7 +84,7 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
         Call QuitarSta(UserIndex, 2)
     Else
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
-        Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Call WriteMacroTrabajoToggle(UserIndex, False)
         Exit Sub
     End If
@@ -94,7 +94,7 @@ Public Sub CraftIngots(ByVal UserIndex As Integer)
     necesarios = MineralsRequiredPerIngot(obji, cant)
     If UserList(UserIndex).invent.Object(Slot).Amount < MineralsRequiredPerIngot(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerals Then
         ' Msg645=No tienes suficientes minerales para hacer un lingote.
-        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MINERALES_HACER_LINGOTE, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MINERALES_HACER_LINGOTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Call ResetUserAutomatedActions(UserIndex)
         Exit Sub
     End If
