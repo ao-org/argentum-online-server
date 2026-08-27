@@ -49,15 +49,15 @@ Dim Logear     As String
 Public Sub IniciarSubasta(ByVal UserIndex As Integer)
     On Error GoTo IniciarSubasta_Err
     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_INGRESA_OFERTA_INICIAL, CStr(UserList(UserIndex).Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_INGRESA_OFERTA_INICIAL, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, CStr(UserList(UserIndex).Counters.TiempoParaSubastar))
         Exit Sub
     End If
     If Subasta.PreparandoSubasta Then
-        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
         Exit Sub
     End If
     If Subasta.HaySubastaActiva = True Then
-        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
         Exit Sub
     End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex <= 0 Then
@@ -75,7 +75,7 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Exit Sub
     End If
     If UserList(UserIndex).Stats.GLD < CLng(SvrConfig.GetValue("CostoPreSubasta")) Then
-        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_ORO_INSUFICIENTE, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(CLng(SvrConfig.GetValue("CostoPreSubasta"))))
+        Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_ORO_INSUFICIENTE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(CLng(SvrConfig.GetValue("CostoPreSubasta"))))
         Exit Sub
     End If
     If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
@@ -89,7 +89,7 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
             .flags.Subastando = True
             Subasta.SubastadorIndex = UserIndex
             Subasta.PreparandoSubasta = True
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_INGRESA_OFERTA_INICIAL, CStr(.Counters.TiempoParaSubastar), e_FontTypeNames.FONTTYPE_SUBASTA))
+            Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_INGRESA_OFERTA_INICIAL, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, CStr(.Counters.TiempoParaSubastar))
             Call EraseObj(Subasta.ObjSubastadoCantidad, .pos.Map, .pos.x, .pos.y)
         End With
         Exit Sub
@@ -152,7 +152,7 @@ Public Sub FinalizarSubasta()
             Call TirarItemAlPiso(UserList(tUser.ArrayIndex).pos, ObjVendido)
         End If
         Call LogearEventoDeSubasta("Se entrego el item en mano.")
-        Call WriteLocaleMsg(tUser.ArrayIndex, "1440", e_FontTypeNames.FONTTYPE_SUBASTA) ' Msg1440=Felicitaciones, has ganado la subasta.
+        Call WriteLocaleMsg(tUser.ArrayIndex, MSG_FELICITACIONES_HAS_GANADO_LA_SUBASTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA) ' Msg1440=Felicitaciones, has ganado la subasta.
     End If
     Dim Descuento As Long
     Descuento = Subasta.MejorOferta / 100 * 5
@@ -167,7 +167,7 @@ Public Sub FinalizarSubasta()
                 "Subastador te ha dejado un mensaje: ¡Has vendido tu item! Te deposite el oro en el sistema de finanzas Goliath.")
     Else
         UserList(Subastador.ArrayIndex).Stats.GLD = UserList(Subastador.ArrayIndex).Stats.GLD + Subasta.MejorOferta
-        Call WriteLocaleMsg(Subastador.ArrayIndex, "1441", e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Subasta.MejorOferta)) ' Msg1441=Felicitaciones, has ganado ¬1 monedas de oro de tú subasta.
+        Call WriteLocaleMsg(Subastador.ArrayIndex, MSG_FELICITACIONES_HAS_GANADO_MONEDAS_DE_ORO_DE_TU_SUBASTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(Subasta.MejorOferta)) ' Msg1441=Felicitaciones, has ganado ¬1 monedas de oro de tú subasta.
         Call WriteUpdateGold(Subastador.ArrayIndex)
         Call LogearEventoDeSubasta("Oro entregado en la billetera")
     End If
@@ -248,7 +248,7 @@ Public Sub DevolverItem()
         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")
     End If
     If IsValidUserRef(tUser) Then
-        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
+        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, ObjData(Subasta.ObjSubastado).name)
     End If
     Call ResetearSubasta
     Exit Sub
@@ -301,7 +301,7 @@ Public Sub CancelarSubasta()
             Call LogearEventoDeSubasta("Se tiro al piso el item.")
         End If
         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")
-        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_FontTypeNames.FONTTYPE_SUBASTA, ObjData(Subasta.ObjSubastado).name)
+        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_ITEM_DEVUELTO_SIN_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, ObjData(Subasta.ObjSubastado).name)
         UserList(tUser.ArrayIndex).flags.Subastando = False
     End If
     Call ResetearSubasta

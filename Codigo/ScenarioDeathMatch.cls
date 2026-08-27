@@ -325,11 +325,11 @@ End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario()
     'queda pendiente hacer un mensaje de broadcast de deathmatch
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgDeathMathInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgDeathMathInstructions, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
 End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
@@ -404,13 +404,13 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
     Call Board.UpdatePlayerScore(deadIndex, -1)
     If killerIndex <> deadIndex Then
         If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1889=¡Tenemos un ganador!
             Call MatchCompleted
         End If
         If TicksElapsed(UserList(deadIndex).flags.LastAttackedByUserTime, GlobalFrameTime) < AssistDamageValidTime Then
             If IsValidUserRef(UserList(deadIndex).flags.LastAttacker) And UserList(deadIndex).flags.LastAttacker.ArrayIndex <> killerIndex Then
                 If Board.UpdatePlayerScore(UserList(deadIndex).flags.LastAttacker.ArrayIndex, 1) >= TargetScore Then
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1889=¡Tenemos un ganador!
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_TENEMOS_GANADOR_1889, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1889=¡Tenemos un ganador!
                     Call MatchCompleted
                 End If
             End If
@@ -430,7 +430,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MATANZA_INICIARA_MINUTOS, (10 - CountdownTimer.Occurrences), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1890=La matanza iniciará en ¬1 minutos.
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MATANZA_INICIARA_MINUTOS, (10 - CountdownTimer.Occurrences), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1890=La matanza iniciará en ¬1 minutos.
                 End If
             End If
             Exit Sub
@@ -439,7 +439,7 @@ Public Sub IBaseScenario_Update()
         Call RespawnItems(frametime)
         ElapsedTime = ElapsedTime + frametime
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1881=¡Se acabó el tiempo!
             Call MatchCompleted
         Else
             If UpdateTime(BroadCastTimer, frametime) Then
@@ -455,7 +455,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call CloseScenario
                 Else
-                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1882=El mapa se cerrará en ¬1
                 End If
             End If
             Exit Sub
@@ -480,7 +480,7 @@ Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCountRaw()
-    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_INICIE_MASACRE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1893=¡Que inicie la masacre!
+    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_INICIE_MASACRE, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1893=¡Que inicie la masacre!
     ElapsedTime = 0
     Call LimitFightArea
     Dim i As Integer
@@ -547,9 +547,9 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1894, CStr(pendingTime), e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1894=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1894, CStr(pendingTime), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1894=Quedan ¬1 minutos.
     ElseIf pendingTime <= 10 Then
-        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg(pendingTime, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
     If pendingTime <= 1 Then
         Call SetTimer(BroadCastTimer, 1000)
@@ -674,7 +674,7 @@ Sub GiveRewards()
         Rewards(2) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.3
         Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
     End If
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     If LobbyList(LobbyIndex).TeamSize > 1 Then
         ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String
         Ranking = Board.GetTeamRanking(LobbyList(LobbyIndex))
@@ -695,8 +695,7 @@ Sub GiveRewards()
                 Next j
                 RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
             End If
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_PUNTOS, i & "¬" & Teams(Ranking(i).PlayerIndex) & "¬" & Ranking(i).Score & "¬" & RewardStr, _
-                    e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1744=¬1) ¬2: ¬3 puntos¬4
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_PUNTOS, i & "¬" & Teams(Ranking(i).PlayerIndex) & "¬" & Ranking(i).Score & "¬" & RewardStr, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1744=¬1) ¬2: ¬3 puntos¬4
         Next i
     Else
         Ranking = Board.GetRanking(3)
@@ -714,7 +713,7 @@ Sub GiveRewards()
             End If
             If Ranking(i).PlayerIndex > 0 Then
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_PUNTOS_1824, (i + 1) & "¬" & UserList(Ranking(i).PlayerIndex).name & "¬" & Ranking(i).Score & "¬" & _
-                        RewardStr, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
+                        RewardStr, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1824=¬1) ¬2: ¬3 puntos¬4
             End If
         Next i
     End If

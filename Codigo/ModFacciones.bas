@@ -36,42 +36,42 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         charindexstr = str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, 1357, vbNullString, charindexstr, vbWhite)  ' Msg1357=Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_YA_PERTENECES_A_MI_EJERCITO_JOVEN_SOLDADO_VE_A_COMBATIR_EL_CAOS_EN_MIS_TIERRAS_PARA_SUBIR_DE_RANGO_EN_EL, vbNullString, charindexstr, vbWhite)  ' Msg1357=Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.
             Exit Sub
         End If
         If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
-            Call WriteLocaleChatOverHead(UserIndex, 1358, vbNullString, charindexstr, vbWhite)  ' Msg1358=¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_LLEGADO_AL_LUGAR_EQUIVOCADO_MALDITA_ESCORIA_VETE_DE_AQUI_ANTES_DE_SER_ENCARCELADO_E_INTERROGADO, vbNullString, charindexstr, vbWhite)  ' Msg1358=¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.
             Exit Sub
         End If
         If Status(UserIndex) = e_Facciones.Criminal Then
-            Call WriteLocaleChatOverHead(UserIndex, 1359, vbNullString, charindexstr, vbWhite)  ' Msg1359=No se permiten criminales en el Ejército Real.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_SE_PERMITEN_CRIMINALES_EN_EL_EJERCITO_REAL, vbNullString, charindexstr, vbWhite)  ' Msg1359=No se permiten criminales en el Ejército Real.
             Exit Sub
         End If
         If .clase = e_Class.Thief Then
-            Call WriteLocaleChatOverHead(UserIndex, 1360, vbNullString, charindexstr, vbWhite)  ' Msg1360=No hay lugar para escoria en el Ejército Real.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_HAY_LUGAR_PARA_ESCORIA_EN_EL_EJERCITO_REAL, vbNullString, charindexstr, vbWhite)  ' Msg1360=No hay lugar para escoria en el Ejército Real.
             Exit Sub
         End If
         'Si fue miembro de la Legión del Caos no se puede enlistar
         If .Faccion.ciudadanosMatados > 0 Then
-            Call WriteLocaleChatOverHead(UserIndex, 1361, vbNullString, charindexstr, vbWhite)  ' Msg1361=Has derramado sangre inocente. Solo aceptamos almas nobles en el Ejército Real.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_DERRAMADO_SANGRE_INOCENTE_SOLO_ACEPTAMOS_ALMAS_NOBLES_EN_EL_EJERCITO_REAL, vbNullString, charindexstr, vbWhite)  ' Msg1361=Has derramado sangre inocente. Solo aceptamos almas nobles en el Ejército Real.
             Exit Sub
         End If
         If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-            Call WriteLocaleChatOverHead(UserIndex, 1362, vbNullString, charindexstr, vbWhite)  ' Msg1362=¡No tienes lugar suficiente en el inventario.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_LUGAR_SUFICIENTE_EN_EL_INVENTARIO, vbNullString, charindexstr, vbWhite)  ' Msg1362=¡No tienes lugar suficiente en el inventario.
             Exit Sub
         End If
         If .Faccion.Reenlistadas > MAX_FACTION_ENLISTMENTS Then
-            Call WriteLocaleChatOverHead(UserIndex, 1363, vbNullString, charindexstr, vbWhite)  ' Msg1363=Ya has desertado el Ejército Real. No serás aceptado otra vez.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_YA_HAS_DESERTADO_EL_EJERCITO_REAL_NO_SERAS_ACEPTADO_OTRA_VEZ, vbNullString, charindexstr, vbWhite)  ' Msg1363=Ya has desertado el Ejército Real. No serás aceptado otra vez.
             Exit Sub
         End If
         Dim primerRango As t_RangoFaccion
         primerRango = RangosFaccion(1)
         If .Faccion.FactionScore < primerRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1378, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_UNIRTE_A_LAS_FUERZAS_DE_LA_ARMADA_REAL_DEBES_TENER_AL_MENOS_PUNTOS_DE_FACCION_DE_MOMENTO_SOLO_TIENES, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
             Exit Sub
         End If
         If .Stats.ELV < primerRango.NivelRequerido Then
-            Call WriteLocaleChatOverHead(UserIndex, 1379, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1379=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_UNIRTE_A_NUESTRAS_FUERZAS_DEBES_SER_AL_MENOS_DE_NIVEL, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1379=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
             Exit Sub
         End If
         'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
@@ -79,7 +79,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             If PersonajeEsLeader(.Id) Then
                 'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1364, vbNullString, charindexstr, vbWhite)  ' Msg1364=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDES_INTEGRAR_NUESTRAS_FUERZAS_SI_PERTENECES_A_UN_CLAN_NEUTRAL_DEBERAS_ABANDONARLO_SI_TU_DESEO_ES, vbNullString, charindexstr, vbWhite)  ' Msg1364=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.
                     Exit Sub
                 End If
             Else
@@ -93,11 +93,11 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
         .Faccion.Status = e_Facciones.Armada
         If .Faccion.RecibioArmaduraReal = 0 Then
-            Call WriteLocaleChatOverHead(UserIndex, 1365, vbNullString, charindexstr, vbWhite)  ' Msg1365=¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_BIENVENIDO_AL_EJERCITO_IMPERIAL_AQUI_TIENES_TUS_VESTIMENTAS_CUMPLE_BIEN_TU_LABOR_EXTERMINANDO_CRIMINALES_Y, vbNullString, charindexstr, vbWhite)  ' Msg1365=¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.
             .Faccion.NivelIngreso = .Stats.ELV
             .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1932=¡Ahora perteneces al Ejército Real!
+        Call WriteLocaleMsg(UserIndex, MSG_NOW_BELONG_ROYAL_ARMY, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1932=¡Ahora perteneces al Ejército Real!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
@@ -115,23 +115,23 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If .Faccion.RecompensasReal >= MaxRangoFaccion Then
-            Call WriteLocaleChatOverHead(UserIndex, 1366, vbNullString, npcCharIndex, vbWhite)  ' Msg1366=Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_ALCANZADO_EL_MAXIMO_RANGO_DENTRO_DE_MIS_SOLDADOS_DEMUESTRA_TU_BONDAD_Y_LIDERAZGO_EN_EL_CAMPO_DE, vbNullString, npcCharIndex, vbWhite)  ' Msg1366=Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.
             Exit Sub
         End If
         If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-            Call WriteLocaleChatOverHead(UserIndex, 1367, vbNullString, npcCharIndex, vbWhite)  ' Msg1367=¡No tienes lugar suficiente en el inventario.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_LUGAR_SUFICIENTE_EN_EL_INVENTARIO_1367, vbNullString, npcCharIndex, vbWhite)  ' Msg1367=¡No tienes lugar suficiente en el inventario.
             Exit Sub
         End If
         proxRango = ProximoRango(UserIndex)
         If .Faccion.FactionScore < proxRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1380, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1380=Te faltan ¬1 Puntos de faccion para subir de rango.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TE_FALTAN_PUNTOS_DE_FACCION_PARA_SUBIR_DE_RANGO, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1380=Te faltan ¬1 Puntos de faccion para subir de rango.
             Exit Sub
         End If
         If proxRango.NivelRequerido > .Stats.ELV Then
-            Call WriteLocaleChatOverHead(UserIndex, 1381, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1381=Has matado suficientes criminales pero, te faltan ¬1 niveles para poder recibir la próxima recompensa.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_MATADO_SUFICIENTES_CRIMINALES_PERO_TE_FALTAN_NIVELES_PARA_PODER_RECIBIR_LA_PROXIMA_RECOMPENSA, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1381=Has matado suficientes criminales pero, te faltan ¬1 niveles para poder recibir la próxima recompensa.
         Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
             .Faccion.RecompensasReal = proxRango.rank
-            Call WriteLocaleChatOverHead(UserIndex, 1382, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1382=¡¡¡Aquí tienes tu recompensa ¬1!!!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_AQUI_TIENES_TU_RECOMPENSA, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1382=¡¡¡Aquí tienes tu recompensa ¬1!!!
             Call DarRecompensas(UserIndex)
             '.Stats.Exp = .Stats.Exp + ExpX100
         End If
@@ -146,7 +146,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Ciudadano
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_ROYAL_ARMY, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1933=Has sido expulsado del Ejército Real.
+    Call WriteLocaleMsg(UserIndex, MSG_EXPELLED_FROM_ROYAL_ARMY, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA, vbNullString) ' Msg1933=Has sido expulsado del Ejército Real.
     Exit Sub
 ExpulsarFaccionReal_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
@@ -157,7 +157,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
     UserList(UserIndex).Faccion.Status = e_Facciones.Criminal
     Call RefreshCharStatus(UserIndex)
     Call PerderItemsFaccionarios(UserIndex)
-    Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_EXPELLED_FROM_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1934=Has sido expulsado de la Legión Oscura.
+    Call WriteLocaleMsg(UserIndex, MSG_EXPELLED_FROM_DARK_LEGION, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS, vbNullString) ' Msg1934=Has sido expulsado de la Legión Oscura.
     Exit Sub
 ExpulsarFaccionCaos_Err:
     Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
@@ -177,29 +177,29 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         charindexstr = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
-            Call WriteLocaleChatOverHead(UserIndex, 1368, vbNullString, charindexstr, vbWhite)  ' Msg1368=Ya perteneces a la Legión Oscura.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_YA_PERTENECES_A_LA_LEGION_OSCURA, vbNullString, charindexstr, vbWhite)  ' Msg1368=Ya perteneces a la Legión Oscura.
             Exit Sub
         End If
         If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, 1369, vbNullString, charindexstr, vbWhite)  ' Msg1369=¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano
+            Call WriteLocaleChatOverHead(UserIndex, MSG_JA_JA_JA_TU_NO_ERES_BIENVENIDO_AQUI_ASQUEROSO_CIUDADANO, vbNullString, charindexstr, vbWhite)  ' Msg1369=¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano
             Exit Sub
         End If
         If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-            Call WriteLocaleChatOverHead(UserIndex, 1370, vbNullString, charindexstr, vbWhite)  ' Msg1370=¡No tienes lugar suficiente en el inventario.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_LUGAR_SUFICIENTE_EN_EL_INVENTARIO_1370, vbNullString, charindexstr, vbWhite)  ' Msg1370=¡No tienes lugar suficiente en el inventario.
             Exit Sub
         End If
         If UserList(UserIndex).Faccion.Reenlistadas > MAX_FACTION_ENLISTMENTS Then
-            Call WriteLocaleChatOverHead(UserIndex, 1372, vbNullString, charindexstr, vbWhite)  ' Msg1372=Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_SIDO_EXPULSADO_DE_LAS_FUERZAS_OSCURAS_Y_DURANTE_TU_REBELDIA_HAS_ATACADO_A_MI_EJERCITO_VETE_DE_AQUI, vbNullString, charindexstr, vbWhite)  ' Msg1372=Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!
             Exit Sub
         End If
         Dim primerRango As t_RangoFaccion
         primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
         If .Faccion.FactionScore < primerRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1383, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
+            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_UNIRTE_A_LAS_FUERZAS_DE_LA_LEGION_OSCURA_DEBES_TENER_AL_MENOS_PUNTOS_DE_FACCION_DE_MOMENTO_SOLO, primerRango.RequiredScore & "¬" & .Faccion.FactionScore, charindexstr, vbWhite)
             Exit Sub
         End If
         If .Stats.ELV < primerRango.NivelRequerido Then
-            Call WriteLocaleChatOverHead(UserIndex, 1384, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1384=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_UNIRTE_A_NUESTRAS_FUERZAS_DEBES_SER_AL_MENOS_DE_NIVEL_1384, primerRango.NivelRequerido, charindexstr, vbWhite) ' Msg1384=¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel ¬1!!!
             Exit Sub
         End If
         'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
@@ -207,7 +207,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             If PersonajeEsLeader(.Id) Then
                 'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                    Call WriteLocaleChatOverHead(UserIndex, 1373, vbNullString, charindexstr, vbWhite)  ' Msg1373=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.
+                    Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDES_INTEGRAR_NUESTRAS_FUERZAS_SI_PERTENECES_A_UN_CLAN_NEUTRAL_DEBERAS_ABANDONARLO_SI_TU_DESEO_ES_1373, vbNullString, charindexstr, vbWhite)  ' Msg1373=No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.
                     Exit Sub
                 End If
             Else
@@ -221,10 +221,10 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
         .Faccion.Status = e_Facciones.Caos
         If .Faccion.RecibioArmaduraCaos = 0 Then
-            Call WriteLocaleChatOverHead(UserIndex, 1374, vbNullString, charindexstr, vbWhite)  ' Msg1374=Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_AQUI_TIENES_TU_ARMADURA_LEGIONARIO_VE_A_DERRAMAR_SANGRE_DE_LOS_SUBDITOS_DE_TANCREDO_ESTA_GUERRA_SERA_LARGA, vbNullString, charindexstr, vbWhite)  ' Msg1374=Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.
             .Faccion.NivelIngreso = .Stats.ELV
         End If
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NOW_BELONG_DARK_LEGION, vbNullString, e_FontTypeNames.FONTTYPE_INFOIAO)) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
+        Call WriteLocaleMsg(UserIndex, MSG_NOW_BELONG_DARK_LEGION, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1935=¡Ahora perteneces a la Legión Oscura!
         Call DarRecompensas(UserIndex)
         Call RefreshCharStatus(UserIndex)
     End With
@@ -242,23 +242,23 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
         ciudadanosMatados = .Faccion.ciudadanosMatados
         npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
         If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
-            Call WriteLocaleChatOverHead(UserIndex, 1375, vbNullString, npcCharIndex, vbWhite)  ' Msg1375=¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_ALCANZADO_UNO_DE_LOS_MEJORES_LUGARES_EN_MIS_FILAS_MANTEN_FIRME_TU_LIDERAZGO_Y_CRUELDAD_PARA_ALGUN_DIA, vbNullString, npcCharIndex, vbWhite)  ' Msg1375=¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.
             Exit Sub
         End If
         If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-            Call WriteLocaleChatOverHead(UserIndex, 1376, vbNullString, npcCharIndex, vbWhite)  ' Msg1376=¡No tienes lugar suficiente en el inventario.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_TIENES_LUGAR_SUFICIENTE_EN_EL_INVENTARIO_1376, vbNullString, npcCharIndex, vbWhite)  ' Msg1376=¡No tienes lugar suficiente en el inventario.
             Exit Sub
         End If
         proxRango = ProximoRango(UserIndex)
         If .Faccion.FactionScore < proxRango.RequiredScore Then
-            Call WriteLocaleChatOverHead(UserIndex, 1385, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1385=Te faltan ¬1 Puntos de faccion para subir de rango.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TE_FALTAN_PUNTOS_DE_FACCION_PARA_SUBIR_DE_RANGO_1385, proxRango.RequiredScore - .Faccion.FactionScore, npcCharIndex, vbWhite) ' Msg1385=Te faltan ¬1 Puntos de faccion para subir de rango.
             Exit Sub
         End If
         If proxRango.NivelRequerido > .Stats.ELV Then
-            Call WriteLocaleChatOverHead(UserIndex, 1386, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1386=Has acabado con la vida de suficientes enemigos pero aún te faltan ¬1 niveles para alcanzar el siguiente rango.
+            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_ACABADO_CON_LA_VIDA_DE_SUFICIENTES_ENEMIGOS_PERO_AUN_TE_FALTAN_NIVELES_PARA_ALCANZAR_EL_SIGUIENTE, proxRango.NivelRequerido - .Stats.ELV, npcCharIndex, vbWhite) ' Msg1386=Has acabado con la vida de suficientes enemigos pero aún te faltan ¬1 niveles para alcanzar el siguiente rango.
         Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
             .Faccion.RecompensasCaos = proxRango.rank
-            Call WriteLocaleChatOverHead(UserIndex, 1387, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1387=¡¡¡Bien hecho ¬1, aquí tienes tu recompensa, sigue pregonando el caos a lo largo de estas tierras.!!!
+            Call WriteLocaleChatOverHead(UserIndex, MSG_BIEN_HECHO_AQUI_TIENES_TU_RECOMPENSA_SIGUE_PREGONANDO_EL_CAOS_A_LO_LARGO_DE_ESTAS_TIERRAS, proxRango.Titulo, npcCharIndex, vbWhite) ' Msg1387=¡¡¡Bien hecho ¬1, aquí tienes tu recompensa, sigue pregonando el caos a lo largo de estas tierras.!!!
             Call DarRecompensas(UserIndex)
             '.Stats.Exp = .Stats.Exp + ExpX100
         End If
@@ -391,25 +391,25 @@ Public Sub NotifyConnectionToFaction(ByVal UserIndex As Integer)
             Case e_Facciones.Armada
                 If msgId > 0 Then
                     Call SendData(SendTarget.ToRealYRMs, 0, _
-                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
+                        PrepareMessageLocaleMsg(msgId, .Name, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
                 End If
 
             Case e_Facciones.consejo
                 If msgId > 0 Then
                     Call SendData(SendTarget.ToRealYRMs, 0, _
-                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CONSEJO))
+                        PrepareMessageLocaleMsg(msgId, .Name, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CONSEJO))
                 End If
 
             Case e_Facciones.Caos
                 If msgId > 0 Then
                     Call SendData(SendTarget.ToCaosYRMs, 0, _
-                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
+                        PrepareMessageLocaleMsg(msgId, .Name, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
                 End If
 
             Case e_Facciones.concilio
                 If msgId > 0 Then
                     Call SendData(SendTarget.ToCaosYRMs, 0, _
-                        PrepareMessageLocaleMsg(msgId, .Name, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
+                        PrepareMessageLocaleMsg(msgId, .Name, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
                 End If
         End Select
     End With
@@ -462,18 +462,18 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex).Faccion
         Select Case .Status
             Case e_Facciones.Caos, e_Facciones.Armada, e_Facciones.concilio, e_Facciones.consejo
-                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_PARDON_FACTION_MEMBER, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_CANNOT_PARDON_FACTION_MEMBER, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Function
             Case e_Facciones.Ciudadano
                 If .ciudadanosMatados = 0 And .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 Else
                     .ciudadanosMatados = 0
                 End If
             Case e_Facciones.Criminal
                 If .Reenlistadas = MAX_FACTION_ENLISTMENTS Then
-                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_YOU_DO_NOT_NEED_PARDON, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case Else
@@ -489,7 +489,7 @@ Public Function ForgiveUserFactionStats(ByVal UserIndex As Integer) As Boolean
         .NivelIngreso = 0
         .MatadosIngreso = 0
         ForgiveUserFactionStats = True
-        Call WriteLocaleMsg(UserIndex, MSG_YOU_HAVE_BEEN_PARDONED, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_YOU_HAVE_BEEN_PARDONED, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
     End With
     Exit Function
 ResetFacciones_Err:

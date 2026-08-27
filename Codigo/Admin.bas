@@ -181,7 +181,7 @@ End Sub
 Sub WorldSave()
     On Error GoTo Handler
     Dim LoopX As Integer
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg("1732", vbNullString, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_INICIANDO_WORLDSAVE, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1732=Servidor » Iniciando WorldSave
     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
     Dim j As Integer, k As Integer
     For j = 1 To NumMaps
@@ -197,7 +197,7 @@ Sub WorldSave()
         End If
     Next LoopX
     FrmStat.Visible = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_WORLD_SAVE_NOTIFICATION, vbNullString, e_FontTypeNames.FONTTYPE_SERVER))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_WORLD_SAVE_NOTIFICATION, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
@@ -214,7 +214,7 @@ Public Sub PurgarPenas()
                     UserList(i).Counters.Pena = 0
                     Call WarpUserChar(i, Libertad.Map, Libertad.x, Libertad.y, True)
                     'Msg1103= Has sido liberado.
-                    Call WriteLocaleMsg(i, "1103", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(i, MSG_HAS_SIDO_LIBERADO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                 End If
             End If
         End If
@@ -296,9 +296,9 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.y, True)
     If LenB(GmName) = 0 Then
         'Msg1107= Has sido encarcelado, deberas permanecer en la carcel  ¬1 minutos.
-        Call WriteLocaleMsg(UserIndex, MSG_SIDO_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_FontTypeNames.FONTTYPE_INFO, minutos)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, minutos)
     Else
-        Call WriteLocaleMsg(UserIndex, MSG_HA_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_FontTypeNames.FONTTYPE_INFO, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
+        Call WriteLocaleMsg(UserIndex, MSG_HA_ENCARCELADO_DEBERAS_PERMANECER_CARCEL_MINUTOS, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER, GmName & "¬" & minutos) 'Msg1617=¬1 te ha encarcelado, deberás permanecer en la cárcel ¬2 minutos.
     End If
     If LenB(GmName) = 0 Then
         JailIssuer = "el sistema"
@@ -414,7 +414,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
     Call Baneos.Add(tBan)
     Call SaveBan(Baneos.count)
     Call LogBanByName(tBan.name, tBan.Baneador, tBan.Causa)
-    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_BANEADO_DURANTE_PROXIMOS_DIAS_MEDIDA_TOMADA, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
+    Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_BANEADO_DURANTE_PROXIMOS_DIAS_MEDIDA_TOMADA, nombre & "¬" & Causa & "¬" & dias & "¬" & Baneador, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1705=¬1 fue baneado por ¬2 durante los próximos ¬3 días. La medida fue tomada por: ¬4.
     Exit Sub
 BanTemporal_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)

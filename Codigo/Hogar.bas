@@ -81,7 +81,7 @@ Public Sub goHome(ByVal UserIndex As Integer, ByVal HomeCostGLD As Long)
             .Accion.AccionPendiente = True
             .Accion.TipoAccion = e_AccionBarra.Hogar
         Else
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_DEBES_ESTAR_MUERTO_PODER_UTILIZAR_COMANDO, vbNullString, e_FontTypeNames.FONTTYPE_FIGHT)) ' Msg1995=Debes estar muerto para poder utilizar este comando.
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_MUERTO_PODER_UTILIZAR_COMANDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1995=Debes estar muerto para poder utilizar este comando.
         End If
     End With
     Exit Sub
@@ -141,7 +141,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         End If
         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_HAS_REGRESADO_CIUDAD_ORIGEN, vbNullString, e_FontTypeNames.FONTTYPE_WARNING)) ' Msg1996=Has regresado a tu ciudad de origen.
+        Call WriteLocaleMsg(UserIndex, MSG_HAS_REGRESADO_CIUDAD_ORIGEN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, vbNullString) ' Msg1996=Has regresado a tu ciudad de origen.
         .flags.Traveling = 0
         .Counters.goHome = 0
     End With

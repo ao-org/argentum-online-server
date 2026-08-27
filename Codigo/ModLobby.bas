@@ -414,8 +414,8 @@ Public Function AddPlayerOrGroup(ByRef instance As t_Lobby, ByVal UserIndex As I
                 If IsValidUserRef(.Grupo.Miembros(i)) Then
                     AddPlayerOrGroup = CanPlayerJoin(instance, .Grupo.Miembros(i).ArrayIndex)
                     If Not AddPlayerOrGroup.Success Then
-                        Call WriteLocaleMsg(UserIndex, MSG_NO_TEAM_MEMBER_CANNOT_PARTICIPATE_REASON, UserList(.Grupo.Miembros(i).ArrayIndex).name, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
-                        Call WriteLocaleMsg(UserIndex, AddPlayerOrGroup.Message, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_TEAM_MEMBER_CANNOT_PARTICIPATE_REASON, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Verde_Oscuro, UserList(.Grupo.Miembros(i).ArrayIndex).name) 'Msg1604= ¬1: no puede participar, motivo: 'ver ReyarB
+                        Call WriteLocaleMsg(UserIndex, AddPlayerOrGroup.Message, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                         Exit Function
                     End If
                 End If
@@ -540,9 +540,9 @@ Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     Dim i As Integer
     For i = 0 To instance.RegisteredPlayers - 1
         If instance.Players(i).Connected And IsValidUserRef(instance.Players(i).User) Then
-            Call WriteConsoleMsg(UserIndex, i & ") " & UserList(instance.Players(i).User.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserIndex, i & ") " & UserList(instance.Players(i).User.ArrayIndex).name, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
         Else
-            Call WriteConsoleMsg(UserIndex, i & ") " & "Disconnected player.", e_FontTypeNames.FONTTYPE_New_Verde_Oscuro)
+            Call WriteConsoleMsg(UserIndex, i & ") " & "Disconnected player.", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
         End If
     Next i
     Exit Sub
@@ -576,12 +576,12 @@ Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) 
             EventName = DEFAULT_EVENT_NAME
         End If
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, EventName & "¬" & instance.MaxPlayers & "¬" & instance.MinLevel & "¬" & instance.MaxLevel _
-                & "¬" & instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GLOBAL))
+                & "¬" & instance.InscriptionPrice, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         If Not instance.Scenario Is Nothing Then
             Call instance.Scenario.BroadcastOpenScenario
         End If
         If instance.InscriptionPrice > 0 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         End If
     End If
     Call SetTimer(instance.BroadOpenEvent, 30000)
@@ -614,10 +614,9 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
                         Seconds = (WaitingForPlayersTime - (TicksElapsed(instance.MapOpenTime, GlobalFrameTime))) / 1000
                         Minutes = Seconds / 60
                         Seconds = Seconds - (Minutes * 60)
-                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_ESPERANDO_JUGADORES_PARTIDA_INICIARA_CUANDO_LLENE_SALA, GetTimeString(Minutes, Seconds), _
-                                e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1727=Esperando jugadores, La partida iniciara en ¬1 o cuando se llene la sala
+                        Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_ESPERANDO_JUGADORES_PARTIDA_INICIARA_CUANDO_LLENE_SALA, GetTimeString(Minutes, Seconds), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1727=Esperando jugadores, La partida iniciara en ¬1 o cuando se llene la sala
                         Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_MOMENTO_HAY_REQUIERE_MINIMO_PUEDA_INICIAR, instance.RegisteredPlayers & "¬" & _
-                                instance.MaxPlayers & "¬" & instance.MinPlayers, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1728=En este momento hay ¬1 / ¬2 y se requiere un minimo de ¬3 para que pueda iniciar
+                                instance.MaxPlayers & "¬" & instance.MinPlayers, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1728=En este momento hay ¬1 / ¬2 y se requiere un minimo de ¬3 para que pueda iniciar
                     End If
                 Next i
             End If
@@ -629,14 +628,14 @@ Public Sub UpdateWaitingForPlayers(ByVal frametime As Long, ByRef instance As t_
         Else
             For i = 0 To instance.RegisteredPlayers - 1
                 If IsValidUserRef(instance.Players(i).User) Then
-                    Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_EVENTO_CANCELADO_FALTA_JUGADORES, "", e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1729=Evento cancelado por falta de jugadores
+                    Call SendData(SendTarget.ToIndex, instance.Players(i).User.ArrayIndex, PrepareMessageLocaleMsg(MSG_EVENTO_CANCELADO_FALTA_JUGADORES, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1729=Evento cancelado por falta de jugadores
                 End If
             Next i
             Call CancelLobby(instance)
         End If
     Else
         If instance.RegisteredPlayers >= instance.MaxPlayers Then
-            Call SendData(sendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_CUPOS_COMPLETOS, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
+            Call SendData(sendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_CUPOS_COMPLETOS, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
             Call StartLobby(instance, -1)
         End If
     End If
@@ -648,9 +647,9 @@ Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
     If Not instance.Scenario Is Nothing Then
         EventName = instance.Scenario.GetScenarioName()
     End If
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgOpenEventBroadcast, EventName, e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgOpenEventBroadcast, EventName, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     If instance.InscriptionPrice > 0 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
 End Sub
 
@@ -795,14 +794,14 @@ End Function
 
 Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     If instance.State = Initialized And UserIndex >= 0 Then
-        Call WriteLocaleMsg(UserIndex, MSG_EVENT_ALREADY_STARTED, e_FontTypeNames.FONTTYPE_INFO) 'Msg1605= El evento ya fue iniciado.
+        Call WriteLocaleMsg(UserIndex, MSG_EVENT_ALREADY_STARTED, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos) 'Msg1605= El evento ya fue iniciado.
         Exit Sub
     End If
     If (instance.TeamSize > 1 Or instance.TeamType = eFixedTeamCount) And instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
-    If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, MSG_EVENT_STARTED, e_FontTypeNames.FONTTYPE_INFO) 'Msg1606= Evento iniciado
+    If UserIndex >= 0 Then Call WriteLocaleMsg(UserIndex, MSG_EVENT_STARTED, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos) 'Msg1606= Evento iniciado
 End Sub
 
 Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
@@ -840,30 +839,30 @@ Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, 
                 Call ModLobby.ListPlayers(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eForceReset
                 Call ModLobby.ForceReset(LobbyList(LobbyIndex))
-                Call WriteConsoleMsg(UserIndex, "Reset done.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Reset done.", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Case e_LobbyCommandId.eSetTeamSize
                 Call ModLobby.SetTeamSize(LobbyList(LobbyIndex), Arguments(0), Arguments(1))
-                Call WriteConsoleMsg(UserIndex, "Team size set.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Team size set.", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Case e_LobbyCommandId.eAddPlayer
                 tUser = NameIndex(Params)
                 If Not IsValidUserRef(tUser) Then
-                    Call WriteConsoleMsg(UserIndex, "User " & Params & " not found.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "User " & Params & " not found.", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                     HandleRemoteLobbyCommand = False
                     Exit Function
                 End If
                 RetValue = ModLobby.AddPlayerOrGroup(LobbyList(LobbyIndex), tUser.ArrayIndex, "")
                 If Not RetValue.Success Then
-                    Call WriteConsoleMsg(UserIndex, "Failed to add player with message:", e_FontTypeNames.FONTTYPE_INFO)
-                    Call WriteLocaleMsg(UserIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Failed to add player with message:", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                    Call WriteLocaleMsg(UserIndex, RetValue.Message, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Else
-                    Call WriteConsoleMsg(UserIndex, "Player has been registered", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Player has been registered", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
-                Call WriteLocaleMsg(tUser.ArrayIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(tUser.ArrayIndex, RetValue.Message, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Case e_LobbyCommandId.eSetInscriptionPrice
                 If SetIncriptionPrice(LobbyList(LobbyIndex), Arguments(0)) Then
-                    Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Else
-                    Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
             Case Else
                 HandleRemoteLobbyCommand = False
@@ -919,7 +918,7 @@ Public Sub SortTeams(ByRef instance As t_Lobby)
     Dim i As Integer
     For i = instance.RegisteredPlayers - 1 To MaxPossiblePlayers Step -1
         If IsValidUserRef(instance.Players(i).User) Then
-            Call WriteLocaleMsg(instance.Players(i).User.ArrayIndex, MsgNotEnoughPlayerForTeam, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(instance.Players(i).User.ArrayIndex, MsgNotEnoughPlayerForTeam, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
         End If
         Call KickPlayer(instance, i)
     Next i
@@ -993,11 +992,11 @@ End Function
 
 Public Function ValidateLobbySettings(ByRef LobbySettings As t_NewScenearioSettings)
     If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_INVALID_LEVEL_RANGE, "", e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_INVALID_LEVEL_RANGE, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Exit Function
     End If
     If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_MIN_LEVEL_GREATER_THAN_MAX, "", e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_LOBBY_MIN_LEVEL_GREATER_THAN_MAX, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Exit Function
     End If
     ValidateLobbySettings = True
