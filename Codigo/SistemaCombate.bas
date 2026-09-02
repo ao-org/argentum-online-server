@@ -532,6 +532,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).invent.EquippedSaddleObjIndex > 0 Then
         obj = ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex)
         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
+        Call DoMontar(UserIndex, ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex), UserList(UserIndex).invent.EquippedSaddleSlot)
     End If
     Lugar = RandomNumber(1, 6)
     Select Case Lugar
@@ -1146,6 +1147,9 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
     On Error GoTo UserDañoUser_Err
     With UserList(VictimaIndex)
         Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
+        If .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
+            Call DoMontar(VictimaIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+        End If
         ' Daño normal
         BaseDamage = GetUserDamage(AtacanteIndex, eUser)
         ' Color por defecto rojo
