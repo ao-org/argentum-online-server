@@ -779,7 +779,9 @@ Private Function TryGuardAttackHostileNpc(ByVal NpcIndex As Integer) As Boolean
     With NpcList(NpcIndex)
         If .npcType <> e_NPCType.GuardiaReal And .npcType <> e_NPCType.GuardiasCaos Then Exit Function
         If IsValidNpcRef(.TargetNPC) Then
-            If NpcList(.TargetNPC.ArrayIndex).flags.OldHostil = 0 Or IsGuardNpcType(NpcList(.TargetNPC.ArrayIndex).npcType) Then Call ClearNpcRef(.TargetNPC)
+            If NpcList(.TargetNPC.ArrayIndex).flags.OldHostil = 0 Or _
+                    NpcList(.TargetNPC.ArrayIndex).Attackable = 0 Or _
+                    IsGuardNpcType(NpcList(.TargetNPC.ArrayIndex).npcType) Then Call ClearNpcRef(.TargetNPC)
         End If
         If Not IsValidNpcRef(.TargetNPC) Then
             Call SetNpcRef(.TargetNPC, BuscarNpcEnArea(NpcIndex, GUARD_NPC_VISION_RANGE))
@@ -790,9 +792,11 @@ Private Function TryGuardAttackHostileNpc(ByVal NpcIndex As Integer) As Boolean
             Exit Function
         End If
         TryGuardAttackHostileNpc = True
+        If Not NPCs.CanAttack(.Contadores, .flags) Then Exit Function
         If TicksElapsed(.Contadores.IntervaloLanzarHechizo, GetTickCountRaw()) < GUARD_NPC_SPELL_INTERVAL Then Exit Function
         .Contadores.IntervaloLanzarHechizo = GetTickCountRaw()
-        If NpcList(.TargetNPC.ArrayIndex).flags.Paralizado = 0 Then
+        If NpcList(.TargetNPC.ArrayIndex).flags.Paralizado = 0 And _
+                NpcList(.TargetNPC.ArrayIndex).flags.AfectaParalisis = 0 Then
             Call NpcLanzaSpellSobreNpc(NpcIndex, .TargetNPC.ArrayIndex, GUARD_PARALYZE_SPELL)
         End If
         If IsValidNpcRef(.TargetNPC) Then
