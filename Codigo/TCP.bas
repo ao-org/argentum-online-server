@@ -1292,7 +1292,6 @@ Public Sub EcharPjsNoPrivilegiados()
         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
             If UserList(LoopC).flags.Privilegios And e_PlayerType.User Then
                 Call WriteCerrarleCliente(LoopC)
-                Call modNetwork.Flush(LoopC)
                 Call CloseSocket(LoopC)
             End If
         End If
