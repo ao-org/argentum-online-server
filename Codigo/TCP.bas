@@ -27,6 +27,22 @@ Attribute VB_Name = "TCP"
 '
 Option Explicit
 
+Private Type t_InitialEquipItem
+    ObjIndex As Integer
+    Amount As Long
+    Equip As Byte
+End Type
+
+Private Type t_InitialEquipSet
+    Items() As t_InitialEquipItem
+    NumItems As Integer
+    Spells() As Integer
+    NumSpells As Integer
+End Type
+
+Private EquipoInicialComun As t_InitialEquipSet
+Private EquipoInicialClase() As t_InitialEquipSet
+
 Sub DarCuerpo(ByVal UserIndex As Integer)
     On Error GoTo DarCuerpo_Err
     '*************************************************
@@ -81,271 +97,16 @@ Sub RellenarInventario(ByVal UserIndex As String)
     On Error GoTo RellenarInventario_Err
     With UserList(UserIndex)
         Dim NumItems As Integer
+        Dim i As Integer
         NumItems = 1
-        ' Todos reciben pociones rojas
-        .invent.Object(NumItems).ObjIndex = 4335 'Pocion Roja
-        .invent.Object(NumItems).amount = 500
-        NumItems = NumItems + 1
-        ' Magicas puras reciben más azules
-        Select Case .clase
-            Case e_Class.Mage, e_Class.Druid
-                .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 850
-                NumItems = NumItems + 1
-            Case e_Class.Bard, e_Class.Cleric
-                .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 650
-                NumItems = NumItems + 1
-            Case e_Class.Paladin, e_Class.Assasin, e_Class.Bandit
-                .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
-                .invent.Object(NumItems).amount = 450
-                NumItems = NumItems + 1
-        End Select
-        ' Hechizos
-        Select Case .clase
-            Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard
-                .Stats.UserHechizos(1) = 1 ' Dardo mágico
-                .Stats.UserHechizos(2) = 7 ' Invocar lobo
-            Case e_Class.Paladin, e_Class.Bandit, e_Class.Assasin
-                .Stats.UserHechizos(1) = 291 ' Onda mágica
-                .Stats.UserHechizos(2) = 12 ' Curar heridas leves
-        End Select
-        ' Pociones amarillas y verdes
-        Select Case .clase
-            Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
-                .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                .invent.Object(NumItems).amount = 100
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 4338 ' Pocion Verde
-                .invent.Object(NumItems).amount = 120
-                NumItems = NumItems + 1
-            Case e_Class.Mage, e_Class.Druid
-                .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
-                .invent.Object(NumItems).amount = 80
-                NumItems = NumItems + 1
-        End Select
-        ' Poción violeta
-        .invent.Object(NumItems).ObjIndex = 4334 ' Pocion violeta
-        .invent.Object(NumItems).amount = 35
-        NumItems = NumItems + 1
-        .invent.Object(NumItems).ObjIndex = 3791 ' Pasaje a Jourmut
-        .invent.Object(NumItems).amount = 4
-        NumItems = NumItems + 1
-        ' Armas
-        Select Case .clase
-            Case e_Class.Cleric
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Paladin
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Hunter
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3491 ' Arco del principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                .invent.Object(NumItems).amount = 1050
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489  ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Trabajador
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                .invent.Object(NumItems).amount = 850
-                NumItems = NumItems + 1
-            Case e_Class.Pirat
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3497 ' Pistola del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3498 ' Balas del Principiante
-                .invent.Object(NumItems).amount = 350
-                NumItems = NumItems + 1
-            Case e_Class.Warrior
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
-                .invent.Object(NumItems).amount = 650
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Thief
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 1353 ' Nudillos del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489  ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Bandit
-                .invent.Object(NumItems).ObjIndex = 1353 ' Nudillos del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Mage
-                .invent.Object(NumItems).ObjIndex = 3495 ' Bastón del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3493 ' Sombrero del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Assasin
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Druid
-                .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3494 ' Flauta del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 1778  'Casco de Lobo (Resistencia Magica 1)
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-            Case e_Class.Bard
-                .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-                .invent.Object(NumItems).ObjIndex = 3496 ' Laúd del Principiante
-                .invent.Object(NumItems).amount = 1
-                NumItems = NumItems + 1
-        End Select
-        ' Armadura o túnica de principiante
-        Select Case .clase
-                ' Todas menos mago, druida y bardo:
-            Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
-                .invent.Object(NumItems).ObjIndex = 3500 ' Armadura de Principiante
-                ' Mago, druida y bardo:
-            Case e_Class.Mage, e_Class.Druid, e_Class.Bard
-                .invent.Object(NumItems).ObjIndex = 3502 ' Túnica del Principiante
-        End Select
-        .invent.Object(NumItems).Equipped = 0
-        Call EquiparInvItem(UserIndex, NumItems)
-        .invent.Object(NumItems).amount = 1
-        .invent.Object(NumItems).Equipped = 1
-        .invent.EquippedArmorSlot = NumItems
-        .invent.EquippedArmorObjIndex = .invent.Object(NumItems).ObjIndex
-        NumItems = NumItems + 1
-        ' Animación según raza
-        .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
-        ' Comida y bebida
-        .invent.Object(NumItems).ObjIndex = 3684 ' Manzana
-        .invent.Object(NumItems).amount = 100
-        NumItems = NumItems + 1
-        .invent.Object(NumItems).ObjIndex = 3685 ' Agua
-        .invent.Object(NumItems).amount = 50
-        NumItems = NumItems + 1
-        ' Seteo la cantidad de items
+        For i = 1 To EquipoInicialComun.NumItems
+            Call AsignarItemInicial(UserIndex, NumItems, EquipoInicialComun.Items(i))
+        Next i
+        For i = 1 To EquipoInicialClase(.clase).NumItems
+            Call AsignarItemInicial(UserIndex, NumItems, EquipoInicialClase(.clase).Items(i))
+        Next i
+        Call AplicarHechizosIniciales(UserIndex, EquipoInicialComun)
+        Call AplicarHechizosIniciales(UserIndex, EquipoInicialClase(.clase))
         .invent.NroItems = NumItems
         .flags.ModificoInventario = True
         .flags.ModificoHechizos = True
@@ -353,6 +114,89 @@ Sub RellenarInventario(ByVal UserIndex As String)
     Exit Sub
 RellenarInventario_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
+End Sub
+
+Public Sub CargarEquipamientoInicial()
+    On Error GoTo CargarEquipamientoInicial_Err
+    Dim Ini As clsIniManager
+    Set Ini = New clsIniManager
+    Call Ini.Initialize(DatPath & "EquipamientoInicial.dat")
+    Call LoadEquipSet(Ini, "COMMON", EquipoInicialComun)
+    ReDim EquipoInicialClase(1 To NUMCLASES)
+    Dim ClaseId As Integer
+    For ClaseId = 1 To NUMCLASES
+        Call LoadEquipSet(Ini, "CLASS" & CStr(ClaseId), EquipoInicialClase(ClaseId))
+    Next ClaseId
+    Set Ini = Nothing
+    AgregarAConsola "Se carg? el equipamiento inicial (EquipamientoInicial.dat)"
+    Exit Sub
+CargarEquipamientoInicial_Err:
+    Call TraceError(Err.Number, Err.Description, "TCP.CargarEquipamientoInicial", Erl)
+End Sub
+
+Private Sub LoadEquipSet(ByVal Ini As clsIniManager, ByVal SectionName As String, ByRef OutSet As t_InitialEquipSet)
+    On Error GoTo LoadEquipSet_Err
+    Dim NumObjs As Integer
+    Dim NumSpells As Integer
+    Dim i As Integer
+    Dim RawValue As String
+    Dim Parts() As String
+    NumObjs = CInt(Ini.GetValue(SectionName, "NumObjs", "0"))
+    OutSet.NumItems = NumObjs
+    If NumObjs > 0 Then
+        ReDim OutSet.Items(1 To NumObjs)
+        For i = 1 To NumObjs
+            RawValue = Ini.GetValue(SectionName, "Obj" & CStr(i), vbNullString)
+            If LenB(RawValue) = 0 Then
+                Call LogError("EquipamientoInicial.dat: falta Obj" & CStr(i) & " en seccion " & SectionName)
+            Else
+                Parts = Split(RawValue, ",")
+                If UBound(Parts) <> 2 Then
+                    Call LogError("EquipamientoInicial.dat: formato invalido en " & SectionName & ".Obj" & CStr(i))
+                Else
+                    OutSet.Items(i).ObjIndex = CInt(Trim$(Parts(0)))
+                    OutSet.Items(i).Amount = CLng(Trim$(Parts(1)))
+                    OutSet.Items(i).Equip = CByte(Trim$(Parts(2)))
+                End If
+            End If
+        Next i
+    End If
+    NumSpells = CInt(Ini.GetValue(SectionName, "NumSpells", "0"))
+    OutSet.NumSpells = NumSpells
+    If NumSpells > 0 Then
+        ReDim OutSet.Spells(1 To NumSpells)
+        For i = 1 To NumSpells
+            OutSet.Spells(i) = CInt(Ini.GetValue(SectionName, "Spell" & CStr(i), "0"))
+        Next i
+    End If
+    Exit Sub
+LoadEquipSet_Err:
+    Call TraceError(Err.Number, Err.Description & ". Seccion: " & SectionName, "TCP.LoadEquipSet", Erl)
+End Sub
+
+Private Sub AsignarItemInicial(ByVal UserIndex As Integer, ByRef NumItems As Integer, ByRef Item As t_InitialEquipItem)
+    With UserList(UserIndex)
+        .invent.Object(NumItems).ObjIndex = Item.ObjIndex
+        If Item.Equip = 1 Then
+            .invent.Object(NumItems).Equipped = 0
+            Call EquiparInvItem(UserIndex, NumItems)
+            .invent.Object(NumItems).Amount = 1
+            .invent.Object(NumItems).Equipped = 1
+            .invent.EquippedArmorSlot = NumItems
+            .invent.EquippedArmorObjIndex = .invent.Object(NumItems).ObjIndex
+            .Char.body = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedArmorObjIndex))
+        Else
+            .invent.Object(NumItems).Amount = Item.Amount
+        End If
+    End With
+    NumItems = NumItems + 1
+End Sub
+
+Private Sub AplicarHechizosIniciales(ByVal UserIndex As Integer, ByRef EquipSet As t_InitialEquipSet)
+    Dim i As Integer
+    For i = 1 To EquipSet.NumSpells
+        UserList(UserIndex).Stats.UserHechizos(i) = EquipSet.Spells(i)
+    Next i
 End Sub
 
 Function AsciiValidos(ByVal cad As String) As Boolean
@@ -449,13 +293,13 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             Exit Function
         End If
         If Not NombrePermitido(name) Then
-            Call WriteShowMessageBox(UserIndex, 1768, vbNullString) 'Msg1768=El nombre no está permitido.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_NOMBRE_NO_ESTA_PERMITIDO, vbNullString) 'Msg1768=El nombre no está permitido.
             Exit Function
         End If
 #End If
         '¿Existe el personaje?
         If PersonajeExiste(name) Then
-            Call WriteShowMessageBox(UserIndex, 1769, vbNullString) 'Msg1769=Ya existe el personaje.
+            Call WriteShowMessageBox(UserIndex, MSG_YA_EXISTE_EL_PERSONAJE, vbNullString) 'Msg1769=Ya existe el personaje.
             Exit Function
         End If
         ' Raza válida
@@ -463,7 +307,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         ' Género válido
         If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
         ' Ciudad válida
-        If Hogar <= 0 Or Hogar > CITY_COUNT Then Exit Function
+        If Not IsValidCharacterCreationCity(Hogar) Then Exit Function
         ' Cabeza válida
 #If LOGIN_STRESS_TEST = 0 Then
         If Not ValidarCabeza(UserRaza, UserSexo, head) Then Exit Function
@@ -491,7 +335,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         .raza = UserRaza
         .Char.head = head
         .genero = UserSexo
-        .Hogar = cForgat
+        .Hogar = Hogar
         '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
         .Stats.SkillPts = 10
         .Char.Heading = e_Heading.SOUTH
@@ -568,7 +412,7 @@ Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal Reason As String = vb
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
-                    Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                    Call WriteLocaleMsg(.ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, vbNullString) ' Msg1844=Comercio cancelado por el otro usuario.
                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 End If
             End If
@@ -665,7 +509,7 @@ ValidateChr_Err:
     Call TraceError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal md5 As String) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String) As Boolean
     On Error GoTo EntrarCuenta_Err
     Dim adminIdx          As Integer
     Dim laCuentaEsDeAdmin As Boolean
@@ -678,18 +522,12 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
             End If
         Next adminIdx
         If Not laCuentaEsDeAdmin Then
-            Call WriteShowMessageBox(UserIndex, 1770, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
+            Call WriteShowMessageBox(UserIndex, MSG_EL_SERVIDOR_SE_ENCUENTRA_HABILITADO_SOLO_PARA_ADMINISTRADORES_POR_EL_MOMENTO, vbNullString) 'Msg1770=El servidor se encuentra habilitado solo para administradores por el momento.
             Exit Function
         End If
     End If
-    #If DEBUGGING = 0 Then
-        If LCase$(Md5Cliente) <> LCase$(md5) Then
-            Call WriteShowMessageBox(UserIndex, 1771, vbNullString) 'Msg1771=Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.
-            Exit Function
-        End If
-    #End If
     If Not CheckMailString(CuentaEmail) Then
-        Call WriteShowMessageBox(UserIndex, 1772, vbNullString) 'Msg1772=Email inválido.
+        Call WriteShowMessageBox(UserIndex, MSG_EMAIL_INVALIDO, vbNullString) 'Msg1772=Email inválido.
         Exit Function
     End If
     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail)
@@ -721,7 +559,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
                     ConnectUser = True
                 End If
             Else
-                Call WriteShowMessageBox(UserIndex, 1773, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString) 'Msg1773=No se puede cargar el personaje.
                 Call CloseSocket(UserIndex)
             End If
         End If
@@ -732,7 +570,7 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUser")
 End Function
@@ -748,14 +586,14 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Call PerformanceTestStart(PerformanceTimer)
 
     If CharID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
 
     ' Ensure we have an account loaded
     If UserList(UserIndex).AccountID <= 0 Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -765,7 +603,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     Set RS = Query("select name from user where id=" & CStr(CharID) & " and account_id=" & CStr(UserList(UserIndex).AccountID))
 
     If RS Is Nothing Or RS.EOF Then
-        Call WriteShowMessageBox(UserIndex, 2093, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_INVALID_SESSION_TOKEN, vbNullString)
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -792,7 +630,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
             ConnectUserByID = True
         End If
     Else
-        Call WriteShowMessageBox(UserIndex, 1773, vbNullString)
+        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
         Call CloseSocket(UserIndex)
     End If
 
@@ -801,7 +639,7 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUserByID", Erl)
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje contiene un error. Comuníquese con un miembro del staff.")
     Call CloseSocket(UserIndex)
     Call PerformTimeLimitCheck(PerformanceTimer, "ConnectUserByID")
 End Function
@@ -813,14 +651,14 @@ Private Sub SendWelcomeUptime(ByVal UserIndex As Integer)
     ' Pick the font/type you prefer. Examples used in this codebase include FONTTYPE_INFO or FONTTYPE_GUILD.
     ' If your helper uses a different enum or function name, keep the same idea:
     '   SendData(ToUser, UserIndex, PrepareMessageConsoleMsg(msg, e_FontTypeNames.FONTTYPE_INFO))
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_FontTypeNames.FONTTYPE_INFO))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(Msg, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO))
 End Sub
 
 Sub SendMOTD(ByVal UserIndex As Integer)
     On Error GoTo SendMOTD_Err
     Dim j As Long
     For j = 1 To MaxLines
-        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
+        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
     Next j
     Call SendWelcomeUptime(UserIndex)
     Exit Sub
@@ -1301,6 +1139,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetFacciones(UserIndex)
     Call ResetContadores(UserIndex)
     Call ResetPacketRateData(UserIndex)
+    Call ResetHooClientCapabilities(UserIndex)
     Call ResetCharInfo(UserIndex)
     Call ResetBasicUserInfo(UserIndex)
     Call ResetUserFlags(UserIndex)

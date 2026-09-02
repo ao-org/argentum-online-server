@@ -26,6 +26,7 @@ Every new timing and weighting constant is tunable from the `[AI]` section of `S
 | Setting | Default | Description |
 | --- | --- | --- |
 | `NPC_PATHFINDING_NOISE` | `0.75` | Adds subtle randomness to pathfinding so multiple NPCs do not pick identical corridors. |
+| `NPCCrossMapAllowSafeMaps` | `1` | Allows hostile NPC cross-map pursuit routes to enter or pass through safe maps. Set to `0` to stop pursuit at those boundaries. Requires `npc-cross-map-pursuit` to be enabled. |
 | `NPC_ORBIT_REEVALUATE_MS` | `1800` | Minimum duration before an NPC can flip its orbit direction. |
 | `PATH_RECOMPUTE_COOLDOWN_MS` | `250` | Minimum delay between A* recomputations once a path exists. |
 | `NPC_ORBIT_TANGENT_WEIGHT` | `0.35` | Balance between backward and sideways motion when orbiting a target. |

@@ -52,7 +52,7 @@ Private Enum e_TrapTypes
     ePoison
 End Enum
 
-Const ACTIVATE_TRAOP_WAW_FILE = 210
+Const ACTIVATE_TRAP_WAW_FILE = 210
 
 Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal SourceType As e_ReferenceType, _
@@ -229,7 +229,14 @@ End Function
 
 Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     trigger = False
-    Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAOP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, _
+    If TargetType = eNpc Then
+        If EffectOverTime(mDotInfo.EotId).SubType = e_TrapTypes.eParalice Then
+            If NpcList(TargetIndex).flags.AfectaParalisis = 1 Then
+                Exit Function
+            End If
+        End If
+    End If
+    Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(ACTIVATE_TRAP_WAW_FILE, mWorldPosition.x, mWorldPosition.y, _
             False))
     If EffectOverTime(mDotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave( _
             EffectOverTime(mDotInfo.EotId).OnHitWav, mWorldPosition.x, mWorldPosition.y, False))
@@ -237,7 +244,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     mDotInfo.RemoveEffect = True
     If mDotInfo.TargetRef.RefType = eUser Then
         If UserList(mDotInfo.TargetRef.ArrayIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(mDotInfo.TargetRef.ArrayIndex, MsgFallIntoTrap, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(mDotInfo.TargetRef.ArrayIndex, MsgFallIntoTrap, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Select Case EffectOverTime(mDotInfo.EotId).SubType
@@ -249,7 +256,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                                 TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                         trigger = True
                         If UserList(TargetIndex).ChatCombate = 1 Then
-                            Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                            Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
                         End If
                         If TargetType = eUser Then
                             Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
@@ -258,7 +265,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     Exit Function
                 End If
                 If TargetType = eNpc Then
-                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration"), EffectOverTime(mDotInfo.EotId).OnHitFx)
+                    Call NPCs.Paralice(mDotInfo.TargetRef.ArrayIndex, TargetIndex, SvrConfig.GetValue("TrapParaliceDuration") * 6.5, EffectOverTime(mDotInfo.EotId).OnHitFx)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
@@ -296,7 +303,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                 If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList( _
                         TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                 If UserList(TargetIndex).ChatCombate = 1 Then
-                    Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                    Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_VENENO, GetName(mDotInfo.TargetRef))
                 End If
                 If TargetType = eUser Then
                     Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)

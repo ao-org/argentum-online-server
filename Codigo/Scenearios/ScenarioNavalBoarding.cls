@@ -399,11 +399,11 @@ Public Function IBaseScenario_GetScenarioName() As String
 End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario()
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalConquestIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalConquestIntro, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
-    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgNavalConquestInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgNavalConquestInstructions, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
 End Sub
 
 Public Function IBaseScenario_GetExtraInterfaces() As Long
@@ -497,7 +497,7 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call StartGame
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ABORDAJE_INICIARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1880=El abordaje iniciará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ABORDAJE_INICIARA, 10 - CountdownTimer.Occurrences, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1880=El abordaje iniciará en ¬1
                 End If
             End If
             Exit Sub
@@ -510,8 +510,8 @@ Public Sub IBaseScenario_Update()
             ElapsedResapwnTime = 0
         End If
         If ElapsedTime > MaxTime Then
-            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
-            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1881=¡Se acabó el tiempo!
+            Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_ACABO_TIEMPO, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1881=¡Se acabó el tiempo!
             Call CheckWinner
             Call MatchCompleted
         Else
@@ -525,8 +525,8 @@ Public Sub IBaseScenario_Update()
                 If CountdownTimer.Occurrences >= 10 Then
                     Call CloseScenario
                 Else
-                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
-                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1882=El mapa se cerrará en ¬1
+                    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MAPA_CERRARA, 10 - CountdownTimer.Occurrences, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1882=El mapa se cerrará en ¬1
                 End If
             End If
             Exit Sub
@@ -561,7 +561,7 @@ Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
     Call SetTimer(ScoreBroadcastTimer, 20000)
     LastFrameTime = GetTickCountRaw()
-    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MARINEROS_ABORDAJE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1883=¡Marineros al abordaje!
+    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_MARINEROS_ABORDAJE, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1883=¡Marineros al abordaje!
     ElapsedTime = 0
     Call ConfigMapEvent
 End Sub
@@ -628,11 +628,11 @@ Private Sub BroadcastPendingTime(ByVal frametime As Long)
         Exit Sub
     ElseIf pendingTime >= 60 Then
         pendingTime = pendingTime / 60
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_FontTypeNames.FONTTYPE_GUILD)) 'Msg1884=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1884=Quedan ¬1 minutos.
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTOS_1884, pendingTime, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) 'Msg1884=Quedan ¬1 minutos.
     ElseIf pendingTime <= 10 Then
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageConsoleMsg(pendingTime, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageConsoleMsg(pendingTime, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
     If pendingTime <= 1 Then
         Call SetTimer(BroadCastTimer, 1000)
@@ -649,7 +649,7 @@ Private Sub RespawnPlayers()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
         Set RespawnInfo = PlayerRespawn.Item(key)
-        If currentTime - RespawnInfo.RespawnTime > PlayerMinRespawnTime Then
+        If TicksElapsed(RespawnInfo.RespawnTime, currentTime) > PlayerMinRespawnTime Then
             Call Respawn(key)
             For i = 0 To RespawnInfo.EquipedElementCount - 1
                 Call EquiparInvItem(key, RespawnInfo.GetActiveSlot(i))
@@ -705,7 +705,7 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
         NpcList(NpcId).flags.Respawn = 1
         NpcList(NpcId).flags.team = team
     Else
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_FAILED, NpcInfo.NpcId, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_FAILED, NpcInfo.NpcId, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1792=No se pudo spawnear el npc ¬1, revisar.
         Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
     End If
 End Sub
@@ -781,10 +781,10 @@ End Function
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
     If NpcList(NpcIndex).Numero = CaptianNpcId Then
         Winner = GetOposingFaction(NpcList(NpcIndex).flags.team)
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call MatchCompleted
     End If
 End Sub
@@ -863,12 +863,12 @@ Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
         If ItemTeam > 0 Then
             If MapData(Map, TileX, TileY).ObjInfo.ObjIndex > 0 Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                 Exit Function
             End If
         Else
             If IsForbidden(.invent.Object(Slot).ObjIndex) Then
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                 Exit Function
             End If
         End If
@@ -936,7 +936,7 @@ End Function
 Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
         If UserLoot.Exists(UserIndex) Then
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantCarryMoreThanOne, "", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantCarryMoreThanOne, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
             Exit Function
         End If
         Dim ObjIndex As Integer
@@ -946,13 +946,13 @@ Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
         If ItemTeam > 0 Then
             If ItemTeam = .flags.CurrentTeam Then
                 If IsInsideArea(TeamCargo(ItemTeam).OriginalCargoArea, .pos.x, .pos.y) Then
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantPickFromYourStorage, "", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantPickFromYourStorage, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                     TryPickupItemAt = False
                     Exit Function
                 End If
             Else
                 If IsInsideArea(TeamCargo(.flags.CurrentTeam).DropArea, .pos.x, .pos.y) Then
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantPickFromYourStorage, "", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantPickFromYourStorage, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                     TryPickupItemAt = False
                     Exit Function
                 End If
@@ -974,8 +974,8 @@ Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
     If GetTeamCargoCount(team) < UBound(TeamCargo(team).ItemList) * 2 Then
         Exit Sub
     End If
-    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_FontTypeNames.FONTTYPE_GUILD))
-    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+    Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     Winner = team
     Call MatchCompleted
 End Sub
@@ -1004,20 +1004,20 @@ Private Sub CheckWinner()
     Dim Team1Cargo, Team2Cargo As Integer
     Team1Cargo = GetTeamCargoCount(1)
     Team2Cargo = GetTeamCargoCount(2)
-    Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_FontTypeNames.FONTTYPE_GUILD))
-    Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+    Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     If Team1Cargo > Team2Cargo Then
         Winner = 1
-        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     ElseIf Team2Cargo > Team1Cargo Then
         Winner = 2
-        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     Else
         Winner = -1
-        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
-        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+        Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
 End Sub
 
@@ -1037,7 +1037,7 @@ Private Sub HandleCaptain(ByVal DeltaTime As Long, ByVal CaptainIndex As Integer
             If Not CaptainFire(CaptainIndex) Then
                 .NextFireTime = .NextFireTime / 2
             Else
-                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageLocaleMsg(MsgCaptainFire, CaptainIndex, e_FontTypeNames.FONTTYPE_WARNING))
+                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageLocaleMsg(MsgCaptainFire, CaptainIndex, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                 Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareLocaleChatOverHead(MsgFire, "", NpcList(.NpcRef.ArrayIndex).Char.charindex, vbRed, , _
                         NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
             End If
@@ -1168,16 +1168,16 @@ Sub GiveRewards()
         End If
     Next i
     If Winner = -1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleEvenBroadcast, Team1 & "¬" & Team2, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleEvenBroadcast, Team1 & "¬" & Team2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     ElseIf Winner = 1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team1 & "¬" & Team2, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team1 & "¬" & Team2, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         If Reward > 0 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         End If
     ElseIf Winner = 2 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team2 & "¬" & Team1, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team2 & "¬" & Team1, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         If Reward > 0 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         End If
     End If
 End Sub

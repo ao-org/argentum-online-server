@@ -288,7 +288,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
 
         If .flags.TargetX = 0 Or .flags.TargetY = 0 Or .flags.TargetMap = 0 Then
-            Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+            Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
             Exit Function
         End If
 
@@ -312,27 +312,27 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
     End If
 
     If Not IsValidMapIndex(UserTargetMap) Then
-        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
     If Not IsCastleFootprintInMapBounds(UserTargetMap, UserTargetX, UserTargetY) Then
-        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
     If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
-        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+        Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
     If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX Then
-        Call WriteLocaleMsg(UserIndex, MSG_CANT_FOUND_CASTLE_ON_TOP_OF_ANOTHER, FONTTYPE_INFOBOLD)
+        Call WriteLocaleMsg(UserIndex, MSG_CANT_FOUND_CASTLE_ON_TOP_OF_ANOTHER, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
     If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex <> CASTLE_SIGN_POST_OBJ_INDEX Then
-        Call WriteLocaleMsg(UserIndex, MSG_CANOT_FOUND_WITHOUT_SIGN, FONTTYPE_INFOBOLD)
+        Call WriteLocaleMsg(UserIndex, MSG_CANOT_FOUND_WITHOUT_SIGN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
@@ -342,7 +342,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
             If Not InMapBounds(UserTargetMap, i, j) Then
-                Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, FONTTYPE_INFOBOLD)
+                Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Function
             End If
 
@@ -685,18 +685,18 @@ Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As 
 
         If IsEmperorCastleCreated(UserIndex) Then
             If Not HasCastleRelocationCooldownPassed(ObjData(ObjIndex).AssignedCastleIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_CASTLE_RELOCATION_ON_COOLDOWN, FONTTYPE_INFOBOLD)
+                Call WriteLocaleMsg(UserIndex, MSG_CASTLE_RELOCATION_ON_COOLDOWN, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Exit Sub
             End If
             With CastleData(ObjData(ObjIndex).AssignedCastleIndex)
                 Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, ObjData(ObjIndex).AssignedCastleIndex)
-                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_FontTypeNames.FONTTYPE_GUILD))
+                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD))
             End With
         End If
 
         Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
         
-        Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, .name & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_FontTypeNames.FONTTYPE_GUILD))
+        Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, .name & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD))
         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.OldClanHorn, 50, 50))
         Call modSendData.SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.NewCastleRPGVoice, 50, 50))
     End With
@@ -742,7 +742,7 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
         End If
     
         If .Stats.tipoUsuario < e_TipoUsuario.tNoble Then
-                Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, FONTTYPE_INFOBOLD)
+                Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
                 Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
                 Exit Sub
         End If
@@ -763,12 +763,12 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
             Case eCastleWhitelistOperation.Add
                 If AddUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
                     CastleData(CastleIndex).dirtyWhiteList = True
-                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_ADDED_TO_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_ADDED_TO_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD, CharacterName)
                 End If
             Case eCastleWhitelistOperation.Remove
                 If RemoveUserNameToWhiteListByCastleSlot(CastleIndex, CharacterName) Then
                     CastleData(CastleIndex).dirtyWhiteList = True
-                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_REMOVED_FROM_WHITELIST, FONTTYPE_INFOBOLD, CharacterName)
+                    Call WriteLocaleMsg(UserIndex, MSG_CHARNAME_REMOVED_FROM_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD, CharacterName)
                 End If
             Case Else
                 Call LogInfoServidor("User: " & .name & " used an invalid operation for modify castle white list")
@@ -845,7 +845,7 @@ Public Sub SendCastleInfo(ByVal UserIndex As Integer, ByVal CastleSlot As Intege
     End If
 
     With CastleData(CastleSlot)
-        Call WriteLocaleMsg(UserIndex, MSG_CASTLE_FOUNDER_INFO, FONTTYPE_INFOBOLD, .name & "¬" & .foundation_date & "¬" & .owner_char_name)
+        Call WriteLocaleMsg(UserIndex, MSG_CASTLE_FOUNDER_INFO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD, .name & "¬" & .foundation_date & "¬" & .owner_char_name)
     End With
 End Sub
 

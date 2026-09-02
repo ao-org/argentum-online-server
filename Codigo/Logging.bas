@@ -60,6 +60,9 @@ Private Enum eType_Log
     DatabaseError = 18
     Security = 19
     BankTransfer = 20
+    SafeCommerceTransfer = 21
+    SkinConsumption = 22
+    QuestEvent = 23
 End Enum
 
 Private Type t_CircularBuffer
@@ -107,6 +110,14 @@ End Sub
 Public Sub LogearEventoDeSubasta(s As String)
     On Error GoTo ErrHandler
     Call LogThis(eType_Log.EventoDeSubasta, "[Subastas.log] " & s, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+
+Public Sub LogBanByName(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As String)
+    On Error GoTo ErrHandler
+    Call LogThis(eType_Log.Ban, "[Bans] " & BannedName & " BannedBy " & Baneador & " Reason " & Motivo, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
@@ -262,6 +273,30 @@ Public Sub LogBankTransfer(ByVal originUser As String, ByVal targetUser As Strin
         transferContext = "destinatario fuera de línea"
     End If
     Call LogThis(eType_Log.BankTransfer, "[BankTransfers.log] " & originUser & " transfirió " & amount & " monedas a " & targetUser & " (" & transferContext & ")", vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+Public Sub LogSafeCommerceTransfer(ByVal originUser As String, ByVal targetUser As String, ByVal itemIndex As Integer, ByVal amount As Long, ByVal elementalTags As Long)
+    On Error GoTo ErrHandler
+    If itemIndex <= 0 Or amount <= 0 Then Exit Sub
+    Call LogThis(eType_Log.SafeCommerceTransfer, "[SafeCommerceTransfers.log] Sender: " & originUser & " | Receiver: " & targetUser & " | Item: " & ObjData(itemIndex).name & " (" & itemIndex & ") | Amount: " & amount & " | ElementalTags: " & elementalTags, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+Public Sub LogSkinConsumption(ByVal characterId As Long, ByVal characterName As String, ByVal itemIndex As Integer, ByVal amount As Long)
+    On Error GoTo ErrHandler
+    If itemIndex <= 0 Or amount <= 0 Then Exit Sub
+    Call LogThis(eType_Log.SkinConsumption, "[SkinConsumptions.log] Character ID: " & characterId & " | Nick: " & characterName & " | Item: " & ObjData(itemIndex).name & " (" & itemIndex & ") | Amount: " & amount, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+Public Sub LogQuestEvent(ByVal characterId As Long, ByVal characterName As String, ByVal questIndex As Integer, ByVal questName As String, ByVal action As String)
+    On Error GoTo ErrHandler
+    If questIndex <= 0 Then Exit Sub
+    Call LogThis(eType_Log.QuestEvent, "[Quests.log] Character ID: " & characterId & " | Nick: " & characterName & " | Action: " & action & " | Quest: " & questName & " (" & questIndex & ")", vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub
