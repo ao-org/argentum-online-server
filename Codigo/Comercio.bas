@@ -113,6 +113,10 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             'Msg1085= Lo siento, no puedo comprarte ese item.
             Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM_1085, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
+        ElseIf IsSet(ObjData(Objeto.ObjIndex).ObjFlags, e_ObjFlags.e_NoTradeableToNPC) Then
+            'Msg1085= Lo siento, no puedo comprarte ese item.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM_1085, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Exit Sub
         ElseIf ((NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO) Then
             'Agrego que si vende el item, lo compre tambien.
             Dim LoVende As Boolean

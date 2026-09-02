@@ -2216,6 +2216,7 @@ Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
     e_JailObject = 4
+    e_NoTradeableToNPC = 8
 End Enum
 
 
