@@ -935,6 +935,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleRequestRemort(UserIndex)
         Case ClientPacketID.eHooTargetedSpellCast
             Call HandleHooTargetedSpellCast(UserIndex)
+        Case ClientPacketID.eHooHouseDoorAction
+            Call HandleHooHouseDoorAction(UserIndex)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -998,6 +1000,11 @@ End Function
 Public Function UserSupportsHooTargetedSpellCast(ByVal UserIndex As Integer) As Boolean
     UserSupportsHooTargetedSpellCast = IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1) And _
         UserSupportsHooCapability(UserIndex, HOO_CAP_TARGETED_SPELL_CAST_V1)
+End Function
+
+Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As Boolean
+    UserSupportsHooHouseDoorActions = IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
 End Function
 
 Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
@@ -1230,6 +1237,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_TARGETED_SPELL_CAST_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
+    End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -1258,6 +1268,34 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooClientCapabilities", Erl)
+End Sub
+
+Private Sub HandleHooHouseDoorAction(ByVal UserIndex As Integer)
+    On Error GoTo HandleHooHouseDoorAction_Err
+    Dim RequestId As Long
+    Dim ActionValue As Byte
+    Dim x As Byte
+    Dim y As Byte
+    RequestId = reader.ReadInt32
+    ActionValue = reader.ReadInt8
+    x = reader.ReadInt8
+    y = reader.ReadInt8
+    If Not UserSupportsHooHouseDoorActions(UserIndex) Then
+        Call LogSecurity("Rejected HOO house door action without negotiated capability; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    Dim Result As e_HooHouseDoorActionResult
+    Result = ExecuteHooHouseDoorAction(UserIndex, CInt(ActionValue), x, y)
+    Call WriteHooHouseDoorActionResult(UserIndex, RequestId, CInt(ActionValue), Result, x, y)
+    If IsFeatureEnabled("debug_connections") Then
+        Call LogInfoServidor("HouseDoorAction user=" & CStr(UserIndex) & _
+            " request=" & CStr(RequestId) & " action=" & CStr(ActionValue) & _
+            " map=" & CStr(UserList(UserIndex).pos.Map) & _
+            " tile=" & CStr(x) & "," & CStr(y) & " result=" & CStr(Result))
+    End If
+    Exit Sub
+HandleHooHouseDoorAction_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooHouseDoorAction", Erl)
 End Sub
 
 Private Sub HandleHooTargetedSpellCast(ByVal UserIndex As Integer)
@@ -7550,6 +7588,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                 Next i
             End If
         End With
+        Call LogQuestEvent(.Id, .name, .QuestStats.Quests(Slot).QuestIndex, QuestList(.QuestStats.Quests(Slot).QuestIndex).nombre, "Abandoned")
         'Le avisamos que abandono la quest
         'Msg2115=Has abandonado la misión ¬1.
         Call WriteLocaleMsg(UserIndex, MSG_ABANDONADO_MISION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(UserList(UserIndex).QuestStats.Quests(Slot).QuestIndex).nombre)

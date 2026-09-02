@@ -217,7 +217,14 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
     Dim Slot As Integer
     Dim obji As Integer
     If Cantidad < 1 Then Exit Function
+    If ObjIndex < 1 Or ObjIndex > UserList(UserIndex).CurrentInventorySlots Then Exit Function
     obji = UserList(UserIndex).invent.Object(ObjIndex).ObjIndex
+    If obji < 1 Or obji > UBound(ObjData) Then Exit Function
+    If ObjData(obji).Newbie = 1 Then
+        ' Msg1141=No puedes comerciar objetos newbie.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_COMERCIAR_OBJETOS_NEWBIE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Exit Function
+    End If
     Dim slotvalido As Boolean
     slotvalido = False
     If slotdestino <> 0 Then

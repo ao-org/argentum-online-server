@@ -62,6 +62,7 @@ Private Enum eType_Log
     BankTransfer = 20
     SafeCommerceTransfer = 21
     SkinConsumption = 22
+    QuestEvent = 23
 End Enum
 
 Private Type t_CircularBuffer
@@ -288,6 +289,14 @@ Public Sub LogSkinConsumption(ByVal characterId As Long, ByVal characterName As 
     On Error GoTo ErrHandler
     If itemIndex <= 0 Or amount <= 0 Then Exit Sub
     Call LogThis(eType_Log.SkinConsumption, "[SkinConsumptions.log] Character ID: " & characterId & " | Nick: " & characterName & " | Item: " & ObjData(itemIndex).name & " (" & itemIndex & ") | Amount: " & amount, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+Public Sub LogQuestEvent(ByVal characterId As Long, ByVal characterName As String, ByVal questIndex As Integer, ByVal questName As String, ByVal action As String)
+    On Error GoTo ErrHandler
+    If questIndex <= 0 Then Exit Sub
+    Call LogThis(eType_Log.QuestEvent, "[Quests.log] Character ID: " & characterId & " | Nick: " & characterName & " | Action: " & action & " | Quest: " & questName & " (" & questIndex & ")", vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub

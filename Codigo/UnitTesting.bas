@@ -395,6 +395,8 @@ Private Function test_suite_remort_capability_state() As Boolean
     Call RunTest("remort packet is appended", CInt(ServerPacketID.eRemortState) = CInt(ServerPacketID.eShowPickUpObj) + 1)
     Call RunTest("remort operation packet IDs are appended", CInt(ServerPacketID.eRemortResult) = CInt(ServerPacketID.eRemortState) + 1 And CInt(ClientPacketID.eRequestRemort) = CInt(ClientPacketID.eHooClientCapabilities) + 1)
     Call RunTest("targeted spell packet IDs are appended", CInt(ServerPacketID.eHooTargetedSpellCastResult) = CInt(ServerPacketID.eRemortResult) + 1 And CInt(ClientPacketID.eHooTargetedSpellCast) = CInt(ClientPacketID.eRequestRemort) + 1)
+    Call RunTest("house door packet IDs and legacy key IDs", test_house_door_packet_ids_and_capability())
+    Call RunTest("house door actions validate before mutation", test_house_door_actions())
     Call RunTest("targeted spell capability and feature gate", test_targeted_spell_capability())
     Call RunTest("targeted spell retry interval is wrap safe", test_targeted_spell_retry_interval())
     Call RunTest("targeted spell NPC resolution rejects stale mappings", test_targeted_spell_target_resolution())
@@ -404,6 +406,133 @@ Private Function test_suite_remort_capability_state() As Boolean
     Call RunTest("remort equipment and count eligibility", test_remort_equipment_and_count_eligibility())
     Call RunTest("remort live reset and preservation", test_remort_live_reset_and_preservation())
     test_suite_remort_capability_state = True
+End Function
+
+Private Function test_house_door_packet_ids_and_capability() As Boolean
+    On Error GoTo TestError
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1)
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_HOUSE_DOOR_ACTIONS_V1) <> HOO_CAP_HOUSE_DOOR_ACTIONS_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_HOUSE_DOOR_ACTIONS_V1) <> 0 Then GoTo TestDone
+    If HOO_CAP_HOUSE_DOOR_ACTIONS_V1 <> &H8& Then GoTo TestDone
+    If CInt(ClientPacketID.eUseKey) <> 209 Or CInt(ServerPacketID.eUpdateUserKey) <> 159 Then GoTo TestDone
+    If CInt(ClientPacketID.eHooHouseDoorAction) <> CInt(ClientPacketID.eHooTargetedSpellCast) + 1 Then GoTo TestDone
+    If CInt(ServerPacketID.eHooHouseDoorActionResult) <> CInt(ServerPacketID.eHooTargetedSpellCastResult) + 1 Then GoTo TestDone
+    test_house_door_packet_ids_and_capability = True
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, OriginalFeatureEnabled)
+    Exit Function
+TestError:
+    test_house_door_packet_ids_and_capability = False
+    Resume TestDone
+End Function
+
+Private Function test_house_door_actions() As Boolean
+    On Error GoTo TestError
+    Dim OriginalObj(1 To 4) As t_ObjData
+    Dim i As Integer
+    For i = 1 To 4
+        OriginalObj(i) = ObjData(i)
+    Next i
+    Dim OriginalTileObj As t_Obj
+    Dim OriginalPairObj As t_Obj
+    OriginalTileObj = MapData(1, 50, 50).ObjInfo
+    OriginalPairObj = MapData(1, 47, 51).ObjInfo
+    Dim OriginalBlocked As Byte
+    Dim OriginalBlockedSouth As Byte
+    OriginalBlocked = MapData(1, 50, 50).Blocked
+    OriginalBlockedSouth = MapData(1, 50, 51).Blocked
+    Dim OriginalMap As Integer
+    Dim OriginalX As Byte
+    Dim OriginalY As Byte
+    Dim OriginalTimer As Long
+    OriginalMap = UserList(1).pos.Map
+    OriginalX = UserList(1).pos.x
+    OriginalY = UserList(1).pos.y
+    OriginalTimer = UserList(1).Counters.TimerUsar
+    Dim OriginalKeys(1 To MAXKEYS) As Integer
+    For i = 1 To MAXKEYS
+        OriginalKeys(i) = UserList(1).Keys(i)
+        UserList(1).Keys(i) = 0
+    Next i
+
+    For i = 1 To 3
+        ObjData(i).OBJType = e_OBJType.otDoors
+        ObjData(i).clave = 410
+        ObjData(i).IndexAbierta = 1
+        ObjData(i).IndexCerrada = 2
+        ObjData(i).IndexCerradaLlave = 3
+        ObjData(i).Subtipo = 4
+        ObjData(i).GrhIndex = 1
+    Next i
+    ObjData(1).Cerrada = 0: ObjData(1).Llave = 0
+    ObjData(2).Cerrada = 1: ObjData(2).Llave = 0
+    ObjData(3).Cerrada = 1: ObjData(3).Llave = 1
+    ObjData(4).OBJType = e_OBJType.otKeys: ObjData(4).clave = 410
+    UserList(1).pos.Map = 1: UserList(1).pos.x = 50: UserList(1).pos.y = 50
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    MapData(1, 50, 50).ObjInfo.amount = 1
+
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Close, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    If ExecuteHooHouseDoorAction(1, 250, 50, 50) <> eHooHouseDoorActionResult_InvalidAction Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    UserList(1).pos.x = 1: UserList(1).pos.y = 1
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_TooFarAway Then GoTo TestDone
+    UserList(1).pos.x = 50: UserList(1).pos.y = 50
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 4
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_NotDoor Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_NoAccess Then GoTo TestDone
+    UserList(1).Keys(1) = 4
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    UserList(1).Counters.TimerUsar = GetTickCountRaw()
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Cooldown Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 3
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_UnlockAndOpen, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    ObjData(1).Subtipo = 1
+    MapData(1, 47, 51).ObjInfo.ObjIndex = 2
+    MapData(1, 47, 51).ObjInfo.amount = 1
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Or MapData(1, 47, 51).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    MapData(1, 47, 51).ObjInfo.ObjIndex = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Unavailable Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    test_house_door_actions = True
+TestDone:
+    For i = 1 To 4
+        ObjData(i) = OriginalObj(i)
+        UserList(1).Keys(i) = OriginalKeys(i)
+    Next i
+    For i = 5 To MAXKEYS
+        UserList(1).Keys(i) = OriginalKeys(i)
+    Next i
+    MapData(1, 50, 50).ObjInfo = OriginalTileObj
+    MapData(1, 47, 51).ObjInfo = OriginalPairObj
+    MapData(1, 50, 50).Blocked = OriginalBlocked
+    MapData(1, 50, 51).Blocked = OriginalBlockedSouth
+    UserList(1).pos.Map = OriginalMap
+    UserList(1).pos.x = OriginalX
+    UserList(1).pos.y = OriginalY
+    UserList(1).Counters.TimerUsar = OriginalTimer
+    Exit Function
+TestError:
+    test_house_door_actions = False
+    Resume TestDone
 End Function
 
 Private Function test_targeted_spell_range_boundaries() As Boolean

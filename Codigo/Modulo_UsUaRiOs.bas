@@ -721,9 +721,9 @@ Dim tStr                        As String
         Call WriteLoggedMessage(UserIndex, newUser)
         Call MaybeSendRemortState(UserIndex)
         If .Stats.ELV = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
         Else
-            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_NUEVO_ACTUALMENTE_NIVEL_BUEN_VIAJE_MUCHA_SUERTE, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & GetMapName(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
+            Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_NUEVO_ACTUALMENTE_NIVEL_BUEN_VIAJE_MUCHA_SUERTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & GetMapName(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
@@ -1178,7 +1178,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_GANADO_SKILLPOINTS_DISPONES_PUNTOS_LIBRES_CUIDADOSO_MOMENTO_USARLOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, Pts & "¬" & .Stats.SkillPts)
             End If
             If Not EsNewbie(UserIndex) And WasNewbie Then
-                Call QuitarNewbieObj(UserIndex)
+                ' Msg671=Has dejado de ser Newbie.
+                Call WriteLocaleMsg(UserIndex, MSG_DEJADO_NEWBIE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             ElseIf .Stats.ELV >= MapInfo(.pos.Map).MaxLevel And Not EsGM(UserIndex) Then
                 If MapInfo(.pos.Map).Salida.Map <> 0 Then
                     ' Msg523=Tu nivel no te permite seguir en el mapa.

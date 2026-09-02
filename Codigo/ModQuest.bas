@@ -242,6 +242,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Call ArrangeUserQuests(UserIndex)
         'Se agrega que el usuario ya hizo esta quest. -  La agrego aunque sea repetible, para llevar el control
         Call AddDoneQuest(UserIndex, QuestIndex)
+        Call LogQuestEvent(UserList(UserIndex).Id, UserList(UserIndex).name, QuestIndex, .nombre, "TurnedIn")
         If .Repetible = 0 Then
             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
         Else
