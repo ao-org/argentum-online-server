@@ -1540,13 +1540,15 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
         End If
     End If
-    ' Rivalidad Criminal <-> Legión Oscura: un Criminal no puede atacar a un Caos (legionario)
-    ' afiliado a un clan Criminal o Legión (Caótica), ni viceversa. Se permite si la VÍCTIMA
-    ' no tiene clan o su clan es Neutral.
-    If (Status(attackerIndex) = e_Facciones.Criminal And Status(VictimIndex) = e_Facciones.Caos) _
-            Or (Status(attackerIndex) = e_Facciones.Caos And Status(VictimIndex) = e_Facciones.Criminal) Then
+    ' Rivalidad Criminal <-> Legión Oscura: se bloquea el ataque solo cuando AMBOS, atacante y
+    ' víctima, están afiliados a un clan de alineación Criminal o Caótica (Legión Oscura).
+    ' Concilio (líder de los legionarios) se trata igual que Caos para esta regla.
+    ' Si el atacante o la víctima no tienen clan, o su clan es de otra alineación (Neutral, etc.),
+    ' el ataque se permite igual.
+    If (Status(attackerIndex) = e_Facciones.Criminal And (Status(VictimIndex) = e_Facciones.Caos Or Status(VictimIndex) = e_Facciones.concilio)) _
+            Or ((Status(attackerIndex) = e_Facciones.Caos Or Status(attackerIndex) = e_Facciones.concilio) And Status(VictimIndex) = e_Facciones.Criminal) Then
         If EsClanCriminalOLegion(UserList(attackerIndex).GuildIndex) And EsClanCriminalOLegion(UserList(VictimIndex).GuildIndex) Then
-            'Msg2291= Ese personaje está protegido por su clan.
+            'Msg2291= No podés atacar a un rival protegido por su clan.
             Call WriteLocaleMsg(attackerIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             PuedeAtacar = False
             Exit Function
