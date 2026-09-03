@@ -7914,28 +7914,18 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
                 Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & .Hogar)
                 HomeCityId = e_City.cUllathorpe
             End If
-
             If .pos.Map <> Cities(HomeCityId).Map Then
-                
                 ' Costo en oro
                 Dim homeCostGLD As Long
-                
-                If .Stats.ELV <= 24 Then
-                    homeCostGLD = (.Stats.ELV * 15) + (CLng(.Stats.ELV ^ 1.5))
-                Else
-                    homeCostGLD = .Stats.ELV ^ 2
-                End If
-                
+                HomeCostGLD = CalculateHomeCostGLD(.Stats.ELV)
                 If .Stats.GLD < homeCostGLD Then
                     'Msg2164=Para utilizar este comando necesitas ¬1 monedas de oro.
                     Call WriteLocaleMsg(UserIndex, MSG_UTILIZAR_COMANDO_NECESITAS_MONEDAS_ORO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, homeCostGLD)
                     Exit Sub
                 End If
-                
                 .Stats.GLD = .Stats.GLD - homeCostGLD
                 Call WriteUpdateGold(UserIndex)
-                
-                Call goHome(UserIndex)
+                Call goHome(UserIndex, HomeCostGLD)
             Else
                 'Msg1276= Ya te encuentras en tu hogar.
                 Call WriteLocaleMsg(UserIndex, MSG_ENCUENTRAS_HOGAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -7951,6 +7941,47 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
 HandleHome_Err:
     Call TraceError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
 End Sub
+
+Public Function CalculateHomeCostGLD(ByVal ELV As Byte) As Long
+    On Error GoTo CalculateHomeCostGLD_Err
+
+    Dim i As Byte
+    Dim levelRange As Long
+    Dim goldRange As Long
+    Dim levelOffset As Long
+
+    If Not HomeCostTiersValid Then
+        ' Fallback a la formula anterior si Balance.dat no tiene tramos validos configurados,
+        ' para evitar que /hogar quede gratuito por un despliegue incompleto o fuera de orden.
+        If ELV <= 24 Then
+            CalculateHomeCostGLD = (ELV * 15) + CLng(ELV ^ 1.5)
+        Else
+            CalculateHomeCostGLD = CLng(ELV) ^ 2
+        End If
+        Exit Function
+    End If
+
+    For i = 1 To HOME_COST_TIER_COUNT
+        If ELV >= HomeCostTierMinLevel(i) And ELV <= HomeCostTierMaxLevel(i) Then
+            levelRange = HomeCostTierMaxLevel(i) - HomeCostTierMinLevel(i)
+            If levelRange = 0 Then
+                CalculateHomeCostGLD = HomeCostTierFloorGLD(i)
+            Else
+                goldRange = HomeCostTierCapGLD(i) - HomeCostTierFloorGLD(i)
+                levelOffset = ELV - HomeCostTierMinLevel(i)
+                CalculateHomeCostGLD = HomeCostTierFloorGLD(i) + CLng((goldRange * levelOffset) / levelRange)
+            End If
+            Exit Function
+        End If
+    Next i
+
+    'Nivel fuera de todos los tramos definidos (> tope del ultimo tier): se cobra el CapGLD del ultimo tramo.
+    CalculateHomeCostGLD = HomeCostTierCapGLD(HOME_COST_TIER_COUNT)
+
+    Exit Function
+CalculateHomeCostGLD_Err:
+    Call TraceError(Err.Number, Err.Description, "Hogar.CalculateHomeCostGLD", Erl)
+End Function
 
 Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler

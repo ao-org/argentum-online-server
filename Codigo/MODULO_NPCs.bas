@@ -2292,6 +2292,10 @@ End Function
 
 Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_AttackInteractionResult
     With NpcList(NpcIndex)
+        If AI.IsGuardNpcType(.npcType) And EsGM(UserIndex) Then
+            CanAttackUser = eNotEnougthPrivileges
+            Exit Function
+        End If
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
             CanAttackUser = eNotEnougthPrivileges
             Exit Function
