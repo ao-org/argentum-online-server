@@ -1035,11 +1035,11 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, _
                                 ByVal DM_Aura As String, _
                                 ByVal RM_Aura As String, _
                                 ByVal Otra_Aura As String, _
-                                ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
+                                ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal clan_alineacion As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
     On Error GoTo WriteCharacterCreate_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(body, head, Heading, charindex, x, y, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, name, _
             Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, clan_index, _
-            clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, NpcNum))
+            clan_nivel, clan_alineacion, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, NpcNum))
     Exit Sub
 WriteCharacterCreate_Err:
     Call Writer.Clear
@@ -4188,7 +4188,7 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, _
                                               ByVal RM_Aura As String, _
                                               ByVal Otra_Aura As String, _
                                               ByVal Escudo_Aura As String, _
-                                              ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
+                                              ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal clan_alineacion As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal NpcNum As Integer = 0)
     On Error GoTo PrepareMessageCharacterCreate_Err
     Call Writer.WriteInt16(ServerPacketID.eCharacterCreate)
     Call Writer.WriteInt16(charindex)
@@ -4221,6 +4221,7 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, _
     Call Writer.WriteInt16(group_index)
     Call Writer.WriteInt16(clan_index)
     Call Writer.WriteInt8(clan_nivel)
+    Call Writer.WriteInt8(clan_alineacion)
     Call Writer.WriteInt32(UserMinHp)
     Call Writer.WriteInt32(UserMaxHp)
     Call Writer.WriteInt32(UserMinMAN)

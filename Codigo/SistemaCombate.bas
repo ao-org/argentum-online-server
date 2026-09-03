@@ -1540,7 +1540,19 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
         End If
     End If
-    'Estas en un Mapa Seguro?
+    ' Rivalidad Criminal <-> Legión Oscura: un Criminal no puede atacar a un Caos (legionario)
+    ' afiliado a un clan Criminal o Legión (Caótica), ni viceversa. Se permite si la VÍCTIMA
+    ' no tiene clan o su clan es Neutral.
+    If (Status(attackerIndex) = e_Facciones.Criminal And Status(VictimIndex) = e_Facciones.Caos) _
+            Or (Status(attackerIndex) = e_Facciones.Caos And Status(VictimIndex) = e_Facciones.Criminal) Then
+        If EsClanCriminalOLegion(UserList(attackerIndex).GuildIndex) And EsClanCriminalOLegion(UserList(VictimIndex).GuildIndex) Then
+            'Msg2291= Ese personaje está protegido por su clan.
+            Call WriteLocaleMsg(attackerIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            PuedeAtacar = False
+            Exit Function
+        End If
+    End If
+    'Estás en un Mapa Seguro?
     If MapInfo(UserList(VictimIndex).pos.Map).Seguro = 1 Then
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
@@ -1581,7 +1593,21 @@ PuedeAtacar_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
 End Function
 
-Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Private Function EsClanCriminalOLegion(ByVal GuildIndex As Integer) As Boolean
+    On Error GoTo EsClanCriminalOLegion_Err
+    If GuildIndex <= 0 Then
+        EsClanCriminalOLegion = False
+        Exit Function
+    End If
+    Dim alineacionClan As e_ALINEACION_GUILD
+    alineacionClan = GuildAlignmentIndex(GuildIndex)
+    EsClanCriminalOLegion = (alineacionClan = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or alineacionClan = e_ALINEACION_GUILD.ALINEACION_CAOTICA)
+    Exit Function
+EsClanCriminalOLegion_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.EsClanCriminalOLegion", Erl)
+End Function
+
+Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExp_Err
     If NpcList(NpcIndex).MaestroUser.ArrayIndex <> 0 Then
         Exit Sub
