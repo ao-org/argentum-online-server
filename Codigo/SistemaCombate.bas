@@ -535,7 +535,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     End If
     Lugar = RandomNumber(1, 6)
     Select Case Lugar
-            ' 1/6 de chances de que sea a la cabeza
+        ' 1/6 de chances de que sea a la cabeza
         Case e_PartesCuerpo.bCabeza
             'Si tiene casco absorbe el golpe
             If UserList(UserIndex).invent.EquippedHelmetObjIndex > 0 Then
@@ -1062,7 +1062,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
                     VictimaIndex).pos.y))
             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
         Else
-            Call WriteLocaleMsg(VictimaIndex, MSG_ATACO_FALLO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name) ' Msg1930=¡¬1 te atacó y falló!
+            Call WriteLocaleMsg(VictimaIndex, MSG_ATACO_FALLO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name)
             'Msg1043= ¡Has fallado el golpe!
             Call WriteLocaleMsg(AtacanteIndex, MSG_HAS_FALLADO_EL_GOLPE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
@@ -1184,10 +1184,13 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             Barco = ObjData(.invent.EquippedShipObjIndex)
             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
             ' Defensa de la montura de la víctima
-        ElseIf .invent.EquippedSaddleObjIndex > 0 Then
+        ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
             Dim Montura As t_ObjData
             Montura = ObjData(.invent.EquippedSaddleObjIndex)
             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
+            ' El golpe recibido lo baja de la montura (ya se aprovecho su defensa en este calculo).
+            ' DoMontar ya se encarga de emitir el ChangeUserChar del desmontaje internamente.
+            Call DoMontar(VictimaIndex, Montura, .invent.EquippedSaddleSlot, True)
         End If
         Defensa = Defensa + UserMod.GetDefenseBonus(VictimaIndex)
         Dim ArmorPen As Integer
@@ -1794,7 +1797,7 @@ End Sub
 
 Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
     On Error GoTo GetExpPenalty_Err
-    '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC’s level the player is.
+    '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC's level the player is.
     '    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
     '    Summary
     '    Output: a multiplier from 1.0 down to 0.0.

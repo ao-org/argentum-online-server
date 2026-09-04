@@ -1794,7 +1794,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
         'desequipar montura
         If .flags.Montado > 0 Then
-            Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+            Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
         End If
         ' << Reseteamos los posibles FX sobre el personaje >>
         If .Char.loops = INFINITE_LOOPS Then
@@ -2246,7 +2246,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
            (MapData(Map, x, y).trigger >= e_Trigger.PESCAINVALIDA And _
             MapData(Map, x, y).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
             If .flags.Montado > 0 Then
-                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
+                Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
             End If
         End If
     End With
