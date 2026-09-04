@@ -2247,7 +2247,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             MapData(Map, x, y).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
             If .flags.Montado > 0 Then
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
-                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
             End If
         End If
     End With

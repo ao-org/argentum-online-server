@@ -1492,31 +1492,30 @@ End Sub
 Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer, Optional ByVal Forzado As Boolean = False)
     On Error GoTo DoMontar_Err
     With UserList(UserIndex)
-If Not Forzado Then
-    If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
-        Exit Sub
-    End If
-    If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-        Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, .Counters.EnCombate)  ' Msg1466=Estï¿½s en combate, debes aguardar ï¿½1 segundo(s) para montar...
-        Exit Sub
-    End If
-    If .flags.EnReto Then
-        ' Msg652=No podï¿½s montar en un reto.
-        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
-        Exit Sub
-    End If
-    If .flags.Montado = 0 And (MapData(.pos.map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
-       And MapData(.pos.map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
-        ' Msg653=No podï¿½s montar aquï¿½.
-        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-        Exit Sub
-    End If
-End If
+        ' Un desmonte forzado nunca debe terminar montando: si no está montado, no hay nada que forzar.
+        If Forzado And .flags.Montado = 0 Then Exit Sub
+
+        If Not Forzado Then
+            If CanUseObject(UserIndex, .invent.Object(Slot).ObjIndex, True) > 0 Then
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
+                Call WriteLocaleMsg(UserIndex, MSG_COMBATE_DEBES_AGUARDAR_SEGUNDO_MONTAR, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, .Counters.EnCombate)
+                Exit Sub
+            End If
+            If .flags.EnReto Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                Exit Sub
+            End If
+            If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
+               And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Sub
+            End If
         End If
 
         If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-' Msg654=Pierdes el efecto del mimetismo.
-Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             .Counters.Mimetismo = 0
             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
             Call RefreshCharStatus(UserIndex)
@@ -1568,15 +1567,24 @@ Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_TextChannel.TEXTC
             Call WriteEquiteToggle(UserIndex)
         Else
             Call AplicarEstadoDesmontado(UserIndex)
-            If Not Forzado Then
-                Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-            End If
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         End If
         Call UpdateUserInv(False, UserIndex, Slot)
     End With
     Exit Sub
 DoMontar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
+End Sub
+
+Public Sub ForzarDesmontura(ByVal UserIndex As Integer)
+    On Error GoTo ForzarDesmontura_Err
+    With UserList(UserIndex)
+        If .flags.Montado = 0 Or .invent.EquippedSaddleObjIndex = 0 Then Exit Sub
+        Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
+    End With
+    Exit Sub
+ForzarDesmontura_Err:
+    Call TraceError(Err.Number, Err.Description, "modMontura.ForzarDesmontura", Erl)
 End Sub
 
 Private Sub AplicarEstadoDesmontado(ByVal UserIndex As Integer)
