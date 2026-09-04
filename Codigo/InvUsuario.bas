@@ -373,6 +373,8 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
             obj.ObjIndex = .invent.Object(Slot).ObjIndex
             obj.amount = num
             obj.ElementalTags = .invent.Object(Slot).ElementalTags
+            obj.MountLevel = .invent.Object(Slot).MountLevel
+            obj.MountExp = .invent.Object(Slot).MountExp
             If Not CustomScenarios.UserCanDropItem(UserIndex, Slot, Map, x, y) Then
                 Exit Sub
             End If
@@ -460,10 +462,12 @@ Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As
     On Error GoTo GetSlotForItemInInventory_Err
     GetSlotForItemInInventory = -1
     Dim i As Integer
+    Dim IsWildMountObj As Boolean
+    IsWildMountObj = (ObjData(MyObject.ObjIndex).OBJType = e_OBJType.otWildMount)
     For i = 1 To UserList(UserIndex).CurrentInventorySlots
         If UserList(UserIndex).invent.Object(i).ObjIndex = 0 And GetSlotForItemInInventory = -1 Then
             GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
-        ElseIf UserList(UserIndex).invent.Object(i).ObjIndex = MyObject.ObjIndex And UserList(UserIndex).invent.Object(i).ElementalTags = MyObject.ElementalTags And UserList( _
+        ElseIf Not IsWildMountObj And UserList(UserIndex).invent.Object(i).ObjIndex = MyObject.ObjIndex And UserList(UserIndex).invent.Object(i).elementalTags = MyObject.elementalTags And UserList( _
                 UserIndex).invent.Object(i).amount + MyObject.amount <= GetMaxInvOBJ() Then
             GetSlotForItemInInventory = i 'we can stack the item, let use this slot
             Exit Function
@@ -609,7 +613,7 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
     If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
         If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Agarrable <> 1 Then
-            If UserList(UserIndex).flags.Montado = 1 Then
+            If UserList(UserIndex).flags.Montado = 1 And Not CanActionWhileMounted(UserIndex) Then
                 ' Msg672=Debes descender de tu montura para agarrar objetos del suelo.
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_AGARRAR_OBJETOS_SUELO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Exit Sub
@@ -630,6 +634,8 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
             MiObj.amount = MapData(Map, x, y).ObjInfo.amount
             MiObj.ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
             MiObj.ElementalTags = MapData(Map, x, y).ObjInfo.ElementalTags
+            MiObj.MountLevel = MapData(Map, x, y).ObjInfo.MountLevel
+            MiObj.MountExp = MapData(Map, x, y).ObjInfo.MountExp
             Dim TransferredAmount As Long
             Dim Inserted As Boolean
             If DestinationSlot = 0 Then
@@ -641,6 +647,9 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
             If Not Inserted Then
                 'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
             Else
+                If ObjData(MiObj.ObjIndex).OBJType = e_OBJType.otWildMount Then
+                    Call ModWildMount.RestoreMountProgressInSlot(UserIndex, MiObj.ObjIndex, MiObj.MountLevel, MiObj.MountExp)
+                End If
                 'Quitamos solamente la cantidad confirmada por el inventario autoritativo.
                 Call EraseObj(TransferredAmount, Map, x, y)
                 If DestinationSlot > 0 Then
@@ -2632,7 +2641,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                     End If
                 End If
-            Case e_OBJType.otSaddles
+            Case e_OBJType.otSaddles, e_OBJType.otWildMount
                 'Verifica todo lo que requiere la montura
                 If .flags.Muerto = 1 Then
                     Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -3373,7 +3382,7 @@ Function ObtenerRopaje(ByVal UserIndex As Integer, ByRef obj As t_ObjData) As In
     EsMujer = UserList(UserIndex).genero = e_Genero.Mujer
     Dim EsRazaBaja As Boolean
     EsRazaBaja = (race = e_Raza.Gnomo Or race = e_Raza.Enano)
-    If obj.OBJType = e_OBJType.otSaddles Then
+    If obj.OBJType = e_OBJType.otSaddles Or obj.OBJType = e_OBJType.otWildMount Then
         If EsRazaBaja Then
             If obj.RazaBajos > 0 Then
                 ObtenerRopaje = obj.RazaBajos

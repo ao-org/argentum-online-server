@@ -136,6 +136,15 @@ Public Enum e_WeaponType
     eWeaponTypeCount
 End Enum
 
+Public Enum e_WildMountBonusCategory
+    eWildMountNone = 0
+    eWildMountMagic = 1
+    eWildMountWeapon = 2
+    eWildMountKnuckle = 3
+    eWildMountDagger = 4
+    eWildMountBow = 5
+End Enum
+
 Public Enum e_Facciones
     Criminal = 0
     Ciudadano = 1
@@ -202,6 +211,7 @@ Public Enum e_DeleteSource
     eClearInvasion
     eAiResetNpc
     eClearHunt
+    eTame
 End Enum
 
 Public lstUsuariosDonadores()        As String
@@ -1586,6 +1596,7 @@ Public Enum e_OBJType
     otElementalRune = 55
     otFactionForgiveness = 56
     otCollectibleCard = 57
+    otWildMount = 58
     otElse = 100
 End Enum
 
@@ -1939,6 +1950,8 @@ Public Type t_UserOBJ
     amount As Integer
     Equipped As Byte
     ElementalTags As Long
+    MountLevel As Byte
+    MountExp As Long
 End Type
 
 Public Type t_UserSkins
@@ -2093,6 +2106,8 @@ Public Type t_Obj
     amount As Long
     data As Double
     CastleSlot As Integer
+    MountLevel As Byte
+    MountExp As Long
 End Type
 
 Public Type t_QuestNpc
@@ -2339,6 +2354,8 @@ Public Type t_ObjData
     RopajeGnoma As Integer
     RazaAltos As Integer
     RazaBajos As Integer
+    NpcDamageBonus As Single
+    NpcDamageBonusCategory As Byte
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer

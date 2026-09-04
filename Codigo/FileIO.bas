@@ -1204,7 +1204,7 @@ Sub LoadOBJData()
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
-                Case e_OBJType.otSaddles
+                Case e_OBJType.otSaddles, e_OBJType.otWildMount
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
                     .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
@@ -1213,6 +1213,8 @@ Sub LoadOBJData()
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
                     .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
+                    .NpcDamageBonus = val(Leer.GetValue(ObjKey, "NpcDamageBonus"))
+                    .NpcDamageBonusCategory = val(Leer.GetValue(ObjKey, "NpcDamageBonusCategory"))
                 Case e_OBJType.otArrows
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))

@@ -359,6 +359,17 @@ Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponOb
             ' mount bonus
         ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
             GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.EquippedSaddleObjIndex).MinHIT, ObjData(.invent.EquippedSaddleObjIndex).MaxHit)
+            If TargetType = eNpc And ObjData(.invent.EquippedSaddleObjIndex).NpcDamageBonus > 0 Then
+                Dim MountedObjSlot As Byte
+                Dim EffectiveBonus As Single
+                MountedObjSlot = .invent.EquippedSaddleSlot
+                EffectiveBonus = ModWildMount.GetWildMountEffectiveBonus(ObjData(.invent.EquippedSaddleObjIndex).NpcDamageBonus, .invent.Object(MountedObjSlot).MountLevel, .invent.EquippedSaddleObjIndex)
+                If ObjData(.invent.EquippedSaddleObjIndex).NpcDamageBonusCategory = e_WildMountBonusCategory.eWildMountNone Then
+                    GetUserDamageWithItem = GetUserDamageWithItem * (1 + EffectiveBonus / 100)
+                ElseIf ObjData(.invent.EquippedSaddleObjIndex).NpcDamageBonusCategory = GetWeaponDamageCategory(WeaponObjIndex) Then
+                    GetUserDamageWithItem = GetUserDamageWithItem + EffectiveBonus
+                End If
+            End If
         End If
     End With
     Exit Function
@@ -1449,8 +1460,13 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         Exit Function
     End If
     If UserList(attackerIndex).flags.Montado = 1 Then
-        'Msg1050= No podés atacar usando una montura.
-        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_USANDO_UNA_MONTURA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        If CanActionWhileMounted(attackerIndex) Then
+            'Msg2269=No podés atacar a otros jugadores mientras usás una montura salvaje.
+            Call WriteLocaleMsg(attackerIndex, MSG_WILD_MOUNT_CANNOT_ATTACK_PLAYERS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Else
+            'Msg1050= No podés atacar usando una montura.
+            Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_USANDO_UNA_MONTURA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        End If
         PuedeAtacar = False
         Exit Function
     End If
@@ -1647,6 +1663,13 @@ Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 End If
             End If
             
+            Dim StolenExp As Double
+            StolenExp = ModWildMount.GetWildMountExpSteal(UserIndex, ExpaDar)
+            If StolenExp > 0 Then
+                ExpaDar = ExpaDar - StolenExp
+                Call ModWildMount.GrantWildMountExp(UserIndex, .invent.EquippedSaddleSlot, CLng(StolenExp))
+                Call WriteLocaleMsg(UserIndex, MSG_WILD_MOUNT_EXP_GAINED, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, CStr(PonerPuntos(StolenExp)))
+            End If
             If .Stats.ELV < STAT_MAXELV Then
                 .Stats.Exp = .Stats.Exp + ExpaDar
                 If .Stats.Exp > MAXEXP Then .Stats.Exp = MAXEXP
@@ -1759,6 +1782,14 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                                     End If
                                 End If
                                 
+                                Dim StolenExpGrupo As Double
+                                StolenExpGrupo = ModWildMount.GetWildMountExpSteal(Index, CDbl(ExpUser))
+                                If StolenExpGrupo > 0 Then
+                                    ExpUser = ExpUser - CLng(StolenExpGrupo)
+                                    Call ModWildMount.GrantWildMountExp(Index, UserList(Index).invent.EquippedSaddleSlot, CLng(StolenExpGrupo))
+                                    Call WriteLocaleMsg(Index, MSG_WILD_MOUNT_EXP_GAINED, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, CStr(PonerPuntos(StolenExpGrupo)))
+                                End If
+                                                                
                                 If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
                                     ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
                                     UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
@@ -2507,4 +2538,25 @@ Private Function GetShieldBlockSound(ByVal ShieldObjIndex As Integer) As Long
     Else
         GetShieldBlockSound = SND_ESCUDO
     End If
+End Function
+
+Public Function GetWeaponDamageCategory(ByVal WeaponObjIndex As Integer) As e_WildMountBonusCategory
+    On Error GoTo GetWeaponDamageCategory_Err
+    If WeaponObjIndex = 0 Then
+        GetWeaponDamageCategory = e_WildMountBonusCategory.eWildMountNone
+        Exit Function
+    End If
+    Select Case ObjData(WeaponObjIndex).WeaponType
+        Case e_WeaponType.eKnuckle
+            GetWeaponDamageCategory = e_WildMountBonusCategory.eWildMountKnuckle
+        Case e_WeaponType.eDagger
+            GetWeaponDamageCategory = e_WildMountBonusCategory.eWildMountDagger
+        Case e_WeaponType.eBow
+            GetWeaponDamageCategory = e_WildMountBonusCategory.eWildMountBow
+        Case Else
+            GetWeaponDamageCategory = e_WildMountBonusCategory.eWildMountWeapon
+    End Select
+    Exit Function
+GetWeaponDamageCategory_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetWeaponDamageCategory", Erl)
 End Function

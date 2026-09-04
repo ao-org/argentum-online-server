@@ -578,6 +578,7 @@ Sub Main()
     Call InitializeFishingBonuses
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
+    Call ModWildMount.LoadWildMountConfig
     frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
     Call LoadGlobalQuests
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
@@ -1560,6 +1561,7 @@ Sub PasarSegundo()
             End If
         End With
     Next
+    Call ModWildMount.CheckWildMountSpawn
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)

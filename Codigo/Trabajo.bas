@@ -1653,11 +1653,25 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call UpdateUserInv(False, UserIndex, Slot)
         Call WriteEquiteToggle(UserIndex)
+        If ObjData(.invent.EquippedSaddleObjIndex).OBJType = e_OBJType.otWildMount And ObjData(.invent.EquippedSaddleObjIndex).NpcDamageBonus > 0 Then
+            If .flags.Montado = 1 Then
+                Call ModWildMount.ShowMountStatusMessage(UserIndex, Slot)
+            Else
+                Call WriteLocaleMsg(UserIndex, MSG_WILD_MOUNT_BONUS_INACTIVE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Blanco)
+            End If
+        End If
     End With
     Exit Sub
 DoMontar_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
 End Sub
+
+Public Function CanActionWhileMounted(ByVal UserIndex As Integer) As Boolean
+    With UserList(UserIndex).invent
+        If .EquippedSaddleObjIndex <= 0 Then Exit Function
+        CanActionWhileMounted = (ObjData(.EquippedSaddleObjIndex).OBJType = e_OBJType.otWildMount)
+    End With
+End Function
 
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo ActualizarRecurso_Err

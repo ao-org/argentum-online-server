@@ -2101,7 +2101,7 @@ Public Function UserCanAttackNpc(ByVal UserIndex As Integer, ByVal NpcIndex As I
         UserCanAttackNpc.Result = eDeathAttacker
         Exit Function
     End If
-    If UserList(UserIndex).flags.Montado = 1 Then
+    If UserList(UserIndex).flags.Montado = 1 And Not CanActionWhileMounted(UserIndex) Then
         UserCanAttackNpc.Result = eMounted
         Exit Function
     End If
