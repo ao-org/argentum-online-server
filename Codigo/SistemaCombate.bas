@@ -1371,7 +1371,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
     UserList(VictimIndex).Counters.EnCombate = IntervaloEnCombate
     UserList(attackerIndex).Counters.EnCombate = IntervaloEnCombate
     'Si es ciudadano
-    If esCiudadano(attackerIndex) Then
+    If esCiudadano(attackerIndex) And Not IsNeutralGuildMember(attackerIndex) Then
         If (esCiudadano(VictimIndex) Or esArmada(VictimIndex)) Then
             Call VolverCriminal(attackerIndex)
         End If
