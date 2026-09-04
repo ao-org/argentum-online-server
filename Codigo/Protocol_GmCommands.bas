@@ -3465,7 +3465,18 @@ Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Call LogGM(GetUserRealName(UserIndex), "/NIEBLA")
-        Call ResetMeteo(True)
+        Dim EnableFog As Boolean
+        Dim FogIntensity As Byte
+        EnableFog = Not IsAtmosphericFogActive()
+        If EnableFog Then
+            FogIntensity = RandomNumber(10, 45)
+            Call SetAtmosphericFogState(True, FogIntensity)
+        Else
+            FogIntensity = IntensidadDeNubes
+            Call SetAtmosphericFogState(False)
+            frmMain.Truenos.Enabled = False
+        End If
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(FogIntensity))
     End With
     Exit Sub
 HandleNieblaToggle_Err:
