@@ -808,7 +808,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
     Dim i     As Long
     Dim Users As String
     With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster Or e_PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
             'Msg952= Servidor Â» /TRABAJANDO es un comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_TRABAJANDO_COMANDO_DESHABILITADO_CARGO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             Exit Sub
