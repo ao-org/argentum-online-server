@@ -17,7 +17,7 @@ Attribute VB_Name = "modMessageIDs"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -1263,6 +1263,8 @@ Public Const MSG_CHARNAME_REMOVED_FROM_WHITELIST As Integer = 2222
 Public Const MSG_JAIL_OBJECT_ONLY_IN_JAIL As Integer = 2226
 Public Const MSG_NOT_IN_A_GUILD As Integer = 2227
 Public Const MSG_SKIN_DELETE_DISABLED_TEMP As Integer = 2255
+Public Const MSG_SOLO_GMS_ACTIVADO As Integer = 2256
+Public Const MSG_SOLO_GMS_DESACTIVADO As Integer = 2257
 Public Const MSG_NECESITAS_INSTRUMENTO_O_ANILLO_LANZAR_HECHIZO As Integer = 2265
 Public Const MSG_DYNAMIC_MESSAGE_BOX As Integer = 2266
 

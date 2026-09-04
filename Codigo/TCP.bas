@@ -1291,6 +1291,7 @@ Public Sub EcharPjsNoPrivilegiados()
     For LoopC = 1 To LastUser
         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
             If UserList(LoopC).flags.Privilegios And e_PlayerType.User Then
+                Call WriteCerrarleCliente(LoopC)
                 Call CloseSocket(LoopC)
             End If
         End If
