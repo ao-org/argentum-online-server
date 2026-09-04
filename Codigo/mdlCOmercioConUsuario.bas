@@ -106,7 +106,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         For i = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
             'Si encuentro el item y tiene lugar pongo Found en la posición que lo encontré
             If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).ElementalTags = ObjAEnviar.ElementalTags _
-                    And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
+                And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 And ObjData(ObjAEnviar.ObjIndex).OBJType <> e_OBJType.otWildMount Then
                 'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
                 If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= GetMaxInvOBJ() Then
                     'Si le entra simplemente le agrego las cantidades
@@ -140,6 +140,8 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
                 .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
                 .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
+                .itemsAenviar(FirstEmptyPos).MountLevel = ObjAEnviar.MountLevel
+                .itemsAenviar(FirstEmptyPos).MountExp = ObjAEnviar.MountExp
             ElseIf FirstEmptyPos = 0 And nada = False Then
                 'le aviso que no le entran los items
                 Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.

@@ -158,7 +158,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Dim max_slots_to_load As Integer
         'Load all slots to avoid destroying items when user stops being patreon
         max_slots_to_load = get_num_inv_slots_from_tier(tEmperador)
-        SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
+        SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags, mount_level, mount_exp FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
         Set RS = Query(SQLQuery, .Id)
         counter = 0
         If Not RS Is Nothing Then
@@ -176,6 +176,8 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                                 .amount = RS!amount
                                 .Equipped = False
                                 .ElementalTags = RS!elemental_tags
+                                .MountLevel = SanitizeNullValue(RS!mount_level, 1)
+                                .MountExp = SanitizeNullValue(RS!mount_exp, 0)
                                 If RS!is_equipped Then
                                     Call EquiparInvItem(UserIndex, RS!Number, True)
                                 End If
@@ -713,7 +715,7 @@ Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As 
     Dim Params() As Variant
     Dim LoopC As Long
     Dim ParamC As Long
-    ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
+    ReDim Params(MAX_INVENTORY_SLOTS * 8 - 1)
     ParamC = 0
     For LoopC = 1 To MAX_INVENTORY_SLOTS
         Params(ParamC) = U.Id
@@ -722,7 +724,9 @@ Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As 
         Params(ParamC + 3) = U.invent.Object(LoopC).amount
         Params(ParamC + 4) = U.invent.Object(LoopC).Equipped
         Params(ParamC + 5) = U.invent.Object(LoopC).ElementalTags
-        ParamC = ParamC + 6
+        Params(ParamC + 6) = U.invent.Object(LoopC).MountLevel
+        Params(ParamC + 7) = U.invent.Object(LoopC).MountExp
+        ParamC = ParamC + 8
     Next LoopC
     QueryTimer = GetTickCountRaw()
     Call Execute(QUERY_UPSERT_INVENTORY, Params)
@@ -1132,7 +1136,9 @@ Public Function HasInventoryChanged(ByVal UserIndex As Integer) As Boolean
             If .invent.Object(i).ObjIndex <> .Persist.LastInventory(i).ObjIndex _
                Or .invent.Object(i).amount <> .Persist.LastInventory(i).amount _
                Or .invent.Object(i).Equipped <> .Persist.LastInventory(i).Equipped _
-               Or .invent.Object(i).ElementalTags <> .Persist.LastInventory(i).ElementalTags Then
+               Or .invent.Object(i).elementalTags <> .Persist.LastInventory(i).elementalTags _
+               Or .invent.Object(i).MountLevel <> .Persist.LastInventory(i).MountLevel _
+               Or .invent.Object(i).MountExp <> .Persist.LastInventory(i).MountExp Then
                 HasInventoryChanged = True
                 Exit Function
             End If
@@ -1495,7 +1501,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
         Next LoopC
         Call Execute(QUERY_SAVE_SPELLS, Params)
         ' ******************* INVENTORY *******************
-        ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
+        ReDim Params(MAX_INVENTORY_SLOTS * 8 - 1)
         ParamC = 0
         For LoopC = 1 To MAX_INVENTORY_SLOTS
             Params(ParamC) = .Id
@@ -1504,7 +1510,9 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 3) = .invent.Object(LoopC).amount
             Params(ParamC + 4) = .invent.Object(LoopC).Equipped
             Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
-            ParamC = ParamC + 6
+            Params(ParamC + 6) = .invent.Object(LoopC).MountLevel
+            Params(ParamC + 7) = .invent.Object(LoopC).MountExp
+            ParamC = ParamC + 8
         Next LoopC
         Call Execute(QUERY_SAVE_INVENTORY, Params)
         ' ******************* SKILLS *******************

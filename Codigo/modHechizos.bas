@@ -547,9 +547,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Exit Function
         End If
         If .flags.Montado = 1 Then
-            'Msg780= No puedes lanzar hechizos si estas montado.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_LANZAR_HECHIZOS_SI_MONTADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Function
+            If Not CanActionWhileMounted(UserIndex) Then
+                'Msg780= No puedes lanzar hechizos si estás montado.
+                Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_LANZAR_HECHIZOS_SI_MONTADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Function
+            ElseIf IsValidUserRef(.flags.targetUser) And .flags.targetUser.ArrayIndex <> UserIndex Then
+                'Msg2270=No podés lanzar hechizos a otros jugadores mientras usás una montura salvaje.
+                Call WriteLocaleMsg(UserIndex, MSG_WILD_MOUNT_CANNOT_CAST_ON_PLAYERS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Function
+            End If
         End If
         If Hechizos(HechizoIndex).NecesitaObj > 0 Then
             If Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj) And Not IsObjecIndextInInventory(UserIndex, Hechizos(HechizoIndex).NecesitaObj2) Then
@@ -2424,6 +2430,14 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicDamageBonus)
             Damage = Damage + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicAbsoluteBonus
             MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.EquippedRingAccesoryObjIndex).MagicPenetration
+        End If
+        ' Wild mount magic damage bonus
+        If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).invent.EquippedSaddleObjIndex > 0 Then
+            If ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex).NpcDamageBonusCategory = e_WildMountBonusCategory.eWildMountMagic And ModWildMount.HasMagicWeaponEquipped(UserIndex) Then
+                Dim MountedSlotMagic As Byte
+                MountedSlotMagic = UserList(UserIndex).invent.EquippedSaddleSlot
+                Damage = Damage + ModWildMount.GetWildMountEffectiveBonus(ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex).NpcDamageBonus, UserList(UserIndex).invent.Object(MountedSlotMagic).MountLevel, UserList(UserIndex).invent.EquippedSaddleObjIndex)
+            End If
         End If
         b = True
         If NpcList(NpcIndex).flags.Snd2 > 0 Then

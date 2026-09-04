@@ -191,9 +191,9 @@ Private Sub ConstruirQuery_CrearPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ******************* INVENTORY *******************
-    QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
+    QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags, mount_level, mount_exp) VALUES "
     For LoopC = 1 To MAX_INVENTORY_SLOTS
-        QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
+        QueryBuilder.Append "(?, ?, ?, ?, ?, ?, ?, ?)"
         If LoopC < MAX_INVENTORY_SLOTS Then
             QueryBuilder.Append ", "
         End If
@@ -335,9 +335,9 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ******************* INVENTORY *******************
-    QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags) VALUES "
+    QueryBuilder.Append "REPLACE INTO inventory_item (user_id, number, item_id, Amount, is_equipped, elemental_tags, mount_level, mount_exp) VALUES "
     For LoopC = 1 To MAX_INVENTORY_SLOTS
-        QueryBuilder.Append "(?, ?, ?, ?, ?, ?)"
+        QueryBuilder.Append "(?, ?, ?, ?, ?, ?, ?, ?)"
         If LoopC < MAX_INVENTORY_SLOTS Then
             QueryBuilder.Append ", "
         End If

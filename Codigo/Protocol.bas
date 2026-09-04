@@ -2517,7 +2517,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         If .flags.Muerto = 1 Then Exit Sub
         'If the user is trading, he can't drop items => He's cheating, we kick him.
         If .flags.Comerciando Then Exit Sub
-        If .flags.Montado = 1 Then
+        If .flags.Montado = 1 And Not CanActionWhileMounted(UserIndex) Then
             ' Msg699=Debes descender de tu montura para dejar objetos en el suelo.
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_DEJAR_OBJETOS_SUELO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
@@ -3293,7 +3293,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_CRIATURA_LUCHANDO_JUGADOR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
                         End If
-                        Call DoDomar(UserIndex, tN)
+                        If ModWildMount.IsWildMountNpc(tN) Then
+                            Call ModWildMount.DoTameWildMount(UserIndex, tN)
+                        Else
+                            Call DoDomar(UserIndex, tN)
+                        End If
                     Else
                         ' Msg718=No puedes domar a esa criatura.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_ESA_CRIATURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -4758,7 +4762,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If .flags.Montado = 1 Then
+        If .flags.Montado = 1 And Not CanActionWhileMounted(UserIndex) Then
             ' Msg756=No podes meditar estando montado.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MEDITAR_ESTANDO_MONTADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
@@ -6577,7 +6581,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             'Msg1235= Espacio no desbloqueado.
             Call WriteLocaleMsg(UserIndex, MSG_NO_ESPACIO_DESBLOQUEADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Else
-            If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags Then
+            If .invent.Object(SlotNuevo).ObjIndex = .invent.Object(SlotViejo).ObjIndex And .invent.Object(SlotNuevo).elementalTags = .invent.Object(SlotViejo).elementalTags And ObjData(.invent.Object(SlotViejo).ObjIndex).OBJType <> e_OBJType.otWildMount Then
                 .invent.Object(SlotNuevo).amount = .invent.Object(SlotNuevo).amount + .invent.Object(SlotViejo).amount
                 Dim Excedente As Integer
                 Excedente = .invent.Object(SlotNuevo).amount - GetMaxInvOBJ()

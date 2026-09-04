@@ -1514,22 +1514,21 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     'Msg1307= Pena: ¬1
     Call WriteLocaleMsg(sendIndex, MSG_PENA_RESTANTE_MINUTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Pena)
 
-' ========================
-' Show current home
-' ========================
-Dim char_home As String
-If IsValidCity(UserList(UserIndex).Hogar) Then
-    ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
-    char_home = CityNames(UserList(UserIndex).Hogar)
-Else
-    Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
-    char_home = CityNames(e_City.cUllathorpe)
-End If
+    ' ========================
+    ' Show current home
+    ' ========================
+    Dim char_home As String
+    If IsValidCity(UserList(UserIndex).Hogar) Then
+        ' CityNames() centralizes city diagnostics/display names and removes duplicated mappings.
+        char_home = CityNames(UserList(UserIndex).Hogar)
+    Else
+        Call LogError("Invalid home city. UserIndex=" & UserIndex & " Hogar=" & UserList(UserIndex).Hogar)
+        char_home = CityNames(e_City.cUllathorpe)
+    End If
+    
     Call WriteLocaleMsg(sendIndex, MSG_CHARACTER_HOME, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, char_home)
-
-
-
-Exit Sub
+    
+    Exit Sub
 SendUserStatsTxt_Err:
     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 End Sub
