@@ -242,8 +242,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As t_ObjData, ByVal 
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot, True)
             End If
             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-'Msg1027= Pierdes el efecto del mimetismo.
-Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO_1027, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                'Msg1027= Pierdes el efecto del mimetismo.
+                Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO_1027, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 .Counters.Mimetismo = 0
                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                 Call RefreshCharStatus(UserIndex)
@@ -268,8 +268,8 @@ Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO_1027, e_TextChannel.
         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
             .flags.Oculto = 0
             .Counters.TiempoOculto = 0
-'MSG307=Has vuelto a ser visible.
-Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
+            'MSG307=Has vuelto a ser visible.
+            Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
@@ -1133,7 +1133,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
     If exito = 1 Then
         obj.ObjIndex = FOGATA_APAG
         obj.amount = MapData(Map, x, y).ObjInfo.amount \ 3
-        Call WriteLocaleMsg(UserIndex, MSG_HECHO_RAMITAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)  ' Msg1456=Has hecho 1 ramitas.
+        Call WriteLocaleMsg(UserIndex, MSG_HECHO_RAMITAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)  ' Msg1456=Has hecho ¬1 ramitas.
         Call MakeObj(obj, Map, x, y)
         'Seteamos la fogata como el nuevo TargetObj del user
         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
@@ -1268,9 +1268,9 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 If UserList(VictimaIndex).flags.Comerciando Then
                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu.ArrayIndex
                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-                        'Msg1037= Comercio cancelado, te están robando!
+                        'Msg1037=¡Comercio cancelado, te están robando!
                         Call WriteLocaleMsg(VictimaIndex, MSG_COMERCIO_CANCELADO_TE_ESTAN_ROBANDO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
-                        'Msg1038= Comercio cancelado, al otro usuario le robaron.
+                        'Msg1038=Comercio cancelado, al otro usuario le robaron.
                         Call WriteLocaleMsg(OtroUserIndex, MSG_COMERCIO_CANCELADO_AL_OTRO_USUARIO_LE_ROBARON, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                         Call LimpiarComercioSeguro(VictimaIndex)
                     End If
@@ -1279,7 +1279,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                     If TieneObjetosRobables(VictimaIndex) Then
                         Call RobarObjeto(LadronIndex, VictimaIndex)
                     Else
-                        Call WriteLocaleMsg(LadronIndex, MSG_NO_TIENE_OBJETOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, UserList(VictimaIndex).name) ' Msg1867=1 no tiene objetos.
+                        Call WriteLocaleMsg(LadronIndex, MSG_NO_TIENE_OBJETOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, UserList(VictimaIndex).name) ' Msg1867=¬1 no tiene objetos.
                     End If
                 Else '50% de robar oro
                     If UserList(VictimaIndex).Stats.GLD > 0 Then
