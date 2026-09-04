@@ -978,9 +978,9 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         End If
     End If
     If UserList(UserIndex).flags.AdminInvisible = 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), name))
     Else
-        Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+        Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), name))
     End If
     Exit Sub
 RefreshCharStatus_Err:
@@ -1013,8 +1013,9 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
             'Place character on map if needed
             If toMap Then MapData(Map, x, y).UserIndex = UserIndex
             'Send make character command to clients
-            Dim klan       As String
-            Dim clan_nivel As Byte
+            Dim klan            As String
+            Dim clan_nivel      As Byte
+            Dim clan_alineacion As Byte
             If Not toMap Then
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
@@ -1023,10 +1024,12 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         If .GuildIndex > 0 Then
                             klan = modGuilds.GuildName(.GuildIndex)
                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
+                            clan_alineacion = modGuilds.GuildAlignmentIndex(.GuildIndex)
                             TempName = displayName & " {" & aliasValue & "}" & " <" & klan & ">"
                         Else
                             klan = vbNullString
                             clan_nivel = 0
+                            clan_alineacion = e_ALINEACION_GUILD.ALINEACION_NEUTRAL
                             If .flags.EnConsulta Then
                                 TempName = displayName & " [CONSULTA]" & " {" & aliasValue & "}"
                             Else
@@ -1038,9 +1041,9 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                     End If
                 End If
                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, _
-                        .Char.BackpackAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, _
+                        .Char.BackpackAnim, .Char.FX, 999, .Char.CascoAnim, TempName, UserStatusForClient(UserIndex), .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, _
                         .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, _
-                        clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
+                        clan_nivel, clan_alineacion, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
                         .flags.tiene_bandera)
             Else
                 'Hide the name and clan - set privs as normal user
@@ -2492,7 +2495,7 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
                 sndNick = sndNick & " <" & modGuilds.GuildName(.GuildIndex) & ">"
             End If
         End If
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, .Faccion.Status, sndNick))
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), sndNick))
     End With
 End Sub
 
@@ -2850,34 +2853,38 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
             End If
         End If
     End If
-    ' Es armada?
-    If esArmada(attackerIndex) Then
-        ' Si ataca otro armada
-        If esArmada(TargetIndex) Then
-            CanAttackUser = eSameFaction
-            Exit Function
-            ' Si ataca un ciudadano
-        ElseIf esCiudadano(TargetIndex) Then
-            CanAttackUser = eSameFaction
-            Exit Function
-        End If
-        ' No es armada
-    Else
-        'Tenes puesto el seguro?
-        If (esCiudadano(attackerIndex)) Then
-            If (UserList(attackerIndex).flags.Seguro) Then
-                If esCiudadano(TargetIndex) Then
-                    CanAttackUser = eRemoveSafe
-                    Exit Function
-                ElseIf esArmada(TargetIndex) Then
-                    CanAttackUser = eRemoveSafe
-                    Exit Function
-                End If
-            End If
-        ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
-            If (UserList(attackerIndex).flags.LegionarySecure) Then
+    ' Neutral guild members ignore faction restrictions. General combat, clan and
+    ' safe-zone restrictions still apply.
+    If Not (IsNeutralGuildMember(attackerIndex) Or IsNeutralGuildMember(TargetIndex)) Then
+        ' Es armada?
+        If esArmada(attackerIndex) Then
+            ' Si ataca otro armada
+            If esArmada(TargetIndex) Then
                 CanAttackUser = eSameFaction
                 Exit Function
+                ' Si ataca un ciudadano
+            ElseIf esCiudadano(TargetIndex) Then
+                CanAttackUser = eSameFaction
+                Exit Function
+            End If
+            ' No es armada
+        Else
+            'Tenes puesto el seguro?
+            If (esCiudadano(attackerIndex)) Then
+                If (UserList(attackerIndex).flags.Seguro) Then
+                    If esCiudadano(TargetIndex) Then
+                        CanAttackUser = eRemoveSafe
+                        Exit Function
+                    ElseIf esArmada(TargetIndex) Then
+                        CanAttackUser = eRemoveSafe
+                        Exit Function
+                    End If
+                End If
+            ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
+                If (UserList(attackerIndex).flags.LegionarySecure) Then
+                    CanAttackUser = eSameFaction
+                    Exit Function
+                End If
             End If
         End If
     End If

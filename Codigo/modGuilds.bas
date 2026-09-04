@@ -43,6 +43,59 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_CRIMINAL = 4
 End Enum
 
+Public Function GuildAlignmentAllowsStatus(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As Boolean
+    On Error GoTo GuildAlignmentAllowsStatus_Err
+    Select Case ClanAlignment
+        Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Criminal)
+        Case e_ALINEACION_GUILD.ALINEACION_ARMADA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Armada Or PlayerStatus = e_Facciones.consejo)
+        Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Caos Or PlayerStatus = e_Facciones.concilio)
+        Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Armada)
+        Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Criminal Or PlayerStatus = e_Facciones.Caos)
+    End Select
+    Exit Function
+GuildAlignmentAllowsStatus_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentAllowsStatus", Erl)
+End Function
+
+Public Function GuildStatusForClient(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As e_Facciones
+    On Error GoTo GuildStatusForClient_Err
+    GuildStatusForClient = PlayerStatus
+    If ClanAlignment = e_ALINEACION_GUILD.ALINEACION_NEUTRAL And PlayerStatus = e_Facciones.Ciudadano Then
+        GuildStatusForClient = e_Facciones.Criminal
+    End If
+    Exit Function
+GuildStatusForClient_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildStatusForClient", Erl)
+End Function
+
+Public Function IsNeutralGuildMember(ByVal UserIndex As Integer) As Boolean
+    On Error GoTo IsNeutralGuildMember_Err
+    Dim GuildIndex As Integer
+    If UserIndex <= 0 Then Exit Function
+    GuildIndex = UserList(UserIndex).GuildIndex
+    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+    IsNeutralGuildMember = (GuildAlignmentIndex(GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL)
+    Exit Function
+IsNeutralGuildMember_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.IsNeutralGuildMember", Erl)
+End Function
+
+Public Function UserStatusForClient(ByVal UserIndex As Integer) As e_Facciones
+    On Error GoTo UserStatusForClient_Err
+    UserStatusForClient = Status(UserIndex)
+    If IsNeutralGuildMember(UserIndex) Then
+        UserStatusForClient = GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, UserStatusForClient)
+    End If
+    Exit Function
+UserStatusForClient_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.UserStatusForClient", Erl)
+End Function
+
 'numero de .wav del cliente
 Public Enum e_SONIDOS_GUILD
     SND_CREACIONCLAN = 44
@@ -352,34 +405,21 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
         refError = 2029 'Para fundar un clan ciudadano deberás tener activado el seguro.
         Exit Function
     End If
-    Select Case Alineacion
-        Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-            If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Or Status(UserIndex) = _
-                    e_Facciones.concilio Then
+    If Not GuildAlignmentAllowsStatus(Alineacion, Status(UserIndex)) Then
+        Select Case Alineacion
+            Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
                 refError = 2030 'Para fundar un clan neutral deberás ser ciudadano o criminal.
-                Exit Function
-            End If
-        Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-            If Status(UserIndex) <> e_Facciones.Armada And Status(UserIndex) <> e_Facciones.consejo Then
+            Case e_ALINEACION_GUILD.ALINEACION_ARMADA
                 refError = 2031 'Para fundar un clan de la Armada Real deberás pertenecer a la misma.
-                Exit Function
-            End If
-        Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-            If Status(UserIndex) <> e_Facciones.Caos And Status(UserIndex) <> e_Facciones.concilio Then
+            Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
                 refError = 2032 'Para fundar un clan de la Legión Oscura deberás pertenecer a la misma.
-                Exit Function
-            End If
-        Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-            If Status(UserIndex) <> e_Facciones.Ciudadano And Status(UserIndex) <> e_Facciones.Armada Then
+            Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
                 refError = 2033 'Para fundar un clan ciudadano deberás ser ciudadano.
-                Exit Function
-            End If
-        Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-            If Status(UserIndex) <> e_Facciones.Criminal And Status(UserIndex) <> e_Facciones.Caos Then
+            Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
                 refError = 2034 'Para fundar un clan criminal deberás ser criminal o legión oscura.
-                Exit Function
-            End If
-    End Select
+        End Select
+        Exit Function
+    End If
     PuedeFundarUnClan = True
     Exit Function
 PuedeFundarUnClan_Err:
@@ -402,20 +442,9 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
         Personaje = Replace(Personaje, ".", vbNullString)
     End If
     If PersonajeExiste(Personaje) Then
-        Dim Status As Integer
+        Dim Status As e_Facciones
         Status = CInt(GetUserValue(LCase$(Personaje), "status"))
-        Select Case guilds(GuildIndex).Alineacion
-            Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Criminal)
-            Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Armada Or Status = e_Facciones.consejo)
-            Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Caos Or Status = e_Facciones.concilio)
-            Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Ciudadano Or Status = e_Facciones.Armada)
-            Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                m_EstadoPermiteEntrarChar = (Status = e_Facciones.Criminal Or Status = e_Facciones.Caos)
-        End Select
+        m_EstadoPermiteEntrarChar = GuildAlignmentAllowsStatus(guilds(GuildIndex).Alineacion, Status)
     End If
     Exit Function
 m_EstadoPermiteEntrarChar_Err:
@@ -424,18 +453,7 @@ End Function
 
 Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
     On Error GoTo m_EstadoPermiteEntrar_Err
-    Select Case guilds(GuildIndex).Alineacion
-        Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Criminal
-        Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo
-        Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
-        Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada
-        Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-            m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos
-    End Select
+    m_EstadoPermiteEntrar = GuildAlignmentAllowsStatus(guilds(GuildIndex).Alineacion, Status(UserIndex))
     Exit Function
 m_EstadoPermiteEntrar_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
