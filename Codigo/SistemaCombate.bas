@@ -645,7 +645,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
     danio = -1
     If NpcImpacto(NpcIndex, UserIndex) Then
         danio = NpcDamage(NpcIndex, UserIndex)
-        ' ¿Puede envenenar?
+        '¿Puede envenenar?
         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
     End If
     Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio))
@@ -1682,9 +1682,9 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     If UserIndex = 0 Then Exit Sub
     If ElDaño <= 0 Then ElDaño = 0
     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-    If ElDaño > NpcList(npcIndex).Stats.MinHp Then ElDaño = NpcList(npcIndex).Stats.MinHp
+    If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     'La experiencia a dar es la porcion de vida quitada * toda la experiencia
-    ExpaDar = CLng((ElDaño) * (NpcList(npcIndex).GiveEXP / NpcList(npcIndex).Stats.MaxHp))
+    ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
     If ExpaDar <= 0 Then Exit Sub
     'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
     'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
