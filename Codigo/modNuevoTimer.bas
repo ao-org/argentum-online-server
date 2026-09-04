@@ -34,6 +34,27 @@ Option Explicit
 '       If Actualizar Then lastTick = nowRaw
 '       result = True
 '   End If
+Public Function IntervalRemainingMs(ByVal LastTick As Long, ByVal IntervalMs As Long, ByVal NowRaw As Long) As Long
+    Dim Elapsed As Double
+    Elapsed = TicksElapsed(LastTick, NowRaw)
+    If Elapsed < CDbl(IntervalMs) Then
+        IntervalRemainingMs = CLng(CDbl(IntervalMs) - Elapsed)
+    End If
+End Function
+
+Public Function HooTargetedSpellCastRetryAfterMs(ByVal UserIndex As Integer) As Long
+    Dim NowRaw As Long
+    Dim Remaining As Long
+    NowRaw = GetTickCountRaw()
+    With UserList(UserIndex).Counters
+        HooTargetedSpellCastRetryAfterMs = IntervalRemainingMs(.TimerPuedeUsarArco, IntervaloFlechasCazadores, NowRaw)
+        Remaining = IntervalRemainingMs(.TimerGolpeMagia, IntervaloGolpeMagia, NowRaw)
+        If Remaining > HooTargetedSpellCastRetryAfterMs Then HooTargetedSpellCastRetryAfterMs = Remaining
+        Remaining = IntervalRemainingMs(.TimerLanzarSpell, IntervaloUserPuedeCastear, NowRaw)
+        If Remaining > HooTargetedSpellCastRetryAfterMs Then HooTargetedSpellCastRetryAfterMs = Remaining
+    End With
+End Function
+
 Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
     On Error GoTo IntervaloPermiteLanzarSpell_Err
     Dim nowRaw As Long: nowRaw = GetTickCountRaw()

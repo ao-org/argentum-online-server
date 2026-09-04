@@ -46,10 +46,10 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         If Slot > MAX_INVENTORY_SLOTS Then
             Exit Sub
         ElseIf Cantidad > GetMaxInvOBJ() Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_BANEADO_SISTEMA_ANTI_CHEATS, UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SIDO_BANEADO_SISTEMA_ANTI_CHEATS, UserList(UserIndex).name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_WARNING)) 'Msg1746=¬1 ha sido baneado por el sistema anti-cheats.
             Call Ban(UserList(UserIndex).name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
             UserList(UserIndex).flags.Ban = 1
-            Call WriteShowMessageBox(UserIndex, 1757, vbNullString) 'Msg1751=Has sido baneado por el Sistema AntiCheat.
+            Call WriteShowMessageBox(UserIndex, MSG_HAS_SIDO_BANEADO_POR_EL_SISTEMA_ANTICHEAT, vbNullString) 'Msg1751=Has sido baneado por el Sistema AntiCheat.
             Call CloseSocket(UserIndex)
             Exit Sub
         ElseIf Not NpcList(NpcIndex).invent.Object(Slot).amount > 0 Then
@@ -77,7 +77,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         precio = Ceil(ObjData(Objeto_A_Comprar.ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
         If UserList(UserIndex).Stats.GLD < precio Then
             'Msg1082= No tienes suficiente dinero.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
         If Not MeterItemEnInventario(UserIndex, Objeto) Then Exit Sub
@@ -99,19 +99,19 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             Exit Sub
         ElseIf EsSkinNoComprablePorComerciante(ObjData(Objeto.ObjIndex).OBJType) Then
             'Msg1084= Lo siento, no puedo comprarte ese item.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM, e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         ElseIf ObjData(Objeto.ObjIndex).Newbie = 1 Then
             'Msg1083= Lo siento, no comercio objetos para newbies.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_COMERCIO_OBJETOS_NEWBIES, e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_COMERCIO_OBJETOS_NEWBIES, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         ElseIf ObjData(Objeto.ObjIndex).Destruye = 1 Then
             'Msg1084= Lo siento, no puedo comprarte ese item.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM, e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         ElseIf ObjData(Objeto.ObjIndex).Instransferible = 1 Then
             'Msg1085= Lo siento, no puedo comprarte ese item.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM_1085, e_FontTypeNames.FONTTYPE_TALK)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_PUEDO_COMPRARTE_ESE_ITEM_1085, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         ElseIf ((NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otElse) Or Objeto.ObjIndex = iORO) Then
             'Agrego que si vende el item, lo compre tambien.
@@ -124,7 +124,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             Next i
             If Not LoVende Then
                 'Msg1086= Lo siento, no estoy interesado en este tipo de objetos.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_ESTOY_INTERESADO_TIPO_OBJETOS, e_FontTypeNames.FONTTYPE_TALK)
+                Call WriteLocaleMsg(UserIndex, MSG_NO_SIENTO_ESTOY_INTERESADO_TIPO_OBJETOS, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Exit Sub
             End If
         ElseIf UserList(UserIndex).invent.Object(Slot).amount < 0 Or Cantidad = 0 Then
@@ -133,7 +133,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             Exit Sub
         ElseIf UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
             ' Msg767=No podés vender items.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_ITEMS, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_ITEMS, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
         Call QuitarUserInvItem(UserIndex, Slot, Cantidad)
@@ -173,7 +173,7 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
     On Error GoTo IniciarComercioNPC_Err
     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
         ' Msg770=El comerciante no está disponible.
-        Call WriteLocaleMsg(UserIndex, MSG_NO_COMERCIANTE_DISPONIBLE, e_FontTypeNames.FONTTYPE_WARNING)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_COMERCIANTE_DISPONIBLE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
     End If
     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC.ArrayIndex, 0)

@@ -107,6 +107,62 @@ WriteLoggedMessage_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLoggedMessage", Erl)
 End Sub
 
+Public Sub WriteRemortState(ByVal UserIndex As Integer, ByVal Reason As e_RemortEligibilityReason)
+    On Error GoTo WriteRemortState_Err
+    Call Writer.WriteInt16(ServerPacketID.eRemortState)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.RemortCount)
+    Call Writer.WriteInt16(STAT_MAXELV)
+    Call Writer.WriteBool(Reason = eRemortEligibility_Eligible)
+    Call Writer.WriteInt8(CByte(Reason))
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteRemortState_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortState", Erl)
+End Sub
+
+Public Sub WriteRemortResult(ByVal UserIndex As Integer, ByVal Success As Boolean, ByVal Reason As e_RemortEligibilityReason)
+    On Error GoTo WriteRemortResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eRemortResult)
+    Call Writer.WriteBool(Success)
+    Call Writer.WriteInt8(CByte(Reason))
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.RemortCount)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteRemortResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortResult", Erl)
+End Sub
+
+Public Sub WriteHooTargetedSpellCastResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal Result As e_HooTargetedSpellCastResult, ByVal RetryAfterMs As Long)
+    On Error GoTo WriteHooTargetedSpellCastResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eHooTargetedSpellCastResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt8(CByte(Result))
+    Call Writer.WriteInt32(RetryAfterMs)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooTargetedSpellCastResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooTargetedSpellCastResult", Erl)
+End Sub
+
+Public Sub WriteHooHouseDoorActionResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal ActionValue As Integer, ByVal Result As e_HooHouseDoorActionResult, ByVal x As Byte, ByVal y As Byte)
+    On Error GoTo WriteHooHouseDoorActionResult_Err
+    If Not UserSupportsHooHouseDoorActions(UserIndex) Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooHouseDoorActionResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt8(CByte(ActionValue))
+    Call Writer.WriteInt8(CByte(Result))
+    Call Writer.WriteInt8(x)
+    Call Writer.WriteInt8(y)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooHouseDoorActionResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooHouseDoorActionResult", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
@@ -828,20 +884,21 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
+' @param    Channel Semantic text channel sent to the client.
 ' @param    FontIndex Index of the FONTTYPE structure to use.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, Optional ByVal FontIndex As e_FontTypeNames = FONTTYPE_INFO)
+Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByVal Channel As e_TextChannel, ByVal FontIndex As e_FontTypeNames)
     On Error GoTo WriteConsoleMsg_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageConsoleMsg(chat, FontIndex))
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageConsoleMsg(chat, Channel, FontIndex))
     Exit Sub
 WriteConsoleMsg_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConsoleMsg", Erl)
 End Sub
 
-Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal FontIndex As e_FontTypeNames, Optional ByVal strExtra As String = vbNullString)
+Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal Channel As e_TextChannel, ByVal FontIndex As e_FontTypeNames, Optional ByVal strExtra As String = vbNullString)
     On Error GoTo WriteLocaleMsg_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, strExtra, FontIndex))
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(Id, strExtra, Channel, FontIndex))
     Exit Sub
 WriteLocaleMsg_Err:
     Call Writer.Clear
@@ -1261,6 +1318,15 @@ WriteRainToggle_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRainToggle", Erl)
 End Sub
 
+Public Sub WriteNieveToggle(ByVal UserIndex As Integer)
+    On Error GoTo WriteNieveToggle_Err
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNevarToggle())
+    Exit Sub
+WriteNieveToggle_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNieveToggle", Erl)
+End Sub
+
 Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
     On Error GoTo WriteNubesToggle_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNieblandoToggle(IntensidadDeNubes))
@@ -1268,6 +1334,22 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 WriteNubesToggle_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
+End Sub
+
+' Initial synchronization only. A newly initialized client starts with
+' atmospheric fog disabled, so sending the fog toggle here enables it safely.
+Public Sub WriteCurrentWeatherState(ByVal UserIndex As Integer)
+    On Error GoTo WriteCurrentWeatherState_Err
+    Dim SendRain As Boolean
+    Dim SendSnow As Boolean
+    Dim ToggleFog As Boolean
+    Call DetermineInitialWeatherSynchronization(SendRain, SendSnow, ToggleFog)
+    If SendRain Then Call WriteRainToggle(UserIndex)
+    If SendSnow Then Call WriteNieveToggle(UserIndex)
+    If ToggleFog Then Call WriteNubesToggle(UserIndex)
+    Exit Sub
+WriteCurrentWeatherState_Err:
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCurrentWeatherState", Erl)
 End Sub
 
 ''
@@ -3380,14 +3462,17 @@ End Function
 ' Prepares the "ConsoleMsg" message and returns it.
 '
 ' @param    Chat Text to be displayed over the char's head.
+' @param    Channel Semantic text channel sent to the client.
 ' @param    FontIndex Index of the FONTTYPE structure to use.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex As e_FontTypeNames)
+Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal Channel As e_TextChannel, ByVal FontIndex As e_FontTypeNames)
     On Error GoTo PrepareMessageConsoleMsg_Err
+    Debug.Assert Channel >= TEXTCHANNEL_SYSTEM And Channel < TEXTCHANNEL_MAX
     Call Writer.WriteInt16(ServerPacketID.eConsoleMsg)
     Call Writer.WriteString8(chat)
     Call Writer.WriteInt8(FontIndex)
+    Call Writer.WriteInt8(Channel)
     Exit Function
 PrepareMessageConsoleMsg_Err:
     Call Writer.Clear
@@ -3417,6 +3502,11 @@ End Function
 '   1) A locale message ID
 '   2) A parameter string
 '   3) A font/style identifier
+'   4) A semantic text channel
+'
+' Channel is appended after the legacy packet fields. Older clients keep reading
+' the original FontIndex position and discard the trailing channel byte, while
+' channel-aware clients read it and default to TEXTCHANNEL_SYSTEM when absent.
 '
 ' The client then resolves the final message using its own locale files.
 '
@@ -3426,6 +3516,7 @@ End Function
 '   [Int16 MessageID]
 '   [String8 Parameters]
 '   [Int8 FontIndex]
+'   [Int8 Channel]
 '
 ' Where:
 '
@@ -3472,7 +3563,7 @@ End Function
 '
 '       Server code:
 '
-'           PrepareMessageLocaleMsg(1639, "Pablo", FONTTYPE_TALK)
+'           PrepareMessageLocaleMsg(1639, "Pablo", TEXTCHANNEL_EVENT, FONTTYPE_TALK)
 '
 '       Client locale resource:
 '
@@ -3495,12 +3586,14 @@ End Function
 '   file (e.g. SP_LocalMsg.dat where entries are defined as MsgXXXX=...).
 '
 '------------------------------------------------------------------------------
-Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As String, ByVal FontIndex As e_FontTypeNames)
+Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As String, ByVal Channel As e_TextChannel, ByVal FontIndex As e_FontTypeNames)
     On Error GoTo PrepareMessageLocaleMsg_Err
+    Debug.Assert Channel >= TEXTCHANNEL_SYSTEM And Channel < TEXTCHANNEL_MAX
     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
     Call Writer.WriteInt16(Id)
     Call Writer.WriteString8(chat)
     Call Writer.WriteInt8(FontIndex)
+    Call Writer.WriteInt8(Channel)
     Exit Function
 PrepareMessageLocaleMsg_Err:
     Call Writer.Clear
@@ -3816,21 +3909,6 @@ PrepareMessageGuildChat_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageGuildChat", Erl)
 End Function
 
-''
-' Prepares the "ShowMessageBox" message and returns it.
-'
-' @param    Message Text to be displayed in the message box.
-' @return   The formated message ready to be writen as is on outgoing buffers.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageShowMessageBox(ByVal chat As String)
-    On Error GoTo PrepareMessageShowMessageBox_Err
-    Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
-    Call Writer.WriteString8(chat)
-    Exit Function
-PrepareMessageShowMessageBox_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageShowMessageBox", Erl)
-End Function
 
 ''
 ' Prepares the "PlayMidi" message and returns it.

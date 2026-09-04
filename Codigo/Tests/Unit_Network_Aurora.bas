@@ -811,6 +811,65 @@ Fail:
     test_aurora_packet_chat_over_head = False
 End Function
 
+Private Function test_aurora_packet_console_message_channel() As Boolean
+    On Error GoTo Fail
+
+    Dim packetWriter As Network.Writer
+    Dim packetReader As Network.reader
+
+    Call Protocol_Writes.InitializeAuxiliaryBuffer
+    Call PrepareMessageConsoleMsg("Server notice", e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+    Set packetWriter = Protocol_Writes.GetWriterBuffer()
+    Set packetReader = CreateReaderFromWriter(packetWriter)
+
+    If packetReader.ReadInt16 <> ServerPacketID.eConsoleMsg Then GoTo Fail
+    If packetReader.ReadString8 <> "Server notice" Then GoTo Fail
+    If packetReader.ReadInt8 <> e_FontTypeNames.FONTTYPE_SERVER Then GoTo Fail
+    If packetReader.ReadInt8 <> e_TextChannel.TEXTCHANNEL_SERVER_STAFF Then GoTo Fail
+    If packetReader.GetAvailable <> 0 Then GoTo Fail
+
+    test_aurora_packet_console_message_channel = True
+    Exit Function
+Fail:
+    test_aurora_packet_console_message_channel = False
+End Function
+
+Private Function test_aurora_packet_parameterized_locale_message_channels() As Boolean
+    On Error GoTo Fail
+
+    Dim messageIds As Variant
+    Dim parameters As Variant
+    Dim channels As Variant
+    Dim fonts As Variant
+    Dim i As Long
+    Dim packetWriter As Network.Writer
+    Dim packetReader As Network.reader
+
+    messageIds = Array(MSG_NECESITAS_ARMADURA, MSG_PUEDES_INVITAR_MAS_PERSONAS_LIMITE, MSG_DEJAS_ESCUCHAR_1603)
+    parameters = Array("Armadura de placas", "5", "Guardianes")
+    channels = Array(e_TextChannel.TEXTCHANNEL_SYSTEM, e_TextChannel.TEXTCHANNEL_GROUP, e_TextChannel.TEXTCHANNEL_GUILD)
+    fonts = Array(e_FontTypeNames.FONTTYPE_INFO, e_FontTypeNames.FONTTYPE_New_GRUPO, e_FontTypeNames.FONTTYPE_GUILD)
+
+    For i = LBound(messageIds) To UBound(messageIds)
+        Call Protocol_Writes.InitializeAuxiliaryBuffer
+        Call PrepareMessageLocaleMsg(CInt(messageIds(i)), CStr(parameters(i)), channels(i), fonts(i))
+        Set packetWriter = Protocol_Writes.GetWriterBuffer()
+        Set packetReader = CreateReaderFromWriter(packetWriter)
+
+        If packetReader.ReadInt16 <> ServerPacketID.eLocaleMsg Then GoTo Fail
+        If packetReader.ReadInt16 <> CInt(messageIds(i)) Then GoTo Fail
+        If packetReader.ReadString8 <> CStr(parameters(i)) Then GoTo Fail
+        If packetReader.ReadInt8 <> CByte(fonts(i)) Then GoTo Fail
+        If packetReader.ReadInt8 <> CByte(channels(i)) Then GoTo Fail
+        If packetReader.GetAvailable <> 0 Then GoTo Fail
+    Next i
+
+    test_aurora_packet_parameterized_locale_message_channels = True
+    Exit Function
+Fail:
+    test_aurora_packet_parameterized_locale_message_channels = False
+End Function
+
 ' --------------------------------------------------------------------------
 ' ERROR CONDITION AND BOUNDARY EDGE CASE TESTS
 ' --------------------------------------------------------------------------
@@ -1058,6 +1117,8 @@ Public Function test_suite_network_aurora() As Boolean
     Call UnitTesting.RunTest("test_aurora_packet_update_mana", test_aurora_packet_update_mana())
     Call UnitTesting.RunTest("test_aurora_packet_pos_update", test_aurora_packet_pos_update())
     Call UnitTesting.RunTest("test_aurora_packet_chat_over_head", test_aurora_packet_chat_over_head())
+    Call UnitTesting.RunTest("test_aurora_packet_console_message_channel", test_aurora_packet_console_message_channel())
+    Call UnitTesting.RunTest("test_aurora_packet_parameterized_locale_message_channels", test_aurora_packet_parameterized_locale_message_channels())
     Call UnitTesting.RunTest("test_aurora_error_read_beyond_buffer", test_aurora_error_read_beyond_buffer())
     Call UnitTesting.RunTest("test_aurora_error_empty_reader", test_aurora_error_empty_reader())
     Call UnitTesting.RunTest("test_aurora_writer_clear", test_aurora_writer_clear())

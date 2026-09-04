@@ -706,12 +706,12 @@ Sub CheckIdleUser()
             'Actualiza el contador de inactividad
             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
             If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
-                Call WriteShowMessageBox(iUserIndex, 1775, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
+                Call WriteShowMessageBox(iUserIndex, MSG_DEMASIADO_TIEMPO_INACTIVO_HAS_SIDO_DESCONECTADO, vbNullString) 'Msg1775=Demasiado tiempo inactivo. Has sido desconectado...
                 'mato los comercios seguros
                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                         If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-                            Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, PrepareMessageLocaleMsg(MSG_COMERCIO_CANCELADO_OTRO_USUARIO, vbNullString, e_FontTypeNames.FONTTYPE_TALK)) ' Msg1844=Comercio cancelado por el otro usuario.
+                            Call WriteLocaleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, vbNullString) ' Msg1844=Comercio cancelado por el otro usuario.
                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                         End If
                     End If
@@ -763,7 +763,7 @@ End Sub
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
     If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR_LANZANDO_NUEVO_PARCHE, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR_LANZANDO_NUEVO_PARCHE, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1659=Servidor » Cerrando servidor y lanzando nuevo parche.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
     GuardarYCerrar = True
@@ -792,7 +792,7 @@ Private Sub Invasion_Timer()
                     ' Descripción del evento
                     .TimerRepetirDesc = .TimerRepetirDesc + 1
                     If .TimerRepetirDesc >= .RepetirDesc Then
-                        Call MensajeGlobal(.Desc, e_FontTypeNames.FONTTYPE_New_Eventos)
+                        Call MensajeGlobal(.Desc, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                         .TimerRepetirDesc = 0
                     End If
                 End If
@@ -804,7 +804,7 @@ Private Sub Invasion_Timer()
                 ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
                     .TimerRepetirAviso = .TimerRepetirAviso - 1
                     If .TimerRepetirAviso <= 0 Then
-                        Call MensajeGlobal(.aviso, e_FontTypeNames.FONTTYPE_New_Eventos)
+                        Call MensajeGlobal(.aviso, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                         .TimerRepetirAviso = .RepetirAviso
                     End If
                 End If
@@ -931,7 +931,7 @@ End Sub
 
 Private Sub Command1_Click()
     On Error GoTo Command1_Click_Err
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(BroadMsg.Text))
+    Call SendData(SendTarget.ToAll, 0, PrepareShowMessageBox(MSG_DYNAMIC_MESSAGE_BOX, BroadMsg.Text))
     Exit Sub
 Command1_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
@@ -960,7 +960,6 @@ End Sub
 Private Sub Command11_Click()
     On Error GoTo Command11_Click_Err
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Exit Sub
 Command11_Click_Err:
@@ -985,7 +984,7 @@ End Sub
 
 Private Sub Command2_Click()
     On Error GoTo Command2_Click_Err
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR, BroadMsg.Text, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR, BroadMsg.Text, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1660=Servidor » ¬1
     Exit Sub
 Command2_Click_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
@@ -994,7 +993,7 @@ End Sub
 Private Sub Command4_Click()
     On Error GoTo Command4_Click_Err
     If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR, vbNullString, e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR)) 'Msg1661=Servidor » Cerrando servidor.
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CERRANDO_SERVIDOR, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1661=Servidor » Cerrando servidor.
     Call GuardarUsuarios
     Call EcharPjsNoPrivilegiados
     GuardarYCerrar = True
@@ -1049,7 +1048,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CONCLUIDO_SENTENCIA_BAN, Baneos(i).name, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_CONCLUIDO_SENTENCIA_BAN, Baneos(i).name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) ' Msg1787=Servidor » Se ha concluido la sentencia de ban para ¬1.
             Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1362,18 +1361,18 @@ Private Sub SubastaTimer_Timer()
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     If Subasta.TiempoRestanteSubasta Mod 5 = 0 And Subasta.SubastadorIndex > 0 Then
-        Call WriteConsoleMsg(Subasta.SubastadorIndex, PrepareMessageLocaleMsg(MSG_SUBASTA_SEGUNDOS_RESTANTES, CStr(Subasta.TiempoRestanteSubasta), e_FontTypeNames.FONTTYPE_SUBASTA))
+        Call WriteLocaleMsg(Subasta.SubastadorIndex, MSG_SUBASTA_SEGUNDOS_RESTANTES, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, CStr(Subasta.TiempoRestanteSubasta))
     End If
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1662=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
     End If
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
     If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
         Subasta.HaySubastaActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_CANCELADA_FALTA_OFERTAS, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1663=Subasta cancelada por falta de ofertas.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_CANCELADA_FALTA_OFERTAS, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)) 'Msg1663=Subasta cancelada por falta de ofertas.
         frmMain.SubastaTimer.Enabled = False
         Call DevolverItem
         Exit Sub
@@ -1383,25 +1382,25 @@ Private Sub SubastaTimer_Timer()
     End If
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1664, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1664, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1664=¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "4"
         End If
         If Subasta.TiempoRestanteSubasta = 180 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1665, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1665, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1665=¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "3"
         End If
         If Subasta.TiempoRestanteSubasta = 120 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1666, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1666, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1666=¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
             Subasta.MinutosDeSubasta = "2"
         End If
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1667, vbNullString, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_QUEDAN_MINUTO_S_FINALIZAR_SUBASTA_ESCRIBE_SUBASTA_1667, vbNullString, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1667=¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.
         End If
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
     End If
     If Subasta.TiempoRestanteSubasta = 1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_TERMINADO_GANADOR, Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SUBASTA_TERMINADO_GANADOR, Subasta.Comprador, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)) 'Msg1668=¡La subasta ha terminado! El ganador fue: ¬1
         Call FinalizarSubasta
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
@@ -1412,79 +1411,49 @@ End Sub
 
 
 Private Sub TimerMeteorologia_Timer()
-    'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_TIMER_LLUVIA, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
     On Error GoTo TimerMeteorologia_Timer_Err
-    If TimerMeteorologico > 7 Then
-        TimerMeteorologico = TimerMeteorologico - 1
-        Exit Sub
+
+    If TimerMeteorologico = 0 Or TimerMeteorologico > METEOROLOGICAL_CYCLE_MINUTES Then
+        TimerMeteorologico = METEOROLOGICAL_CYCLE_MINUTES
     End If
-    If TimerMeteorologico = 7 Then
-        ProbabilidadNublar = RandomNumber(1, 3)
-        If ProbabilidadNublar = 1 Then
+
+    If TimerMeteorologico = METEOROLOGICAL_CLOUD_COUNTDOWN_MINUTES Then
+        ProbabilidadNublar = RandomNumber(1, 2)
+        If WeatherCloudRollSucceeds(ProbabilidadNublar) Then
             IntensidadDeNubes = RandomNumber(10, 45)
-            ServidorNublado = True
-            'Enviar Nubes a todos
-            Nieblando = True
-            ServidorNublado = True
+            Call SetAtmosphericFogState(True, IntensidadDeNubes)
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
-            Call AgregarAConsola("Servidor » Empezaron las nubes")
-            TimerMeteorologico = TimerMeteorologico - 1
+            Call AgregarAConsola("Servidor - Empezaron las nubes")
         Else
-            ServidorNublado = False
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", e_FontTypeNames.FONTTYPE_SERVER))
-            Call AgregarAConsola("Servidor » Tranquilo, no hay nubes ni va a llover.")
-            Call ResetMeteo
-            Exit Sub
+            Call AgregarAConsola("Servidor - Tiempo despejado.")
+        End If
+    ElseIf TimerMeteorologico < METEOROLOGICAL_CLOUD_COUNTDOWN_MINUTES And _
+            TimerMeteorologico > METEOROLOGICAL_PRECIPITATION_COUNTDOWN_MINUTES Then
+        If IsAtmosphericFogActive() Then
+            Truenos.Enabled = True
+        End If
+    ElseIf TimerMeteorologico = METEOROLOGICAL_PRECIPITATION_COUNTDOWN_MINUTES Then
+        If IsAtmosphericFogActive() Then
+            ProbabilidadLLuvia = RandomNumber(1, 5)
+            If WeatherPrecipitationRollSucceeds(ProbabilidadLLuvia, True) Then
+                Call SetPrecipitationState(True)
+                Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
+                Call AgregarAConsola("Servidor - Empezo la precipitacion.")
+            Else
+                Truenos.Enabled = False
+                Call AgregarAConsola("Servidor - Las nubes continuan sin precipitacion.")
+            End If
         End If
     End If
-    If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
+
+    If TimerMeteorologico = 1 Then
+        Call AgregarAConsola("Servidor - Ciclo meteorologico finalizado.")
+        Call ResetMeteo(True)
+    Else
         TimerMeteorologico = TimerMeteorologico - 1
-        'Enviar Truenos y rayos
-        Truenos.Enabled = True
-        'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", e_FontTypeNames.FONTTYPE_SERVER))
-        Call AgregarAConsola("Servidor » Truenos y nubes activados.")
-        Exit Sub
-    End If
-    If TimerMeteorologico = 3 Then
-        ProbabilidadLLuvia = RandomNumber(1, 5)
-        If ProbabilidadLLuvia = 1 Then
-            'Envia Lluvia
-            Nebando = True
-            Lloviendo = True
-            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250)) 'Rayo
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            Call AgregarAConsola("Servidor » Lloviendo.")
-            TimerMeteorologico = TimerMeteorologico - 1
-        Else
-            Nieblando = False
-            Lloviendo = False
-            ServidorNublado = False
-            Truenos.Enabled = False
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-            Call AgregarAConsola("Servidor » Truenos y nubes desactivados.")
-            Call ResetMeteo
-            Exit Sub
-        End If
-    End If
-    If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
-        TimerMeteorologico = TimerMeteorologico - 1
-        Exit Sub
-    End If
-    If TimerMeteorologico = 0 Then
-        'dejar de llover y sacar nubes
-        Nieblando = False
-        Lloviendo = False
-        Truenos.Enabled = False
-        Nebando = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-        Call AgregarAConsola("Servidor >Lluvia desactivada.")
-        Call ResetMeteo
-        Exit Sub
     End If
     Exit Sub
 TimerMeteorologia_Timer_Err:
@@ -1518,7 +1487,7 @@ Private Sub tPiqueteC_Timer()
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 ' Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
-                    Call WriteLocaleMsg(i, "70", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(i, MSG_ESTAS_OBSTRUYENDO_EL_PASO_MUEVETE_O_SERAS_DESCONECTADO_DEL_JUEGO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0

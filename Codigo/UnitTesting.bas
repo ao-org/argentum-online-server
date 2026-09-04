@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 35
+    Private Const SUITE_COUNT As Integer = 39
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -277,6 +277,10 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
 #If DIRECT_PLAY = 0 Then
         Case 35: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
+        Case 36: RunSuite = Unit_Weather.test_suite_weather()
+        Case 37: RunSuite = test_suite_remort_persistence()
+        Case 38: RunSuite = test_suite_remort_capability_state()
+        Case 39: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
         Case Else
             RunSuite = False
     End Select
@@ -330,6 +334,802 @@ End Sub
 
 Public Function GetFailedTests() As Integer
     GetFailedTests = FailedTests
+End Function
+
+Private Function test_suite_remort_persistence() As Boolean
+    Call RunTest("remort_count migration default", test_remort_count_migration_default())
+    Call RunTest("remort_count load validation", test_remort_count_load_validation())
+    Call RunTest("remort_count normal save SQL", test_remort_count_normal_save_sql())
+    test_suite_remort_persistence = True
+End Function
+
+Private Function test_remort_count_migration_default() As Boolean
+    On Error GoTo TestError
+
+    Dim RS As ADODB.Recordset
+    Set RS = Query("PRAGMA table_info(user)")
+    If RS Is Nothing Then Exit Function
+
+    Do While Not RS.EOF
+        If LCase$(CStr(RS.Fields("name").value)) = "remort_count" Then
+            Dim defaultValue As String
+            defaultValue = Replace$(CStr(RS.Fields("dflt_value").value), "(", vbNullString)
+            defaultValue = Replace$(defaultValue, ")", vbNullString)
+            test_remort_count_migration_default = _
+                    CLng(RS.Fields("notnull").value) = 1 And defaultValue = "0"
+            Exit Function
+        End If
+        RS.MoveNext
+    Loop
+    Exit Function
+
+TestError:
+    test_remort_count_migration_default = False
+End Function
+
+Private Function test_remort_count_load_validation() As Boolean
+    On Error GoTo TestError
+
+    If NormalizeRemortCount(0) <> 0 Then Exit Function
+    If NormalizeRemortCount(3) <> 3 Then Exit Function
+    If NormalizeRemortCount(-1) <> 0 Then Exit Function
+    If NormalizeRemortCount(2147483648#) <> 0 Then Exit Function
+
+    test_remort_count_load_validation = True
+    Exit Function
+
+TestError:
+    test_remort_count_load_validation = False
+End Function
+
+Private Function test_remort_count_normal_save_sql() As Boolean
+    test_remort_count_normal_save_sql = _
+            InStr(1, QUERY_LOAD_MAINPJ, "remort_count", vbTextCompare) > 0 And _
+            InStr(1, QUERY_UPDATE_MAINPJ, "remort_count = ?", vbTextCompare) > 0
+End Function
+
+Private Function test_suite_remort_capability_state() As Boolean
+    Call RunTest("remort eligibility and priority", test_remort_eligibility_and_priority())
+    Call RunTest("remort eligibility is read-only", test_remort_eligibility_is_read_only())
+    Call RunTest("remort capability bit and reset", test_remort_capability_bit_and_reset())
+    Call RunTest("remort packet is appended", CInt(ServerPacketID.eRemortState) = CInt(ServerPacketID.eShowPickUpObj) + 1)
+    Call RunTest("remort operation packet IDs are appended", CInt(ServerPacketID.eRemortResult) = CInt(ServerPacketID.eRemortState) + 1 And CInt(ClientPacketID.eRequestRemort) = CInt(ClientPacketID.eHooClientCapabilities) + 1)
+    Call RunTest("targeted spell packet IDs are appended", CInt(ServerPacketID.eHooTargetedSpellCastResult) = CInt(ServerPacketID.eRemortResult) + 1 And CInt(ClientPacketID.eHooTargetedSpellCast) = CInt(ClientPacketID.eRequestRemort) + 1)
+    Call RunTest("house door packet IDs and legacy key IDs", test_house_door_packet_ids_and_capability())
+    Call RunTest("house door actions validate before mutation", test_house_door_actions())
+    Call RunTest("targeted spell capability and feature gate", test_targeted_spell_capability())
+    Call RunTest("targeted spell retry interval is wrap safe", test_targeted_spell_retry_interval())
+    Call RunTest("targeted spell NPC resolution rejects stale mappings", test_targeted_spell_target_resolution())
+    Call RunTest("targeted spell eligibility rejects unsupported spells", test_targeted_spell_eligibility())
+    Call RunTest("targeted spell range matches legacy vision boundaries", test_targeted_spell_range_boundaries())
+    Call RunTest("targeted spell early rejections are read-only", test_targeted_spell_early_rejections())
+    Call RunTest("remort equipment and count eligibility", test_remort_equipment_and_count_eligibility())
+    Call RunTest("remort live reset and preservation", test_remort_live_reset_and_preservation())
+    test_suite_remort_capability_state = True
+End Function
+
+Private Function test_house_door_packet_ids_and_capability() As Boolean
+    On Error GoTo TestError
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1)
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_HOUSE_DOOR_ACTIONS_V1) <> HOO_CAP_HOUSE_DOOR_ACTIONS_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_HOUSE_DOOR_ACTIONS_V1) <> 0 Then GoTo TestDone
+    If HOO_CAP_HOUSE_DOOR_ACTIONS_V1 <> &H8& Then GoTo TestDone
+    If CInt(ClientPacketID.eUseKey) <> 209 Or CInt(ServerPacketID.eUpdateUserKey) <> 159 Then GoTo TestDone
+    If CInt(ClientPacketID.eHooHouseDoorAction) <> CInt(ClientPacketID.eHooTargetedSpellCast) + 1 Then GoTo TestDone
+    If CInt(ServerPacketID.eHooHouseDoorActionResult) <> CInt(ServerPacketID.eHooTargetedSpellCastResult) + 1 Then GoTo TestDone
+    test_house_door_packet_ids_and_capability = True
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, OriginalFeatureEnabled)
+    Exit Function
+TestError:
+    test_house_door_packet_ids_and_capability = False
+    Resume TestDone
+End Function
+
+Private Function test_house_door_actions() As Boolean
+    On Error GoTo TestError
+    Dim OriginalObj(1 To 4) As t_ObjData
+    Dim i As Integer
+    For i = 1 To 4
+        OriginalObj(i) = ObjData(i)
+    Next i
+    Dim OriginalTileObj As t_Obj
+    Dim OriginalPairObj As t_Obj
+    OriginalTileObj = MapData(1, 50, 50).ObjInfo
+    OriginalPairObj = MapData(1, 47, 51).ObjInfo
+    Dim OriginalBlocked As Byte
+    Dim OriginalBlockedSouth As Byte
+    OriginalBlocked = MapData(1, 50, 50).Blocked
+    OriginalBlockedSouth = MapData(1, 50, 51).Blocked
+    Dim OriginalMap As Integer
+    Dim OriginalX As Byte
+    Dim OriginalY As Byte
+    Dim OriginalTimer As Long
+    OriginalMap = UserList(1).pos.Map
+    OriginalX = UserList(1).pos.x
+    OriginalY = UserList(1).pos.y
+    OriginalTimer = UserList(1).Counters.TimerUsar
+    Dim OriginalKeys(1 To MAXKEYS) As Integer
+    For i = 1 To MAXKEYS
+        OriginalKeys(i) = UserList(1).Keys(i)
+        UserList(1).Keys(i) = 0
+    Next i
+
+    For i = 1 To 3
+        ObjData(i).OBJType = e_OBJType.otDoors
+        ObjData(i).clave = 410
+        ObjData(i).IndexAbierta = 1
+        ObjData(i).IndexCerrada = 2
+        ObjData(i).IndexCerradaLlave = 3
+        ObjData(i).Subtipo = 4
+        ObjData(i).GrhIndex = 1
+    Next i
+    ObjData(1).Cerrada = 0: ObjData(1).Llave = 0
+    ObjData(2).Cerrada = 1: ObjData(2).Llave = 0
+    ObjData(3).Cerrada = 1: ObjData(3).Llave = 1
+    ObjData(4).OBJType = e_OBJType.otKeys: ObjData(4).clave = 410
+    UserList(1).pos.Map = 1: UserList(1).pos.x = 50: UserList(1).pos.y = 50
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    MapData(1, 50, 50).ObjInfo.amount = 1
+
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Close, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    If ExecuteHooHouseDoorAction(1, 250, 50, 50) <> eHooHouseDoorActionResult_InvalidAction Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    UserList(1).pos.x = 1: UserList(1).pos.y = 1
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_TooFarAway Then GoTo TestDone
+    UserList(1).pos.x = 50: UserList(1).pos.y = 50
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 4
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_NotDoor Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_NoAccess Then GoTo TestDone
+    UserList(1).Keys(1) = 4
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    UserList(1).Counters.TimerUsar = GetTickCountRaw()
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Cooldown Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 3
+    UserList(1).Counters.TimerUsar = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_UnlockAndOpen, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    ObjData(1).Subtipo = 1
+    MapData(1, 47, 51).ObjInfo.ObjIndex = 2
+    MapData(1, 47, 51).ObjInfo.amount = 1
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Or MapData(1, 47, 51).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    MapData(1, 47, 51).ObjInfo.ObjIndex = 0
+    If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Unavailable Then GoTo TestDone
+    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    test_house_door_actions = True
+TestDone:
+    For i = 1 To 4
+        ObjData(i) = OriginalObj(i)
+        UserList(1).Keys(i) = OriginalKeys(i)
+    Next i
+    For i = 5 To MAXKEYS
+        UserList(1).Keys(i) = OriginalKeys(i)
+    Next i
+    MapData(1, 50, 50).ObjInfo = OriginalTileObj
+    MapData(1, 47, 51).ObjInfo = OriginalPairObj
+    MapData(1, 50, 50).Blocked = OriginalBlocked
+    MapData(1, 50, 51).Blocked = OriginalBlockedSouth
+    UserList(1).pos.Map = OriginalMap
+    UserList(1).pos.x = OriginalX
+    UserList(1).pos.y = OriginalY
+    UserList(1).Counters.TimerUsar = OriginalTimer
+    Exit Function
+TestError:
+    test_house_door_actions = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_range_boundaries() As Boolean
+    On Error GoTo TestError
+    Dim OriginalUserX As Byte
+    Dim OriginalUserY As Byte
+    Dim OriginalNpcX As Byte
+    Dim OriginalNpcY As Byte
+    OriginalUserX = UserList(1).pos.x
+    OriginalUserY = UserList(1).pos.y
+    OriginalNpcX = NpcList(1).pos.x
+    OriginalNpcY = NpcList(1).pos.y
+
+    UserList(1).pos.x = 50
+    UserList(1).pos.y = 50
+
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 50
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 39
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 62
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 38
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    NpcList(1).pos.x = 50: NpcList(1).pos.y = 59
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 41
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 60
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.y = 40
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 59
+    If Not IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 62
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+    NpcList(1).pos.x = 61: NpcList(1).pos.y = 60
+    If IsHooTargetedSpellTargetInRange(1, 1) Then GoTo TestDone
+
+    test_targeted_spell_range_boundaries = True
+TestDone:
+    UserList(1).pos.x = OriginalUserX
+    UserList(1).pos.y = OriginalUserY
+    NpcList(1).pos.x = OriginalNpcX
+    NpcList(1).pos.y = OriginalNpcY
+    Exit Function
+TestError:
+    test_targeted_spell_range_boundaries = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_early_rejections() As Boolean
+    On Error GoTo TestError
+    Dim OriginalMapping As Integer
+    Dim OriginalActive As Boolean
+    Dim OriginalHp As Integer
+    Dim OriginalCharIndex As Integer
+    Dim OriginalNpcMap As Integer
+    Dim OriginalNpcX As Byte
+    Dim OriginalNpcY As Byte
+    Dim OriginalUserMap As Integer
+    Dim OriginalUserX As Byte
+    Dim OriginalUserY As Byte
+    Dim OriginalSpellIndex As Integer
+    Dim OriginalAuto As Byte
+    Dim OriginalAreaRadio As Long
+    Dim OriginalAreaAfecta As Integer
+    Dim OriginalTarget As e_TargetType
+    Dim OriginalEffect As e_TargetEffectType
+    Dim OriginalType As e_TipoHechizo
+    Dim OriginalBowTimer As Long
+    Dim OriginalHitMagicTimer As Long
+    Dim OriginalMagicTimer As Long
+    OriginalMapping = CharList(1)
+    OriginalActive = NpcList(1).flags.NPCActive
+    OriginalHp = NpcList(1).Stats.MinHp
+    OriginalCharIndex = NpcList(1).Char.charindex
+    OriginalNpcMap = NpcList(1).pos.Map
+    OriginalNpcX = NpcList(1).pos.x
+    OriginalNpcY = NpcList(1).pos.y
+    OriginalUserMap = UserList(1).pos.Map
+    OriginalUserX = UserList(1).pos.x
+    OriginalUserY = UserList(1).pos.y
+    OriginalSpellIndex = UserList(1).Stats.UserHechizos(1)
+    OriginalAuto = Hechizos(1).AutoLanzar
+    OriginalAreaRadio = Hechizos(1).AreaRadio
+    OriginalAreaAfecta = Hechizos(1).AreaAfecta
+    OriginalTarget = Hechizos(1).Target
+    OriginalEffect = Hechizos(1).TargetEffectType
+    OriginalType = Hechizos(1).Tipo
+    OriginalBowTimer = UserList(1).Counters.TimerPuedeUsarArco
+    OriginalHitMagicTimer = UserList(1).Counters.TimerGolpeMagia
+    OriginalMagicTimer = UserList(1).Counters.TimerLanzarSpell
+
+    CharList(1) = 1
+    NpcList(1).flags.NPCActive = True
+    NpcList(1).Stats.MinHp = 10
+    NpcList(1).Char.charindex = 1
+    NpcList(1).pos.Map = 1
+    NpcList(1).pos.x = 20
+    NpcList(1).pos.y = 20
+    UserList(1).pos.Map = 1
+    UserList(1).pos.x = 20
+    UserList(1).pos.y = 20
+    UserList(1).Stats.UserHechizos(1) = 1
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).AreaAfecta = 0
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.eNegative
+    Hechizos(1).Tipo = e_TipoHechizo.uPropiedades
+
+    Dim RetryAfterMs As Long
+    If ExecuteHooTargetedSpellCast(1, 1, 0, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
+    If ExecuteHooTargetedSpellCast(1, 0, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidSpell Then GoTo TestDone
+    NpcList(1).pos.Map = 2
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_InvalidTarget Then GoTo TestDone
+    NpcList(1).pos.Map = 1
+    NpcList(1).pos.x = 100
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_OutOfRange Then GoTo TestDone
+    NpcList(1).pos.x = 20
+    Dim NowRaw As Long
+    NowRaw = GetTickCountRaw()
+    UserList(1).Counters.TimerPuedeUsarArco = NowRaw
+    UserList(1).Counters.TimerGolpeMagia = NowRaw
+    UserList(1).Counters.TimerLanzarSpell = NowRaw
+    If ExecuteHooTargetedSpellCast(1, 1, 1, RetryAfterMs) <> eHooTargetedSpellCastResult_RateLimited Then GoTo TestDone
+    If RetryAfterMs <= 0 Then GoTo TestDone
+    If UserList(1).Counters.TimerPuedeUsarArco <> NowRaw Then GoTo TestDone
+    If UserList(1).Counters.TimerGolpeMagia <> NowRaw Then GoTo TestDone
+    If UserList(1).Counters.TimerLanzarSpell <> NowRaw Then GoTo TestDone
+    test_targeted_spell_early_rejections = True
+TestDone:
+    CharList(1) = OriginalMapping
+    NpcList(1).flags.NPCActive = OriginalActive
+    NpcList(1).Stats.MinHp = OriginalHp
+    NpcList(1).Char.charindex = OriginalCharIndex
+    NpcList(1).pos.Map = OriginalNpcMap
+    NpcList(1).pos.x = OriginalNpcX
+    NpcList(1).pos.y = OriginalNpcY
+    UserList(1).pos.Map = OriginalUserMap
+    UserList(1).pos.x = OriginalUserX
+    UserList(1).pos.y = OriginalUserY
+    UserList(1).Stats.UserHechizos(1) = OriginalSpellIndex
+    Hechizos(1).AutoLanzar = OriginalAuto
+    Hechizos(1).AreaRadio = OriginalAreaRadio
+    Hechizos(1).AreaAfecta = OriginalAreaAfecta
+    Hechizos(1).Target = OriginalTarget
+    Hechizos(1).TargetEffectType = OriginalEffect
+    Hechizos(1).Tipo = OriginalType
+    UserList(1).Counters.TimerPuedeUsarArco = OriginalBowTimer
+    UserList(1).Counters.TimerGolpeMagia = OriginalHitMagicTimer
+    UserList(1).Counters.TimerLanzarSpell = OriginalMagicTimer
+    Exit Function
+TestError:
+    test_targeted_spell_early_rejections = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_target_resolution() As Boolean
+    On Error GoTo TestError
+    Dim OriginalMapping As Integer
+    Dim OriginalActive As Boolean
+    Dim OriginalHp As Integer
+    Dim OriginalCharIndex As Integer
+    OriginalMapping = CharList(1)
+    OriginalActive = NpcList(1).flags.NPCActive
+    OriginalHp = NpcList(1).Stats.MinHp
+    OriginalCharIndex = NpcList(1).Char.charindex
+
+    CharList(1) = 1
+    NpcList(1).flags.NPCActive = True
+    NpcList(1).Stats.MinHp = 10
+    NpcList(1).Char.charindex = 1
+    If ResolveHooTargetedSpellNpc(1) <> 1 Then GoTo TestDone
+    NpcList(1).Char.charindex = 2
+    If ResolveHooTargetedSpellNpc(1) <> 0 Then GoTo TestDone
+    NpcList(1).Char.charindex = 1
+    NpcList(1).Stats.MinHp = 0
+    If ResolveHooTargetedSpellNpc(1) <> 0 Then GoTo TestDone
+    test_targeted_spell_target_resolution = True
+TestDone:
+    CharList(1) = OriginalMapping
+    NpcList(1).flags.NPCActive = OriginalActive
+    NpcList(1).Stats.MinHp = OriginalHp
+    NpcList(1).Char.charindex = OriginalCharIndex
+    Exit Function
+TestError:
+    test_targeted_spell_target_resolution = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_eligibility() As Boolean
+    On Error GoTo TestError
+    Dim OriginalSpellIndex As Integer
+    Dim OriginalAuto As Byte
+    Dim OriginalAreaRadio As Long
+    Dim OriginalAreaAfecta As Integer
+    Dim OriginalTarget As e_TargetType
+    Dim OriginalEffect As e_TargetEffectType
+    Dim OriginalType As e_TipoHechizo
+    OriginalSpellIndex = UserList(1).Stats.UserHechizos(1)
+    OriginalAuto = Hechizos(1).AutoLanzar
+    OriginalAreaRadio = Hechizos(1).AreaRadio
+    OriginalAreaAfecta = Hechizos(1).AreaAfecta
+    OriginalTarget = Hechizos(1).Target
+    OriginalEffect = Hechizos(1).TargetEffectType
+    OriginalType = Hechizos(1).Tipo
+
+    UserList(1).Stats.UserHechizos(1) = 1
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).AreaAfecta = 0
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.eNegative
+    Hechizos(1).Tipo = e_TipoHechizo.uPropiedades
+    If Not IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AutoLanzar = 1
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AutoLanzar = 0
+    Hechizos(1).AreaRadio = 1
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).AreaRadio = 0
+    Hechizos(1).Target = e_TargetType.uUsuarios
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    Hechizos(1).Target = e_TargetType.uNPC
+    Hechizos(1).TargetEffectType = e_TargetEffectType.ePositive
+    If IsHooTargetedSpellEligible(1, 1) Then GoTo TestDone
+    test_targeted_spell_eligibility = True
+TestDone:
+    UserList(1).Stats.UserHechizos(1) = OriginalSpellIndex
+    Hechizos(1).AutoLanzar = OriginalAuto
+    Hechizos(1).AreaRadio = OriginalAreaRadio
+    Hechizos(1).AreaAfecta = OriginalAreaAfecta
+    Hechizos(1).Target = OriginalTarget
+    Hechizos(1).TargetEffectType = OriginalEffect
+    Hechizos(1).Tipo = OriginalType
+    Exit Function
+TestError:
+    test_targeted_spell_eligibility = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_capability() As Boolean
+    On Error GoTo TestError
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_TARGETED_SPELL_CAST_V1)
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_TARGETED_SPELL_CAST_V1) <> HOO_CAP_TARGETED_SPELL_CAST_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_TARGETED_SPELL_CAST_V1) <> 0 Then GoTo TestDone
+    test_targeted_spell_capability = (HOO_CAP_TARGETED_SPELL_CAST_V1 = &H4&)
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_TARGETED_SPELL_CAST_V1, OriginalFeatureEnabled)
+    Exit Function
+TestError:
+    test_targeted_spell_capability = False
+    Resume TestDone
+End Function
+
+Private Function test_targeted_spell_retry_interval() As Boolean
+    test_targeted_spell_retry_interval = _
+        IntervalRemainingMs(1000, 500, 1250) = 250 And _
+        IntervalRemainingMs(1000, 500, 1500) = 0 And _
+        IntervalRemainingMs(2147483600, 200, -2147483596) = 100
+End Function
+
+Private Function test_remort_eligibility_and_priority() As Boolean
+    On Error GoTo TestError
+    Dim OriginalLevel As Byte
+    Dim OriginalDead As Byte
+    Dim OriginalInParty As Boolean
+    Dim OriginalQuests(1 To MAXUSERQUESTS) As Integer
+    Dim QuestSlot As Integer
+    Dim OriginalRemortCount As Long
+    Dim OriginalEquipped(1 To MAX_INVENTORY_SLOTS) As Byte
+    Dim InventorySlot As Integer
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalDead = UserList(1).flags.Muerto
+    OriginalInParty = UserList(1).Grupo.EnGrupo
+    OriginalRemortCount = UserList(1).Stats.RemortCount
+    UserList(1).Stats.RemortCount = 0
+    For InventorySlot = 1 To MAX_INVENTORY_SLOTS
+        OriginalEquipped(InventorySlot) = UserList(1).invent.Object(InventorySlot).Equipped
+        UserList(1).invent.Object(InventorySlot).Equipped = 0
+    Next InventorySlot
+    For QuestSlot = 1 To MAXUSERQUESTS
+        OriginalQuests(QuestSlot) = UserList(1).QuestStats.Quests(QuestSlot).QuestIndex
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = 0
+    Next QuestSlot
+
+    UserList(1).Stats.ELV = STAT_MAXELV - 1
+    UserList(1).flags.Muerto = 1
+    If GetRemortEligibility(1) <> eRemortEligibility_BelowRequiredLevel Then GoTo TestDone
+
+    UserList(1).Stats.ELV = STAT_MAXELV
+    If GetRemortEligibility(1) <> eRemortEligibility_Dead Then GoTo TestDone
+
+    UserList(1).flags.Muerto = 0
+    UserList(1).QuestStats.Quests(1).QuestIndex = 1
+    UserList(1).Grupo.EnGrupo = True
+    If GetRemortEligibility(1) <> eRemortEligibility_ActiveQuest Then GoTo TestDone
+
+    UserList(1).QuestStats.Quests(1).QuestIndex = 0
+    If GetRemortEligibility(1) <> eRemortEligibility_InParty Then GoTo TestDone
+
+    UserList(1).Grupo.EnGrupo = False
+    If GetRemortEligibility(1) <> eRemortEligibility_Eligible Then GoTo TestDone
+    test_remort_eligibility_and_priority = True
+
+TestDone:
+    UserList(1).Stats.ELV = OriginalLevel
+    UserList(1).flags.Muerto = OriginalDead
+    UserList(1).Grupo.EnGrupo = OriginalInParty
+    UserList(1).Stats.RemortCount = OriginalRemortCount
+    For InventorySlot = 1 To MAX_INVENTORY_SLOTS
+        UserList(1).invent.Object(InventorySlot).Equipped = OriginalEquipped(InventorySlot)
+    Next InventorySlot
+    For QuestSlot = 1 To MAXUSERQUESTS
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = OriginalQuests(QuestSlot)
+    Next QuestSlot
+    Exit Function
+TestError:
+    test_remort_eligibility_and_priority = False
+    Resume TestDone
+End Function
+
+Private Function test_remort_eligibility_is_read_only() As Boolean
+    On Error GoTo TestError
+    Dim OriginalRemortCount As Long
+    Dim OriginalLevel As Byte
+    Dim OriginalExp As Long
+    Dim OriginalSkillPts As Integer
+    Dim OriginalHp As Integer
+    Dim OriginalSkill As Byte
+    OriginalRemortCount = UserList(1).Stats.RemortCount
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalExp = UserList(1).Stats.Exp
+    OriginalSkillPts = UserList(1).Stats.SkillPts
+    OriginalHp = UserList(1).Stats.MinHp
+    OriginalSkill = UserList(1).Stats.UserSkills(1)
+
+    Call GetRemortEligibility(1)
+    test_remort_eligibility_is_read_only = _
+        UserList(1).Stats.RemortCount = OriginalRemortCount And _
+        UserList(1).Stats.ELV = OriginalLevel And _
+        UserList(1).Stats.Exp = OriginalExp And _
+        UserList(1).Stats.SkillPts = OriginalSkillPts And _
+        UserList(1).Stats.MinHp = OriginalHp And _
+        UserList(1).Stats.UserSkills(1) = OriginalSkill
+    Exit Function
+TestError:
+    test_remort_eligibility_is_read_only = False
+End Function
+
+Private Function test_remort_capability_bit_and_reset() As Boolean
+    On Error GoTo TestError
+    Dim OriginalNegotiated As Boolean
+    Dim OriginalVersion As Byte
+    Dim OriginalMask As Long
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalNegotiated = UserList(1).HooCapabilities.Negotiated
+    OriginalVersion = UserList(1).HooCapabilities.ProtocolVersion
+    OriginalMask = UserList(1).HooCapabilities.CapabilityMask
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_REMORT_V1)
+
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_REMORT_V1) <> HOO_CAP_REMORT_V1 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, False)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, True)
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION + 1, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
+    Call ResetHooClientCapabilities(1)
+    If UserSupportsHooCapability(1, HOO_CAP_REMORT_V1) Then GoTo TestDone
+    UserList(1).HooCapabilities.Negotiated = True
+    UserList(1).HooCapabilities.ProtocolVersion = HOO_CAP_PROTOCOL_VERSION
+    UserList(1).HooCapabilities.CapabilityMask = HOO_CAP_ADJACENT_CHARACTERS_V1 Or HOO_CAP_REMORT_V1
+    If Not UserSupportsHooCapability(1, HOO_CAP_REMORT_V1) Then GoTo TestDone
+    If Not UserSupportsHooCapability(1, HOO_CAP_ADJACENT_CHARACTERS_V1) Then GoTo TestDone
+    Call ResetHooClientCapabilities(1)
+    If UserList(1).HooCapabilities.Negotiated Then GoTo TestDone
+    If UserList(1).HooCapabilities.CapabilityMask <> 0 Then GoTo TestDone
+    test_remort_capability_bit_and_reset = (HOO_CAP_REMORT_V1 = &H2&)
+
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, OriginalFeatureEnabled)
+    UserList(1).HooCapabilities.Negotiated = OriginalNegotiated
+    UserList(1).HooCapabilities.ProtocolVersion = OriginalVersion
+    UserList(1).HooCapabilities.CapabilityMask = OriginalMask
+    Exit Function
+TestError:
+    test_remort_capability_bit_and_reset = False
+    Resume TestDone
+End Function
+
+Private Function test_remort_equipment_and_count_eligibility() As Boolean
+    On Error GoTo TestError
+
+    Dim OriginalLevel As Byte
+    Dim OriginalDead As Byte
+    Dim OriginalInParty As Boolean
+    Dim OriginalCount As Long
+    Dim OriginalEquipped As Byte
+    Dim OriginalObjIndex As Integer
+    Dim OriginalMinLevel As Byte
+    Dim OriginalMaxLevel As Byte
+    Dim OriginalSkillIndex As Byte
+    Dim OriginalSkillRequired As Byte
+    Dim OriginalQuests(1 To MAXUSERQUESTS) As Integer
+    Dim QuestSlot As Integer
+
+    OriginalLevel = UserList(1).Stats.ELV
+    OriginalDead = UserList(1).flags.Muerto
+    OriginalInParty = UserList(1).Grupo.EnGrupo
+    OriginalCount = UserList(1).Stats.RemortCount
+    OriginalEquipped = UserList(1).invent.Object(1).Equipped
+    OriginalObjIndex = UserList(1).invent.Object(1).ObjIndex
+    For QuestSlot = 1 To MAXUSERQUESTS
+        OriginalQuests(QuestSlot) = UserList(1).QuestStats.Quests(QuestSlot).QuestIndex
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = 0
+    Next QuestSlot
+    OriginalMinLevel = ObjData(1).MinELV
+    OriginalMaxLevel = ObjData(1).MaxLEV
+    OriginalSkillIndex = ObjData(1).SkillIndex
+    OriginalSkillRequired = ObjData(1).SkillRequerido
+
+    UserList(1).Stats.ELV = STAT_MAXELV
+    UserList(1).flags.Muerto = 0
+    UserList(1).Grupo.EnGrupo = False
+    UserList(1).QuestStats.Quests(1).QuestIndex = 0
+    UserList(1).Stats.RemortCount = 0
+    UserList(1).invent.Object(1).Equipped = 1
+    UserList(1).invent.Object(1).ObjIndex = 1
+    ObjData(1).MinELV = 2
+    ObjData(1).MaxLEV = 0
+    ObjData(1).SkillIndex = 0
+    ObjData(1).SkillRequerido = 0
+    If GetRemortEligibility(1) <> eRemortEligibility_InvalidEquipment Then GoTo TestDone
+
+    ObjData(1).MinELV = 0
+    ObjData(1).SkillIndex = 1
+    ObjData(1).SkillRequerido = 1
+    If GetRemortEligibility(1) <> eRemortEligibility_InvalidEquipment Then GoTo TestDone
+
+    UserList(1).invent.Object(1).Equipped = 0
+    UserList(1).Stats.RemortCount = 2147483647
+    If GetRemortEligibility(1) <> eRemortEligibility_RemortLimitReached Then GoTo TestDone
+    test_remort_equipment_and_count_eligibility = True
+
+TestDone:
+    UserList(1).Stats.ELV = OriginalLevel
+    UserList(1).flags.Muerto = OriginalDead
+    UserList(1).Grupo.EnGrupo = OriginalInParty
+    UserList(1).Stats.RemortCount = OriginalCount
+    UserList(1).invent.Object(1).Equipped = OriginalEquipped
+    UserList(1).invent.Object(1).ObjIndex = OriginalObjIndex
+    For QuestSlot = 1 To MAXUSERQUESTS
+        UserList(1).QuestStats.Quests(QuestSlot).QuestIndex = OriginalQuests(QuestSlot)
+    Next QuestSlot
+    ObjData(1).MinELV = OriginalMinLevel
+    ObjData(1).MaxLEV = OriginalMaxLevel
+    ObjData(1).SkillIndex = OriginalSkillIndex
+    ObjData(1).SkillRequerido = OriginalSkillRequired
+    Exit Function
+TestError:
+    test_remort_equipment_and_count_eligibility = False
+    Resume TestDone
+End Function
+
+Private Function test_remort_live_reset_and_preservation() As Boolean
+    On Error GoTo TestError
+
+    Dim OriginalLevel As Byte, OriginalDead As Byte, OriginalExp As Long
+    Dim OriginalCount As Long, OriginalSkillPts As Integer, OriginalModified As Boolean
+    Dim OriginalMaxHp As Integer, OriginalMinHp As Integer, OriginalShield As Long
+    Dim OriginalMaxMana As Integer, OriginalMinMana As Integer
+    Dim OriginalMaxSta As Integer, OriginalMinSta As Integer
+    Dim OriginalMaxHit As Integer, OriginalMinHit As Integer
+    Dim OriginalMaxWater As Integer, OriginalMinWater As Integer
+    Dim OriginalMaxHunger As Integer, OriginalMinHunger As Integer
+    Dim OriginalGold As Long, OriginalBankGold As Long, OriginalSpell As Integer
+    Dim OriginalGuild As Integer, OriginalClass As e_Class
+    Dim OriginalConstitution As Byte, OriginalIntelligence As Byte
+    Dim OriginalParty As Boolean
+    Dim OriginalQuests(1 To MAXUSERQUESTS) As Integer
+    Dim QuestSlot As Integer
+    Dim OriginalSkills(1 To NUMSKILLS) As Byte
+    Dim OriginalDirty(1 To NUMSKILLS) As Boolean
+    Dim OriginalEquipped(1 To MAX_INVENTORY_SLOTS) As Byte
+    Dim SkillIndex As Integer, Slot As Integer
+
+    With UserList(1)
+        OriginalLevel = .Stats.ELV
+        OriginalDead = .flags.Muerto
+        OriginalExp = .Stats.Exp
+        OriginalCount = .Stats.RemortCount
+        OriginalSkillPts = .Stats.SkillPts
+        OriginalModified = .flags.ModificoSkills
+        OriginalMaxHp = .Stats.MaxHp: OriginalMinHp = .Stats.MinHp: OriginalShield = .Stats.shield
+        OriginalMaxMana = .Stats.MaxMAN: OriginalMinMana = .Stats.MinMAN
+        OriginalMaxSta = .Stats.MaxSta: OriginalMinSta = .Stats.MinSta
+        OriginalMaxHit = .Stats.MaxHit: OriginalMinHit = .Stats.MinHIT
+        OriginalMaxWater = .Stats.MaxAGU: OriginalMinWater = .Stats.MinAGU
+        OriginalMaxHunger = .Stats.MaxHam: OriginalMinHunger = .Stats.MinHam
+        OriginalGold = .Stats.GLD: OriginalBankGold = .Stats.Banco
+        OriginalSpell = .Stats.UserHechizos(1): OriginalGuild = .GuildIndex
+        OriginalClass = .clase
+        OriginalConstitution = .Stats.UserAtributos(e_Atributos.Constitucion)
+        OriginalIntelligence = .Stats.UserAtributos(e_Atributos.Inteligencia)
+        OriginalParty = .Grupo.EnGrupo
+        For QuestSlot = 1 To MAXUSERQUESTS
+            OriginalQuests(QuestSlot) = .QuestStats.Quests(QuestSlot).QuestIndex
+            .QuestStats.Quests(QuestSlot).QuestIndex = 0
+        Next QuestSlot
+        For SkillIndex = 1 To NUMSKILLS
+            OriginalSkills(SkillIndex) = .Stats.UserSkills(SkillIndex)
+            OriginalDirty(SkillIndex) = .Stats.SkillDirty(SkillIndex)
+            .Stats.UserSkills(SkillIndex) = 75
+            .Stats.SkillDirty(SkillIndex) = False
+        Next SkillIndex
+        For Slot = 1 To MAX_INVENTORY_SLOTS
+            OriginalEquipped(Slot) = .invent.Object(Slot).Equipped
+            .invent.Object(Slot).Equipped = 0
+        Next Slot
+        .clase = e_Class.Mage
+        .Stats.UserAtributos(e_Atributos.Constitucion) = 18
+        .Stats.UserAtributos(e_Atributos.Inteligencia) = 18
+        .Stats.ELV = STAT_MAXELV
+        .flags.Muerto = 0
+        .Grupo.EnGrupo = False
+        .Stats.Exp = 123456
+        .Stats.SkillPts = 99
+        .Stats.MaxHp = 500: .Stats.MinHp = 250: .Stats.shield = 50
+        .Stats.MaxMAN = 500: .Stats.MinMAN = 250
+        .Stats.MaxSta = 500: .Stats.MinSta = 250
+        .Stats.MaxHit = 100: .Stats.MinHIT = 90
+        .Stats.MaxAGU = 25: .Stats.MinAGU = 10
+        .Stats.MaxHam = 25: .Stats.MinHam = 10
+        .Stats.RemortCount = 3
+        .Stats.GLD = 12345: .Stats.Banco = 23456
+        .Stats.UserHechizos(1) = 42
+        .GuildIndex = 7
+    End With
+
+    If Not ApplyRemortProgression(1) Then GoTo TestDone
+    With UserList(1)
+        If .Stats.ELV <> 1 Or .Stats.Exp <> 0 Or .Stats.RemortCount <> 4 Then GoTo TestDone
+        If .Stats.SkillPts <> 10 Then GoTo TestDone
+        If .Stats.MaxHp <> 18 Or .Stats.MinHp <> 18 Or .Stats.shield <> 0 Then GoTo TestDone
+        If .Stats.MaxMAN <> CInt(18 * ModClase(.clase).ManaInicial) Or .Stats.MinMAN <> .Stats.MaxMAN Then GoTo TestDone
+        If .Stats.MaxSta <> 60 Or .Stats.MinSta <> 60 Then GoTo TestDone
+        If .Stats.MinHIT <> 1 Or .Stats.MaxHit <> 2 Then GoTo TestDone
+        If .Stats.MinAGU <> 100 Or .Stats.MinHam <> 100 Then GoTo TestDone
+        For SkillIndex = 1 To NUMSKILLS
+            If .Stats.UserSkills(SkillIndex) <> 0 Or Not .Stats.SkillDirty(SkillIndex) Then GoTo TestDone
+        Next SkillIndex
+        If .Stats.GLD <> 12345 Or .Stats.Banco <> 23456 Then GoTo TestDone
+        If .Stats.UserHechizos(1) <> 42 Or .GuildIndex <> 7 Then GoTo TestDone
+    End With
+    If ApplyRemortProgression(1) Then GoTo TestDone
+    If UserList(1).Stats.RemortCount <> 4 Then GoTo TestDone
+    test_remort_live_reset_and_preservation = True
+
+TestDone:
+    With UserList(1)
+        .Stats.ELV = OriginalLevel: .flags.Muerto = OriginalDead: .Stats.Exp = OriginalExp
+        .Stats.RemortCount = OriginalCount: .Stats.SkillPts = OriginalSkillPts
+        .flags.ModificoSkills = OriginalModified
+        .Stats.MaxHp = OriginalMaxHp: .Stats.MinHp = OriginalMinHp: .Stats.shield = OriginalShield
+        .Stats.MaxMAN = OriginalMaxMana: .Stats.MinMAN = OriginalMinMana
+        .Stats.MaxSta = OriginalMaxSta: .Stats.MinSta = OriginalMinSta
+        .Stats.MaxHit = OriginalMaxHit: .Stats.MinHIT = OriginalMinHit
+        .Stats.MaxAGU = OriginalMaxWater: .Stats.MinAGU = OriginalMinWater
+        .Stats.MaxHam = OriginalMaxHunger: .Stats.MinHam = OriginalMinHunger
+        .Stats.GLD = OriginalGold: .Stats.Banco = OriginalBankGold
+        .Stats.UserHechizos(1) = OriginalSpell: .GuildIndex = OriginalGuild
+        .clase = OriginalClass
+        .Stats.UserAtributos(e_Atributos.Constitucion) = OriginalConstitution
+        .Stats.UserAtributos(e_Atributos.Inteligencia) = OriginalIntelligence
+        .Grupo.EnGrupo = OriginalParty
+        For QuestSlot = 1 To MAXUSERQUESTS
+            .QuestStats.Quests(QuestSlot).QuestIndex = OriginalQuests(QuestSlot)
+        Next QuestSlot
+        For SkillIndex = 1 To NUMSKILLS
+            .Stats.UserSkills(SkillIndex) = OriginalSkills(SkillIndex)
+            .Stats.SkillDirty(SkillIndex) = OriginalDirty(SkillIndex)
+        Next SkillIndex
+        For Slot = 1 To MAX_INVENTORY_SLOTS
+            .invent.Object(Slot).Equipped = OriginalEquipped(Slot)
+        Next Slot
+    End With
+    Exit Function
+TestError:
+    test_remort_live_reset_and_preservation = False
+    Resume TestDone
 End Function
 
 #End If

@@ -559,9 +559,10 @@ ErrorHandler:
     Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountID & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-Public Sub EcharConsejoDatabase(username As String, ByVal Status As Integer)
+Public Sub EcharConsejoDatabase(username As String, ByVal newStatus As Integer)
     On Error GoTo EcharConsejoDatabase_Err
-    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", Status, UCase$(username))
+    Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", _
+        newStatus, UCase$(username))
     Exit Sub
 EcharConsejoDatabase_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
@@ -609,7 +610,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal usernam
     If RS Is Nothing Then Exit Sub
     If Not RS.RecordCount = 0 Then
         While Not RS.EOF
-            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             RS.MoveNext
         Wend
     End If
@@ -738,7 +739,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal username 
     Dim GuildRequestHistory As String
     Dim GuildHistory        As String
     If RS Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     GuildRequestHistory = GetUserGuildPedidosDatabase(username)
@@ -771,7 +772,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     Dim RS As ADODB.Recordset
     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     If Connection.State = adStateClosed Then
-        Call WriteShowMessageBox(UserIndex, 1784, vbNullString) 'Msg1784=Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!
+        Call WriteShowMessageBox(UserIndex, MSG_HA_OCURRIDO_UN_ERROR_INTERNO_EN_EL_SERVIDOR_ESTAMOS_TRATANDO_DE_RESOLVERLO, vbNullString) 'Msg1784=Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!
         Exit Function
     End If
     UserList(UserIndex).AccountID = RS!Id
@@ -850,7 +851,7 @@ Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub
 
-
 Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)
 End Sub
+
