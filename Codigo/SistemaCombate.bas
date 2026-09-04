@@ -441,7 +441,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage) & "ï¿½" & (DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_CRITICAL_ON_CREATURE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage) & "¬" & (DamageExtra))
                 End If
                 ' Color naranja
                 Color = RGB(225, 165, 0)
@@ -458,7 +458,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
                 DamageExtra = Damage * (Rnd * (max_stab_npc - min_stab_npc) + min_stab_npc)
                 ' Mostramos en consola el daño
                 If .ChatCombate = 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_STABBED_CREATURE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage) & "ï¿½" & PonerPuntos(DamageExtra))
+                    Call WriteLocaleMsg(UserIndex, MSG_HIT_AND_STABBED_CREATURE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
                 End If
                 ' Color amarillo
                 Color = vbYellow
@@ -1183,12 +1183,12 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
         End Select
-        ' Defensa del barco de la victima
+        ' Defensa del barco de la víctima
         If .invent.EquippedShipObjIndex > 0 Then
             Dim Barco As t_ObjData
             Barco = ObjData(.invent.EquippedShipObjIndex)
             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
-            ' Defensa de la montura de la victima
+            ' Defensa de la montura de la víctima
         ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
             Dim Montura As t_ObjData
             Montura = ObjData(.invent.EquippedSaddleObjIndex)
@@ -1553,7 +1553,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
                 If UserList(VictimIndex).pos.Map = 58 Or UserList(VictimIndex).pos.Map = 59 Or UserList(VictimIndex).pos.Map = 60 Then
-                    'Msg1060= Huye de la ciudad! estas siendo atacado y no podés defenderte.
+                    'Msg1060= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
                     Call WriteLocaleMsg(VictimIndex, MSG_HUYE_DE_LA_CIUDAD_UN_MIEMBRO_DE_LA_ARMADA_REAL_TE_ESTA_ATACANDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                     Exit Function
@@ -1563,7 +1563,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         If esCaos(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
                 If UserList(VictimIndex).pos.Map = 195 Or UserList(VictimIndex).pos.Map = 196 Then
-                    'Msg1061= Huye de la ciudad! estas siendo atacado y no podés defenderte.
+                    'Msg1061= Huye de la ciudad! estas siendo atacado y no podrás defenderte.
                     Call WriteLocaleMsg(VictimIndex, MSG_HUYE_DE_LA_CIUDAD_UN_MIEMBRO_DE_LA_LEGION_OSCURA_TE_ESTA_ATACANDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                     Exit Function
@@ -1597,14 +1597,14 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
     If UserList(UserIndex).Grupo.EnGrupo Then
         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
     Else
-        Call GetExpForUser(UserIndex, npcIndex, ElDaño)
+        Call GetExpForUser(UserIndex, NpcIndex, ElDaño)
     End If
     Exit Sub
 CalcularDarExp_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 End Sub
 
-Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
+Private Sub GetExpForUser(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo GetExpForUser_Err
     Dim ExpaDar As Double
     With UserList(UserIndex)
@@ -1669,7 +1669,7 @@ GetExpForUser_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
 End Sub
 
-Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
+Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExpGrupal_Err
     Dim ExpaDar                 As Long
     Dim BonificacionGrupo       As Single
@@ -1802,8 +1802,8 @@ End Sub
 
 Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single
     On Error GoTo GetExpPenalty_Err
-    '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPCs level the player is.
-    '    No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
+    '    This function computes an experience-gain multiplier (between 0.0 and 1.0) based on how far above the NPC's level the player is.
+    '    Why “DeltaLevel – 4”? No penalty for small over-leveling (up to 4 levels). Beyond that, each extra level reduces your XP by the configured percentage.
     '    Summary
     '    Output: a multiplier from 1.0 down to 0.0.
     '    Use it to scale whatever EXP your damage routine calculated.
