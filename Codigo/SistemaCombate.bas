@@ -532,11 +532,6 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).invent.EquippedSaddleObjIndex > 0 Then
         obj = ObjData(UserList(UserIndex).invent.EquippedSaddleObjIndex)
         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
-    ' El golpe recibido lo baja de la montura (ya se aprovecho su defensa en este calculo)
-    Call DoMontar(UserIndex, obj, UserList(UserIndex).invent.EquippedSaddleSlot, True)
-    With UserList(UserIndex)
-        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
-    End With
     End If
     Lugar = RandomNumber(1, 6)
     Select Case Lugar

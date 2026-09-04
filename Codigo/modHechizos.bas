@@ -85,8 +85,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             ' =======================================================================
             
             If Damage < 0 Then Damage = 0
-            
-            Call ForzarDesmontura(UserIndex)
             IsAlive = UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
             DamageStr = PonerPuntos(Damage)
             Call WriteLocaleMsg(UserIndex, MSG_HA_QUITADO_PUNTOS_VIDA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr) 'Msg1627=¬1 te ha quitado ¬2 puntos de vida.
