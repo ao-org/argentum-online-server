@@ -155,6 +155,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Dim RS                As ADODB.Recordset
         Dim counter           As Long
         Dim SQLQuery          As String
+        Dim QueryBreakdown   As String
         Dim max_slots_to_load As Integer
         'Load all slots to avoid destroying items when user stops being patreon
         max_slots_to_load = get_num_inv_slots_from_tier(tLeyenda)
@@ -188,6 +189,9 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                 RS.MoveNext
             Wend
             .invent.NroItems = counter
+        End If
+        If NormalizarEscudoEquipado(UserIndex, True) Then
+            Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
         End If
     End With
     LoadCharacterInventory = True

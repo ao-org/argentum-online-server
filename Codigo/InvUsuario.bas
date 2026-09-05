@@ -363,6 +363,80 @@ QuitarUserInvItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
 End Sub
 
+Public Function NormalizarEscudoEquipado(ByVal UserIndex As Integer, Optional ByVal UserIsLoggingIn As Boolean = False) As Boolean
+    On Error GoTo NormalizarEscudoEquipado_Err
+
+    Dim RegisteredShieldSlot As Byte
+    Dim Slot As Integer
+    Dim LastSlot As Integer
+    Dim ObjIndex As Integer
+    Dim InventoryChanged As Boolean
+
+    With UserList(UserIndex)
+        RegisteredShieldSlot = .invent.EquippedShieldSlot
+        LastSlot = .CurrentInventorySlots
+        If LastSlot > UBound(.invent.Object) Then LastSlot = UBound(.invent.Object)
+
+        If RegisteredShieldSlot < LBound(.invent.Object) Or RegisteredShieldSlot > LastSlot Then
+            RegisteredShieldSlot = 0
+        Else
+            ObjIndex = .invent.Object(RegisteredShieldSlot).ObjIndex
+            If ObjIndex <= 0 Or ObjIndex > UBound(ObjData) Then
+                RegisteredShieldSlot = 0
+            ElseIf ObjData(ObjIndex).OBJType <> e_OBJType.otShield Then
+                RegisteredShieldSlot = 0
+            End If
+        End If
+
+        If RegisteredShieldSlot = 0 Then
+            .invent.EquippedShieldObjIndex = 0
+            .invent.EquippedShieldSlot = 0
+            .Char.ShieldAnim = NingunEscudo
+            .Char.Escudo_Aura = 0
+        Else
+            .invent.EquippedShieldSlot = RegisteredShieldSlot
+            .invent.EquippedShieldObjIndex = .invent.Object(RegisteredShieldSlot).ObjIndex
+            If .invent.Object(RegisteredShieldSlot).Equipped = 0 Then
+                .invent.Object(RegisteredShieldSlot).Equipped = 1
+                InventoryChanged = True
+                Call UpdateUserInv(False, UserIndex, RegisteredShieldSlot)
+            End If
+        End If
+
+        If LastSlot >= LBound(.invent.Object) Then
+            For Slot = LBound(.invent.Object) To LastSlot
+                ObjIndex = .invent.Object(Slot).ObjIndex
+                If ObjIndex > 0 And ObjIndex <= UBound(ObjData) Then
+                    If ObjData(ObjIndex).OBJType = e_OBJType.otShield Then
+                        If .invent.Object(Slot).Equipped <> 0 And Slot <> RegisteredShieldSlot Then
+                            .invent.Object(Slot).Equipped = 0
+                            InventoryChanged = True
+                            Call UpdateUserInv(False, UserIndex, CByte(Slot))
+                            Call LogError("Desequipar: flag Equipped huerfano limpiado. Usuario=" & .name & _
+                                          " Slot=" & Slot & " ObjIndex=" & ObjIndex & _
+                                          " SlotRegistrado=" & RegisteredShieldSlot)
+                        End If
+                    End If
+                End If
+            Next Slot
+        End If
+
+        If InventoryChanged Then
+            .flags.ModificoInventario = True
+        End If
+
+        If RegisteredShieldSlot = 0 And Not UserIsLoggingIn Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 3))
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
+        End If
+    End With
+
+    NormalizarEscudoEquipado = InventoryChanged
+    Exit Function
+NormalizarEscudoEquipado_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.NormalizarEscudoEquipado", Erl)
+End Function
+
 Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
     On Error GoTo UpdateUserInv_Err
     Dim NullObj As t_UserOBJ

@@ -240,6 +240,14 @@ Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.read
         '       HandleLoginNewChar(ConnectionID)
         ' It does not make sense to pass the index if it has not being assigned
         Call Protocol.HandleIncomingData(Connection, Message, UserRef.ArrayIndex)
+    ElseIf UserRef.ArrayIndex > 0 Then
+        If UserRef.ArrayIndex <= UBound(UserList) Then
+            Call LogUserRefError(UserRef, "modNetwork.OnServerRecv")
+        Else
+            Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") At: modNetwork.OnServerRecv")
+        End If
+        Call KickConnection(Connection)
+        Exit Sub
     Else
         Call Protocol.HandleIncomingData(Connection, Message)
     End If
