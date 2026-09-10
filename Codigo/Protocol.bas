@@ -3921,6 +3921,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             If .ComUsu.Objeto > 0 Then
                 'Msg1142= No podés cambiar tu oferta.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CAMBIAR_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Sub
             End If
             'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
             If .flags.Navegando = 1 Then
