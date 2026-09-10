@@ -3487,7 +3487,7 @@ Dim eSkinType                   As e_OBJType
         'Validate item slot
         If Not bSkins Then
             If itemSlot > .CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
-            'Auto Fix errores de dateos en ï¿½tems.
+            'Auto Fix errores de dateos en ítems.
             If .invent.Object(itemSlot).amount = 0 Then
                 .invent.Object(itemSlot).ObjIndex = 0
                 Call UpdateSingleItemInv(UserIndex, itemSlot, False)
