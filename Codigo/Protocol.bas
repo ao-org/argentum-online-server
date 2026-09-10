@@ -6558,9 +6558,11 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim SlotNuevo As Byte
         SlotViejo = reader.ReadInt8()
         SlotNuevo = reader.ReadInt8()
-        Dim Objeto               As t_Obj
+        Dim Objeto               As t_UserOBJ
         Dim AppliedElementalTags As Boolean
         Dim tmpElementalTags     As Long
+        Dim tmpMountLevel        As Byte
+        Dim tmpMountExp          As Long
         Dim Equipado             As Boolean
         Dim Equipado2            As Boolean
         Dim Equipado3            As Boolean
@@ -6595,6 +6597,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     .invent.Object(SlotViejo).ObjIndex = 0
                     .invent.Object(SlotViejo).amount = 0
                     .invent.Object(SlotViejo).Equipped = 0
+                    .invent.Object(SlotViejo).MountLevel = 0
+                    .invent.Object(SlotViejo).MountExp = 0
                     'Cambiamos si alguno es un anillo
                     If .invent.EquippedRingAccesorySlot = SlotViejo Then
                         .invent.EquippedRingAccesorySlot = SlotNuevo
@@ -6644,21 +6648,24 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     Objeto.amount = .invent.Object(SlotViejo).amount
                     Objeto.ObjIndex = .invent.Object(SlotViejo).ObjIndex
                     tmpElementalTags = .invent.Object(SlotViejo).ElementalTags
+                    tmpMountLevel = .invent.Object(SlotViejo).MountLevel
+                    tmpMountExp = .invent.Object(SlotViejo).MountExp
                     If .invent.Object(SlotViejo).Equipped = 1 Then
                         Equipado = True
                     End If
                     If .invent.Object(SlotNuevo).Equipped = 1 Then
                         Equipado2 = True
                     End If
-                    '  If .Invent.Object(SlotNuevo).Equipped = 1 And .Invent.Object(SlotViejo).Equipped = 1 Then
-                    '     Equipado3 = True
-                    ' End If
                     .invent.Object(SlotViejo).ObjIndex = .invent.Object(SlotNuevo).ObjIndex
                     .invent.Object(SlotViejo).amount = .invent.Object(SlotNuevo).amount
                     .invent.Object(SlotViejo).ElementalTags = .invent.Object(SlotNuevo).ElementalTags
+                    .invent.Object(SlotViejo).MountLevel = .invent.Object(SlotNuevo).MountLevel
+                    .invent.Object(SlotViejo).MountExp = .invent.Object(SlotNuevo).MountExp
                     .invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
                     .invent.Object(SlotNuevo).amount = Objeto.amount
                     .invent.Object(SlotNuevo).ElementalTags = tmpElementalTags
+                    .invent.Object(SlotNuevo).MountLevel = tmpMountLevel
+                    .invent.Object(SlotNuevo).MountExp = tmpMountExp
                     If Equipado Then
                         .invent.Object(SlotNuevo).Equipped = 1
                     Else
@@ -6735,10 +6742,14 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     .invent.Object(SlotNuevo).amount = .invent.Object(SlotViejo).amount
                     .invent.Object(SlotNuevo).Equipped = .invent.Object(SlotViejo).Equipped
                     .invent.Object(SlotNuevo).ElementalTags = .invent.Object(SlotViejo).ElementalTags
+                    .invent.Object(SlotNuevo).MountLevel = .invent.Object(SlotViejo).MountLevel
+                    .invent.Object(SlotNuevo).MountExp = .invent.Object(SlotViejo).MountExp
                     .invent.Object(SlotViejo).ObjIndex = 0
                     .invent.Object(SlotViejo).amount = 0
                     .invent.Object(SlotViejo).Equipped = 0
                     .invent.Object(SlotViejo).ElementalTags = 0
+                    .invent.Object(SlotViejo).MountLevel = 0
+                    .invent.Object(SlotViejo).MountExp = 0
                 End If
             End If
             Call UpdateUserInv(False, UserIndex, SlotViejo)
@@ -6776,7 +6787,6 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         Call UpdateBanUserInv(False, UserIndex, SlotViejo, "HandleBovedaMoveItem - slot viejo")
         Call UpdateBanUserInv(False, UserIndex, SlotNuevo, "HandleBovedaMoveItem - slot nuevo")
     End With
-    Exit Sub
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBovedaMoveItem", Erl)

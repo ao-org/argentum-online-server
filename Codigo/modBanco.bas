@@ -199,6 +199,10 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Ca
         Exit Sub
     End If
     If UserList(UserIndex).invent.Object(Slot).amount > 0 And Cantidad > 0 Then
+        If ObjData(UserList(UserIndex).invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otWildMount Then
+            Call WriteLocaleMsg(UserIndex, MSG_WILD_MOUNT_CANNOT_BE_BANKED, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Exit Sub
+        End If
         If Cantidad > UserList(UserIndex).invent.Object(Slot).amount Then Cantidad = UserList(UserIndex).invent.Object(Slot).amount
         'Agregamos el obj que deposita al banco
         slotdestino = UserDejaObj(UserIndex, CInt(Slot), Cantidad, slotdestino)
