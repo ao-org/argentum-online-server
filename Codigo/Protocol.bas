@@ -7242,7 +7242,6 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     On Error GoTo HandleAbandonarGrupo_Err
     With UserList(UserIndex)
-        Call reader.ReadInt16
         If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
             Call FinalizarGrupo(UserIndex)
         Else
