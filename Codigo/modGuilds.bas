@@ -85,11 +85,11 @@ IsNeutralGuildMember_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.IsNeutralGuildMember", Erl)
 End Function
 
-Public Function UserStatusForClient(ByVal UserIndex As Integer) As e_Facciones
+Public Function UserStatusForClient(ByVal UserIndex As Integer, ByVal PersonalStatus As e_Facciones) As e_Facciones
     On Error GoTo UserStatusForClient_Err
-    UserStatusForClient = Status(UserIndex)
+    UserStatusForClient = PersonalStatus
     If IsNeutralGuildMember(UserIndex) Then
-        UserStatusForClient = GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, UserStatusForClient)
+        UserStatusForClient = GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, PersonalStatus)
     End If
     Exit Function
 UserStatusForClient_Err:

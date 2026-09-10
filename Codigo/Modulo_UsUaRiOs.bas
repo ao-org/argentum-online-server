@@ -978,9 +978,9 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         End If
     End If
     If UserList(UserIndex).flags.AdminInvisible = 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), name))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex, UserList(UserIndex).faccion.Status), name))
     Else
-        Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), name))
+        Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex, UserList(UserIndex).faccion.Status), name))
     End If
     Exit Sub
 RefreshCharStatus_Err:
@@ -1041,10 +1041,10 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                     End If
                 End If
                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, _
-                        .Char.BackpackAnim, .Char.FX, 999, .Char.CascoAnim, TempName, UserStatusForClient(UserIndex), .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, _
+                        .Char.BackpackAnim, .Char.FX, 999, .Char.CascoAnim, TempName, UserStatusForClient(UserIndex, .faccion.Status), .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, _
                         .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, _
-                        clan_nivel, clan_alineacion, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
-                        .flags.tiene_bandera)
+                        clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
+                        .flags.tiene_bandera, , clan_alineacion)
             Else
                 'Hide the name and clan - set privs as normal user
                 Call AgregarUser(UserIndex, .pos.Map, appear)
@@ -2480,11 +2480,6 @@ WarpMascotas_Err:
 End Sub
 
 Public Sub SetModoConsulta(ByVal UserIndex As Integer)
-    '***************************************************
-    'Author: Torres Patricio (Pato)
-    'Last Modification: 05/06/10
-    '
-    '***************************************************
     Dim sndNick As String
     With UserList(UserIndex)
         sndNick = .name
@@ -2495,7 +2490,7 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
                 sndNick = sndNick & " <" & modGuilds.GuildName(.GuildIndex) & ">"
             End If
         End If
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex), sndNick))
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserStatusForClient(UserIndex, .faccion.Status), sndNick))
     End With
 End Sub
 

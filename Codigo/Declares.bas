@@ -3087,7 +3087,7 @@ Public Type t_User
     MascotasType(1 To MAXMASCOTAS) As Integer
     MascotasIndex(1 To MAXMASCOTAS) As t_NpcReference
     GuildIndex As Integer   'puntero al array global de guilds
-    FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
+    FundandoGuildAlineacion As Byte     'Cambiado de e_ALINEACION_GUILD a Byte: Declares.bas no puede depender del tipo de modGuilds.bas (dependencia circular de modulos en VB6, detectada al agregar GuildAlignmentAllowsStatus/GuildStatusForClient/UserStatusForClient). Sigue representando los valores de e_ALINEACION_GUILD (0=Neutral, 1=Armada, 2=Caotica, 3=Ciudadana, 4=Criminal). No se usa en ningun otro lado del codigo. Esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion.
     EscucheClan As Integer
     LastGuildRejection As String
     KeyCrypt As Integer
