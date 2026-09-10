@@ -1411,65 +1411,49 @@ End Sub
 
 
 Private Sub TimerMeteorologia_Timer()
-    'Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_TIMER_LLUVIA, TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1741=Servidor > Timer de lluvia en : ¬1
     On Error GoTo TimerMeteorologia_Timer_Err
-    If TimerMeteorologico > 7 Then
-        TimerMeteorologico = TimerMeteorologico - 1
-        Exit Sub
+
+    If TimerMeteorologico = 0 Or TimerMeteorologico > METEOROLOGICAL_CYCLE_MINUTES Then
+        TimerMeteorologico = METEOROLOGICAL_CYCLE_MINUTES
     End If
-    If TimerMeteorologico = 7 Then
-        ProbabilidadNublar = RandomNumber(1, 3)
-        If ProbabilidadNublar = 1 Then
+
+    If TimerMeteorologico = METEOROLOGICAL_CLOUD_COUNTDOWN_MINUTES Then
+        ProbabilidadNublar = RandomNumber(1, 2)
+        If WeatherCloudRollSucceeds(ProbabilidadNublar) Then
             IntensidadDeNubes = RandomNumber(10, 45)
-            Nieblando = True
-            ServidorNublado = True
-            'Enviar Nubes a todos
+            Call SetAtmosphericFogState(True, IntensidadDeNubes)
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
-            Call AgregarAConsola("Servidor » Empezaron las nubes")
-            TimerMeteorologico = TimerMeteorologico - 1
+            Call AgregarAConsola("Servidor - Empezaron las nubes")
         Else
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", e_FontTypeNames.FONTTYPE_SERVER))
-            Call AgregarAConsola("Servidor » Tranquilo, no hay nubes ni va a llover.")
-            Call ResetMeteo(True)
-            Exit Sub
+            Call AgregarAConsola("Servidor - Tiempo despejado.")
+        End If
+    ElseIf TimerMeteorologico < METEOROLOGICAL_CLOUD_COUNTDOWN_MINUTES And _
+            TimerMeteorologico > METEOROLOGICAL_PRECIPITATION_COUNTDOWN_MINUTES Then
+        If IsAtmosphericFogActive() Then
+            Truenos.Enabled = True
+        End If
+    ElseIf TimerMeteorologico = METEOROLOGICAL_PRECIPITATION_COUNTDOWN_MINUTES Then
+        If IsAtmosphericFogActive() Then
+            ProbabilidadLLuvia = RandomNumber(1, 5)
+            If WeatherPrecipitationRollSucceeds(ProbabilidadLLuvia, True) Then
+                Call SetPrecipitationState(True)
+                Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
+                Call AgregarAConsola("Servidor - Empezo la precipitacion.")
+            Else
+                Truenos.Enabled = False
+                Call AgregarAConsola("Servidor - Las nubes continuan sin precipitacion.")
+            End If
         End If
     End If
-    If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
-        TimerMeteorologico = TimerMeteorologico - 1
-        'Enviar Truenos y rayos
-        Truenos.Enabled = True
-        'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", e_FontTypeNames.FONTTYPE_SERVER))
-        Call AgregarAConsola("Servidor » Truenos y nubes activados.")
-        Exit Sub
-    End If
-    If TimerMeteorologico = 3 Then
-        ProbabilidadLLuvia = RandomNumber(1, 5)
-        If ProbabilidadLLuvia = 1 Then
-            'Envia Lluvia
-            Nebando = True
-            Lloviendo = True
-            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250)) 'Rayo
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            Call AgregarAConsola("Servidor » Lloviendo.")
-            TimerMeteorologico = TimerMeteorologico - 1
-        Else
-            Call AgregarAConsola("Servidor » Truenos y nubes desactivados.")
-            Call ResetMeteo(True)
-            Exit Sub
-        End If
-    End If
-    If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
-        TimerMeteorologico = TimerMeteorologico - 1
-        Exit Sub
-    End If
-    If TimerMeteorologico = 0 Then
-        'dejar de llover y sacar nubes
-        Call AgregarAConsola("Servidor >Lluvia desactivada.")
+
+    If TimerMeteorologico = 1 Then
+        Call AgregarAConsola("Servidor - Ciclo meteorologico finalizado.")
         Call ResetMeteo(True)
-        Exit Sub
+    Else
+        TimerMeteorologico = TimerMeteorologico - 1
     End If
     Exit Sub
 TimerMeteorologia_Timer_Err:
