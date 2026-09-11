@@ -899,6 +899,13 @@ Sub LoadBalance()
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
     Next
+        ' Costo de /hogar por tramos de nivel
+    For i = 1 To HOME_COST_TIER_COUNT
+        HomeCostTierMinLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MinLevel", "0")))
+        HomeCostTierMaxLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MaxLevel", "0")))
+        HomeCostTierFloorGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "FloorGLD", "0")))
+        HomeCostTierCapGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "CapGLD", "0")))
+    Next i
     'ElementalMatrixForNpcs
     Dim vals() As String
     Dim row    As String
@@ -909,11 +916,62 @@ Sub LoadBalance()
             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
         Next j
     Next i
+    Call ValidateHomeCostTiers
     Set BalanceIni = Nothing
     AgregarAConsola "Se cargó el balance (Balance.dat)"
     Exit Sub
 LoadBalance_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+End Sub
+
+Private Sub ValidateHomeCostTiers()
+    On Error GoTo ValidateHomeCostTiers_Err
+    Dim i As Byte
+    Dim ErrorMessage As String
+
+    HomeCostTiersValid = True
+
+    For i = 1 To HOME_COST_TIER_COUNT
+        If HomeCostTierMinLevel(i) <= 0 Or HomeCostTierMaxLevel(i) <= 0 _
+            Or HomeCostTierMinLevel(i) > HomeCostTierMaxLevel(i) _
+            Or HomeCostTierFloorGLD(i) <= 0 Or HomeCostTierCapGLD(i) < HomeCostTierFloorGLD(i) Then
+            ErrorMessage = "Tramo de costo de hogar invalido. Tier=" & i & _
+                " MinLevel=" & HomeCostTierMinLevel(i) & _
+                " MaxLevel=" & HomeCostTierMaxLevel(i) & _
+                " FloorGLD=" & HomeCostTierFloorGLD(i) & _
+                " CapGLD=" & HomeCostTierCapGLD(i)
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+            HomeCostTiersValid = False
+        ElseIf i > 1 Then
+            If HomeCostTierMinLevel(i) <> HomeCostTierMaxLevel(i - 1) + 1 Then
+                ErrorMessage = "Tramos de costo de hogar no son contiguos. Tier=" & i & _
+                    " MinLevel=" & HomeCostTierMinLevel(i) & _
+                    " Tier anterior MaxLevel=" & HomeCostTierMaxLevel(i - 1)
+                Call LogError(ErrorMessage)
+                Debug.Print ErrorMessage
+                HomeCostTiersValid = False
+            End If
+        End If
+    Next i
+
+    If HomeCostTierMinLevel(1) <> 1 Then
+        Call LogError("El primer tramo de costo de hogar no arranca en nivel 1. MinLevel=" & HomeCostTierMinLevel(1))
+        HomeCostTiersValid = False
+    End If
+
+    If HomeCostTierMaxLevel(HOME_COST_TIER_COUNT) < STAT_MAXELV Then
+        Call LogError("El ultimo tramo de costo de hogar no cubre el nivel maximo. MaxLevel=" & HomeCostTierMaxLevel(HOME_COST_TIER_COUNT) & " STAT_MAXELV=" & STAT_MAXELV)
+        HomeCostTiersValid = False
+    End If
+
+    If Not HomeCostTiersValid Then
+        Debug.Assert False
+    End If
+
+    Exit Sub
+ValidateHomeCostTiers_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.ValidateHomeCostTiers", Erl)
 End Sub
 
 Sub LoadObjCarpintero()

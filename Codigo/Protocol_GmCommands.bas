@@ -808,7 +808,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
     Dim i     As Long
     Dim Users As String
     With UserList(UserIndex)
-        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster Or e_PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
             'Msg952= Servidor Â» /TRABAJANDO es un comando deshabilitado para tu cargo.
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_TRABAJANDO_COMANDO_DESHABILITADO_CARGO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             Exit Sub
@@ -3465,7 +3465,18 @@ Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Call LogGM(GetUserRealName(UserIndex), "/NIEBLA")
-        Call ResetMeteo(True)
+        Dim EnableFog As Boolean
+        Dim FogIntensity As Byte
+        EnableFog = Not IsAtmosphericFogActive()
+        If EnableFog Then
+            FogIntensity = RandomNumber(10, 45)
+            Call SetAtmosphericFogState(True, FogIntensity)
+        Else
+            FogIntensity = IntensidadDeNubes
+            Call SetAtmosphericFogState(False)
+            frmMain.Truenos.Enabled = False
+        End If
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(FogIntensity))
     End With
     Exit Sub
 HandleNieblaToggle_Err:

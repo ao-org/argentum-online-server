@@ -3225,6 +3225,35 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     enviarInfoHechizo = False
     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
     targetUserIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
+    
+    If IsSet(Hechizos(h).Effects, e_SpellEffects.Immobilize) Or IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
+        If UserIndex = targetUserIndex Then
+            Call WriteLocaleMsg(UserIndex, MSG_CANNOT_ATTACK_YOURSELF, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+            b = False
+            Exit Sub
+        End If
+        If UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_VOLVER_SER_INMOVILIZADO_TAN_RAPIDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, UserList(targetUserIndex).name)
+            b = False
+            Exit Sub
+        End If
+        If Not UserMod.CanMove(UserList(targetUserIndex).flags, UserList(targetUserIndex).Counters) Then
+            ' Msg661=No podes inmovilizar un objetivo que no puede moverse.
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INMOVILIZAR_OBJETIVO_PUEDE_MOVERSE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+            b = False
+            Exit Sub
+        End If
+        If IsSet(UserList(targetUserIndex).flags.StatusMask, eCCInmunity) Then
+            Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            b = False
+            Exit Sub
+        End If
+        If Not PuedeAtacar(UserIndex, targetUserIndex) Then
+            b = False
+            Exit Sub
+        End If
+    End If
+    
     ' <-------- Agilidad ---------->
     If Hechizos(h).SubeAgilidad = 1 Then
         'Para poder tirar cl a un pk en el ring
