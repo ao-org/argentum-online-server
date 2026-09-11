@@ -3140,7 +3140,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
         End If
         Call InfoHechizo(UserIndex)
-        Call ForzarDesmontura(tempChr)
+        If Damage > 0 Then Call ForzarDesmontura(tempChr)
         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
         Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(tempChr, Resistencia)
@@ -3426,7 +3426,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             Call UsuarioAtacadoPorUsuario(UserIndex, targetUserIndex)
         End If
         enviarInfoHechizo = True
-        Call ForzarDesmontura(targetUserIndex)
+        If Damage > 0 Then Call ForzarDesmontura(targetUserIndex)
         IsAlive = UserMod.DoDamageOrHeal(targetUserIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
         Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, targetUserIndex, eUser, e_DamageSourceType.e_magic)
         Call SubirSkill(targetUserIndex, Resistencia)

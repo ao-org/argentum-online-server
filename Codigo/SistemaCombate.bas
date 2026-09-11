@@ -1146,6 +1146,9 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
     On Error GoTo UserDañoUser_Err
     With UserList(VictimaIndex)
         Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
+        Dim VictimaMontadaConSilla As Boolean
+        Dim SlotMontura As Integer
+        Dim ObjMontura As t_ObjData
         ' Daño normal
         BaseDamage = GetUserDamage(AtacanteIndex, eUser)
         ' Color por defecto rojo
@@ -1185,12 +1188,12 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
             ' Defensa de la montura de la víctima
         ElseIf .flags.Montado = 1 And .invent.EquippedSaddleObjIndex > 0 Then
-            Dim Montura As t_ObjData
-            Montura = ObjData(.invent.EquippedSaddleObjIndex)
-            Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
-            ' El golpe recibido lo baja de la montura (ya se aprovecho su defensa en este calculo).
-            ' DoMontar ya se encarga de emitir el ChangeUserChar del desmontaje internamente.
-            Call DoMontar(VictimaIndex, Montura, .invent.EquippedSaddleSlot, True)
+            ObjMontura = ObjData(.invent.EquippedSaddleObjIndex)
+            SlotMontura = .invent.EquippedSaddleSlot
+            Defensa = Defensa + RandomNumber(ObjMontura.MinDef, ObjMontura.MaxDef)
+            ' Ya se aprovechó la defensa de la montura en este cálculo; el desmontaje se ejecuta
+            ' más abajo, una vez que se conoce el daño final (incluyendo crítico/apuñalada).
+            VictimaMontadaConSilla = True
         End If
         Defensa = Defensa + UserMod.GetDefenseBonus(VictimaIndex)
         Dim ArmorPen As Integer
@@ -1276,6 +1279,11 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     Damage = .Stats.MinHp ' Esto simula la muerte (vida minima)
                 End If
             End If
+        End If
+        ' El desmontaje se ejecuta acá, con el Damage ya definitivo (post crítico/apuñalada),
+        ' y solo si el golpe efectivamente hizo daño.
+        If VictimaMontadaConSilla And Damage > 0 Then
+            Call DoMontar(VictimaIndex, ObjMontura, SlotMontura, True)
         End If
         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -Damage, e_DamageSourceType.e_phisical, .invent.EquippedWeaponObjIndex, -1, -1, Color) = _
                 eStillAlive Then
