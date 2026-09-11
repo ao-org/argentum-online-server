@@ -1168,7 +1168,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         Destino.Map = .pos.Map
         Destino.x = .Orig.x + .Caminata(.CaminataActual).offset.x
         Destino.y = .Orig.y + .Caminata(.CaminataActual).offset.y
-        ' Si todaviï¿½a no llego al destino
+        ' Si todavía no llego al destino
         If .pos.x <> Destino.x Or .pos.y <> Destino.y Then
             ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
             Heading = GetHeadingFromWorldPos(.pos, Destino)
