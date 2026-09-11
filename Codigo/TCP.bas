@@ -554,12 +554,16 @@ Function ConnectUser(ByVal UserIndex As Integer, ByRef name As String, Optional 
         Else
             Call ConnectUser_Prepare(UserIndex, name)
 
-            If LoadCharacterFromDB(UserIndex) Then
+            If LoadCharacterFromDB(UserIndex, failureReason) Then
                 If ConnectUser_Complete(UserIndex, name, newUser) Then
                     ConnectUser = True
                 End If
             Else
-                Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                If LenB(failureReason) > 0 Then
+                    Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, failureReason)
+                Else
+                    Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString) 'Msg1773=No se puede cargar el personaje.
+                End If
                 Call CloseSocket(UserIndex)
             End If
         End If
@@ -625,12 +629,16 @@ Public Function ConnectUserByID(ByVal UserIndex As Integer, ByVal CharID As Long
     ' Tell the loader to load by ID
     UserList(UserIndex).id = CharID
 
-    If LoadCharacterFromDB(UserIndex) Then
+    If LoadCharacterFromDB(UserIndex, failureReason) Then
         If ConnectUser_Complete(UserIndex, name, newUser) Then
             ConnectUserByID = True
         End If
     Else
-        Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
+        If LenB(failureReason) > 0 Then
+            Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, failureReason)
+        Else
+            Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
+        End If
         Call CloseSocket(UserIndex)
     End If
 
