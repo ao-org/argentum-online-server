@@ -6209,12 +6209,12 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
         If ServerSoloGMs > 0 Then
             ServerSoloGMs = 0
             Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "0")
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg("2257", .name, e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_DESACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
             Call LogGM(GetUserRealName(UserIndex), "Desactivo Solo GMs (ServerSoloGMs=0)")
         Else
             ServerSoloGMs = 1
             Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "1")
-            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg("2256", .name, e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_ACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
             Call LogGM(GetUserRealName(UserIndex), "Activo Solo GMs (ServerSoloGMs=1)")
         End If
     End With
