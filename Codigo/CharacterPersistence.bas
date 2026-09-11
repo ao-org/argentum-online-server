@@ -101,32 +101,56 @@ GetCharacterNameByUserId_Err:
                           ". Línea: " & Erl)
 End Function
 
-Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
+Public Function LoadCharacterBank(ByVal UserIndex As Integer, Optional ByRef failureReason As String) As Boolean
     On Error GoTo LoadCharacterBank_Err
+    LoadCharacterBank = False
     With UserList(UserIndex)
         Dim RS      As ADODB.Recordset
         Dim counter As Long
+        Dim db_obj_index As Long
+        Dim invalid_objects As String
+        Dim invalid_slots As String
         Set RS = Query("SELECT number, item_id, amount,elemental_tags FROM bank_item WHERE user_id = ?;", .Id)
         counter = 0
         If Not RS Is Nothing Then
             While Not RS.EOF
-                With .BancoInvent.Object(RS!Number)
-                    .ObjIndex = IIf(RS!item_id <= UBound(ObjData), RS!item_id, 0)
-                    If .ObjIndex <> 0 Then
-                        If LenB(ObjData(.ObjIndex).name) Then
-                            counter = counter + 1
-                            .amount = RS!amount
-                            .ElementalTags = RS!elemental_tags
+                If RS!Number >= LBound(.BancoInvent.Object) And RS!Number <= UBound(.BancoInvent.Object) Then
+                    With .BancoInvent.Object(RS!Number)
+                        db_obj_index = RS!item_id
+                        .ObjIndex = 0
+                        If db_obj_index = 0 Then
+                            'Empty database slots are valid and do not need diagnostics.
+                        ElseIf db_obj_index >= LBound(ObjData) And db_obj_index <= UBound(ObjData) Then
+                            .ObjIndex = db_obj_index
+                            If LenB(ObjData(.ObjIndex).name) Then
+                                counter = counter + 1
+                                .amount = RS!amount
+                                .ElementalTags = RS!elemental_tags
+                            Else
+                                invalid_objects = invalid_objects & RS!Number & ":" & db_obj_index & ";"
+                            End If
                         Else
-                            .ObjIndex = 0
+                            invalid_objects = invalid_objects & RS!Number & ":" & db_obj_index & ";"
+                            If db_obj_index >= 0 And db_obj_index <= 32767 Then .ObjIndex = db_obj_index
                         End If
-                    End If
-                End With
+                    End With
+                Else
+                    invalid_slots = invalid_slots & RS!Number & ";"
+                End If
                 RS.MoveNext
             Wend
             .BancoInvent.NroItems = counter
         End If
+        If LenB(invalid_objects) Then
+            Call LogInvalidCharacterObjects(UserIndex, "banco", invalid_objects)
+            failureReason = failureReason & "BANK|" & invalid_objects & "|"
+        End If
+        If LenB(invalid_slots) Then
+            Call LogInvalidCharacterSlots(UserIndex, "banco", invalid_slots, UBound(.BancoInvent.Object))
+            failureReason = failureReason & "BANK_SLOTS|" & invalid_slots & "|"
+        End If
     End With
+    If LenB(failureReason) Then Exit Function
     LoadCharacterBank = True
     Exit Function
 LoadCharacterBank_Err:
@@ -149,13 +173,17 @@ Public Function get_num_inv_slots_from_tier(ByVal t As e_TipoUsuario) As Integer
     End Select
 End Function
 
-Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
+Public Function LoadCharacterInventory(ByVal UserIndex As Integer, Optional ByRef failureReason As String) As Boolean
     On Error GoTo LoadCharacterInventory_Err
+    LoadCharacterInventory = False
     With UserList(UserIndex)
         Dim RS                As ADODB.Recordset
         Dim counter           As Long
         Dim SQLQuery          As String
         Dim max_slots_to_load As Integer
+        Dim db_obj_index      As Long
+        Dim invalid_objects   As String
+        Dim invalid_slots     As String
         'Load all slots to avoid destroying items when user stops being patreon
         max_slots_to_load = get_num_inv_slots_from_tier(tEmperador)
         SQLQuery = "SELECT number, item_id, is_equipped, amount, elemental_tags FROM inventory_item WHERE number <= " & max_slots_to_load & " AND user_id = ?;"
@@ -166,11 +194,15 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                 Dim db_inv_slot As Integer
                 db_inv_slot = RS!Number
                 Debug.Assert db_inv_slot > 0 And db_inv_slot <= UBound(.invent.Object)
-                If db_inv_slot > 0 And db_inv_slot <= max_slots_to_load Then
+                If db_inv_slot >= LBound(.invent.Object) And db_inv_slot <= UBound(.invent.Object) And db_inv_slot <= max_slots_to_load Then
                     'Make sure the slot index is within array bounds and that we don't load slots more slots than required for the current tier
                     With .invent.Object(db_inv_slot)
-                        .ObjIndex = IIf(RS!item_id <= UBound(ObjData), RS!item_id, 0)
-                        If .ObjIndex <> 0 Then
+                        db_obj_index = RS!item_id
+                        .ObjIndex = 0
+                        If db_obj_index = 0 Then
+                            'Empty database slots are valid and do not need diagnostics.
+                        ElseIf db_obj_index >= LBound(ObjData) And db_obj_index <= UBound(ObjData) Then
+                            .ObjIndex = db_obj_index
                             If LenB(ObjData(.ObjIndex).name) Then
                                 counter = counter + 1
                                 .amount = RS!amount
@@ -180,23 +212,45 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
                                     Call EquiparInvItem(UserIndex, RS!Number, True)
                                 End If
                             Else
-                                .ObjIndex = 0
+                                invalid_objects = invalid_objects & db_inv_slot & ":" & db_obj_index & ";"
                             End If
+                        Else
+                            invalid_objects = invalid_objects & db_inv_slot & ":" & db_obj_index & ";"
+                            If db_obj_index >= 0 And db_obj_index <= 32767 Then .ObjIndex = db_obj_index
                         End If
                     End With
+                Else
+                    invalid_slots = invalid_slots & db_inv_slot & ";"
                 End If
                 RS.MoveNext
             Wend
             .invent.NroItems = counter
         End If
+        If LenB(invalid_objects) Then
+            Call LogInvalidCharacterObjects(UserIndex, "inventario", invalid_objects)
+            failureReason = failureReason & "INV|" & invalid_objects & "|"
+        End If
+        If LenB(invalid_slots) Then
+            Call LogInvalidCharacterSlots(UserIndex, "inventario", invalid_slots, UBound(.invent.Object))
+            failureReason = failureReason & "INV_SLOTS|" & invalid_slots & "|"
+        End If
     End With
+    If LenB(failureReason) Then Exit Function
     LoadCharacterInventory = True
     Exit Function
 LoadCharacterInventory_Err:
     Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
-Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
+Private Sub LogInvalidCharacterObjects(ByVal UserIndex As Integer, ByVal inventoryName As String, ByVal invalidObjects As String)
+    Call LogDatabaseError("Objetos invalidos al cargar personaje " & UserList(UserIndex).name & ": " & inventoryName & ", " & invalidObjects & "rango OBJ.dat=" & LBound(ObjData) & "-" & UBound(ObjData) & ". No se eliminaron de la base de datos.")
+End Sub
+
+Private Sub LogInvalidCharacterSlots(ByVal UserIndex As Integer, ByVal inventoryName As String, ByVal invalidSlots As String, ByVal maxSlot As Integer)
+    Call LogDatabaseError("Slots invalidos al cargar personaje " & UserList(UserIndex).name & ": " & inventoryName & ", slots=" & invalidSlots & "rango permitido=1-" & maxSlot & ". No se eliminaron de la base de datos.")
+End Sub
+
+Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef failureReason As String) As Boolean
     On Error GoTo ErrorHandler
 #If LOGIN_STRESS_TEST = 1 Then
     LoadCharacterFromDB = True
@@ -205,6 +259,9 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
     
     Dim RS      As ADODB.Recordset
     Dim counter As Long
+    Dim inventoryLoaded As Boolean
+    Dim bankLoaded      As Boolean
+    failureReason = vbNullString
     LoadCharacterFromDB = False
     With UserList(UserIndex)
         Debug.Assert .id > 0
@@ -255,8 +312,12 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
             Call SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex))
         End If
         ' Load additional inventories.
-        If Not LoadCharacterInventory(UserIndex) Then Exit Function
-        If Not LoadCharacterBank(UserIndex) Then Exit Function
+        inventoryLoaded = LoadCharacterInventory(UserIndex, failureReason)
+        bankLoaded = LoadCharacterBank(UserIndex, failureReason)
+        If Not inventoryLoaded Or Not bankLoaded Then
+            If LenB(failureReason) Then failureReason = "CHAR_INVALID|" & failureReason
+            Exit Function
+        End If
         Call LoadSkinsInventory(UserIndex)
         Call RegisterUserName(.Id, .name)
         Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
