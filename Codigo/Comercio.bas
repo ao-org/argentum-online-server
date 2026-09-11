@@ -223,7 +223,7 @@ End Function
 
 Private Function EsSkinNoComprablePorComerciante(ByVal OBJType As e_OBJType) As Boolean
     Select Case OBJType
-        Case e_OBJType.otSkinsWings, e_OBJType.otSkinsArmours, e_OBJType.otSkinsShields, _
+        Case e_OBJType.otSkinBackpack, e_OBJType.otSkinsArmours, e_OBJType.otSkinsShields, _
             e_OBJType.otSkinsHelmets, e_OBJType.otSkinsWeapons, e_OBJType.otSkinsBoats, _
             e_OBJType.otSkinsSpells
             EsSkinNoComprablePorComerciante = True
