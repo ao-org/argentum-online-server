@@ -1545,15 +1545,13 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
         ' Rivalidad Criminal <-> Legión Oscura: se bloquea el ataque solo cuando AMBOS, atacante y
         ' víctima, están afiliados a un clan de alineación Criminal o Caótica (Legión Oscura).
-        ' Concilio (líder de los legionarios) se trata igual que Caos para esta regla.
-        If (Status(attackerIndex) = e_Facciones.Criminal And (Status(VictimIndex) = e_Facciones.Caos Or Status(VictimIndex) = e_Facciones.concilio)) _
-                Or ((Status(attackerIndex) = e_Facciones.Caos Or Status(attackerIndex) = e_Facciones.concilio) And Status(VictimIndex) = e_Facciones.Criminal) Then
-            If EsClanCriminalOLegion(UserList(attackerIndex).GuildIndex) And EsClanCriminalOLegion(UserList(VictimIndex).GuildIndex) Then
-                'Msg2291= No podés atacar a un rival protegido por su clan.
-                Call WriteLocaleMsg(attackerIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                PuedeAtacar = False
-                Exit Function
-            End If
+        ' Concilio se trata igual que Caos. La condición está centralizada en RivalidadClanBloqueaAtaque
+        ' para que CanAttackUser (ataque a distancia) aplique exactamente la misma regla.
+        If RivalidadClanBloqueaAtaque(attackerIndex, VictimIndex) Then
+            'Msg2291= No podés atacar a un rival protegido por su clan.
+            Call WriteLocaleMsg(attackerIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            PuedeAtacar = False
+            Exit Function
         End If
     End If
     'Estás en un Mapa Seguro?
@@ -1611,7 +1609,21 @@ EsClanCriminalOLegion_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.EsClanCriminalOLegion", Erl)
 End Function
 
-Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
+Public Function RivalidadClanBloqueaAtaque(ByVal attackerIndex As Integer, ByVal VictimIndex As Integer) As Boolean
+    On Error GoTo RivalidadClanBloqueaAtaque_Err
+    RivalidadClanBloqueaAtaque = False
+    If (Status(attackerIndex) = e_Facciones.Criminal And (Status(VictimIndex) = e_Facciones.Caos Or Status(VictimIndex) = e_Facciones.concilio)) _
+            Or ((Status(attackerIndex) = e_Facciones.Caos Or Status(attackerIndex) = e_Facciones.concilio) And Status(VictimIndex) = e_Facciones.Criminal) Then
+        If EsClanCriminalOLegion(UserList(attackerIndex).GuildIndex) And EsClanCriminalOLegion(UserList(VictimIndex).GuildIndex) Then
+            RivalidadClanBloqueaAtaque = True
+        End If
+    End If
+    Exit Function
+RivalidadClanBloqueaAtaque_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.RivalidadClanBloqueaAtaque", Erl)
+End Function
+
+Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExp_Err
     If NpcList(NpcIndex).MaestroUser.ArrayIndex <> 0 Then
         Exit Sub
