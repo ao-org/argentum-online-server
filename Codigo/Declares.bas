@@ -180,6 +180,7 @@ Public Enum e_AttackInteractionResult
     eAttackCitizenNpc
     eAttackSameFaction
     eAttackPetSameFaction
+    eClanRivalryProtected
 End Enum
 
 Public Enum e_DeleteSource

@@ -2260,8 +2260,11 @@ Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef TargetPos As 
     On Error GoTo ThrowArrowToTile_Err
     ThrowArrowToTile = False
     If MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex > 0 Then
-        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, UserList(MapData(TargetPos.Map, _
-                TargetPos.x, TargetPos.y).UserIndex).VersionId) = eCanAttack Then
+        Dim UserAttackInteractionResultUser As e_AttackInteractionResult
+        UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, _
+                UserList(MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex).VersionId)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResultUser)
+        If UserAttackInteractionResultUser = eCanAttack Then
             Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, eUser)
             ThrowArrowToTile = True
         End If

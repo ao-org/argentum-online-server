@@ -1033,6 +1033,22 @@ GuildAlignmentIndex_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentIndex", Erl)
 End Function
 
+#If UNIT_TEST = 1 Then
+Public Sub Test_SetGuildAlignment(ByVal GuildIndex As Integer, ByVal Alignment As e_ALINEACION_GUILD)
+    '***************************************************
+    'SOLO PARA TESTS (UNIT_TEST=1). Fija la alineacion de un clan de prueba sin pasar por los
+    'requisitos de CrearNuevoClan (nivel, liderazgo, items en inventario). Crea el clan en el
+    'indice indicado si todavia no existe.
+    '***************************************************
+    If GuildIndex <= 0 Or GuildIndex > MAX_GUILDS Then Exit Sub
+    If guilds(GuildIndex) Is Nothing Then
+        Set guilds(GuildIndex) = New clsClan
+        If CANTIDADDECLANES < GuildIndex Then CANTIDADDECLANES = GuildIndex
+    End If
+    Call guilds(GuildIndex).CambiarAlineacion(Alignment)
+End Sub
+#End If
+
 Public Function NivelDeClan(ByVal GuildIndex As Integer) As Byte
     On Error GoTo NivelDeClan_Err
     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
@@ -1203,4 +1219,73 @@ Public Function GetGuildMemberList(ByVal GuildName As String) As Long()
     Exit Function
 GetGuildMemberList_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildMemberList", Erl)
+End Function
+
+' Verifica que la rivalidad Criminal <-> Legion bloquea el ataque cuando AMBOS estan afiliados
+' a un clan Criminal o Caotico, en las dos direcciones, incluyendo Concilio como equivalente a Caos.
+Private Function test_rivalidad_clan_bloquea_ataque() As Boolean
+    On Error GoTo Err_Handler
+    test_rivalidad_clan_bloquea_ataque = True
+    Dim AttackerIdx As Integer, VictimIdx As Integer
+    Dim AttackerGuild As Integer, VictimGuild As Integer
+    AttackerIdx = 1
+    VictimIdx = 2
+    AttackerGuild = 1
+    VictimGuild = 2
+    Dim origAttackerGuild As Integer, origVictimGuild As Integer
+    Dim origAttackerStatus As e_Facciones, origVictimStatus As e_Facciones
+    origAttackerGuild = UserList(AttackerIdx).GuildIndex
+    origVictimGuild = UserList(VictimIdx).GuildIndex
+    origAttackerStatus = UserList(AttackerIdx).faccion.Status
+    origVictimStatus = UserList(VictimIdx).faccion.Status
+
+    UserList(AttackerIdx).GuildIndex = AttackerGuild
+    UserList(VictimIdx).GuildIndex = VictimGuild
+
+    ' Criminal (clan Criminal) ataca Caos (clan Legion): bloqueado
+    Call modGuilds.Test_SetGuildAlignment(AttackerGuild, e_ALINEACION_GUILD.ALINEACION_CRIMINAL)
+    Call modGuilds.Test_SetGuildAlignment(VictimGuild, e_ALINEACION_GUILD.ALINEACION_CAOTICA)
+    UserList(AttackerIdx).faccion.Status = e_Facciones.Criminal
+    UserList(VictimIdx).faccion.Status = e_Facciones.Caos
+    If Not SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_clan_bloquea_ataque = False: GoTo Restore
+    End If
+
+    ' Criminal ataca Concilio (equivalente a Caos): bloqueado
+    UserList(VictimIdx).faccion.Status = e_Facciones.concilio
+    If Not SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_clan_bloquea_ataque = False: GoTo Restore
+    End If
+
+    ' Direccion inversa: Caos (clan Legion) ataca Criminal (clan Criminal): bloqueado
+    UserList(AttackerIdx).faccion.Status = e_Facciones.Caos
+    UserList(VictimIdx).faccion.Status = e_Facciones.Criminal
+    Call modGuilds.Test_SetGuildAlignment(AttackerGuild, e_ALINEACION_GUILD.ALINEACION_CAOTICA)
+    Call modGuilds.Test_SetGuildAlignment(VictimGuild, e_ALINEACION_GUILD.ALINEACION_CRIMINAL)
+    If Not SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_clan_bloquea_ataque = False: GoTo Restore
+    End If
+
+    ' Concilio (clan Legion) ataca Criminal: bloqueado
+    UserList(AttackerIdx).faccion.Status = e_Facciones.concilio
+    If Not SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_clan_bloquea_ataque = False: GoTo Restore
+    End If
+
+    ' Control: mismos estados opuestos, pero clanes NO rivales (Neutral) -> no bloquea
+    Call modGuilds.Test_SetGuildAlignment(AttackerGuild, e_ALINEACION_GUILD.ALINEACION_NEUTRAL)
+    Call modGuilds.Test_SetGuildAlignment(VictimGuild, e_ALINEACION_GUILD.ALINEACION_NEUTRAL)
+    If SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_clan_bloquea_ataque = False: GoTo Restore
+    End If
+
+Restore:
+    UserList(AttackerIdx).GuildIndex = origAttackerGuild
+    UserList(VictimIdx).GuildIndex = origVictimGuild
+    UserList(AttackerIdx).faccion.Status = origAttackerStatus
+    UserList(VictimIdx).faccion.Status = origVictimStatus
+    Exit Function
+Err_Handler:
+    test_rivalidad_clan_bloquea_ataque = False
+    Resume Restore
 End Function

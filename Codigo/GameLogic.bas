@@ -1812,6 +1812,9 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
         Case e_AttackInteractionResult.eAttackCitizenNpc
             ' Msg510=¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.
             Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CRIATURA_OTRO_USUARIO_CONVERTIDO_CRIMINAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        Case e_AttackInteractionResult.eClanRivalryProtected
+            'Msg2291= No podés atacar a un rival protegido por su clan.
+            Call WriteLocaleMsg(UserIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case Else
             ' Msg511=Target inválido.
             Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
