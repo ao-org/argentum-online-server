@@ -193,7 +193,6 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         End If
         Exit Sub
     End If
-
     UserList(UserIndex).ComUsu.Acepto = True
     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
         'Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
@@ -213,12 +212,12 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     Dim i As Long
     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
-        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.ElementalTags) Then
+        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.elementalTags) Then
             Call WriteLocaleMsg(OtroUserIndex, MSG_NO_OTRO_USUARIO_TIENE_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
-        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.ElementalTags) Then
+        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.elementalTags) Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
@@ -241,25 +240,32 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     ' Confirmamos que SI tienen los objetos a comerciar, procedemos con el cambio.
     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
-        If Not MeterItemEnInventario(UserIndex, objOfrecido) Then
-            Call TirarItemAlPiso(UserList(UserIndex).pos, objOfrecido)
-        End If
-        If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.ElementalTags) Then
-            Call LogSafeCommerceTransfer(GetUserRealName(OtroUserIndex), GetUserRealName(UserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.ElementalTags)
+        If objOfrecido.ObjIndex > 0 Then
+            If Not MeterItemEnInventario(UserIndex, objOfrecido) Then
+                Call TirarItemAlPiso(UserList(UserIndex).pos, objOfrecido)
+            End If
+            If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.elementalTags) Then
+                Call LogSafeCommerceTransfer(GetUserRealName(OtroUserIndex), GetUserRealName(UserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.elementalTags)
+            End If
         End If
     Next i
     Dim j As Long
     For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(j)
-        If MeterItemEnInventario(OtroUserIndex, objOfrecido) = False Then
-            Call TirarItemAlPiso(UserList(OtroUserIndex).pos, objOfrecido)
-        End If
-        If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.ElementalTags) Then
-            Call LogSafeCommerceTransfer(GetUserRealName(UserIndex), GetUserRealName(OtroUserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.ElementalTags)
+        If objOfrecido.ObjIndex > 0 Then
+            If MeterItemEnInventario(OtroUserIndex, objOfrecido) = False Then
+                Call TirarItemAlPiso(UserList(OtroUserIndex).pos, objOfrecido)
+            End If
+            If QuitarObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.elementalTags) Then
+                Call LogSafeCommerceTransfer(GetUserRealName(UserIndex), GetUserRealName(OtroUserIndex), objOfrecido.ObjIndex, objOfrecido.amount, objOfrecido.elementalTags)
+            End If
         End If
     Next j
     Call UpdateUserInv(True, UserIndex, 0)
     Call UpdateUserInv(True, OtroUserIndex, 0)
+    'Msg2290=Comercio finalizado con éxito.
+    Call WriteLocaleMsg(UserIndex, MSG_COMERCIO_FINALIZADO_EXITO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+    Call WriteLocaleMsg(OtroUserIndex, MSG_COMERCIO_FINALIZADO_EXITO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
 FinalizarComercio:
     Call FinComerciarUsu(UserIndex)
     Call FinComerciarUsu(OtroUserIndex)
