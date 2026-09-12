@@ -1294,7 +1294,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1114= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE_1114, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE_1114, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
     Else
         If FoundSomething = 0 Then
@@ -1306,7 +1306,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1106= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End If
     Exit Sub
