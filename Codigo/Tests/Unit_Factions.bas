@@ -26,6 +26,11 @@ Public Function test_suite_factions() As Boolean
     Call UnitTesting.RunTest("test_help_same_faction", test_help_same_faction())
     Call UnitTesting.RunTest("test_help_opposing_faction", test_help_opposing_faction())
     Call UnitTesting.RunTest("test_help_criminal_blocked", test_help_criminal_blocked())
+    Call UnitTesting.RunTest("test_guild_alignment_status_rules", test_guild_alignment_status_rules())
+    Call UnitTesting.RunTest("test_neutral_guild_client_status", test_neutral_guild_client_status())
+    Call UnitTesting.RunTest("test_rivalidad_sin_clan_no_bloquea", test_rivalidad_sin_clan_no_bloquea())
+    Call UnitTesting.RunTest("test_rivalidad_estados_no_opuestos", test_rivalidad_estados_no_opuestos())
+    Call UnitTesting.RunTest("test_rivalidad_clan_bloquea_ataque", test_rivalidad_clan_bloquea_ataque())
     Call UnitTesting.RunTest("test_clamp_chance_normal", test_clamp_chance_normal())
     Call UnitTesting.RunTest("test_clamp_chance_edges", test_clamp_chance_edges())
     Call UnitTesting.RunTest("test_byte_arr_to_string", test_byte_arr_to_string())
@@ -48,6 +53,49 @@ Private Function test_same_faction_no_attack() As Boolean
     Exit Function
 Err_Handler:
     test_same_faction_no_attack = False
+End Function
+
+Private Function test_guild_alignment_status_rules() As Boolean
+    On Error GoTo Err_Handler
+    test_guild_alignment_status_rules = True
+    Dim Alignment    As Integer
+    Dim PlayerStatus As Integer
+    Dim Expected     As Boolean
+    For Alignment = e_ALINEACION_GUILD.ALINEACION_NEUTRAL To e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+        For PlayerStatus = e_Facciones.Criminal To e_Facciones.consejo
+            Select Case Alignment
+                Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
+                    Expected = (PlayerStatus = e_Facciones.Criminal Or PlayerStatus = e_Facciones.Ciudadano)
+                Case e_ALINEACION_GUILD.ALINEACION_ARMADA
+                    Expected = (PlayerStatus = e_Facciones.Armada Or PlayerStatus = e_Facciones.consejo)
+                Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
+                    Expected = (PlayerStatus = e_Facciones.Caos Or PlayerStatus = e_Facciones.concilio)
+                Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+                    Expected = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Armada)
+                Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+                    Expected = (PlayerStatus = e_Facciones.Criminal Or PlayerStatus = e_Facciones.Caos)
+            End Select
+            If GuildAlignmentAllowsStatus(Alignment, PlayerStatus) <> Expected Then
+                test_guild_alignment_status_rules = False
+                Exit Function
+            End If
+        Next PlayerStatus
+    Next Alignment
+    Exit Function
+Err_Handler:
+    test_guild_alignment_status_rules = False
+End Function
+
+Private Function test_neutral_guild_client_status() As Boolean
+    On Error GoTo Err_Handler
+    test_neutral_guild_client_status = True
+
+    If GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, e_Facciones.Ciudadano) <> e_Facciones.Criminal Then test_neutral_guild_client_status = False: Exit Function
+    If GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, e_Facciones.Criminal) <> e_Facciones.Criminal Then test_neutral_guild_client_status = False: Exit Function
+    If GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_CIUDADANA, e_Facciones.Ciudadano) <> e_Facciones.Ciudadano Then test_neutral_guild_client_status = False: Exit Function
+    Exit Function
+Err_Handler:
+    test_neutral_guild_client_status = False
 End Function
 
 ' Verifies that allied factions cannot attack each other.
@@ -223,6 +271,51 @@ Private Function test_byte_arr_to_string() As Boolean
     Exit Function
 Err_Handler:
     test_byte_arr_to_string = False
+End Function
+
+' Verifica que sin clan (GuildIndex = 0) la rivalidad nunca bloquea el ataque,
+' aunque los estados personales sean opuestos (Criminal vs Caos/concilio).
+Private Function test_rivalidad_sin_clan_no_bloquea() As Boolean
+    On Error GoTo Err_Handler
+    test_rivalidad_sin_clan_no_bloquea = True
+    Dim AttackerIdx As Integer, VictimIdx As Integer
+    AttackerIdx = 1
+    VictimIdx = 2
+    UserList(AttackerIdx).GuildIndex = 0
+    UserList(VictimIdx).GuildIndex = 0
+    ' Criminal ataca Caos, sin clan de ninguno de los dos: permitido
+    UserList(AttackerIdx).faccion.Status = e_Facciones.Criminal
+    UserList(VictimIdx).faccion.Status = e_Facciones.Caos
+    If SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_sin_clan_no_bloquea = False: Exit Function
+    End If
+    ' Concilio ataca Criminal, sin clan de ninguno de los dos: permitido
+    UserList(AttackerIdx).faccion.Status = e_Facciones.concilio
+    UserList(VictimIdx).faccion.Status = e_Facciones.Criminal
+    If SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_sin_clan_no_bloquea = False: Exit Function
+    End If
+    Exit Function
+Err_Handler:
+    test_rivalidad_sin_clan_no_bloquea = False
+End Function
+
+' Verifica que estados NO opuestos (por ejemplo Ciudadano vs Armada) nunca activan
+' la rivalidad, sin importar el clan.
+Private Function test_rivalidad_estados_no_opuestos() As Boolean
+    On Error GoTo Err_Handler
+    test_rivalidad_estados_no_opuestos = True
+    Dim AttackerIdx As Integer, VictimIdx As Integer
+    AttackerIdx = 1
+    VictimIdx = 2
+    UserList(AttackerIdx).faccion.Status = e_Facciones.Ciudadano
+    UserList(VictimIdx).faccion.Status = e_Facciones.Armada
+    If SistemaCombate.RivalidadClanBloqueaAtaque(AttackerIdx, VictimIdx) Then
+        test_rivalidad_estados_no_opuestos = False: Exit Function
+    End If
+    Exit Function
+Err_Handler:
+    test_rivalidad_estados_no_opuestos = False
 End Function
 
 #End If
