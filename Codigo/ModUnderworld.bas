@@ -75,31 +75,27 @@ Public Sub KickUsersFromUnderworld()
     For i = 1 To UBound(UnderworldMapPool)
         If Not MapaValido(UnderworldMapPool(i).Map) Then
             Debug.Assert False 'invalid map shouldn't happen
-            Exit Sub
+            Call TraceError(1, UnderworldMapPool(i).map & " is invalid", "KickUsersFromUnderworld()", 1)
         End If
         For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
             tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
             With UserList(tempIndex)
                 HomeCityId = .Hogar
-                If .ConnectionDetails.ConnIDValida Then
-                    Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
-                End If
+                Call WarpUserChar(tempIndex, Cities(HomeCityId).map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End With
         Next LoopC
     Next i
     
     If Not MapaValido(UNDERWORLD_CENTER_MAP_NUMBER) Then
         Debug.Assert False 'invalid map shouldn't happen
-        Exit Sub
+        Call TraceError(1, "Center of the underworld is invalid", "KickUsersFromUnderworld()", 1)
     End If
     
     For LoopC = 1 To ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys
         tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
         With UserList(tempIndex)
-            If .ConnectionDetails.ConnIDValida Then
-                HomeCityId = .Hogar
-                Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
-            End If
+            HomeCityId = .Hogar
+            Call WarpUserChar(tempIndex, Cities(HomeCityId).map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
         End With
     Next LoopC
 End Sub
