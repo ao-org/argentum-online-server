@@ -24,7 +24,7 @@ Public Type t_GlobalQuestData
     GatheringGlobalInstallments As Long
     GatheringInitialInstallments As Long
     IsBossAlive As Boolean
-    BossIndex As Integer
+    BossIndexes() As Integer
     BossSpawnMap            As Integer
     BossSpawnPositionTopLeft As t_Position
     BossSpawnPositionBottomRight As t_Position
@@ -46,6 +46,8 @@ Private Const SELECT_ALL_GLOBAL_QUEST                 As String = "SELECT * FROM
 Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
+    Dim i As Integer
+
     With GlobalQuestInfo(GlobalQuestIndex)
         .GatheringGlobalCounter = .GatheringGlobalCounter + Amount
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
@@ -55,7 +57,9 @@ Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQues
                 RandomizedSpawnPosition.Map = .BossSpawnMap
                 RandomizedSpawnPosition.x = RandomNumber(.BossSpawnPositionTopLeft.x, .BossSpawnPositionBottomRight.x)
                 RandomizedSpawnPosition.y = RandomNumber(.BossSpawnPositionTopLeft.y, .BossSpawnPositionBottomRight.y)
-                Call SpawnNpc(.BossIndex, RandomizedSpawnPosition, False, False, True, 0)
+                For i = LBound(.BossIndexes) To UBound(.BossIndexes)
+                    Call SpawnNpc(.BossIndexes(i), RandomizedSpawnPosition, False, False, True, 0)
+                Next i
                 .IsBossAlive = True
             End If
         End If
@@ -93,7 +97,10 @@ Public Sub LoadGlobalQuests()
     Call IniFile.Initialize(DatPath & "GlobalQuests.dat")
     MaxGlobalQuests = val(IniFile.GetValue("INIT", "NumGlobalQuest"))
     ReDim Preserve GlobalQuestInfo(1 To MaxGlobalQuests) As t_GlobalQuestData
-    Dim i As Integer
+    Dim i             As Integer
+    Dim j             As Integer
+    Dim BossIndexes() As String
+
     For i = 1 To MaxGlobalQuests
         With GlobalQuestInfo(i)
             .GatheringThreshold = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringThreshold")))
@@ -104,7 +111,11 @@ Public Sub LoadGlobalQuests()
             .BossSpawnPositionBottomRight.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightY")))
             .BossSpawnPositionTopLeft.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftX")))
             .BossSpawnPositionTopLeft.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftY")))
-            .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
+            BossIndexes = Split(IniFile.GetValue("GlobalQuest" & i, "BossIndex"), "-")
+            ReDim .BossIndexes(0 To UBound(BossIndexes))
+            For j = 0 To UBound(BossIndexes)
+                .BossIndexes(j) = CInt(val(BossIndexes(j)))
+            Next j
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
             .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
             .StartDate = CDate(IniFile.GetValue("GlobalQuest" & i, "StartDate"))
