@@ -397,6 +397,7 @@ Private Function test_suite_remort_capability_state() As Boolean
     Call RunTest("targeted spell packet IDs are appended", CInt(ServerPacketID.eHooTargetedSpellCastResult) = CInt(ServerPacketID.eRemortResult) + 1 And CInt(ClientPacketID.eHooTargetedSpellCast) = CInt(ClientPacketID.eRequestRemort) + 1)
     Call RunTest("house door packet IDs and legacy key IDs", test_house_door_packet_ids_and_capability())
     Call RunTest("house door actions validate before mutation", test_house_door_actions())
+    Call RunTest("HOO spatial player-audio privacy buckets", test_hoo_spatial_player_audio_buckets())
     Call RunTest("targeted spell capability and feature gate", test_targeted_spell_capability())
     Call RunTest("targeted spell retry interval is wrap safe", test_targeted_spell_retry_interval())
     Call RunTest("targeted spell NPC resolution rejects stale mappings", test_targeted_spell_target_resolution())
@@ -406,6 +407,36 @@ Private Function test_suite_remort_capability_state() As Boolean
     Call RunTest("remort equipment and count eligibility", test_remort_equipment_and_count_eligibility())
     Call RunTest("remort live reset and preservation", test_remort_live_reset_and_preservation())
     test_suite_remort_capability_state = True
+End Function
+
+Private Function test_hoo_spatial_player_audio_buckets() As Boolean
+    On Error GoTo TestError
+    Dim OriginalFeatureEnabled As Boolean
+    OriginalFeatureEnabled = IsFeatureEnabled(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1)
+    Call SetFeatureToggle(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1, True)
+    If HOO_CAP_SPATIAL_PLAYER_AUDIO_V1 <> &H20& Then GoTo TestDone
+    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_SPATIAL_PLAYER_AUDIO_V1) <> HOO_CAP_SPATIAL_PLAYER_AUDIO_V1 Then GoTo TestDone
+    If CInt(ServerPacketID.eHooSpatialPlayerSound) <> 208 Then GoTo TestDone
+    If HooSpatialSoundRangeBand(52, 52, 50, 50) <> eHooSpatialSoundRange_Near Then GoTo TestDone
+    If HooSpatialSoundRangeBand(53, 55, 50, 50) <> eHooSpatialSoundRange_Close Then GoTo TestDone
+    If HooSpatialSoundRangeBand(54, 58, 50, 50) <> eHooSpatialSoundRange_Mid Then GoTo TestDone
+    If HooSpatialSoundRangeBand(41, 39, 50, 50) <> eHooSpatialSoundRange_Distant Then GoTo TestDone
+    If HooSpatialSoundRangeBand(38, 35, 50, 50) <> eHooSpatialSoundRange_Far Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(60, 50, 50, 50) <> 0 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(60, 60, 50, 50) <> 2 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(50, 60, 50, 50) <> 4 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(40, 60, 50, 50) <> 6 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(40, 50, 50, 50) <> 8 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(40, 40, 50, 50) <> 10 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(50, 40, 50, 50) <> 12 Then GoTo TestDone
+    If HooSpatialSoundDirectionSector(60, 40, 50, 50) <> 14 Then GoTo TestDone
+    test_hoo_spatial_player_audio_buckets = True
+TestDone:
+    Call SetFeatureToggle(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1, OriginalFeatureEnabled)
+    Exit Function
+TestError:
+    test_hoo_spatial_player_audio_buckets = False
+    Resume TestDone
 End Function
 
 Private Function test_house_door_packet_ids_and_capability() As Boolean

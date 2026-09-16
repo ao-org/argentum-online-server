@@ -2981,10 +2981,20 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_SPATIAL_PLAYER_AUDIO_V1 As Long = &H20&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
 Public Const HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1 As String = "hoo-house-door-actions-v1"
+Public Const HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1 As String = "hoo-spatial-player-audio-v1"
+
+Public Enum e_HooSpatialSoundRangeBand
+    eHooSpatialSoundRange_Near = 0
+    eHooSpatialSoundRange_Close = 1
+    eHooSpatialSoundRange_Mid = 2
+    eHooSpatialSoundRange_Distant = 3
+    eHooSpatialSoundRange_Far = 4
+End Enum
 
 Public Enum e_HooHouseDoorAction
     eHooHouseDoorAction_Open = 0

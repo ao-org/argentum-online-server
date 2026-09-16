@@ -1007,6 +1007,11 @@ Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As B
         UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
 End Function
 
+Public Function UserSupportsHooSpatialPlayerAudio(ByVal UserIndex As Integer) As Boolean
+    UserSupportsHooSpatialPlayerAudio = IsFeatureEnabled(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_SPATIAL_PLAYER_AUDIO_V1)
+End Function
+
 Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
     If TargetCharacterIndex < LBound(CharList) Or TargetCharacterIndex > UBound(CharList) Then Exit Function
     Dim NpcIndex As Integer
@@ -1239,6 +1244,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     End If
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
+    End If
+    If IsFeatureEnabled(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_SPATIAL_PLAYER_AUDIO_V1
     End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function

@@ -159,6 +159,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
     #End If
     Dim LoopC As Long
     Dim Map   As Integer
+    Dim PlayerSoundSource As Integer
     Select Case sndRoute
         Case SendTarget.ToIndex
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
@@ -171,10 +172,10 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
             End If
         Case SendTarget.ToPCArea
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
-            Call SendToUserArea(sndIndex, Buffer, ValidateInvi)
+            Call SendToUserArea(sndIndex, Buffer, ValidateInvi, Args)
         Case SendTarget.ToPCAliveArea
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
-            Call SendToUserAliveArea(sndIndex, Buffer, ValidateInvi)
+            Call SendToUserAliveArea(sndIndex, Buffer, ValidateInvi, Args)
         Case SendTarget.ToPCAreaButGMs
             Debug.Assert sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList)
             Call SendToUserAreaButGMs(sndIndex, Buffer)
@@ -233,7 +234,12 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
                 End If
             Next LoopC
         Case SendTarget.toMap
-            Call SendToMap(sndIndex, Buffer)
+            PlayerSoundSource = ExplicitPlayerSoundSource(Args)
+            If PlayerSoundSource > 0 Then
+                Call SendPlayerSoundToMap(PlayerSoundSource, sndIndex, Buffer, Args)
+            Else
+                Call SendToMap(sndIndex, Buffer)
+            End If
         Case SendTarget.ToMapButIndex
             Call SendToMapButIndex(sndIndex, Buffer)
         Case SendTarget.ToGuildMembers
@@ -329,10 +335,73 @@ SendData_Err:
     End If
 End Sub
 
+Private Function IsSpatialPlayerSoundBroadcast(ByVal SourceIndex As Integer, Optional Args As Variant) As Boolean
+    On Error GoTo InvalidMetadata
+    If IsMissing(Args) Then Exit Function
+    If Not IsArray(Args) Then Exit Function
+    If LBound(Args) <> 0 Or UBound(Args) < 5 Then Exit Function
+    If CStr(Args(0)) <> "hoo-player-sound-v1" Then Exit Function
+    If CInt(Args(1)) <= 0 Then Exit Function
+    If CInt(Args(4)) < 0 Or CInt(Args(4)) > 2 Then Exit Function
+    If SourceIndex < LBound(UserList) Or SourceIndex > UBound(UserList) Then Exit Function
+    If UserList(SourceIndex).flags.invisible + UserList(SourceIndex).flags.Oculto = 0 Then Exit Function
+    If CInt(Args(2)) <> UserList(SourceIndex).pos.x Or CInt(Args(3)) <> UserList(SourceIndex).pos.y Then Exit Function
+    IsSpatialPlayerSoundBroadcast = True
+InvalidMetadata:
+End Function
+
+Private Function ExplicitPlayerSoundSource(Optional Args As Variant) As Integer
+    On Error GoTo InvalidMetadata
+    If IsMissing(Args) Then Exit Function
+    If Not IsArray(Args) Then Exit Function
+    If LBound(Args) <> 0 Or UBound(Args) < 6 Then Exit Function
+    If CStr(Args(0)) <> "hoo-player-sound-v1" Then Exit Function
+    ExplicitPlayerSoundSource = CInt(Args(6))
+InvalidMetadata:
+End Function
+
+Private Function TargetNeedsQuantizedPlayerSound(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    If TargetIndex < LBound(UserList) Or TargetIndex > UBound(UserList) Then Exit Function
+    If SourceIndex = TargetIndex Or EsGM(TargetIndex) Then Exit Function
+    If Not UserSupportsHooSpatialPlayerAudio(TargetIndex) Then Exit Function
+    If UserList(SourceIndex).GuildIndex > 0 And _
+            UserList(SourceIndex).GuildIndex = UserList(TargetIndex).GuildIndex And _
+            modGuilds.NivelDeClan(UserList(TargetIndex).GuildIndex) >= RequiredGuildLevelSeeInvisible Then Exit Function
+    TargetNeedsQuantizedPlayerSound = True
+End Function
+
 #If DIRECT_PLAY = 0 Then
-    Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
+    Private Sub SendPlayerSoundOrOriginal(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByRef Buffer As Network.Writer, ByRef SpatialBuffer As Network.Writer, Optional Args As Variant)
     #Else
-        Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
+        Private Sub SendPlayerSoundOrOriginal(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByRef Buffer As clsNetWriter, ByRef SpatialBuffer As clsNetWriter, Optional Args As Variant)
+        #End If
+        If Not TargetNeedsQuantizedPlayerSound(SourceIndex, TargetIndex) Then
+            Call modNetwork.Send(TargetIndex, Buffer)
+            Exit Sub
+        End If
+        If SpatialBuffer Is Nothing Then
+            #If DIRECT_PLAY = 0 Then
+                Set SpatialBuffer = New Network.Writer
+            #Else
+                Set SpatialBuffer = New clsNetWriter
+            #End If
+        End If
+        Dim flags As Byte
+        If CByte(Args(5)) <> 0 Then flags = flags Or &H2
+        flags = flags Or CByte(CInt(Args(4)) * 4)
+        Call SpatialBuffer.WriteInt16(ServerPacketID.eHooSpatialPlayerSound)
+        Call SpatialBuffer.WriteInt16(CInt(Args(1)))
+        Call SpatialBuffer.WriteInt8(HooSpatialSoundDirectionSector(UserList(SourceIndex).pos.x, UserList(SourceIndex).pos.y, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+        Call SpatialBuffer.WriteInt8(CByte(HooSpatialSoundRangeBand(UserList(SourceIndex).pos.x, UserList(SourceIndex).pos.y, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y)))
+        Call SpatialBuffer.WriteInt8(flags)
+        Call modNetwork.Send(TargetIndex, SpatialBuffer)
+        Call SpatialBuffer.Clear
+    End Sub
+
+#If DIRECT_PLAY = 0 Then
+    Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False, Optional Args As Variant)
+    #Else
+        Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False, Optional Args As Variant)
         #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC      As Long
@@ -341,6 +410,13 @@ End Sub
         Dim AreaX      As Integer
         Dim AreaY      As Integer
         Dim enviaDatos As Boolean
+        Dim QuantizePlayerSound As Boolean
+        #If DIRECT_PLAY = 0 Then
+            Dim SpatialBuffer As Network.Writer
+        #Else
+            Dim SpatialBuffer As clsNetWriter
+        #End If
+        QuantizePlayerSound = IsSpatialPlayerSoundBroadcast(UserIndex, Args)
         If UserIndex = 0 Then Exit Sub
         Map = UserList(UserIndex).pos.Map
         AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
@@ -356,16 +432,20 @@ End Sub
                             enviaDatos = True
                             If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi And Not (UserList(tempIndex).GuildIndex > 0 And _
-                                        UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= RequiredGuildLevelSeeInvisible) And _
-                                        UserList(UserIndex).flags.Navegando = 0 Then
-                                    If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
+                                        UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= RequiredGuildLevelSeeInvisible) Then
+                                    If (UserSupportsHooSpatialPlayerAudio(tempIndex) Or _
+                                            (UserList(UserIndex).flags.Navegando = 0 And Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS)) And UserList(UserIndex).Counters.timeFx + UserList( _
                                             UserIndex).Counters.timeChat = 0 Then
                                         enviaDatos = False
                                     End If
                                 End If
                             End If
                             If enviaDatos Then
-                                Call modNetwork.Send(tempIndex, Buffer)
+                                If QuantizePlayerSound Then
+                                    Call SendPlayerSoundOrOriginal(UserIndex, tempIndex, Buffer, SpatialBuffer, Args)
+                                Else
+                                    Call modNetwork.Send(tempIndex, Buffer)
+                                End If
                             End If
                         End If
                     End If
@@ -378,9 +458,9 @@ SendToUserArea_Err:
     End Sub
 
 #If DIRECT_PLAY = 0 Then
-    Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean)
+    Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean, Optional Args As Variant)
     #Else
-        Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean)
+        Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean, Optional Args As Variant)
         #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC      As Long
@@ -389,6 +469,13 @@ SendToUserArea_Err:
         Dim AreaX      As Integer
         Dim AreaY      As Integer
         Dim enviaDatos As Boolean
+        Dim QuantizePlayerSound As Boolean
+        #If DIRECT_PLAY = 0 Then
+            Dim SpatialBuffer As Network.Writer
+        #Else
+            Dim SpatialBuffer As clsNetWriter
+        #End If
+        QuantizePlayerSound = IsSpatialPlayerSoundBroadcast(UserIndex, Args)
         If UserIndex = 0 Then Exit Sub
         Map = UserList(UserIndex).pos.Map
         AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
@@ -402,14 +489,19 @@ SendToUserArea_Err:
                         enviaDatos = True
                         If Not EsGM(tempIndex) Then
                             If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi Then
-                                If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
+                                If (UserSupportsHooSpatialPlayerAudio(tempIndex) Or _
+                                        (UserList(UserIndex).flags.Navegando = 0 And Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS)) And UserList(UserIndex).Counters.timeFx + UserList( _
                                         UserIndex).Counters.timeChat = 0 Then
                                     enviaDatos = False
                                 End If
                             End If
                         End If
                         If enviaDatos Then
-                            Call modNetwork.Send(tempIndex, Buffer)
+                            If QuantizePlayerSound Then
+                                Call SendPlayerSoundOrOriginal(UserIndex, tempIndex, Buffer, SpatialBuffer, Args)
+                            Else
+                                Call modNetwork.Send(tempIndex, Buffer)
+                            End If
                         End If
                     End If
                 End If
@@ -556,7 +648,8 @@ SendToSuperioresArea_Err:
                             enviaDatos = True
                             If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi Then
-                                    If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
+                                    If (UserSupportsHooSpatialPlayerAudio(tempIndex) Or _
+                                            (UserList(UserIndex).flags.Navegando = 0 And Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS)) And UserList(UserIndex).Counters.timeFx + UserList( _
                                             UserIndex).Counters.timeChat = 0 Then
                                         enviaDatos = False
                                     End If
@@ -591,8 +684,10 @@ SendToUserAreaButindex_Err:
         If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet( _
                 TargetUser.flags.StatusMask, e_StatusMask.eTalkToDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalkToDead)) Then Exit Function
         If Not EsGM(TargetIndex) Then
-            If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not CheckGuildSend(SourceUser, TargetUser) And SourceUser.flags.Navegando = 0 Then
-                If Distancia(SourceUser.pos, TargetUser.pos) > DISTANCIA_ENVIO_DATOS And SourceUser.Counters.timeFx + SourceUser.Counters.timeChat = 0 Then
+            If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not CheckGuildSend(SourceUser, TargetUser) Then
+                If (UserSupportsHooSpatialPlayerAudio(TargetIndex) Or _
+                        (SourceUser.flags.Navegando = 0 And Distancia(SourceUser.pos, TargetUser.pos) > DISTANCIA_ENVIO_DATOS)) And _
+                        SourceUser.Counters.timeFx + SourceUser.Counters.timeChat = 0 Then
                     Exit Function
                 End If
             End If
@@ -849,6 +944,35 @@ SendToAreaByPos_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
     End If
 End Sub
+
+#If DIRECT_PLAY = 0 Then
+    Private Sub SendPlayerSoundToMap(ByVal SourceIndex As Integer, ByVal Map As Integer, ByRef Buffer As Network.Writer, ByRef Args As Variant)
+    #Else
+        Private Sub SendPlayerSoundToMap(ByVal SourceIndex As Integer, ByVal Map As Integer, ByRef Buffer As clsNetWriter, ByRef Args As Variant)
+        #End If
+        On Error GoTo SendPlayerSoundToMap_Err
+        If Not IsSpatialPlayerSoundBroadcast(SourceIndex, Args) Then
+            Call SendToMap(Map, Buffer)
+            Exit Sub
+        End If
+        Dim LoopC As Long
+        Dim tempIndex As Integer
+        #If DIRECT_PLAY = 0 Then
+            Dim SpatialBuffer As Network.Writer
+        #Else
+            Dim SpatialBuffer As clsNetWriter
+        #End If
+        If Not MapaValido(Map) Then Exit Sub
+        For LoopC = 1 To ConnGroups(Map).CountEntrys
+            tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+            If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
+                Call SendPlayerSoundOrOriginal(SourceIndex, tempIndex, Buffer, SpatialBuffer, Args)
+            End If
+        Next LoopC
+        Exit Sub
+SendPlayerSoundToMap_Err:
+        Call TraceError(Err.Number, Err.Description, "modSendData.SendPlayerSoundToMap", Erl)
+    End Sub
 
 #If DIRECT_PLAY = 0 Then
     Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)

@@ -1326,8 +1326,17 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 'Togle para alternar el paso para los invis
                 .flags.stepToggle = Not .flags.stepToggle
                 If Not EsGM(UserIndex) Then
-                    If .flags.invisible + .flags.Oculto > 0 And .flags.Navegando = 0 Then
-                    
+                    If .flags.invisible + .flags.Oculto > 0 Then
+                        Dim HooMovementSound As Integer
+                        Dim HooMovementCancel As Byte
+                        If .flags.Navegando = 1 Then
+                            HooMovementSound = 50
+                            HooMovementCancel = 1
+                        ElseIf .flags.stepToggle Then
+                            HooMovementSound = 23
+                        Else
+                            HooMovementSound = 24
+                        End If
                         For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
                             tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
                             If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
@@ -1336,13 +1345,16 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                         If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
                                             If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
                                                 If .Counters.timeFx + .Counters.timeChat = 0 Then
-                                                    If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
+                                                    If UserSupportsHooSpatialPlayerAudio(tempIndex) Then
+                                                        Call WriteHooSpatialPlayerSound(tempIndex, _
+                                                                HooMovementSound, nPos.x, nPos.y, True, HooMovementCancel)
+                                                    ElseIf .flags.Navegando = 0 And Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
                                                         'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
                                                         'Mando tambien el char para q lo borre
                                                         Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.Map, nPos.x, nPos.y).Graphic(1), MapData(nPos.Map, _
                                                                 nPos.x, nPos.y).Graphic(2), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
                                                                 Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
-                                                    Else
+                                                    ElseIf .flags.Navegando = 0 Then
                                                         Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
                                                     End If
                                                 End If
@@ -1353,19 +1365,21 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             End If
                         Next LoopC
                     End If
-                    Dim x As Byte, y As Byte
-                    'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
-                    For x = nPos.x - DISTANCIA_ENVIO_DATOS To nPos.x + DISTANCIA_ENVIO_DATOS
-                        For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
-                            tempIndex = MapData(.pos.Map, x, y).UserIndex
-                            If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
-                                If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
-                                        0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < RequiredGuildLevelSeeInvisible) Then
-                                    Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
+                    If Not UserSupportsHooSpatialPlayerAudio(UserIndex) Then
+                        Dim x As Byte, y As Byte
+                        'Legacy clients require exact nearby updates to avoid stale collision state.
+                        For x = nPos.x - DISTANCIA_ENVIO_DATOS To nPos.x + DISTANCIA_ENVIO_DATOS
+                            For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
+                                tempIndex = MapData(.pos.Map, x, y).UserIndex
+                                If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
+                                    If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
+                                            0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < RequiredGuildLevelSeeInvisible) Then
+                                        Call WritePosUpdateChar(UserIndex, x, y, UserList(tempIndex).Char.charindex)
+                                    End If
                                 End If
-                            End If
-                        Next y
-                    Next x
+                            Next y
+                        Next x
+                    End If
                 End If
             End If
         Else

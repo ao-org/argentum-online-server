@@ -229,6 +229,7 @@ Public Enum ServerPacketID
     eRemortResult
     eHooTargetedSpellCastResult
     eHooHouseDoorActionResult
+    eHooSpatialPlayerSound = 208
     eMaxPacket
     [PacketCount]
 End Enum
