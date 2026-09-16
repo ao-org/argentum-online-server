@@ -254,7 +254,7 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
     sendChar = True
     With UserList(UserNotificado)
         If UserList(UserIngresante).flags.AdminInvisible = 1 Then
-            If Not EsGM(UserNotificado) Or CompararPrivilegios(.flags.Privilegios, UserList(UserIngresante).flags.Privilegios) <= 0 Then
+            If Not CanUserSeeAdminInvisible(UserNotificado, UserIngresante) Then
                 sendChar = False
             End If
         ElseIf UserList(UserNotificado).flags.Muerto = 1 And MapInfo(.pos.Map).Seguro = 0 And (UserList(UserNotificado).GuildIndex = 0 Or UserList(UserNotificado).GuildIndex <> _
