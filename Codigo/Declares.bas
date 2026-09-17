@@ -2981,10 +2981,12 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_GUILD_STATE_V1 As Long = &H10&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
 Public Const HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1 As String = "hoo-house-door-actions-v1"
+Public Const HOO_FEATURE_GUILD_STATE_V1 As String = "hoo-guild-state-v1"
 
 Public Enum e_HooHouseDoorAction
     eHooHouseDoorAction_Open = 0

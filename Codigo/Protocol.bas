@@ -1007,6 +1007,11 @@ Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As B
         UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
 End Function
 
+Public Function UserSupportsHooGuildState(ByVal UserIndex As Integer) As Boolean
+    UserSupportsHooGuildState = IsFeatureEnabled(HOO_FEATURE_GUILD_STATE_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_GUILD_STATE_V1)
+End Function
+
 Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
     If TargetCharacterIndex < LBound(CharList) Or TargetCharacterIndex > UBound(CharList) Then Exit Function
     Dim NpcIndex As Integer
@@ -1225,6 +1230,13 @@ Public Sub MaybeSendRemortState(ByVal UserIndex As Integer)
     Call WriteRemortState(UserIndex, GetRemortEligibility(UserIndex))
 End Sub
 
+Public Sub MaybeSendHooGuildState(ByVal UserIndex As Integer)
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Sub
+    If Not UserList(UserIndex).flags.UserLogged Then Exit Sub
+    If Not UserSupportsHooGuildState(UserIndex) Then Exit Sub
+    Call WriteHooGuildState(UserIndex)
+End Sub
+
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
     If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
     Dim SupportedMask As Long
@@ -1239,6 +1251,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     End If
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
+    End If
+    If IsFeatureEnabled(HOO_FEATURE_GUILD_STATE_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_GUILD_STATE_V1
     End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
@@ -1264,6 +1279,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
+    Call MaybeSendHooGuildState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
@@ -3346,7 +3362,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
-                If clan_nivel < 3 Then
+                If clan_nivel < RequiredGuildLevelMarkNpc Then
                     Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                     Exit Sub
                 End If
@@ -3403,6 +3419,10 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
         Desc = reader.ReadString8()
         GuildName = reader.ReadString8()
         Alineacion = reader.ReadInt8()
+        If Not modGuilds.GuildEncodedLengthValid(Desc, 256, True) Or Not modGuilds.GuildEncodedLengthValid(GuildName, 30, False) Then
+            Call LogSecurity("Rejected invalid guild creation text; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         If modGuilds.CrearNuevoClan(UserIndex, Desc, GuildName, Alineacion, errorStr) Then
             Call QuitarObjetos(407, 1, UserIndex)
             Call QuitarObjetos(408, 1, UserIndex)
@@ -3839,7 +3859,11 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Desc As String
         Desc = reader.ReadString8()
-        Call modGuilds.ChangeCodexAndDesc(Desc, .GuildIndex)
+        If Not modGuilds.GuildEncodedLengthValid(Desc, 256, True) Then
+            Call LogSecurity("Rejected invalid guild description text; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
+        Call modGuilds.ChangeCodexAndDesc(UserIndex, Desc)
     End With
     Exit Sub
 ErrHandler:
@@ -4149,6 +4173,10 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         Dim User    As String
         Dim details As String
         User = reader.ReadString8()
+        If Not modGuilds.GuildEncodedLengthValid(User, 30, False) Then
+            Call LogSecurity("Rejected invalid guild applicant name; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         details = modGuilds.a_DetallesAspirante(UserIndex, User)
         If LenB(details) = 0 Then
             'Msg1148= El personaje no ha mandado solicitud, o no estás habilitado para verla.
@@ -4223,7 +4251,13 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    Call modGuilds.ActualizarWebSite(UserIndex, reader.ReadString8())
+    Dim Website As String
+    Website = reader.ReadString8()
+    If Not modGuilds.GuildEncodedLengthValid(Website, 255, True) Then
+        Call LogSecurity("Rejected invalid guild website text; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    Call modGuilds.ActualizarWebSite(UserIndex, Website)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
@@ -4240,6 +4274,10 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         Dim username As String
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
+        If Not modGuilds.GuildEncodedLengthValid(username, 30, False) Then
+            Call LogSecurity("Rejected invalid guild member name; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         tUser = NameIndex(username)
         If IsValidUserRef(tUser) Then
             If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
@@ -4276,6 +4314,10 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
         Dim tUser    As t_UserReference
         username = reader.ReadString8()
         Reason = reader.ReadString8()
+        If Not modGuilds.GuildEncodedLengthValid(username, 30, False) Or Not modGuilds.GuildEncodedLengthValid(Reason, 255, False) Then
+            Call LogSecurity("Rejected invalid guild rejection text; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         If Not modGuilds.a_RechazarAspirante(UserIndex, username, errorStr) Then
             Call WriteConsoleMsg(UserIndex, errorStr, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)
         Else
@@ -4303,6 +4345,10 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         Dim username   As String
         Dim GuildIndex As Integer
         username = reader.ReadString8()
+        If Not modGuilds.GuildEncodedLengthValid(username, 30, False) Then
+            Call LogSecurity("Rejected invalid guild member name; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         Dim CharId As Long
         CharId = GetCharacterIdWithName(username)
         If CharId <= 0 Then
@@ -4332,7 +4378,13 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    Call modGuilds.ActualizarNoticias(UserIndex, reader.ReadString8())
+    Dim News As String
+    News = reader.ReadString8()
+    If Not modGuilds.GuildEncodedLengthValid(News, 1024, True) Then
+        Call LogSecurity("Rejected invalid guild news text; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    Call modGuilds.ActualizarNoticias(UserIndex, News)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
@@ -4344,7 +4396,13 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    Call modGuilds.SendDetallesPersonaje(UserIndex, reader.ReadString8())
+    Dim MemberName As String
+    MemberName = reader.ReadString8()
+    If Not modGuilds.GuildEncodedLengthValid(MemberName, 30, False) Then
+        Call LogSecurity("Rejected invalid guild member name; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    Call modGuilds.SendDetallesPersonaje(UserIndex, MemberName)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
@@ -4378,6 +4436,10 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
         Dim errorStr    As String
         guild = reader.ReadString8()
         application = reader.ReadString8()
+        If Not modGuilds.GuildEncodedLengthValid(guild, 32, False) Or Not modGuilds.GuildEncodedLengthValid(application, 400, False) Then
+            Call LogSecurity("Rejected invalid guild application text; user=" & CStr(UserIndex))
+            Exit Sub
+        End If
         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
             Call WriteLocaleMsg(UserIndex, errorStr, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString)
         Else
@@ -4396,7 +4458,13 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    Call modGuilds.SendGuildDetails(UserIndex, reader.ReadString8())
+    Dim GuildName As String
+    GuildName = reader.ReadString8()
+    If Not modGuilds.GuildEncodedLengthValid(GuildName, 32, False) Then
+        Call LogSecurity("Rejected invalid guild name; user=" & CStr(UserIndex))
+        Exit Sub
+    End If
+    Call modGuilds.SendGuildDetails(UserIndex, GuildName)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
@@ -7046,7 +7114,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
         End If
         Dim clan_nivel As Byte
         clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
-        If clan_nivel < 3 Then
+        If clan_nivel < RequiredGuildLevelMarkNpc Then
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_NIVEL_CLAN_DEBE_UTILIZAR_OPCION, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             Exit Sub
         End If
