@@ -1103,14 +1103,17 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
                 If Barco.Ropaje = iBarca Then .Char.body = iBarcaArmada
                 If Barco.Ropaje = iGalera Then .Char.body = iGaleraArmada
                 If Barco.Ropaje = iGaleon Then .Char.body = iGaleonArmada
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
                 If Barco.Ropaje = iBarca Then .Char.body = iBarcaCaos
                 If Barco.Ropaje = iGalera Then .Char.body = iGaleraCaos
                 If Barco.Ropaje = iGaleon Then .Char.body = iGaleonCaos
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             Else
                 If Barco.Ropaje = iBarca Then .Char.body = IIf(.Faccion.Status = 0, iBarcaCrimi, iBarcaCiuda)
                 If Barco.Ropaje = iGalera Then .Char.body = IIf(.Faccion.Status = 0, iGaleraCrimi, iGaleraCiuda)
                 If Barco.Ropaje = iGaleon Then .Char.body = IIf(.Faccion.Status = 0, iGaleonCrimi, iGaleonCiuda)
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             End If
         End If
         .Char.ShieldAnim = NingunEscudo
