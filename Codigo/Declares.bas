@@ -262,6 +262,7 @@ Public Const iGalera = 85
 Public Const iGaleraCiuda = 1267
 Public Const iGaleraCrimi = 1268
 Public Const iGaleon = 86
+Public Const iGaleonFantasmal = 4596
 Public Const iGaleonCiuda = 1269
 Public Const iGaleonCrimi = 1270
 Public Const iBarcaArmada = 1273
