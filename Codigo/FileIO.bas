@@ -1106,6 +1106,7 @@ Sub LoadOBJData()
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
+            If val(Leer.GetValue(ObjKey, "NoTradeableToNPC")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_NoTradeableToNPC)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
