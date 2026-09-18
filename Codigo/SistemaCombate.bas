@@ -1371,7 +1371,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
     UserList(VictimIndex).Counters.EnCombate = IntervaloEnCombate
     UserList(attackerIndex).Counters.EnCombate = IntervaloEnCombate
     'Si es ciudadano
-    If esCiudadano(attackerIndex) Then
+    If esCiudadano(attackerIndex) And Not IsNeutralGuildMember(attackerIndex) Then
         If (esCiudadano(VictimIndex) Or esArmada(VictimIndex)) Then
             Call VolverCriminal(attackerIndex)
         End If
@@ -1497,50 +1497,64 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
         End If
     End If
-    ' Es armada?
-    If esArmada(attackerIndex) Then
-        ' Si ataca otro armada
-        If esArmada(VictimIndex) Then
-            'Msg1055= Los miembros del Ejercito Real tienen prohibido atacarse entre sí.
-            Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACARSE_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-            PuedeAtacar = False
-            Exit Function
-            ' Si ataca un ciudadano
-        ElseIf esCiudadano(VictimIndex) Then
-            'Msg1056= Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.
-            Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACAR_CIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-            PuedeAtacar = False
-            Exit Function
-        End If
-        ' No es armada
-    Else
-        'Tenes puesto el seguro?
-        If (esCiudadano(attackerIndex)) Then
-            If (UserList(attackerIndex).flags.Seguro) Then
-                If esCiudadano(VictimIndex) Then
-                    'Msg1057= No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.
-                    Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_CIUDADANOS_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                    PuedeAtacar = False
-                    Exit Function
-                ElseIf esArmada(VictimIndex) Then
-                    'Msg1058= No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.
-                    Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_MIEMBROS_DEL_EJERCITO_REAL_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+    ' Neutral guild members ignore faction restrictions, but all general combat and zone
+    ' restrictions above and below this block still apply.
+    If Not (IsNeutralGuildMember(attackerIndex) Or IsNeutralGuildMember(VictimIndex)) Then
+        ' Es armada?
+        If esArmada(attackerIndex) Then
+            ' Si ataca otro armada
+            If esArmada(VictimIndex) Then
+                'Msg1055= Los miembros del Ejercito Real tienen prohibido atacarse entre sí.
+                Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACARSE_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                PuedeAtacar = False
+                Exit Function
+                ' Si ataca un ciudadano
+            ElseIf esCiudadano(VictimIndex) Then
+                'Msg1056= Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.
+                Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DEL_EJERCITO_REAL_TIENEN_PROHIBIDO_ATACAR_CIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                PuedeAtacar = False
+                Exit Function
+            End If
+            ' No es armada
+        Else
+            'Tenes puesto el seguro?
+            If (esCiudadano(attackerIndex)) Then
+                If (UserList(attackerIndex).flags.Seguro) Then
+                    If esCiudadano(VictimIndex) Then
+                        'Msg1057= No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.
+                        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_CIUDADANOS_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                        PuedeAtacar = False
+                        Exit Function
+                    ElseIf esArmada(VictimIndex) Then
+                        'Msg1058= No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.
+                        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_MIEMBROS_DEL_EJERCITO_REAL_PARA_HACERLO_DEBES_DESACTIVAR_EL_SEGURO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+                        PuedeAtacar = False
+                        Exit Function
+                    End If
+                End If
+            ElseIf esCaos(attackerIndex) And esCaos(VictimIndex) Then
+                If Not (UserList(attackerIndex).flags.LegionarySecure) Then
+                    PuedeAtacar = True
+                ElseIf MapInfo(UserList(VictimIndex).pos.Map).Seguro <> 1 Then
+                    'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
+                    Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DE_LA_LEGION_OSCURA_NO_SE_PUEDEN_ATACAR_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     PuedeAtacar = False
                     Exit Function
                 End If
             End If
-        ElseIf esCaos(attackerIndex) And esCaos(VictimIndex) Then
-            If Not (UserList(attackerIndex).flags.LegionarySecure) Then
-                PuedeAtacar = True
-            ElseIf MapInfo(UserList(VictimIndex).pos.Map).Seguro <> 1 Then
-                'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
-                Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DE_LA_LEGION_OSCURA_NO_SE_PUEDEN_ATACAR_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                PuedeAtacar = False
-                Exit Function
-            End If
+        End If
+        ' Rivalidad Criminal <-> Legión Oscura: se bloquea el ataque solo cuando AMBOS, atacante y
+        ' víctima, están afiliados a un clan de alineación Criminal o Caótica (Legión Oscura).
+        ' Concilio se trata igual que Caos. La condición está centralizada en RivalidadClanBloqueaAtaque
+        ' para que CanAttackUser (ataque a distancia) aplique exactamente la misma regla.
+        If RivalidadClanBloqueaAtaque(attackerIndex, VictimIndex) Then
+            'Msg2291= No podés atacar a un rival protegido por su clan.
+            Call WriteLocaleMsg(attackerIndex, MSG_CLAN_PROHIBIDO_ATACAR_RIVAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            PuedeAtacar = False
+            Exit Function
         End If
     End If
-    'Estas en un Mapa Seguro?
+    'Estás en un Mapa Seguro?
     If MapInfo(UserList(VictimIndex).pos.Map).Seguro = 1 Then
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
@@ -1579,6 +1593,34 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     Exit Function
 PuedeAtacar_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
+End Function
+
+Private Function EsClanCriminalOLegion(ByVal GuildIndex As Integer) As Boolean
+    On Error GoTo EsClanCriminalOLegion_Err
+    If GuildIndex <= 0 Then
+        EsClanCriminalOLegion = False
+        Exit Function
+    End If
+    Dim alineacionClan As e_ALINEACION_GUILD
+    alineacionClan = GuildAlignmentIndex(GuildIndex)
+    EsClanCriminalOLegion = (alineacionClan = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or alineacionClan = e_ALINEACION_GUILD.ALINEACION_CAOTICA)
+    Exit Function
+EsClanCriminalOLegion_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.EsClanCriminalOLegion", Erl)
+End Function
+
+Public Function RivalidadClanBloqueaAtaque(ByVal attackerIndex As Integer, ByVal VictimIndex As Integer) As Boolean
+    On Error GoTo RivalidadClanBloqueaAtaque_Err
+    RivalidadClanBloqueaAtaque = False
+    If (Status(attackerIndex) = e_Facciones.Criminal And (Status(VictimIndex) = e_Facciones.Caos Or Status(VictimIndex) = e_Facciones.concilio)) _
+            Or ((Status(attackerIndex) = e_Facciones.Caos Or Status(attackerIndex) = e_Facciones.concilio) And Status(VictimIndex) = e_Facciones.Criminal) Then
+        If EsClanCriminalOLegion(UserList(attackerIndex).GuildIndex) And EsClanCriminalOLegion(UserList(VictimIndex).GuildIndex) Then
+            RivalidadClanBloqueaAtaque = True
+        End If
+    End If
+    Exit Function
+RivalidadClanBloqueaAtaque_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.RivalidadClanBloqueaAtaque", Erl)
 End Function
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
@@ -2218,8 +2260,11 @@ Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef TargetPos As 
     On Error GoTo ThrowArrowToTile_Err
     ThrowArrowToTile = False
     If MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex > 0 Then
-        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, UserList(MapData(TargetPos.Map, _
-                TargetPos.x, TargetPos.y).UserIndex).VersionId) = eCanAttack Then
+        Dim UserAttackInteractionResultUser As e_AttackInteractionResult
+        UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, _
+                UserList(MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex).VersionId)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResultUser)
+        If UserAttackInteractionResultUser = eCanAttack Then
             Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, eUser)
             ThrowArrowToTile = True
         End If
