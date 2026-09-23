@@ -1219,9 +1219,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         .Char.ParticulaFx = 0
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, 0, 0, True))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 0, 0))
-        errordesc = "ERROR AL ENVIAR INVI"
-        'Le devolvemos el body y head originales
-        If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
         errordesc = "ERROR AL CANCELAR SUBASTA"
         If .flags.Subastando = True Then
             Call CancelarSubasta

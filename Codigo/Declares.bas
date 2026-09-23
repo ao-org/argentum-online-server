@@ -262,6 +262,7 @@ Public Const iGalera = 85
 Public Const iGaleraCiuda = 1267
 Public Const iGaleraCrimi = 1268
 Public Const iGaleon = 86
+Public Const iGaleonFantasmal = 4596
 Public Const iGaleonCiuda = 1269
 Public Const iGaleonCrimi = 1270
 Public Const iBarcaArmada = 1273
@@ -2216,6 +2217,7 @@ Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
     e_JailObject = 4
+    e_NoTradeableToNPC = 8
 End Enum
 
 
