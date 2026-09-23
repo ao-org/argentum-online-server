@@ -2808,6 +2808,7 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     Dim isTierUser     As Boolean
     Dim isHouseZone    As Boolean
     Dim isCastleZone   As Boolean
+    Dim isPirateEventZone As Boolean
     Dim isSpecialZone  As Boolean
     Dim isTrainingZone As Boolean
     Dim isArena        As Boolean
@@ -2822,6 +2823,8 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     isTierUser = IsPatreon(UserIndex)
     ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo
     isHouseZone = (currentMap >= 600 And currentMap <= 749 And isTriggerZone)
+    ' Zona de PirateEvent: mapa 597
+    isPirateEventZone = (currentMap = 597)
     ' Zona de castillos: mapas del 758 al 772
     isCastleZone = (currentMap >= 758 And currentMap <= 772)
     ' Zonas especiales fijas donde no se consumen pociones
@@ -2837,7 +2840,7 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     ' Meson Hostigado - Beneficio Patreon: mapa 172, con trigger activo y jugador con tier
     isTrainingZone = (currentMap = MAP_MESON_HOSTIGADO And isTriggerZone And isTierUser)
     ' Si esta en alguna de las zonas anteriores, no se consume la poción
-    IsConsumableFreeZone = (isHouseZone Or isCastleZone Or isSpecialZone Or isTrainingZone Or isArena)
+    IsConsumableFreeZone = (isHouseZone Or isCastleZone Or isPirateEventZone Or isSpecialZone Or isTrainingZone Or isArena)
 End Function
 
 Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
