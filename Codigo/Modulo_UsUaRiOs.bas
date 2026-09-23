@@ -659,12 +659,17 @@ Dim tStr                        As String
             End If
         End If
         .flags.UserLogged = True
+        If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
+            .flags.AdminInvisible = 1
+            .flags.invisible = 1
+            .flags.Oculto = 1
+        End If
         'Crea  el personaje del usuario
         Call MakeUserChar(True, .pos.Map, UserIndex, .pos.Map, .pos.x, .pos.y, 1)
         Call WriteUserCharIndexInServer(UserIndex)
         Call ActualizarVelocidadDeUsuario(UserIndex)
-        If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
-            Call DoAdminInvisible(UserIndex)
+        If .flags.AdminInvisible = 1 Then
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
         End If
         Call WriteUpdateUserStats(UserIndex)
         Call WriteUpdateHungerAndThirst(UserIndex)
@@ -2274,7 +2279,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 .flags.Traveling = 0
                 .Counters.goHome = 0
             End If
-            If .flags.invisible + .flags.Oculto > 0 Then
+            If .flags.invisible + .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
                 .flags.invisible = 0
                 .flags.Oculto = 0
                 .Counters.DisabledInvisibility = 0

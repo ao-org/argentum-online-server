@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 39
+    Private Const SUITE_COUNT As Integer = 40
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -281,6 +281,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 37: RunSuite = test_suite_remort_persistence()
         Case 38: RunSuite = test_suite_remort_capability_state()
         Case 39: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
+        Case 40: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
         Case Else
             RunSuite = False
     End Select
