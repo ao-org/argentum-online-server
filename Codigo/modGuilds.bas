@@ -43,59 +43,6 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_CRIMINAL = 4
 End Enum
 
-Public Function GuildAlignmentAllowsStatus(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As Boolean
-    On Error GoTo GuildAlignmentAllowsStatus_Err
-    Select Case ClanAlignment
-        Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Criminal)
-        Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Armada Or PlayerStatus = e_Facciones.consejo)
-        Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Caos Or PlayerStatus = e_Facciones.concilio)
-        Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Armada)
-        Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Criminal Or PlayerStatus = e_Facciones.Caos)
-    End Select
-    Exit Function
-GuildAlignmentAllowsStatus_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentAllowsStatus", Erl)
-End Function
-
-Public Function GuildStatusForClient(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As e_Facciones
-    On Error GoTo GuildStatusForClient_Err
-    GuildStatusForClient = PlayerStatus
-    If ClanAlignment = e_ALINEACION_GUILD.ALINEACION_NEUTRAL And PlayerStatus = e_Facciones.Ciudadano Then
-        GuildStatusForClient = e_Facciones.Criminal
-    End If
-    Exit Function
-GuildStatusForClient_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildStatusForClient", Erl)
-End Function
-
-Public Function IsNeutralGuildMember(ByVal UserIndex As Integer) As Boolean
-    On Error GoTo IsNeutralGuildMember_Err
-    Dim GuildIndex As Integer
-    If UserIndex <= 0 Then Exit Function
-    GuildIndex = UserList(UserIndex).GuildIndex
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
-    IsNeutralGuildMember = (GuildAlignmentIndex(GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL)
-    Exit Function
-IsNeutralGuildMember_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.IsNeutralGuildMember", Erl)
-End Function
-
-Public Function UserStatusForClient(ByVal UserIndex As Integer, ByVal PersonalStatus As e_Facciones) As e_Facciones
-    On Error GoTo UserStatusForClient_Err
-    UserStatusForClient = PersonalStatus
-    If IsNeutralGuildMember(UserIndex) Then
-        UserStatusForClient = GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, PersonalStatus)
-    End If
-    Exit Function
-UserStatusForClient_Err:
-    Call TraceError(Err.Number, Err.Description, "modGuilds.UserStatusForClient", Erl)
-End Function
-
 'numero de .wav del cliente
 Public Enum e_SONIDOS_GUILD
     SND_CREACIONCLAN = 44
@@ -118,6 +65,7 @@ Public RequiredGuildLevelSeeInvisible As Byte
 Public RequiredGuildLevelSafe As Byte
 Public RequiredGuildLevelShowHPBar As Byte
 Public PriceAcceptMemberGuild(1 To MAX_LEVEL_GUILD) As Integer
+
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -1289,3 +1237,57 @@ Err_Handler:
     test_rivalidad_clan_bloquea_ataque = False
     Resume Restore
 End Function
+
+Public Function GuildAlignmentAllowsStatus(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As Boolean
+    On Error GoTo GuildAlignmentAllowsStatus_Err
+    Select Case ClanAlignment
+        Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Criminal)
+        Case e_ALINEACION_GUILD.ALINEACION_ARMADA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Armada Or PlayerStatus = e_Facciones.consejo)
+        Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Caos Or PlayerStatus = e_Facciones.concilio)
+        Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Ciudadano Or PlayerStatus = e_Facciones.Armada)
+        Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+            GuildAlignmentAllowsStatus = (PlayerStatus = e_Facciones.Criminal Or PlayerStatus = e_Facciones.Caos)
+    End Select
+    Exit Function
+GuildAlignmentAllowsStatus_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentAllowsStatus", Erl)
+End Function
+
+Public Function GuildStatusForClient(ByVal ClanAlignment As e_ALINEACION_GUILD, ByVal PlayerStatus As e_Facciones) As e_Facciones
+    On Error GoTo GuildStatusForClient_Err
+    GuildStatusForClient = PlayerStatus
+    If ClanAlignment = e_ALINEACION_GUILD.ALINEACION_NEUTRAL And PlayerStatus = e_Facciones.Ciudadano Then
+        GuildStatusForClient = e_Facciones.Criminal
+    End If
+    Exit Function
+GuildStatusForClient_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildStatusForClient", Erl)
+End Function
+
+Public Function IsNeutralGuildMember(ByVal UserIndex As Integer) As Boolean
+    On Error GoTo IsNeutralGuildMember_Err
+    Dim GuildIndex As Integer
+    If UserIndex <= 0 Then Exit Function
+    GuildIndex = UserList(UserIndex).GuildIndex
+    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+    IsNeutralGuildMember = (GuildAlignmentIndex(GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL)
+    Exit Function
+IsNeutralGuildMember_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.IsNeutralGuildMember", Erl)
+End Function
+
+Public Function UserStatusForClient(ByVal UserIndex As Integer, ByVal PersonalStatus As e_Facciones) As e_Facciones
+    On Error GoTo UserStatusForClient_Err
+    UserStatusForClient = PersonalStatus
+    If IsNeutralGuildMember(UserIndex) Then
+        UserStatusForClient = GuildStatusForClient(e_ALINEACION_GUILD.ALINEACION_NEUTRAL, PersonalStatus)
+    End If
+    Exit Function
+UserStatusForClient_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.UserStatusForClient", Erl)
+End Function
+
