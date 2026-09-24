@@ -5,15 +5,15 @@ Attribute VB_Name = "modPartyEffects"
 
 Option Explicit
 
-Private Const MaxPartyEffects As Integer = 16
+Public Const MaxPartyEffects As Integer = 16
 
-Private Function PartyEffectAllowed(ByVal ResourceId As Integer, ByVal Category As Byte) As Boolean
+Public Function PartyEffectAllowed(ByVal ResourceId As Integer, ByVal Category As Byte) As Boolean
     ' Effects.ini 1-42 are public EOT effects; 43-49 are the supported statuses.
     PartyEffectAllowed = ResourceId >= 1 And ResourceId <= 49 And _
         (Category = eBuff Or Category = eDebuff)
 End Function
 
-Private Function EffectRemaining(ByRef Effect As t_PartyDisplayEffect) As Long
+Public Function EffectRemaining(ByRef Effect As t_PartyDisplayEffect) As Long
     If Effect.RemainingMs = -1 Then
         EffectRemaining = -1
         Exit Function
@@ -36,28 +36,6 @@ Private Function PartySlotOf(ByVal LeaderIndex As Integer, ByVal MemberIndex As 
         End If
     Next Slot
 End Function
-
-Private Sub WritePartyEffectFields(ByRef Effect As t_PartyDisplayEffect, ByVal RemainingMs As Long)
-    Call Writer.WriteInt16(Effect.ResourceId)
-    Call Writer.WriteInt32(Effect.InstanceId)
-    Call Writer.WriteInt32(RemainingMs)
-    Call Writer.WriteInt32(Effect.TotalMs)
-    Call Writer.WriteInt8(Effect.Category)
-    Call Writer.WriteInt16(Effect.Stacks)
-End Sub
-
-Private Sub SendPartyEffectUpdate(ByVal RecipientIndex As Integer, ByVal MemberSlot As Byte, _
-                                  ByRef Effect As t_PartyDisplayEffect, ByVal RemainingMs As Long)
-    On Error GoTo SendPartyEffectUpdate_Err
-    Call Writer.WriteInt16(ServerPacketID.ePartyMemberEffectUpdate)
-    Call Writer.WriteInt8(MemberSlot)
-    Call WritePartyEffectFields(Effect, RemainingMs)
-    Call modSendData.SendData(ToIndex, RecipientIndex)
-    Exit Sub
-SendPartyEffectUpdate_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "modPartyEffects.SendPartyEffectUpdate", Erl)
-End Sub
 
 Public Sub TrackPartyEffect(ByVal UserIndex As Integer, ByVal ResourceId As Integer, _
                             ByVal InstanceId As Long, ByVal RemainingMs As Long, _
@@ -106,43 +84,10 @@ Public Sub TrackPartyEffect(ByVal UserIndex As Integer, ByVal ResourceId As Inte
         If IsValidUserRef(UserList(LeaderIndex).Grupo.Miembros(RecipientSlot)) Then
             RecipientIndex = UserList(LeaderIndex).Grupo.Miembros(RecipientSlot).ArrayIndex
             If UserSupportsPartyEffects(RecipientIndex) Then
-                Call SendPartyEffectUpdate(RecipientIndex, MemberSlot, Effect, RemainingMs)
+                Call WritePartyMemberEffectUpdate(RecipientIndex, MemberSlot, Effect, RemainingMs)
             End If
         End If
     Next RecipientSlot
-End Sub
-
-Private Sub SendPartyEffectSnapshot(ByVal RecipientIndex As Integer, ByVal MemberIndex As Integer, _
-                                    ByVal MemberSlot As Byte)
-    On Error GoTo SendPartyEffectSnapshot_Err
-    Dim Count As Byte
-    Dim Index As Integer
-    Dim Remaining(1 To MaxPartyEffects) As Long
-    For Index = 1 To MaxPartyEffects
-        With UserList(MemberIndex).PartyDisplayEffects(Index)
-            If PartyEffectAllowed(.ResourceId, .Category) Then
-                Remaining(Index) = EffectRemaining( _
-                    UserList(MemberIndex).PartyDisplayEffects(Index))
-                If Remaining(Index) <> 0 Then Count = Count + 1
-            End If
-        End With
-    Next Index
-    Call Writer.WriteInt16(ServerPacketID.ePartyMemberEffectsSnapshot)
-    Call Writer.WriteInt8(MemberSlot)
-    Call Writer.WriteInt8(Count)
-    For Index = 1 To MaxPartyEffects
-        With UserList(MemberIndex).PartyDisplayEffects(Index)
-            If Remaining(Index) <> 0 Then
-                Call WritePartyEffectFields( _
-                    UserList(MemberIndex).PartyDisplayEffects(Index), Remaining(Index))
-            End If
-        End With
-    Next Index
-    Call modSendData.SendData(ToIndex, RecipientIndex)
-    Exit Sub
-SendPartyEffectSnapshot_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "modPartyEffects.SendPartyEffectSnapshot", Erl)
 End Sub
 
 Public Sub SendPartyEffectSnapshotsToUser(ByVal RecipientIndex As Integer)
@@ -154,7 +99,7 @@ Public Sub SendPartyEffectSnapshotsToUser(ByVal RecipientIndex As Integer)
     Dim Slot As Byte
     For Slot = 1 To UserList(LeaderIndex).Grupo.CantidadMiembros
         If IsValidUserRef(UserList(LeaderIndex).Grupo.Miembros(Slot)) Then
-            Call SendPartyEffectSnapshot(RecipientIndex, _
+            Call WritePartyMemberEffectsSnapshot(RecipientIndex, _
                 UserList(LeaderIndex).Grupo.Miembros(Slot).ArrayIndex, Slot)
         End If
     Next Slot

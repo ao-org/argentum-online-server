@@ -4540,6 +4540,61 @@ Public Sub WriteActiveEffectSeconds(ByVal UserIndex As Integer, _
         Call WriteActiveEffectUpsert(UserIndex, ResourceId, InstanceId, RemainingSeconds * 1000&, RemainingSeconds * 1000&, Category)
     End If
 End Sub
+Private Sub WritePartyEffectFields(ByRef Effect As t_PartyDisplayEffect, ByVal RemainingMs As Long)
+    Call Writer.WriteInt16(Effect.ResourceId)
+    Call Writer.WriteInt32(Effect.InstanceId)
+    Call Writer.WriteInt32(RemainingMs)
+    Call Writer.WriteInt32(Effect.TotalMs)
+    Call Writer.WriteInt8(Effect.Category)
+    Call Writer.WriteInt16(Effect.Stacks)
+End Sub
+
+Public Sub WritePartyMemberEffectUpdate(ByVal RecipientIndex As Integer, ByVal MemberSlot As Byte, _
+                                  ByRef Effect As t_PartyDisplayEffect, ByVal RemainingMs As Long)
+    On Error GoTo WritePartyMemberEffectUpdate_Err
+    Call Writer.WriteInt16(ServerPacketID.ePartyMemberEffectUpdate)
+    Call Writer.WriteInt8(MemberSlot)
+    Call WritePartyEffectFields(Effect, RemainingMs)
+    Call modSendData.SendData(ToIndex, RecipientIndex)
+    Exit Sub
+WritePartyMemberEffectUpdate_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WritePartyMemberEffectUpdate", Erl)
+End Sub
+
+Public Sub WritePartyMemberEffectsSnapshot(ByVal RecipientIndex As Integer, ByVal MemberIndex As Integer, _
+                                    ByVal MemberSlot As Byte)
+    On Error GoTo WritePartyMemberEffectsSnapshot_Err
+    Dim Count As Byte
+    Dim Index As Integer
+    Dim Remaining(1 To MaxPartyEffects) As Long
+    For Index = 1 To MaxPartyEffects
+        With UserList(MemberIndex).PartyDisplayEffects(Index)
+            If PartyEffectAllowed(.ResourceId, .Category) Then
+                Remaining(Index) = EffectRemaining( _
+                    UserList(MemberIndex).PartyDisplayEffects(Index))
+                If Remaining(Index) <> 0 Then Count = Count + 1
+            End If
+        End With
+    Next Index
+    Call Writer.WriteInt16(ServerPacketID.ePartyMemberEffectsSnapshot)
+    Call Writer.WriteInt8(MemberSlot)
+    Call Writer.WriteInt8(Count)
+    For Index = 1 To MaxPartyEffects
+        With UserList(MemberIndex).PartyDisplayEffects(Index)
+            If Remaining(Index) <> 0 Then
+                Call WritePartyEffectFields( _
+                    UserList(MemberIndex).PartyDisplayEffects(Index), Remaining(Index))
+            End If
+        End With
+    Next Index
+    Call modSendData.SendData(ToIndex, RecipientIndex)
+    Exit Sub
+WritePartyMemberEffectsSnapshot_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WritePartyMemberEffectsSnapshot", Erl)
+End Sub
+
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
     On Error GoTo WriteNpcQuestListSend_Err
     Dim i As Integer
