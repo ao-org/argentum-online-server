@@ -704,10 +704,12 @@ Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
         
         ' ===== APLICAR BONO DE DAÑO POR CARTA =====
         If IsFeatureEnabled("collectible_cards") Then
-            Dim CardDamageBonus As Single
-            CardDamageBonus = GetCardDamageBonusForNpc(.MaestroUser.ArrayIndex, TargetIndex)
-            If CardDamageBonus > 1# Then
-                finalDamage = CLng(finalDamage * CardDamageBonus)
+            If .MaestroUser.ArrayIndex > 0 Then
+                Dim CardDamageBonus As Single
+                CardDamageBonus = GetCardDamageBonusForNpc(.MaestroUser.ArrayIndex, TargetIndex)
+                If CardDamageBonus > 1# Then
+                    finalDamage = CLng(finalDamage * CardDamageBonus)
+                End If
             End If
         End If
         ' ===========================================
