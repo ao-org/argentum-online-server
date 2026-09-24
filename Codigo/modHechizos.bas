@@ -123,12 +123,16 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             .flags.DuracionEfecto = Hechizos(Spell).Duration
             .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + Damage, .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
             Call WriteFYA(UserIndex)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
+            Call WriteActiveEffectSeconds(UserIndex, 47, ACTIVE_EFFECT_AGILITY, .flags.DuracionEfecto, eBuff)
         ElseIf Hechizos(Spell).SubeAgilidad = 2 Then
             Damage = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
             .Stats.UserAtributos(e_Atributos.Agilidad) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(e_Atributos.Agilidad) - Damage)
             Call WriteFYA(UserIndex)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
+            Call WriteActiveEffectSeconds(UserIndex, 47, ACTIVE_EFFECT_AGILITY, .flags.DuracionEfecto, eDebuff)
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveDebuff) Then
             Dim NegativeEffect As IBaseEffectOverTime
@@ -151,17 +155,22 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             .flags.DuracionEfecto = Hechizos(Spell).Duration
             .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + Damage, .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
             Call WriteFYA(UserIndex)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectSeconds(UserIndex, 46, ACTIVE_EFFECT_STRENGTH, .flags.DuracionEfecto, eBuff)
         ElseIf Hechizos(Spell).SubeFuerza = 2 Then
             Damage = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
             .Stats.UserAtributos(e_Atributos.Fuerza) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(e_Atributos.Fuerza) - Damage)
             Call WriteFYA(UserIndex)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectSeconds(UserIndex, 46, ACTIVE_EFFECT_STRENGTH, .flags.DuracionEfecto, eDebuff)
         End If
         If IsSet(Hechizos(Spell).Effects, e_SpellEffects.Paralize) Then
             If .flags.Paralizado = 0 Then
                 .flags.Paralizado = 1
                 .Counters.Paralisis = Hechizos(Spell).Duration / 2
+                Call WriteActiveEffectSeconds(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, .Counters.Paralisis, eDebuff)
                 Call WriteParalizeOK(UserIndex)
                 Call WritePosUpdate(UserIndex)
             End If
@@ -170,6 +179,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             If .flags.Inmovilizado = 0 Then
                 .flags.Inmovilizado = 1
                 .Counters.Inmovilizado = Hechizos(Spell).Duration / 2
+                Call WriteActiveEffectSeconds(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, .Counters.Inmovilizado, eDebuff)
                 Call WriteInmovilizaOK(UserIndex)
                 Call WritePosUpdate(UserIndex)
             End If
@@ -178,11 +188,13 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             If .flags.Paralizado > 0 Then
                 .flags.Paralizado = 0
                 .Counters.Paralisis = 0
+                Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
                 Call WriteParalizeOK(UserIndex)
             End If
             If .flags.Inmovilizado > 0 Then
                 .flags.Inmovilizado = 0
                 .Counters.Inmovilizado = 0
+                Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
                 Call WriteInmovilizaOK(UserIndex)
             End If
             Call WritePosUpdate(UserIndex)
@@ -1552,6 +1564,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(targetUserIndex).Counters.Invisibilidad <= 0 Then UserList(targetUserIndex).Counters.Invisibilidad = RandomNumber(Hechizos(h).Duration - 4, Hechizos( _
                 h).Duration + 1)
         Call WriteContadores(targetUserIndex)
+        Call WriteActiveEffectSeconds(targetUserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, UserList(targetUserIndex).Counters.Invisibilidad, eBuff)
         Call SendData(SendTarget.ToPCArea, targetUserIndex, PrepareMessageSetInvisible(UserList(targetUserIndex).Char.charindex, True, UserList(targetUserIndex).pos.x, UserList( _
                 targetUserIndex).pos.y))
         Call InfoHechizo(UserIndex)
@@ -1633,6 +1646,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         UserList(UserIndex).Counters.Incineracion = 0
         If UserList(UserIndex).flags.Inmovilizado > 0 Then
             UserList(UserIndex).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             UserList(UserIndex).flags.Inmovilizado = 0
             If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList( _
                     UserIndex).clase = e_Class.Pirat Then
@@ -1642,6 +1656,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(UserIndex).flags.Paralizado > 0 Then
             UserList(UserIndex).Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             UserList(UserIndex).flags.Paralizado = 0
             If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList( _
                     UserIndex).clase = e_Class.Pirat Then
@@ -1793,6 +1808,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Else
             UserList(targetUserIndex).Counters.Paralisis = Hechizos(h).Duration
         End If
+        Call WriteActiveEffectSeconds(targetUserIndex, 45, ACTIVE_EFFECT_PARALYZED, UserList(targetUserIndex).Counters.Paralisis, eDebuff)
         If UserList(targetUserIndex).flags.Paralizado = 0 Then
             UserList(targetUserIndex).flags.Paralizado = 1
             Call WriteParalizeOK(targetUserIndex)
@@ -1875,6 +1891,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Else
             UserList(targetUserIndex).Counters.Inmovilizado = Hechizos(h).Duration
         End If
+        Call WriteActiveEffectSeconds(targetUserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, UserList(targetUserIndex).Counters.Inmovilizado, eDebuff)
         UserList(targetUserIndex).flags.Inmovilizado = 1
         Call WriteInmovilizaOK(targetUserIndex)
         Call WritePosUpdate(targetUserIndex)
@@ -1935,6 +1952,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         If UserList(targetUserIndex).flags.Inmovilizado = 1 Then
             UserList(targetUserIndex).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(targetUserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             If UserList(targetUserIndex).clase = e_Class.Warrior Or UserList(targetUserIndex).clase = e_Class.Thief Or _
                     UserList(targetUserIndex).clase = e_Class.Pirat Then
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
@@ -1950,6 +1968,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 UserList(targetUserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             UserList(targetUserIndex).Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(targetUserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             Call WriteParalizeOK(targetUserIndex)
         End If
         b = True
@@ -2943,6 +2962,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         UserList(tempChr).flags.TomoPocion = True
         b = True
         Call WriteFYA(tempChr)
+        Call WriteActiveEffectRemoveBoth(tempChr, 49, ACTIVE_EFFECT_AGILITY)
+        Call WriteActiveEffectSeconds(tempChr, 47, ACTIVE_EFFECT_AGILITY, UserList(tempChr).flags.DuracionEfecto, eBuff)
     ElseIf Hechizos(h).SubeAgilidad = 2 Then
         'Verifica que el usuario no este muerto
         If UserList(tempChr).flags.Muerto = 1 Then
@@ -2964,6 +2985,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         End If
         b = True
         Call WriteFYA(tempChr)
+        Call WriteActiveEffectRemoveBoth(tempChr, 49, ACTIVE_EFFECT_AGILITY)
+        Call WriteActiveEffectSeconds(tempChr, 47, ACTIVE_EFFECT_AGILITY, UserList(tempChr).flags.DuracionEfecto, eDebuff)
     End If
     ' <-------- Fuerza ---------->
     If Hechizos(h).SubeFuerza = 1 Then
@@ -3024,6 +3047,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                 tempChr).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
         UserList(tempChr).flags.TomoPocion = True
         Call WriteFYA(tempChr)
+        Call WriteActiveEffectRemoveBoth(tempChr, 48, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectSeconds(tempChr, 46, ACTIVE_EFFECT_STRENGTH, UserList(tempChr).flags.DuracionEfecto, eBuff)
         b = True
         Call InfoHechizo(UserIndex)
         Call WriteFYA(tempChr)
@@ -3048,6 +3073,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         b = True
         Call InfoHechizo(UserIndex)
         Call WriteFYA(tempChr)
+        Call WriteActiveEffectRemoveBoth(tempChr, 48, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectSeconds(tempChr, 46, ACTIVE_EFFECT_STRENGTH, UserList(tempChr).flags.DuracionEfecto, eDebuff)
     End If
     'Salud
     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
@@ -3280,6 +3307,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         UserList(targetUserIndex).flags.TomoPocion = True
         b = True
         Call WriteFYA(targetUserIndex)
+        Call WriteActiveEffectRemoveBoth(targetUserIndex, 49, ACTIVE_EFFECT_AGILITY)
+        Call WriteActiveEffectSeconds(targetUserIndex, 47, ACTIVE_EFFECT_AGILITY, UserList(targetUserIndex).flags.DuracionEfecto, eBuff)
     ElseIf Hechizos(h).SubeAgilidad = 2 Then
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
         If UserIndex <> targetUserIndex Then
@@ -3296,6 +3325,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         b = True
         Call WriteFYA(targetUserIndex)
+        Call WriteActiveEffectRemoveBoth(targetUserIndex, 49, ACTIVE_EFFECT_AGILITY)
+        Call WriteActiveEffectSeconds(targetUserIndex, 47, ACTIVE_EFFECT_AGILITY, UserList(targetUserIndex).flags.DuracionEfecto, eDebuff)
     End If
     ' <-------- Fuerza ---------->
     If Hechizos(h).SubeFuerza = 1 Then
@@ -3322,6 +3353,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         b = True
         enviarInfoHechizo = True
         Call WriteFYA(targetUserIndex)
+        Call WriteActiveEffectRemoveBoth(targetUserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectSeconds(targetUserIndex, 46, ACTIVE_EFFECT_STRENGTH, UserList(targetUserIndex).flags.DuracionEfecto, eBuff)
     ElseIf Hechizos(h).SubeFuerza = 2 Then
         If Not PuedeAtacar(UserIndex, targetUserIndex) Then Exit Sub
         If UserIndex <> targetUserIndex Then
@@ -3338,6 +3371,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         b = True
         enviarInfoHechizo = True
         Call WriteFYA(targetUserIndex)
+        Call WriteActiveEffectRemoveBoth(targetUserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectSeconds(targetUserIndex, 46, ACTIVE_EFFECT_STRENGTH, UserList(targetUserIndex).flags.DuracionEfecto, eDebuff)
     End If
     'Salud
     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
@@ -3516,6 +3551,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         'Reseteamos el contador de Invisibilidad
         If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
         Call WriteContadores(tU)
+        Call WriteActiveEffectSeconds(tU, 43, ACTIVE_EFFECT_INVISIBILITY, UserList(tU).Counters.Invisibilidad, eBuff)
         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True, UserList(tU).pos.x, UserList(tU).pos.y))
         enviarInfoHechizo = True
         b = True
@@ -3536,6 +3572,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         UserList(UserIndex).flags.Incinerado = 0
         If UserList(UserIndex).flags.Inmovilizado = 1 Then
             UserList(UserIndex).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList( _
                     UserIndex).clase = e_Class.Pirat Then
                 UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
@@ -3545,6 +3582,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         If UserList(UserIndex).flags.Paralizado = 1 Then
             UserList(UserIndex).Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList( _
                     UserIndex).clase = e_Class.Pirat Then
                 UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
@@ -3678,6 +3716,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         Else
             UserList(tU).Counters.Paralisis = Hechizos(h).Duration
         End If
+        Call WriteActiveEffectSeconds(tU, 45, ACTIVE_EFFECT_PARALYZED, UserList(tU).Counters.Paralisis, eDebuff)
         If UserList(tU).flags.Paralizado = 0 Then
             UserList(tU).flags.Paralizado = 1
             Call WriteParalizeOK(tU)
@@ -3714,6 +3753,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         Else
             UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
         End If
+        Call WriteActiveEffectSeconds(tU, 44, ACTIVE_EFFECT_IMMOBILIZED, UserList(tU).Counters.Inmovilizado, eDebuff)
         If UserList(tU).flags.Inmovilizado = 0 Then
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
@@ -3740,6 +3780,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         If UserList(tU).flags.Inmovilizado = 1 Then
             UserList(tU).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(tU, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             UserList(tU).flags.Inmovilizado = 0
             If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
@@ -3750,6 +3791,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         If UserList(tU).flags.Paralizado = 1 Then
             UserList(tU).Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(tU, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             UserList(tU).flags.Paralizado = 0
             If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
                 UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
@@ -4055,6 +4097,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         'Msg823= Has sido paralizado.
         Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_PARALIZADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).Counters.Paralisis = Hechizos(h2).Duration
+        Call WriteActiveEffectSeconds(NpcIndex, 45, ACTIVE_EFFECT_PARALYZED, UserList(NpcIndex).Counters.Paralisis, eDebuff)
         If UserList(NpcIndex).flags.Paralizado = 0 Then
             UserList(NpcIndex).flags.Paralizado = 1
             Call WriteParalizeOK(NpcIndex)
@@ -4071,6 +4114,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         'Msg824= Has sido inmovilizado.
         Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_INMOVILIZADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         UserList(NpcIndex).Counters.Inmovilizado = Hechizos(h2).Duration
+        Call WriteActiveEffectSeconds(NpcIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, UserList(NpcIndex).Counters.Inmovilizado, eDebuff)
         If UserList(NpcIndex).flags.Inmovilizado = 0 Then
             UserList(NpcIndex).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(NpcIndex)
@@ -4146,6 +4190,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         UserList(NpcIndex).flags.invisible = 1
         UserList(NpcIndex).Counters.Invisibilidad = Hechizos(h2).Duration
         Call WriteContadores(NpcIndex)
+        Call WriteActiveEffectSeconds(NpcIndex, 43, ACTIVE_EFFECT_INVISIBILITY, UserList(NpcIndex).Counters.Invisibilidad, eBuff)
         Call SendData(SendTarget.ToPCAliveArea, NpcIndex, PrepareMessageSetInvisible(UserList(NpcIndex).Char.charindex, True, UserList(NpcIndex).pos.x, UserList(NpcIndex).pos.y))
     End If
     If Hechizos(h2).Sanacion = 1 Then
@@ -4164,6 +4209,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         Call WriteLocaleMsg(NpcIndex, MSG_HAS_SIDO_REMOVIDO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
             UserList(NpcIndex).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(NpcIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             UserList(NpcIndex).flags.Inmovilizado = 0
             If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
@@ -4190,6 +4236,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
         UserList(NpcIndex).Counters.Incineracion = 0
         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
             UserList(NpcIndex).Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(NpcIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
             UserList(NpcIndex).flags.Inmovilizado = 0
             If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = _
                     e_Class.Pirat Then
@@ -4204,6 +4251,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, y 
                 UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
             End If
             UserList(NpcIndex).Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(NpcIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             Call WriteParalizeOK(NpcIndex)
         End If
         If UserList(NpcIndex).flags.Ceguera = 1 Then

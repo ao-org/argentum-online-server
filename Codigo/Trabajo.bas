@@ -1905,6 +1905,7 @@ Sub ThrowNetToTarget(ByVal UserIndex As Integer)
             If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
             UserList(tU).Counters.Inmovilizado = NET_INMO_DURATION
+            Call WriteActiveEffectSeconds(tU, 44, ACTIVE_EFFECT_IMMOBILIZED, UserList(tU).Counters.Inmovilizado, eDebuff)
             If UserList(tU).flags.Inmovilizado = 0 Then
                 UserList(tU).flags.Inmovilizado = 1
                 Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FISHING_NET_FX, 0, UserList(tU).pos.x, UserList(tU).pos.y))

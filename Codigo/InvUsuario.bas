@@ -1919,6 +1919,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
+                        Call WriteActiveEffectRemoveBoth(UserIndex, 47, ACTIVE_EFFECT_AGILITY)
+                        Call WriteActiveEffectSeconds(UserIndex, 49, ACTIVE_EFFECT_AGILITY, .flags.DuracionEfecto, eBuff)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
                         If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
@@ -1933,6 +1935,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .flags.DuracionEfecto = obj.DuracionEfecto
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
+                        Call WriteActiveEffectRemoveBoth(UserIndex, 46, ACTIVE_EFFECT_STRENGTH)
+                        Call WriteActiveEffectSeconds(UserIndex, 48, ACTIVE_EFFECT_STRENGTH, .flags.DuracionEfecto, eBuff)
                         ' Consumir pocion solo si el usuario no esta en zona de uso libre
                         If Not IsConsumableFreeZone(UserIndex) Then
                             ' Quitamos el ítem del inventario
@@ -2004,10 +2008,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
                             If .flags.Paralizado = 1 Then
                                 .flags.Paralizado = 0
+                                .Counters.Paralisis = 0
+                                Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
                                 Call WriteParalizeOK(UserIndex)
                             End If
                             If .flags.Inmovilizado = 1 Then
                                 .Counters.Inmovilizado = 0
+                                Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
                                 .flags.Inmovilizado = 0
                                 Call WriteInmovilizaOK(UserIndex)
                             End If
@@ -2143,6 +2150,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                             .flags.invisible = 1
                             .Counters.Invisibilidad = obj.DuracionEfecto
+                            Call WriteActiveEffectSeconds(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, .Counters.Invisibilidad, eBuff)
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, .pos.x, .pos.y))
                             Call WriteContadores(UserIndex)
                             Call QuitarUserInvItem(UserIndex, Slot, 1)
@@ -2165,11 +2173,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         .flags.Incinerado = 0
                         If .flags.Inmovilizado = 1 Then
                             .Counters.Inmovilizado = 0
+                            Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
                             .flags.Inmovilizado = 0
                             Call WriteInmovilizaOK(UserIndex)
                         End If
                         If .flags.Paralizado = 1 Then
                             .flags.Paralizado = 0
+                            Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
                             Call WriteParalizeOK(UserIndex)
                         End If
                         If .flags.Ceguera = 1 Then

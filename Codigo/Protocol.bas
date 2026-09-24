@@ -1007,6 +1007,11 @@ Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As B
         UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
 End Function
 
+Public Function UserSupportsPartyEffects(ByVal UserIndex As Integer) As Boolean
+    UserSupportsPartyEffects = IsFeatureEnabled(HOO_FEATURE_PARTY_EFFECTS_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_PARTY_EFFECTS_V1)
+End Function
+
 Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
     If TargetCharacterIndex < LBound(CharList) Or TargetCharacterIndex > UBound(CharList) Then Exit Function
     Dim NpcIndex As Integer
@@ -1240,6 +1245,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_PARTY_EFFECTS_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_PARTY_EFFECTS_V1
+    End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -1264,6 +1272,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
+    Call SendPartyEffectSnapshotsToUser(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
@@ -7695,6 +7704,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
                     .flags.invisible = 0
                     .Counters.TiempoOculto = 0
                     .Counters.Invisibilidad = 0
+                    Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
                     .Counters.DisabledInvisibility = 0
                     If UserList(UserConsulta.ArrayIndex).flags.Navegando = 0 Then
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))

@@ -4500,12 +4500,46 @@ Public Sub WriteSendSkillCdUpdate(ByVal UserIndex As Integer, _
     Call Writer.WriteInt8(ConvertToClientBuff(SkillType))
     Call Writer.WriteInt16(Stacks)
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call TrackPartyEffect(UserIndex, SkillTypeId, SkillId, TimeLeft, TotalTime, ConvertToClientBuff(SkillType), Stacks)
     Exit Sub
 WriteSendSkillCdUpdate_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
 End Sub
 
+Public Sub WriteActiveEffectUpsert(ByVal UserIndex As Integer, _
+                                   ByVal ResourceId As Integer, _
+                                   ByVal InstanceId As Long, _
+                                   ByVal RemainingMs As Long, _
+                                   ByVal TotalMs As Long, _
+                                   ByVal Category As e_EffectType, _
+                                   Optional ByVal Stacks As Integer = 1)
+    Call WriteSendSkillCdUpdate(UserIndex, ResourceId, InstanceId, RemainingMs, TotalMs, Category, Stacks)
+End Sub
+
+Public Sub WriteActiveEffectRemove(ByVal UserIndex As Integer, _
+                                   ByVal ResourceId As Integer, _
+                                   ByVal InstanceId As Long, _
+                                   ByVal Category As e_EffectType)
+    Call WriteSendSkillCdUpdate(UserIndex, ResourceId, InstanceId, 0, 0, Category)
+End Sub
+Public Sub WriteActiveEffectRemoveBoth(ByVal UserIndex As Integer, _
+                                       ByVal ResourceId As Integer, _
+                                       ByVal InstanceId As Long)
+    Call WriteActiveEffectRemove(UserIndex, ResourceId, InstanceId, eBuff)
+    Call WriteActiveEffectRemove(UserIndex, ResourceId, InstanceId, eDebuff)
+End Sub
+Public Sub WriteActiveEffectSeconds(ByVal UserIndex As Integer, _
+                                    ByVal ResourceId As Integer, _
+                                    ByVal InstanceId As Long, _
+                                    ByVal RemainingSeconds As Long, _
+                                    ByVal Category As e_EffectType)
+    If RemainingSeconds <= 0 Then
+        Call WriteActiveEffectRemove(UserIndex, ResourceId, InstanceId, Category)
+    Else
+        Call WriteActiveEffectUpsert(UserIndex, ResourceId, InstanceId, RemainingSeconds * 1000&, RemainingSeconds * 1000&, Category)
+    End If
+End Sub
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
     On Error GoTo WriteNpcQuestListSend_Err
     Dim i As Integer

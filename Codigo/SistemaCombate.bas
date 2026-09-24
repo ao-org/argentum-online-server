@@ -919,6 +919,8 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
                 If Not IsExtraHit And .flags.Inmovilizado + .flags.Paralizado > 0 Then
                     .Counters.Inmovilizado = max(0, .Counters.Inmovilizado - AirHitReductParalisisTime)
                     .Counters.Paralisis = max(0, .Counters.Paralisis - AirHitReductParalisisTime)
+                    If .flags.Inmovilizado > 0 Then Call WriteActiveEffectSeconds(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, .Counters.Inmovilizado, eDebuff)
+                    If .flags.Paralizado > 0 Then Call WriteActiveEffectSeconds(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, .Counters.Paralisis, eDebuff)
                 End If
             End With
         End If
@@ -1924,6 +1926,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         If RandomNumber(1, 100) < 10 Then
             UserList(VictimaIndex).flags.Paralizado = 1
             UserList(VictimaIndex).Counters.Paralisis = 6
+            Call WriteActiveEffectSeconds(VictimaIndex, 45, ACTIVE_EFFECT_PARALYZED, UserList(VictimaIndex).Counters.Paralisis, eDebuff)
             Call WriteParalizeOK(VictimaIndex)
             UserList(VictimaIndex).Counters.timeFx = 3
             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 8, 0, UserList(VictimaIndex).pos.x, UserList( _
