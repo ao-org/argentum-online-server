@@ -12,6 +12,7 @@ Option Explicit
 'whenever the business logic sees fit (eg: combat, finance, etc)
 
 Private Const MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE = 1024
+Private Const MAX_COLLECTIBLE_CARDS_BITARRAY_SIZE = 128
 
 Public Enum e_CardRarity
     Bronce = 1
@@ -27,12 +28,44 @@ Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
     
 Private Const GET_ACCOUNT_COLLECTIBLE_CARDS As String = "SELECT card_quantities FROM account_collectible_cards WHERE account_id = ?"
 
+Public Sub ResetUserAccountCollectibleCardCollection(ByRef User As t_User)
+    ' Clears the in-memory card collection held by a user slot.
+    '
+    ' WHY THIS EXISTS: user slots are reused across sessions. When a player
+    ' disconnects, ResetUserSlot wipes most fields but NOT the card arrays, so
+    ' the freed slot keeps the previous account's card data in memory. If the
+    ' next account to occupy the slot has no saved blob in the
+    ' account_collectible_cards table (the SELECT hits EOF), that stale data
+    ' would be left untouched and the new account would inherit the previous
+    ' account's card collection and all its gameplay bonuses (EXP, damage,
+    ' damage reduction and drop rate).
+    '
+    ' This routine is called both when a slot is freed (TCP.ResetUserSlot) and
+    ' right before loading a collection from the database, so the arrays are
+    ' always consistent with the account that is currently logged in.
+    Dim i As Integer
+
+    For i = 1 To MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE
+        User.AccountCollectibleCardQuantities(i) = 0
+    Next i
+
+    For i = 1 To MAX_COLLECTIBLE_CARDS_BITARRAY_SIZE
+        User.AccountCollectibleCardBitArray(i) = 0
+    Next i
+End Sub
+
 Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_User)
     On Error GoTo GetUserCollectibleCards_Err
     Dim RS As ADODB.Recordset
     Dim Cmd As ADODB.Command
     Dim i As Integer
     Dim QuantityData() As Byte
+    
+    ' Wipe any card data left in memory by a previous account that occupied
+    ' this slot before loading the real collection for the current account.
+    ' Without this, an account with no saved blob (EOF on the SELECT below)
+    ' would silently keep the previous account's cards.
+    Call ResetUserAccountCollectibleCardCollection(User)
     
     ' Create command to fetch the collectible card blob
     Set Cmd = New ADODB.Command
