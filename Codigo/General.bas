@@ -902,14 +902,8 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             End If
         End If
         If .flags.Desnudo = 0 And Not HambreOSed Then
-            If (Not Lloviendo Or Not Intemperie(UserIndex)) And Not .AutomatedAction.IsActive Then
+            If Not .AutomatedAction.IsActive Then
                 Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
-            End If
-        Else
-            If Lloviendo And Intemperie(UserIndex) Then
-                Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
-            Else
-                Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
             End If
         End If
         If .flags.Descansar Then

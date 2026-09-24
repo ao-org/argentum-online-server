@@ -1160,6 +1160,10 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetUserSkills(UserIndex)
     Call ResetUserKeys(UserIndex)
     Call ResetCd(UserList(UserIndex))
+    ' Wipe the in-memory card collection so the freed slot is clean for the
+    ' next account that reuses it. Failing to do this lets a new account
+    ' inherit the previous account's collectible card bonuses.
+    Call ResetUserAccountCollectibleCardCollection(UserList(UserIndex))
     Call ResetUserAutomatedActions(UserIndex)
     With UserList(UserIndex).ComUsu
         .Acepto = False
@@ -1219,9 +1223,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         .Char.ParticulaFx = 0
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, 0, 0, True))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 0, 0))
-        errordesc = "ERROR AL ENVIAR INVI"
-        'Le devolvemos el body y head originales
-        If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
         errordesc = "ERROR AL CANCELAR SUBASTA"
         If .flags.Subastando = True Then
             Call CancelarSubasta
