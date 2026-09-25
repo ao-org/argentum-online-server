@@ -948,7 +948,7 @@ Function LegalWalk(ByVal Map As Integer, _
             If (.Blocked And FLAG_AGUA) <> 0 And Not .trigger = e_Trigger.VALIDOPUENTE Then Exit Function
         End If
         If Not PuedeTierra Then
-            If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
+            If (.Blocked And FLAG_AGUA) = 0 And Not EsAguaPocoProfunda(Map, x, y) Then Exit Function
         End If
         If .trigger = WORKERONLY Then
             If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function

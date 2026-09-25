@@ -1268,12 +1268,14 @@ End Sub
 
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
     On Error GoTo MoveUserChar_Err
+    Dim wasShallow As Boolean
     Dim nPos             As t_WorldPos
     Dim nPosOriginal     As t_WorldPos
     Dim nPosMuerto       As t_WorldPos
     Dim IndexMover       As Integer
     Dim Opposite_Heading As e_Heading
     With UserList(UserIndex)
+        wasShallow = EsAguaPocoProfunda(.pos.Map, .pos.x, .pos.y)
         nPos = .pos
         Call HeadtoPos(nHeading, nPos)
         If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
@@ -1383,6 +1385,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         .pos = nPos
         .Char.Heading = nHeading
         MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+        If wasShallow <> EsAguaPocoProfunda(.pos.Map, .pos.x, .pos.y) Then
+            Call ActualizarVelocidadDeUsuario(UserIndex)
+        End If
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
         If .Counters.Trabajando Then
@@ -2665,6 +2670,7 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
             End If
         End If
         velocidad = VelocidadNormal * modificadorItem * JineteLevelSpeed * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
+        velocidad = VelocidadEnAguaPocoProfunda(velocidad, EsAguaPocoProfunda(.pos.Map, .pos.x, .pos.y), .flags.Navegando <> 0)
 UpdateSpeed:
         .Char.speeding = velocidad
         If .flags.UserLogged Then

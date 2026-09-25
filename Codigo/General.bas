@@ -245,13 +245,27 @@ BloquearPuerta_Err:
     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
 End Sub
 
+Function EsGrhAguaPocoProfunda(ByVal GrhIndex As Long) As Boolean
+    EsGrhAguaPocoProfunda = GrhIndex >= 89950 And GrhIndex <= 89965
+End Function
+
+Function VelocidadEnAguaPocoProfunda(ByVal baseSpeed As Single, ByVal shallow As Boolean, ByVal navigating As Boolean) As Single
+    VelocidadEnAguaPocoProfunda = baseSpeed
+    If shallow And Not navigating Then VelocidadEnAguaPocoProfunda = baseSpeed * VelocidadAguaPocoProfunda
+End Function
+
+Function EsAguaPocoProfunda(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If Map <= 0 Or Map > NumMaps Or x <= 0 Or x > 100 Or y <= 0 Or y > 100 Then Exit Function
+    EsAguaPocoProfunda = EsGrhAguaPocoProfunda(MapData(Map, x, y).Graphic(1))
+End Function
+
 Function HayCosta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayCosta_Err
     'Ladder 10 - 2 - 2010
     'Chequea si hay costa en los tiles proximos al usuario
     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
         If ((MapData(Map, x, y).Graphic(1) >= 22552 And MapData(Map, x, y).Graphic(1) <= 22599) Or (MapData(Map, x, y).Graphic(1) >= 7283 And MapData(Map, x, y).Graphic(1) <= _
-                7378) Or (MapData(Map, x, y).Graphic(1) >= 13387 And MapData(Map, x, y).Graphic(1) <= 13482)) And MapData(Map, x, y).Graphic(2) = 0 Then
+                7378) Or (MapData(Map, x, y).Graphic(1) >= 13387 And MapData(Map, x, y).Graphic(1) <= 13482) Or MapData(Map, x, y).Graphic(1) = 89966 Or EsAguaPocoProfunda(Map, x, y)) And MapData(Map, x, y).Graphic(2) = 0 Then
             HayCosta = True
         Else
             HayCosta = False

@@ -22,6 +22,8 @@ Public Function test_suite_general() As Boolean
     Call UnitTesting.RunTest("test_inside_rectangle", test_inside_rectangle())
     Call UnitTesting.RunTest("test_valid_ip", test_valid_ip())
     Call UnitTesting.RunTest("test_invalid_ip", test_invalid_ip())
+    Call UnitTesting.RunTest("test_shallow_graphic_bounds", test_shallow_graphic_bounds())
+    Call UnitTesting.RunTest("test_shallow_speed", test_shallow_speed())
     test_suite_general = True
 End Function
 
@@ -224,6 +226,14 @@ Private Function test_invalid_ip() As Boolean
     Exit Function
 Err_Handler:
     test_invalid_ip = False
+End Function
+
+Private Function test_shallow_graphic_bounds() As Boolean
+    test_shallow_graphic_bounds = Not EsGrhAguaPocoProfunda(89949) And EsGrhAguaPocoProfunda(89950) And EsGrhAguaPocoProfunda(89965) And Not EsGrhAguaPocoProfunda(89966)
+End Function
+
+Private Function test_shallow_speed() As Boolean
+    test_shallow_speed = Abs(VelocidadEnAguaPocoProfunda(1, True, False) - 0.85) < 0.0001 And VelocidadEnAguaPocoProfunda(1, True, True) = 1 And VelocidadEnAguaPocoProfunda(1, False, False) = 1
 End Function
 
 #End If
