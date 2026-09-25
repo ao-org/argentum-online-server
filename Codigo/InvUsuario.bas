@@ -2781,9 +2781,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If IsFeatureEnabled("collectible_cards") Then
                     MiObj.Amount = 1
                     MiObj.ObjIndex = .invent.Object(Slot).ObjIndex
-                    Call AddCollectibleCardToUser(UserIndex, MiObj)
-                    Call QuitarUserInvItem(UserIndex, Slot, 1)
-                    Call UpdateUserInv(False, UserIndex, Slot)
+            
+                    If AddCollectibleCardToUser(UserIndex, MiObj) Then
+                        Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call UpdateUserInv(False, UserIndex, Slot)
+                    Else
+                        'Msg2292=No podés consumir más cartas de este tipo.
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CONSUMIR_MAS_CARTAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    End If
                 End If
         End Select
     End With
