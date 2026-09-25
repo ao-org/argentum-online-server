@@ -17,12 +17,23 @@ Public Function test_suite_characters() As Boolean
     Call UnitTesting.RunTest("test_erase_char_map", test_erase_char_map())
     Call UnitTesting.RunTest("test_erase_char_index", test_erase_char_index())
     Call UnitTesting.RunTest("test_distinct_charindex", test_distinct_charindex())
+    Call UnitTesting.RunTest("test_character_slots_by_tier", test_character_slots_by_tier())
     
     ' Clean up all characters after suite
     Call CleanupAllChars
     
     Debug.Print "Characters suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_characters = True
+End Function
+
+Private Function test_character_slots_by_tier() As Boolean
+    test_character_slots_by_tier = _
+        MaxCharacterForTier(e_TipoUsuario.tNormal) = 3 And _
+        MaxCharacterForTier(e_TipoUsuario.tAventurero) = 5 And _
+        MaxCharacterForTier(e_TipoUsuario.tHeroe) = 5 And _
+        MaxCharacterForTier(e_TipoUsuario.tLeyenda) = 10 And _
+        MaxCharacterForTier(e_TipoUsuario.tNoble) = 10 And _
+        MaxCharacterForTier(e_TipoUsuario.tEmperador) = 10
 End Function
 
 ' Helper: places a user at the given map position and creates their character.
