@@ -208,6 +208,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             Call SetUserRef(.Miembros(1), 0)
             .Id = -1
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+            Call SendPartyEffectSnapshotsForGroup(UserIndex)
             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2056, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -218,7 +219,9 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     
     Call RefreshCharStatus(UserIndex)
     Call modSendData.SendData(ToGroup, GroupLider, PrepareUpdateGroupInfo(GroupLider))
+    Call SendPartyEffectSnapshotsForGroup(GroupLider)
     Call modSendData.SendData(ToIndex, UserIndexEchar, PrepareUpdateGroupInfo(UserIndexEchar))
+    Call SendPartyEffectSnapshotsForGroup(UserIndexEchar)
     Exit Sub
 EcharMiembro_Err:
     Call TraceError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
@@ -302,6 +305,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
             Call modSendData.SendData(ToIndex, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+            Call SendPartyEffectSnapshotsForGroup(.Grupo.Lider.ArrayIndex)
             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2059, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -310,8 +314,10 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         End If
         Call WriteUbicacion(UserIndex, 1, 0)
         Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+        Call SendPartyEffectSnapshotsForGroup(.Grupo.Lider.ArrayIndex)
         Call SetUserRef(.Grupo.Lider, 0)
         Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+        Call SendPartyEffectSnapshotsForGroup(UserIndex)
         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2060, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
@@ -344,7 +350,9 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         Next i
         UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros - 1
         Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+        Call SendPartyEffectSnapshotsForGroup(.Grupo.Lider.ArrayIndex)
         Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+        Call SendPartyEffectSnapshotsForGroup(UserIndex)
         Dim a As Long
         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
@@ -394,6 +402,7 @@ Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
             
             ' Enviar actualización del grupo a cada miembro
             Call modSendData.SendData(ToIndex, MemberIndex, PrepareUpdateGroupInfo(MemberIndex))
+            Call SendPartyEffectSnapshotsForGroup(MemberIndex)
             
             ' Limpiar datos del grupo para este miembro
             .Grupo.EnGrupo = False
@@ -425,6 +434,7 @@ Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
     
     ' Enviar actualización final al líder (ahora recibirá GroupSize = 0)
     Call modSendData.SendData(ToIndex, LiderIndex, PrepareUpdateGroupInfo(LiderIndex))
+    Call SendPartyEffectSnapshotsForGroup(LiderIndex)
     
     Exit Sub
 FinalizarGrupo_Err:
@@ -494,6 +504,7 @@ Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As I
     Call RefreshCharStatus(UserIndex)
     Call CompartirUbicacion(UserIndex)
     Call modSendData.SendData(ToGroup, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+    Call SendPartyEffectSnapshotsForGroup(UserIndex)
     Exit Sub
 AddUserToGRoup_Err:
     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)

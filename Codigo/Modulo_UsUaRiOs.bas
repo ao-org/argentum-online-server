@@ -270,6 +270,7 @@ End Function
 Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByVal name As String)
     On Error GoTo Prepare_ConnectUser_Err
     Call ResetHooClientCapabilities(UserIndex)
+    Call ClearPartyEffectState(UserIndex)
     With UserList(UserIndex)
         .flags.Escondido = 0
         Call ClearNpcRef(.flags.TargetNPC)
@@ -724,6 +725,9 @@ Dim tStr                        As String
         End If
         Call WriteCurrentWeatherState(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
+        If .Counters.Invisibilidad > 0 Then Call WriteActiveEffectSeconds(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, .Counters.Invisibilidad, eBuff)
+        If .Counters.Inmovilizado > 0 Then Call WriteActiveEffectSeconds(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, .Counters.Inmovilizado, eDebuff)
+        If .Counters.Paralisis > 0 Then Call WriteActiveEffectSeconds(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, .Counters.Paralisis, eDebuff)
         Call MaybeSendRemortState(UserIndex)
         If .Stats.ELV = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
@@ -1818,6 +1822,10 @@ Sub UserDie(ByVal UserIndex As Integer)
         End If
         ' << Frenamos el contador de la droga >>
         .flags.DuracionEfecto = 0
+        Call WriteActiveEffectRemoveBoth(UserIndex, 46, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectRemoveBoth(UserIndex, 47, ACTIVE_EFFECT_AGILITY)
+        Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+        Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
         '<< Cambiamos la apariencia del char >>
         If .flags.Navegando = 0 Then
             .Char.body = iCuerpoMuerto
@@ -2228,6 +2236,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 .flags.Oculto = 0
                 .Counters.TiempoOculto = 0
                 .Counters.Invisibilidad = 0
+                Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
                 .Counters.DisabledInvisibility = 0
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
                 ' Msg575=Una fuerza divina que vigila esta zona te ha vuelto visible.
@@ -2548,10 +2557,18 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
             .flags.Paralizado = 0
             Call WriteParalizeOK(UserIndex)
         End If
+        If .Counters.Paralisis <> 0 Then
+            .Counters.Paralisis = 0
+            Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
+        End If
         '<<<< Inmovilizado >>>>
         If .flags.Inmovilizado = 1 Then
             .flags.Inmovilizado = 0
             Call WriteInmovilizaOK(UserIndex)
+        End If
+        If .Counters.Inmovilizado <> 0 Then
+            .Counters.Inmovilizado = 0
+            Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
         End If
         '<<< Estupidez >>>
         If .flags.Estupidez = 1 Then
@@ -2577,6 +2594,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
             .flags.invisible = 0
             .Counters.TiempoOculto = 0
             .Counters.Invisibilidad = 0
+            Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
             .Counters.DisabledInvisibility = 0
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
@@ -3069,6 +3087,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
             .flags.invisible = 0
             .flags.Oculto = 0
             .Counters.Invisibilidad = 0
+            Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
             .Counters.Ocultando = 0
             .Counters.DisabledInvisibility = 0
             ' Msg591=Tu invisibilidad ya no tiene efecto.
@@ -3086,6 +3105,7 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
     End If
     If CanMove(UserList(TargetIndex).flags, UserList(TargetIndex).Counters) Then
         UserList(TargetIndex).Counters.Inmovilizado = Time
+        Call WriteActiveEffectSeconds(TargetIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, UserList(TargetIndex).Counters.Inmovilizado, eDebuff)
         UserList(TargetIndex).flags.Inmovilizado = 1
         Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, FX, 0, UserList(TargetIndex).pos.x, UserList( _
                 TargetIndex).pos.y))
@@ -3175,6 +3195,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
             .flags.Oculto = 0
             .flags.invisible = 0
             .Counters.Invisibilidad = 0
+            Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
             .Counters.TiempoOculto = 0
             .Counters.LastAttackTime = GlobalFrameTime
             If .flags.Navegando = 1 Then

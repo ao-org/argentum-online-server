@@ -2940,6 +2940,12 @@ Public Enum e_CdTypes
     [CDCount]
 End Enum
 
+' Stable singleton instance ids for the active-effects display protocol.
+Public Const ACTIVE_EFFECT_INVISIBILITY As Long = 1
+Public Const ACTIVE_EFFECT_IMMOBILIZED As Long = 2
+Public Const ACTIVE_EFFECT_PARALYZED As Long = 3
+Public Const ACTIVE_EFFECT_STRENGTH As Long = 4
+Public Const ACTIVE_EFFECT_AGILITY As Long = 5
 Public Enum e_EffectType
     eBuff = 1
     eDebuff
@@ -2983,10 +2989,12 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_PARTY_EFFECTS_V1 As Long = &H10&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
 Public Const HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1 As String = "hoo-house-door-actions-v1"
+Public Const HOO_FEATURE_PARTY_EFFECTS_V1 As String = "hoo-party-effects-v1"
 
 Public Enum e_HooHouseDoorAction
     eHooHouseDoorAction_Open = 0
@@ -3033,6 +3041,16 @@ Public Type t_HooClientCapabilities
     CapabilityMask As Long
 End Type
 
+Public Type t_PartyDisplayEffect
+    ResourceId As Integer
+    InstanceId As Long
+    RemainingMs As Long
+    TotalMs As Long
+    Category As Byte
+    Stacks As Integer
+    ReceiptTick As Double
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
     name As String
@@ -3069,6 +3087,7 @@ Public Type t_User
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
     HooCapabilities As t_HooClientCapabilities
+    PartyDisplayEffects(1 To 16) As t_PartyDisplayEffect
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters

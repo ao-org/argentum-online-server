@@ -64,7 +64,7 @@ Private Sub SetEotEffect()
         TickTime = .TickTime
         TickCount = .Ticks
         If EffectInfo.TargetRef.RefType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, EffectInfo.UniqueId, .TickTime, .buffType, TickCount)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, EffectInfo.UniqueId, .TickTime, .TickTime, .buffType, TickCount)
         End If
     End With
 End Sub
