@@ -130,6 +130,83 @@ Distance_Err:
     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 End Function
 
+Public Function HooSpatialSoundRangeBand(ByVal SourceX As Integer, _
+                                         ByVal SourceY As Integer, _
+                                         ByVal ListenerX As Integer, _
+                                         ByVal ListenerY As Integer) As e_HooSpatialSoundRangeBand
+    On Error GoTo HooSpatialSoundRangeBand_Err
+    Dim horizontalDistance As Long
+    Dim verticalDistance As Long
+    Dim squareDistance As Long
+    horizontalDistance = Abs(CLng(SourceX) - CLng(ListenerX))
+    verticalDistance = Abs(CLng(SourceY) - CLng(ListenerY))
+    squareDistance = horizontalDistance
+    If verticalDistance > squareDistance Then squareDistance = verticalDistance
+    If squareDistance <= 2 Then
+        HooSpatialSoundRangeBand = eHooSpatialSoundRange_Near
+    ElseIf squareDistance <= 5 Then
+        HooSpatialSoundRangeBand = eHooSpatialSoundRange_Close
+    ElseIf squareDistance <= 8 Then
+        HooSpatialSoundRangeBand = eHooSpatialSoundRange_Mid
+    ElseIf squareDistance <= 11 Then
+        HooSpatialSoundRangeBand = eHooSpatialSoundRange_Distant
+    Else
+        HooSpatialSoundRangeBand = eHooSpatialSoundRange_Far
+    End If
+    Exit Function
+HooSpatialSoundRangeBand_Err:
+    Call TraceError(Err.Number, Err.Description, "Matematicas.HooSpatialSoundRangeBand", Erl)
+End Function
+
+Public Function HooSpatialSoundDirectionSector(ByVal SourceX As Integer, _
+                                                ByVal SourceY As Integer, _
+                                                ByVal ListenerX As Integer, _
+                                                ByVal ListenerY As Integer) As Byte
+    On Error GoTo HooSpatialSoundDirectionSector_Err
+    Dim horizontalOffset As Long
+    Dim verticalOffset As Long
+    Dim absoluteHorizontal As Long
+    Dim absoluteVertical As Long
+    Dim quadrantSector As Long
+    horizontalOffset = CLng(SourceX) - CLng(ListenerX)
+    verticalOffset = CLng(SourceY) - CLng(ListenerY)
+    absoluteHorizontal = Abs(horizontalOffset)
+    absoluteVertical = Abs(verticalOffset)
+    If absoluteHorizontal = 0 And absoluteVertical = 0 Then
+        HooSpatialSoundDirectionSector = 0
+        Exit Function
+    End If
+
+    ' Integer approximations of tan(11.25, 33.75, 56.25, 78.75 degrees).
+    ' This keeps the single-threaded movement hot path free of Atn/Double work.
+    If absoluteVertical * 1000 < absoluteHorizontal * 199 Then
+        quadrantSector = 0
+    ElseIf absoluteVertical * 1000 < absoluteHorizontal * 668 Then
+        quadrantSector = 1
+    ElseIf absoluteVertical * 1000 < absoluteHorizontal * 1497 Then
+        quadrantSector = 2
+    ElseIf absoluteVertical * 1000 < absoluteHorizontal * 5027 Then
+        quadrantSector = 3
+    Else
+        quadrantSector = 4
+    End If
+
+    If horizontalOffset >= 0 And verticalOffset >= 0 Then
+        HooSpatialSoundDirectionSector = CByte(quadrantSector)
+    ElseIf horizontalOffset < 0 And verticalOffset >= 0 Then
+        HooSpatialSoundDirectionSector = CByte(8 - quadrantSector)
+    ElseIf horizontalOffset < 0 And verticalOffset < 0 Then
+        HooSpatialSoundDirectionSector = CByte(8 + quadrantSector)
+    ElseIf quadrantSector = 0 Then
+        HooSpatialSoundDirectionSector = 0
+    Else
+        HooSpatialSoundDirectionSector = CByte(16 - quadrantSector)
+    End If
+    Exit Function
+HooSpatialSoundDirectionSector_Err:
+    Call TraceError(Err.Number, Err.Description, "Matematicas.HooSpatialSoundDirectionSector", Erl)
+End Function
+
 Function GetDirection(ByRef From As t_WorldPos, ByRef ToPos As t_WorldPos) As t_Vector
     Dim Ret As t_Vector
     Ret.x = ToPos.x - From.x

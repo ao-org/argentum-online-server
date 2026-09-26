@@ -2554,7 +2554,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
                         End If
-                        Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
+                        Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y, False, 0, UserIndex))
                         Exit Sub
                     Else
                         'Msg908= Solo Miembros de la Armada Real pueden usar este cuerno.
@@ -2568,7 +2568,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA_909, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
                         End If
-                        Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y))
+                        Call SendData(SendTarget.toMap, .pos.Map, PrepareMessagePlayWave(obj.Snd1, .pos.x, .pos.y, False, 0, UserIndex))
                         Exit Sub
                     Else
                         'Msg910= Solo Miembros de la Legión Oscura pueden usar este cuerno.

@@ -1258,6 +1258,30 @@ WritePlayWaveStep_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWaveStep", Erl)
 End Sub
 
+Public Sub WriteHooSpatialPlayerSound(ByVal UserIndex As Integer, _
+                                      ByVal SoundId As Integer, _
+                                      ByVal SourceX As Integer, _
+                                      ByVal SourceY As Integer, _
+                                      Optional ByVal MovementSound As Boolean = False, _
+                                      Optional ByVal CancelLastWave As Byte = 0, _
+                                      Optional ByVal Localize As Byte = 0)
+    On Error GoTo WriteHooSpatialPlayerSound_Err
+    Dim flags As Byte
+    If MovementSound Then flags = flags Or &H1
+    If Localize <> 0 Then flags = flags Or &H2
+    flags = flags Or CByte(CancelLastWave * 4)
+    Call Writer.WriteInt16(ServerPacketID.eHooSpatialPlayerSound)
+    Call Writer.WriteInt16(SoundId)
+    Call Writer.WriteInt8(HooSpatialSoundDirectionSector(SourceX, SourceY, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+    Call Writer.WriteInt8(CByte(HooSpatialSoundRangeBand(SourceX, SourceY, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)))
+    Call Writer.WriteInt8(flags)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooSpatialPlayerSound_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooSpatialPlayerSound", Erl)
+End Sub
+
 ''
 ' Writes the "GuildList" message to the given user's outgoing data .incomingData.
 '
@@ -3781,7 +3805,7 @@ End Function
 ' @param    Y The Y position in map coordinates from where the sound comes.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal CancelLastWave As Byte = False, Optional ByVal Localize As Byte = 0)
+Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal x As Byte, ByVal y As Byte, Optional ByVal CancelLastWave As Byte = False, Optional ByVal Localize As Byte = 0, Optional ByVal PlayerSourceIndex As Integer = 0)
     On Error GoTo PrepareMessagePlayWave_Err
     Call Writer.WriteInt16(ServerPacketID.ePlayWave)
     Call Writer.WriteInt16(wave)
@@ -3789,6 +3813,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal x As Byte, B
     Call Writer.WriteInt8(y)
     Call Writer.WriteInt8(CancelLastWave)
     Call Writer.WriteInt8(Localize)
+    PrepareMessagePlayWave = Array("hoo-player-sound-v1", wave, x, y, CancelLastWave, Localize, PlayerSourceIndex)
     Exit Function
 PrepareMessagePlayWave_Err:
     Call Writer.Clear
