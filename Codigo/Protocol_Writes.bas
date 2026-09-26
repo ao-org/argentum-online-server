@@ -163,6 +163,45 @@ WriteHooHouseDoorActionResult_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooHouseDoorActionResult", Erl)
 End Sub
 
+Public Sub WriteHooGuildState(ByVal UserIndex As Integer)
+    On Error GoTo WriteHooGuildState_Err
+    If Not UserSupportsHooGuildState(UserIndex) Then Exit Sub
+    Dim GuildIndex As Integer
+    GuildIndex = UserList(UserIndex).GuildIndex
+    If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then GuildIndex = 0
+    Call Writer.WriteInt16(ServerPacketID.eHooGuildState)
+    Call Writer.WriteInt8(1)
+    Call Writer.WriteBool(GuildIndex > 0)
+    If GuildIndex > 0 Then
+        Call Writer.WriteInt16(GuildIndex)
+        Call Writer.WriteString8(modGuilds.GuildName(GuildIndex))
+        Call Writer.WriteInt8(modGuilds.GuildAlignmentIndex(GuildIndex))
+        Call Writer.WriteBool(modGuilds.PersonajeEsLeader(UserList(UserIndex).Id))
+        Call Writer.WriteInt8(modGuilds.NivelDeClan(GuildIndex))
+        Call Writer.WriteInt32(modGuilds.GuildCurrentExperience(GuildIndex))
+        Call Writer.WriteInt32(modGuilds.GetRequiredExpForGuildLevel(modGuilds.NivelDeClan(GuildIndex)))
+    End If
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooGuildState_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooGuildState", Erl)
+End Sub
+
+Public Sub WriteHooGuildProfile(ByVal UserIndex As Integer, ByVal GuildName As String, ByVal Website As String)
+    On Error GoTo WriteHooGuildProfile_Err
+    If Not UserSupportsHooGuildState(UserIndex) Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooGuildProfile)
+    Call Writer.WriteInt8(1)
+    Call Writer.WriteString8(GuildName)
+    Call Writer.WriteString8(Website)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooGuildProfile_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooGuildProfile", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
@@ -610,7 +649,11 @@ End Sub
 Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
     On Error GoTo WriteUpdateMana_Err
     Call SendData(SendTarget.ToAdminsYDioses, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
-    Call SendData(SendTarget.ToClanArea, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
+    If UserList(UserIndex).GuildIndex > 0 Then
+        If modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex) >= RequiredGuildLevelShowHPBar Then
+            Call SendData(SendTarget.ToClanArea, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
+        End If
+    End If
     Call Writer.WriteInt16(ServerPacketID.eUpdateMana)
     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
     Call modSendData.SendData(ToIndex, UserIndex)
@@ -629,7 +672,11 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
     'Call SendData(SendTarget.ToDiosesYclan, UserIndex, PrepareMessageCharUpdateHP(UserIndex))
     On Error GoTo WriteUpdateHP_Err
     Call SendData(SendTarget.ToAdminsYDioses, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
-    Call SendData(SendTarget.ToClanArea, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
+    If UserList(UserIndex).GuildIndex > 0 Then
+        If modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex) >= RequiredGuildLevelShowHPBar Then
+            Call SendData(SendTarget.ToClanArea, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
+        End If
+    End If
     Call SendData(SendTarget.ToGroupButIndex, UserIndex, PrepareMessageCharUpdateHP(UserIndex))
     Call Writer.WriteInt16(ServerPacketID.eUpdateHP)
     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
@@ -4753,6 +4800,9 @@ Public Sub WriteGuildConfig(ByVal UserIndex As Integer)
     For i = 1 To MAX_LEVEL_GUILD
         Call Writer.WriteInt8(MembersByLevel(i))
     Next i
+    If UserSupportsHooGuildState(UserIndex) Then
+        Call Writer.WriteInt8(RequiredGuildLevelMarkNpc)
+    End If
     
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub

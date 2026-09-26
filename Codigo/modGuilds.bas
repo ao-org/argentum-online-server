@@ -64,7 +64,21 @@ Public RequiredGuildLevelCallSupport As Byte
 Public RequiredGuildLevelSeeInvisible As Byte
 Public RequiredGuildLevelSafe As Byte
 Public RequiredGuildLevelShowHPBar As Byte
+Public RequiredGuildLevelMarkNpc As Byte
 Public PriceAcceptMemberGuild(1 To MAX_LEVEL_GUILD) As Integer
+
+Public Function GuildEncodedLengthValid(ByVal Value As String, ByVal MaximumBytes As Long, ByVal AllowEmpty As Boolean) As Boolean
+    On Error GoTo GuildEncodedLengthValid_Err
+    If Len(Value) = 0 Then
+        GuildEncodedLengthValid = AllowEmpty
+        Exit Function
+    End If
+    GuildEncodedLengthValid = (LenB(StrConv(Value, vbFromUnicode)) <= MaximumBytes)
+    Exit Function
+GuildEncodedLengthValid_Err:
+    GuildEncodedLengthValid = False
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildEncodedLengthValid", Erl)
+End Function
 Public Sub LoadGuildsDB()
     On Error GoTo LoadGuildsDB_Err
     Dim CantClanes As String
@@ -95,6 +109,7 @@ Public Function m_ConectarMiembroAClan(ByVal UserIndex As Integer, ByVal GuildIn
     If m_EstadoPermiteEntrar(UserIndex, GuildIndex) Then
         Call guilds(GuildIndex).ConectarMiembro(UserIndex)
         UserList(UserIndex).GuildIndex = GuildIndex
+        Call MaybeSendHooGuildState(UserIndex)
         m_ConectarMiembroAClan = True
     End If
     Exit Function
@@ -147,6 +162,8 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 UserList(UserReference.ArrayIndex).GuildIndex = 0
+                Call MaybeSendHooGuildState(UserReference.ArrayIndex)
+                Call BroadcastHooGuildState(GI)
                 Map = UserList(UserReference.ArrayIndex).pos.Map
                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.x, MapInfo(Map).Salida.y, True)
@@ -168,6 +185,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
             If m_PuedeSalirDeClan(ExpellUserId, GI, Expulsador) Then
                 If m_EsGuildLeader(ExpellUserId, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
+                Call BroadcastHooGuildState(GI)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 Map = GetMapDatabase(ExpelledName)
                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
@@ -198,10 +216,13 @@ ActualizarWebSite_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.ActualizarWebSite", Erl)
 End Sub
 
-Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
+Public Sub ChangeCodexAndDesc(ByVal UserIndex As Integer, ByRef Desc As String)
     On Error GoTo ChangeCodexAndDesc_Err
-    Dim i As Long
+    Dim GuildIndex As Integer
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Sub
+    GuildIndex = UserList(UserIndex).GuildIndex
     If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
+    If Not m_EsGuildLeader(UserList(UserIndex).Id, GuildIndex) Then Exit Sub
     With guilds(GuildIndex)
         Call .SetDesc(Desc)
     End With
@@ -261,6 +282,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, _
         Call guilds(CANTIDADDECLANES).AceptarNuevoMiembro(UserList(FundadorIndex).Id)
         Call guilds(CANTIDADDECLANES).ConectarMiembro(FundadorIndex)
         UserList(FundadorIndex).GuildIndex = CANTIDADDECLANES
+        Call MaybeSendHooGuildState(FundadorIndex)
         Call RefreshCharStatus(FundadorIndex)
         For i = 1 To CANTIDADDECLANES - 1
             Call guilds(i).ProcesarFundacionDeOtroClan
@@ -610,8 +632,9 @@ Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As Strin
     GI = GuildIndex(GuildName)
     If GI = 0 Then Exit Sub
     With guilds(GI)
-        Call WriteGuildDetails(UserIndex, GuildName, GetUserName(.Fundador), .GetFechaFundacion, .GetLeader, .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, _
+        Call WriteGuildDetails(UserIndex, GuildName, GetUserName(.Fundador), .GetFechaFundacion, GetUserName(.GetLeader), .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, _
                 .GetNivelDeClan)
+        Call WriteHooGuildProfile(UserIndex, GuildName, .GetURL)
     End With
     Exit Sub
 SendGuildDetails_Err:
@@ -756,6 +779,10 @@ Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As 
         refError = 2035 'No perteneces a ningún clan.
         Exit Function
     End If
+    If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
+        refError = 2035
+        Exit Function
+    End If
     Call guilds(GI).RetirarAspirante(nombre)
     refError = 2036 'Fue rechazada tu solicitud de ingreso a ¬1.
     a_RechazarAspirante = True
@@ -789,13 +816,13 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     On Error GoTo Error
     GI = UserList(UserIndex).GuildIndex
     Personaje = UCase$(Personaje)
+    If GI <= 0 Or GI > CANTIDADDECLANES Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENECES_NINGUN_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1946=No perteneces a ningún clan.
+        Exit Sub
+    End If
     If Not PersonajeExiste(Personaje) Then
         Call guilds(GI).ExpulsarMiembro(Personaje)
         Call WriteLocaleMsg(UserIndex, MSG_PERSONAJE_NO_EXISTE_ELIMINADO_LISTA_MIEMBROS, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1945=El personaje no existe y fue eliminado de la lista de miembros.
-        Exit Sub
-    End If
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENECES_NINGUN_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1946=No perteneces a ningún clan.
         Exit Sub
     End If
     If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
@@ -991,10 +1018,19 @@ End Function
 Public Function GuildLeader(ByVal GuildIndex As Integer) As String
     On Error GoTo GuildLeader_Err
     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
-    GuildLeader = guilds(GuildIndex).GetLeader
+    GuildLeader = GetUserName(guilds(GuildIndex).GetLeader)
     Exit Function
 GuildLeader_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildLeader", Erl)
+End Function
+
+Public Function GuildCurrentExperience(ByVal GuildIndex As Integer) As Long
+    On Error GoTo GuildCurrentExperience_Err
+    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+    GuildCurrentExperience = guilds(GuildIndex).GetExpActual
+    Exit Function
+GuildCurrentExperience_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.GuildCurrentExperience", Erl)
 End Function
 
 Public Function GuildAlignment(ByVal GuildIndex As Integer) As String
@@ -1077,6 +1113,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Long)
     End With
     guilds(GI).SetExpActual (ExpActual)
     guilds(GI).SetNivelDeClan (nivel)
+    Call BroadcastHooGuildState(GI)
     Exit Sub
 CheckClanExp_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.CheckClanExp", Erl)
@@ -1089,6 +1126,20 @@ Public Function GetRequiredExpForGuildLevel(ByVal CurrentLevel As Integer) As Lo
         GetRequiredExpForGuildLevel = 0
     End If
 End Function
+
+Public Sub BroadcastHooGuildState(ByVal GuildIndex As Integer)
+    On Error GoTo BroadcastHooGuildState_Err
+    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
+    Dim MemberIndex As Integer
+    MemberIndex = m_Iterador_ProximoUserIndex(GuildIndex)
+    While MemberIndex > 0
+        Call MaybeSendHooGuildState(MemberIndex)
+        MemberIndex = m_Iterador_ProximoUserIndex(GuildIndex)
+    Wend
+    Exit Sub
+BroadcastHooGuildState_Err:
+    Call TraceError(Err.Number, Err.Description, "modGuilds.BroadcastHooGuildState", Erl)
+End Sub
 
 Public Function MiembrosPermite(ByVal GI As Integer) As Byte
     On Error GoTo MiembrosPermite_Err
