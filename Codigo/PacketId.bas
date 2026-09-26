@@ -229,8 +229,11 @@ Public Enum ServerPacketID
     eRemortResult
     eHooTargetedSpellCastResult
     eHooHouseDoorActionResult
-    ePartyMemberEffectsSnapshot
-    ePartyMemberEffectUpdate
+    ePartyMemberEffectsSnapshot = 206
+    ePartyMemberEffectUpdate = 207
+    eHooSpatialPlayerSound = 208
+    eHooGuildState = 209
+    eHooGuildProfile = 210
     eMaxPacket
     [PacketCount]
 End Enum
