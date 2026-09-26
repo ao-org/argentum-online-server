@@ -955,9 +955,7 @@ Dim eSkinType                   As e_OBJType
                 If .invent.EquippedBackpackObjIndex > 0 Then
                     .Char.BackpackAnim = ObtenerRopaje(UserIndex, ObjData(.invent.EquippedBackpackObjIndex))
                 Else
-                    If SkinRequireObject(UserIndex, Slot) Then
-                        .Char.BackpackAnim = 0
-                    End If
+                    .Char.BackpackAnim = NoBackPack
                 End If
                 
             Case e_OBJType.otSkinsBoats
