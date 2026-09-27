@@ -2286,9 +2286,8 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     On Error GoTo SaveUser_Err
     If Logout Then
         Call UserDisconnected(UserIndex)
-        Call SaveLastLogoutDatabase(UserList(UserIndex).Id)
     End If
-    Call SaveCharacterDB(UserIndex)
+    Call SaveCharacterDB(UserIndex, Logout)
     If Logout Then
         Call RemoveTokenDatabase(UserIndex)
     End If
