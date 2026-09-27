@@ -2424,6 +2424,13 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
     Dim ElementalQuitado As Boolean
     Dim SpawnInvalido    As Boolean
     PermiteMascotas = MapInfo(UserList(UserIndex).pos.Map).NoMascotas = False
+
+    ' Si el mapa PERMITE mascotas y venían guardadas (por ciudad o muerte protegida),
+    ' liberamos el flag para permitir que el bucle las vuelva a reaparecer (spawnear).
+    If PermiteMascotas Then
+        UserList(UserIndex).flags.MascotasGuardadas = 0
+    End If
+
     For i = 1 To MAXMASCOTAS
         Index = UserList(UserIndex).MascotasIndex(i).ArrayIndex
         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
@@ -2443,8 +2450,10 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
             iMinHP = 0
             PetTiempoDeVida = 0
         End If
+
         petType = UserList(UserIndex).MascotasType(i)
-        If petType > 0 And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0) And PetTiempoDeVida = 0 Then
+        
+        If petType > 0 And PermiteMascotas And PetTiempoDeVida = 0 Then
             Dim SpawnPos As t_WorldPos
             SpawnPos.Map = UserList(UserIndex).pos.Map
             SpawnPos.x = UserList(UserIndex).pos.x + RandomNumber(-3, 3)
@@ -2464,6 +2473,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
             End If
         End If
     Next i
+
     If MascotaQuitada Then
         If Not PermiteMascotas Then
             ' Msg582=Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.
@@ -3388,6 +3398,10 @@ Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
     On Error GoTo HandleUserPetsOnDeath_Err
     Dim i              As Long
     Dim PreventPetLoss As Boolean
+    Dim petType        As Integer
+    Dim NroPets        As Integer
+    Dim NpcIdx         As Integer
+    
     With UserList(UserIndex)
         ' Determinar si el druida tiene protección de pérdida
         ' (objeto mágico de madera élfica equipado)
@@ -3402,30 +3416,36 @@ Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
         End If
         'Procesar mascotas ACTIVAS, si hay protección guardarlas, si no hay protección matarlas
         For i = 1 To MAXMASCOTAS
-            If .MascotasIndex(i).ArrayIndex > 0 Then   ' Hay mascota activa
-                'Obtener si es mascota domada (TiempoExistencia = 0)
+            NpcIdx = .MascotasIndex(i).ArrayIndex
+            
+            If NpcIdx > 0 Then   ' Hay mascota activa en este slot
                 Dim isTamed As Boolean
                 isTamed = False
+                
                 If IsValidNpcRef(.MascotasIndex(i)) Then
-                    isTamed = (NpcList(.MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0)
+                    isTamed = (NpcList(NpcIdx).Contadores.TiempoExistencia = 0)
                 End If
-                If PreventPetLoss Then
-                    If isTamed Then
-                        'Guardar mascota domada usando la misma lógica que HechizoInvocacion
-                        Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, 0)
-                        Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eStorePets)
-                        Call ClearNpcRef(.MascotasIndex(i))
-                    Else
-                        'Mascota invocada siempre muere aunque haya protección
-                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
-                        Call ClearNpcRef(.MascotasIndex(i))
-                    End If
+                
+                If PreventPetLoss And isTamed Then
+                    ' Preservar tipo y cantidad total
+                    petType = NpcList(NpcIdx).Numero
+                    NroPets = .NroMascotas
+                    
+                    ' Desvincular amo y remover NPC del mapa
+                    Call SetUserRef(NpcList(NpcIdx).MaestroUser, 0)
+                    Call QuitarNPC(NpcIdx, eStorePets)
+                    
+                    ' Reasignar los datos para que permanezcan guardados en el usuario
+                    .MascotasType(i) = petType
+                    .NroMascotas = NroPets
+                    Call ClearNpcRef(.MascotasIndex(i))
                 Else
                     'Sin protección comportamiento normal, mueren todas
                     If IsValidNpcRef(.MascotasIndex(i)) Then
-                        Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                        Call MuereNpc(NpcIdx, 0)
                     End If
                     Call ClearNpcRef(.MascotasIndex(i))
+                    .MascotasType(i) = 0
                 End If
             End If
         Next i
@@ -3436,6 +3456,9 @@ Public Sub HandleUserPetsOnDeath(ByVal UserIndex As Integer)
             End If
         Else
             .flags.MascotasGuardadas = 1
+            .flags.ModificoMascotas = True
+            
+            Call WriteLocaleMsg(UserIndex, MSG_TUS_MASCOTAS_HAN_SIDO_GUARDADAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         End If
     End With
     Exit Sub
