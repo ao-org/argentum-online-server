@@ -77,7 +77,8 @@ Public Sub KickUsersFromUnderworld()
             Debug.Assert False 'invalid map shouldn't happen
             Call TraceError(1, UnderworldMapPool(i).map & " is invalid", "KickUsersFromUnderworld()", 1)
         End If
-        For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
+        ' WarpUserChar removes the user and shifts the remaining entries left.
+        For LoopC = ConnGroups(UnderworldMapPool(i).Map).CountEntrys To 1 Step -1
             tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
             With UserList(tempIndex)
                 HomeCityId = .Hogar
@@ -91,7 +92,8 @@ Public Sub KickUsersFromUnderworld()
         Call TraceError(1, "Center of the underworld is invalid", "KickUsersFromUnderworld()", 1)
     End If
     
-    For LoopC = 1 To ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys
+    ' Iterate backwards so removing users does not skip the next entry.
+    For LoopC = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys To 1 Step -1
         tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
         With UserList(tempIndex)
             HomeCityId = .Hogar
