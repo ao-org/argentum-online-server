@@ -147,16 +147,21 @@ SaveUserAccountCollectibleCards_Err:
     Set Cmd = Nothing
 End Function
 
-Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As t_Obj)
-    If ObjCard.ObjIndex = 0 Then Exit Sub
+Public Function AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As t_Obj) As Boolean
+    If ObjCard.ObjIndex = 0 Then Exit Function
     
     Dim CardIndex As Integer
     CardIndex = ObjData(ObjCard.ObjIndex).CollectibleCardIndex
     
     ' Validate card index
-    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then Exit Sub
-    
+    If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then Exit Function
+        
     With UserList(UserIndex)
+        If .AccountCollectibleCardQuantities(CardIndex) >= 10 Then
+            AddCollectibleCardToUser = False
+            Exit Function
+        End If
+    
         .flags.DirtyCollectibleCardCollection = True
         ' Increment the quantity for this specific card (cap at 255 per byte)
         Dim Inc As Integer
@@ -173,11 +178,13 @@ Public Sub AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As
         If Inc > 0 Then
             Dim NewQty As Integer
             NewQty = .AccountCollectibleCardQuantities(CardIndex) + Inc
-            If NewQty > 255 Then NewQty = 255
+            If NewQty > 10 Then NewQty = 10
             .AccountCollectibleCardQuantities(CardIndex) = CByte(NewQty)
         End If
     End With
-End Sub
+    
+    AddCollectibleCardToUser = True
+End Function
 
 Public Function HasUserCollectedNpcCard(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
     Dim CardIndex As Integer

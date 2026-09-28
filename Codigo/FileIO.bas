@@ -2292,7 +2292,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     If Logout Then
         Call UserDisconnected(UserIndex)
     End If
-    Call SaveCharacterDB(UserIndex)
+    Call SaveCharacterDB(UserIndex, Logout)
     If Logout Then
         Call RemoveTokenDatabase(UserIndex)
     End If
