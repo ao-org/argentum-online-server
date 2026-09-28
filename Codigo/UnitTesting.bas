@@ -416,7 +416,11 @@ Private Function test_hoo_spatial_player_audio_buckets() As Boolean
     Call SetFeatureToggle(HOO_FEATURE_SPATIAL_PLAYER_AUDIO_V1, True)
     If HOO_CAP_SPATIAL_PLAYER_AUDIO_V1 <> &H20& Then GoTo TestDone
     If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_SPATIAL_PLAYER_AUDIO_V1) <> HOO_CAP_SPATIAL_PLAYER_AUDIO_V1 Then GoTo TestDone
-    If CInt(ServerPacketID.eHooSpatialPlayerSound) <> 208 Then GoTo TestDone
+    #If PYMMO = 0 Then
+        If CInt(ServerPacketID.eHooSpatialPlayerSound) <> 209 Then GoTo TestDone
+    #Else
+        If CInt(ServerPacketID.eHooSpatialPlayerSound) <> 208 Then GoTo TestDone
+    #End If
     If HooSpatialSoundRangeBand(52, 52, 50, 50) <> eHooSpatialSoundRange_Near Then GoTo TestDone
     If HooSpatialSoundRangeBand(53, 55, 50, 50) <> eHooSpatialSoundRange_Close Then GoTo TestDone
     If HooSpatialSoundRangeBand(54, 58, 50, 50) <> eHooSpatialSoundRange_Mid Then GoTo TestDone
