@@ -883,6 +883,9 @@ Dim obj                         As t_ObjData
                     End If
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, 0, True, 2))
                     .Char.Body_Aura = 0
+                    If obj.ResistenciaMagica > 0 Then
+                        Call WriteUpdateRM(UserIndex)
+                    End If
             End Select
             Call UpdateUserInv(False, UserIndex, Slot)
         Else
