@@ -341,6 +341,7 @@ Private Function test_suite_remort_persistence() As Boolean
     Call RunTest("remort_count migration default", test_remort_count_migration_default())
     Call RunTest("remort_count load validation", test_remort_count_load_validation())
     Call RunTest("remort_count normal save SQL", test_remort_count_normal_save_sql())
+    Call RunTest("last_logout save SQL", test_last_logout_save_sql())
     test_suite_remort_persistence = True
 End Function
 
@@ -387,6 +388,13 @@ Private Function test_remort_count_normal_save_sql() As Boolean
     test_remort_count_normal_save_sql = _
             InStr(1, QUERY_LOAD_MAINPJ, "remort_count", vbTextCompare) > 0 And _
             InStr(1, QUERY_UPDATE_MAINPJ, "remort_count = ?", vbTextCompare) > 0
+End Function
+
+Private Function test_last_logout_save_sql() As Boolean
+    test_last_logout_save_sql = _
+            InStr(1, QUERY_UPDATE_MAINPJ_LOGOUT, "last_logout = strftime('%s','now')", vbTextCompare) > 0 And _
+            InStr(1, QUERY_UPDATE_MAINPJ_LOGOUT, "remort_count = ?, last_logout", vbTextCompare) > 0 And _
+            InStr(1, QUERY_UPDATE_MAINPJ, "last_logout", vbTextCompare) = 0
 End Function
 
 Private Function test_suite_remort_capability_state() As Boolean
