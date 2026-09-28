@@ -1916,6 +1916,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Select Case .flags.TipoPocion
                     Case e_PotionType.ModifiesAgility    'Modif la agilidad
                         .flags.DuracionEfecto = obj.DuracionEfecto
+                        Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_STRENGTH)
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
                         Call WriteFYA(UserIndex)
@@ -1933,6 +1934,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                     Case e_PotionType.ModifiesStrength    'Modif la fuerza
                         .flags.DuracionEfecto = obj.DuracionEfecto
+                        Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_AGILITY)
                         'Usa el item
                         .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
                         Call WriteActiveEffectRemoveBoth(UserIndex, 46, ACTIVE_EFFECT_STRENGTH)

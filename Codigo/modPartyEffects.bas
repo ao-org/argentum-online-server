@@ -119,6 +119,40 @@ Public Sub SendPartyEffectSnapshotsForGroup(ByVal MemberIndex As Integer)
     Next Slot
 End Sub
 
+' Strength and agility share DuracionEfecto; refresh the other visible timer when it resets.
+Public Sub RefreshAttributeDisplayForSharedDuration(ByVal UserIndex As Integer, ByVal InstanceId As Long)
+    Dim FirstResourceId As Integer
+    Dim SecondResourceId As Integer
+    Select Case InstanceId
+        Case ACTIVE_EFFECT_STRENGTH
+            FirstResourceId = 46
+            SecondResourceId = 48
+        Case ACTIVE_EFFECT_AGILITY
+            FirstResourceId = 47
+            SecondResourceId = 49
+        Case Else
+            Exit Sub
+    End Select
+
+    Dim Index As Integer
+    Dim ResourceId As Integer
+    Dim Category As e_EffectType
+    For Index = 1 To MaxPartyEffects
+        With UserList(UserIndex).PartyDisplayEffects(Index)
+            If .InstanceId = InstanceId And (.ResourceId = FirstResourceId Or .ResourceId = SecondResourceId) Then
+                If PartyEffectAllowed(.ResourceId, .Category) Then
+                    ResourceId = .ResourceId
+                    Category = .Category
+                    Exit For
+                End If
+            End If
+        End With
+    Next Index
+    If ResourceId <> 0 Then
+        Call WriteActiveEffectSeconds(UserIndex, ResourceId, InstanceId, UserList(UserIndex).flags.DuracionEfecto, Category)
+    End If
+End Sub
+
 Public Sub ClearPartyEffectState(ByVal UserIndex As Integer)
     Dim Index As Integer
     For Index = 1 To MaxPartyEffects

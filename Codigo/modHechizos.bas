@@ -121,6 +121,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Damage = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
+            Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_STRENGTH)
             .Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(.Stats.UserAtributos(e_Atributos.Agilidad) + Damage, .Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
             Call WriteFYA(UserIndex)
             Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
@@ -129,6 +130,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Damage = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
+            Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_STRENGTH)
             .Stats.UserAtributos(e_Atributos.Agilidad) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(e_Atributos.Agilidad) - Damage)
             Call WriteFYA(UserIndex)
             Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
@@ -153,6 +155,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Damage = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
+            Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_AGILITY)
             .Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(.Stats.UserAtributos(e_Atributos.Fuerza) + Damage, .Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
             Call WriteFYA(UserIndex)
             Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
@@ -161,6 +164,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Damage = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
             .flags.TomoPocion = True
             .flags.DuracionEfecto = Hechizos(Spell).Duration
+            Call RefreshAttributeDisplayForSharedDuration(UserIndex, ACTIVE_EFFECT_AGILITY)
             .Stats.UserAtributos(e_Atributos.Fuerza) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(e_Atributos.Fuerza) - Damage)
             Call WriteFYA(UserIndex)
             Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
