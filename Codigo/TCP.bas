@@ -1160,6 +1160,10 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     Call ResetUserSkills(UserIndex)
     Call ResetUserKeys(UserIndex)
     Call ResetCd(UserList(UserIndex))
+    ' Wipe the in-memory card collection so the freed slot is clean for the
+    ' next account that reuses it. Failing to do this lets a new account
+    ' inherit the previous account's collectible card bonuses.
+    Call ResetUserAccountCollectibleCardCollection(UserList(UserIndex))
     Call ResetUserAutomatedActions(UserIndex)
     With UserList(UserIndex).ComUsu
         .Acepto = False

@@ -556,20 +556,14 @@ End Sub
 ''' <param name="tier">The user tier.</param>
 ''' <returns>The maximum number of characters allowed.</returns>
 Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
-    #If DEBUGGING Then
-        MaxCharacterForTier = 10
-    #Else
-        Select Case tier
-            Case e_TipoUsuario.tAventurero
-                MaxCharacterForTier = 3
-            Case e_TipoUsuario.tHeroe
-                MaxCharacterForTier = 5
-            Case e_TipoUsuario.tLeyenda, e_TipoUsuario.tNoble, e_TipoUsuario.tEmperador
-                MaxCharacterForTier = 10
-            Case Else
-                MaxCharacterForTier = 1
-        End Select
-    #End If
+    Select Case tier
+        Case e_TipoUsuario.tAventurero, e_TipoUsuario.tHeroe
+            MaxCharacterForTier = 5
+        Case e_TipoUsuario.tLeyenda, e_TipoUsuario.tNoble, e_TipoUsuario.tEmperador
+            MaxCharacterForTier = 10
+        Case Else
+            MaxCharacterForTier = 3
+    End Select
 End Function
 
 Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario

@@ -699,9 +699,22 @@ Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
         Dim finalDamage As Long
 
         finalDamage = Damage
+        
+        ' ===== APLICAR BONO DE DAÑO POR CARTA =====
+        If IsFeatureEnabled("collectible_cards") Then
+            If .MaestroUser.ArrayIndex > 0 Then
+                Dim CardDamageBonus As Single
+                CardDamageBonus = GetCardDamageBonusForNpc(.MaestroUser.ArrayIndex, TargetIndex)
+                If CardDamageBonus > 1# Then
+                    finalDamage = CLng(finalDamage * CardDamageBonus)
+                End If
+            End If
+        End If
+        ' ===========================================
+        
         finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
         finalDamage = finalDamage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
-
+        
         NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0)
 
         If NpcDamageToNpc = eDead Then
