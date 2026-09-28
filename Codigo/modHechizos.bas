@@ -2961,6 +2961,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         Call InfoHechizo(UserIndex)
         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(tempChr, ACTIVE_EFFECT_STRENGTH)
         UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList( _
                 tempChr).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
         UserList(tempChr).flags.TomoPocion = True
@@ -2982,6 +2983,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         UserList(tempChr).flags.TomoPocion = True
         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(tempChr, ACTIVE_EFFECT_STRENGTH)
         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < MINATRIBUTOS Then
             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
         Else
@@ -3047,6 +3049,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         End If
         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(tempChr, ACTIVE_EFFECT_AGILITY)
         UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList( _
                 tempChr).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
         UserList(tempChr).flags.TomoPocion = True
@@ -3069,6 +3072,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         UserList(tempChr).flags.TomoPocion = True
         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(tempChr, ACTIVE_EFFECT_AGILITY)
         If UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < MINATRIBUTOS Then
             UserList(tempChr).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
         Else
@@ -3306,6 +3310,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         enviarInfoHechizo = True
         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
         UserList(targetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(targetUserIndex, ACTIVE_EFFECT_STRENGTH)
         UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList( _
                 targetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
         UserList(targetUserIndex).flags.TomoPocion = True
@@ -3322,6 +3327,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         UserList(targetUserIndex).flags.TomoPocion = True
         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
         UserList(targetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(targetUserIndex, ACTIVE_EFFECT_STRENGTH)
         If UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) - Damage < 6 Then
             UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Agilidad) = MINATRIBUTOS
         Else
@@ -3351,6 +3357,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
         UserList(targetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(targetUserIndex, ACTIVE_EFFECT_AGILITY)
         UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MinimoInt(UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) + Damage, UserList( _
                 targetUserIndex).Stats.UserAtributosBackUP(e_Atributos.Fuerza) * 2)
         UserList(targetUserIndex).flags.TomoPocion = True
@@ -3367,6 +3374,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         UserList(targetUserIndex).flags.TomoPocion = True
         Damage = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
         UserList(targetUserIndex).flags.DuracionEfecto = Hechizos(h).Duration
+        Call RefreshAttributeDisplayForSharedDuration(targetUserIndex, ACTIVE_EFFECT_AGILITY)
         If UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) - Damage < 6 Then
             UserList(targetUserIndex).Stats.UserAtributos(e_Atributos.Fuerza) = MINATRIBUTOS
         Else
