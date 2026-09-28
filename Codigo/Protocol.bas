@@ -1279,6 +1279,9 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
+    If UserList(UserIndex).flags.UserLogged And UserSupportsHooGuildState(UserIndex) Then
+        Call WriteGuildConfig(UserIndex)
+    End If
     Call MaybeSendHooGuildState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
