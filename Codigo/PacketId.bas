@@ -229,11 +229,8 @@ Public Enum ServerPacketID
     eRemortResult
     eHooTargetedSpellCastResult
     eHooHouseDoorActionResult
-    ePartyMemberEffectsSnapshot
-    ePartyMemberEffectUpdate
-    eHooSpatialPlayerSound
-    eHooGuildState
-    eHooGuildProfile
+    ' Keep this feature's wire IDs stable without declaring other feature packets.
+    eHooSpatialPlayerSound = eHooHouseDoorActionResult + 3
     eMaxPacket
     [PacketCount]
 End Enum
