@@ -1493,7 +1493,7 @@ Private Sub tPiqueteC_Timer()
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                     ' En vez de encarcelarlo, lo sacamos del juego.
-                    'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
+                    'Ojo! No sé si se puede abusar de esto para evitar los 10 segundos al salir
                     Call WriteDisconnect(i)
                     Call CloseSocket(i)
                 End If

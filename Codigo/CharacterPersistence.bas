@@ -606,7 +606,7 @@ Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
+Public Sub SaveCharacterDB(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo ErrorHandler
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
@@ -618,7 +618,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
-        Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown)
+        Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown, Logout)
         Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
         If HasBankChanged(UserIndex) Then
@@ -650,7 +650,7 @@ ErrorHandler:
     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 End Sub
 
-Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, Optional ByVal Logout As Boolean = False)
     Dim QueryTimer As Long
     Dim Params() As Variant
     ReDim Params(62)
@@ -721,7 +721,11 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Params(post_increment(i)) = U.Id
     Debug.Assert i = UBound(Params) + 1
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_UPDATE_MAINPJ, Params)
+    If Logout Then
+        Call Execute(QUERY_UPDATE_MAINPJ_LOGOUT, Params)
+    Else
+        Call Execute(QUERY_UPDATE_MAINPJ, Params)
+    End If
     Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
 End Sub
 

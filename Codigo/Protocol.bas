@@ -3496,7 +3496,7 @@ Dim eSkinType                   As e_OBJType
         'Validate item slot
         If Not bSkins Then
             If itemSlot > .CurrentInventorySlots Or itemSlot < 1 Then Exit Sub
-            'Auto Fix errores de dateos en ï¿½tems.
+            'Auto Fix errores de dateos en ítems.
             If .invent.Object(itemSlot).amount = 0 Then
                 .invent.Object(itemSlot).ObjIndex = 0
                 Call UpdateSingleItemInv(UserIndex, itemSlot, False)
@@ -6217,13 +6217,15 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         If ServerSoloGMs > 0 Then
-            'Msg1222= Servidor habilitado para todos.
-            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_HABILITADO_TODOS, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             ServerSoloGMs = 0
+            Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "0")
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_DESACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
+            Call LogGM(GetUserRealName(UserIndex), "Desactivo Solo GMs (ServerSoloGMs=0)")
         Else
-            'Msg1223= Servidor restringido a administradores.
-            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_RESTRINGIDO_ADMINISTRADORES, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             ServerSoloGMs = 1
+            Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "1")
+            Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_ACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
+            Call LogGM(GetUserRealName(UserIndex), "Activo Solo GMs (ServerSoloGMs=1)")
         End If
     End With
     Exit Sub
@@ -7568,35 +7570,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         Dim Slot As Byte
         Slot = reader.ReadInt8
         If Slot > MAXUSERQUESTS Then Exit Sub
-        With .QuestStats.Quests(Slot)
-            ' Le quitamos los objetos de quest que no puede tirar
-            If QuestList(.QuestIndex).RequiredOBJs Then
-                Dim ObjIndex As Integer, i As Integer
-                For i = 1 To QuestList(.QuestIndex).RequiredOBJs
-                    ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
-                    If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
-                        ' Revisamos que ninguna otra quest que tenga activa le pida el mismo item
-                        Dim q As Integer, j As Byte, K As Byte, QuitarItem As Boolean
-                        QuitarItem = True
-                        For j = 1 To MAXUSERQUESTS
-                            q = UserList(UserIndex).QuestStats.Quests(j).QuestIndex
-                            If q <> 0 And q <> .QuestIndex Then
-                                For K = 1 To QuestList(q).RequiredOBJs
-                                    If QuestList(q).RequiredOBJ(K).ObjIndex = ObjIndex Then
-                                        QuitarItem = False
-                                        Exit For
-                                    End If
-                                Next
-                            End If
-                            If Not QuitarItem Then Exit For
-                        Next
-                        If QuitarItem Then
-                            Call QuitarObjetos(ObjIndex, GetMaxInvOBJ(), UserIndex)
-                        End If
-                    End If
-                Next i
-            End If
-        End With
+
         Call LogQuestEvent(.Id, .name, .QuestStats.Quests(Slot).QuestIndex, QuestList(.QuestStats.Quests(Slot).QuestIndex).nombre, "Abandoned")
         'Le avisamos que abandono la quest
         'Msg2115=Has abandonado la misión ¬1.

@@ -1,0 +1,1 @@
+UPDATE spell SET spell_id = 9 WHERE spell_id = 0 AND user_id IN (SELECT id FROM "user" WHERE class_id = 6) AND user_id NOT IN (SELECT DISTINCT user_id FROM spell WHERE spell_id = 9) AND number = (SELECT MIN(s2.number) FROM spell s2 WHERE s2.user_id = spell.user_id AND s2.spell_id = 0);
