@@ -2784,6 +2784,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
                     If AddCollectibleCardToUser(UserIndex, MiObj) Then
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call LogCardConsumption(.Id, .name, .AccountID, MiObj.ObjIndex, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
                     Else
                         'Msg2292=No podés consumir más cartas de este tipo.
