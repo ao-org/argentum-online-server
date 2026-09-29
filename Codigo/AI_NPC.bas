@@ -781,6 +781,7 @@ Private Function TryGuardAttackHostileNpc(ByVal NpcIndex As Integer) As Boolean
         If IsValidNpcRef(.TargetNPC) Then
             If NpcList(.TargetNPC.ArrayIndex).flags.OldHostil = 0 Or _
                     NpcList(.TargetNPC.ArrayIndex).Attackable = 0 Or _
+                    IsValidUserRef(NpcList(.TargetNPC.ArrayIndex).MaestroUser) Or _
                     IsGuardNpcType(NpcList(.TargetNPC.ArrayIndex).npcType) Then Call ClearNpcRef(.TargetNPC)
         End If
         If Not IsValidNpcRef(.TargetNPC) Then
@@ -1051,7 +1052,10 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer, Optional ByVal Searc
                     If MapData(.Orig.Map, x, y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, x, y).NpcIndex Then
                     Dim foundNpc As Integer
                     foundNpc = MapData(.Orig.Map, x, y).NpcIndex
-                    If NpcList(foundNpc).flags.OldHostil <> 0 And NpcList(foundNpc).Attackable <> 0 And Not IsGuardNpcType(NpcList(foundNpc).npcType) Then
+                    If NpcList(foundNpc).flags.OldHostil <> 0 And _
+                            NpcList(foundNpc).Attackable <> 0 And _
+                            Not IsValidUserRef(NpcList(foundNpc).MaestroUser) And _
+                            Not IsGuardNpcType(NpcList(foundNpc).npcType) Then
                         If Not IsValidUserRef(NpcList(foundNpc).TargetUser) Then
                             BuscarNpcEnArea = MapData(.Orig.Map, x, y).NpcIndex
                             Exit Function
