@@ -171,15 +171,13 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
     On Error GoTo LimpiarInventario_Err
     Dim j As Integer
     With UserList(UserIndex)
-        If .CurrentInventorySlots > 0 Then
-            For j = 1 To .CurrentInventorySlots
-                If j > 0 And j <= UBound(.invent.Object) Then 'Make sure the slot is valid
-                    .invent.Object(j).ObjIndex = 0
-                    .invent.Object(j).amount = 0
-                    .invent.Object(j).Equipped = 0
-                End If
-            Next
-        End If
+        ' A reused user slot must not retain items in locked Patreon slots.
+        For j = LBound(.invent.Object) To UBound(.invent.Object)
+            .invent.Object(j).ObjIndex = 0
+            .invent.Object(j).amount = 0
+            .invent.Object(j).Equipped = 0
+            .invent.Object(j).ElementalTags = 0
+        Next j
         .invent.NroItems = 0
         .invent.EquippedArmorObjIndex = 0
         .invent.EquippedArmorSlot = 0
