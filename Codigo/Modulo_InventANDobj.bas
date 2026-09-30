@@ -189,11 +189,13 @@ Public Sub NpcDropObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
             Dropeo.ObjIndex = Npc.Drop(i).ItemIndex
             
             ' ===== APLICAR BONO DE CARTA A LA CANTIDAD DE DROP =====
-            If IsFeatureEnabled("collectible_cards") Then
-                If CardDropBonus > 1# Then
-                    Dropeo.Amount = CInt(Dropeo.Amount * CardDropBonus)
-                    ' Asegurar que la cantidad sea al menos 1
-                    If Dropeo.Amount < 1 Then Dropeo.Amount = 1
+            If ObjData(Dropeo.ObjIndex).OBJType <> otCollectibleCard Then
+                If IsFeatureEnabled("collectible_cards") Then
+                    If CardDropBonus > 1# Then
+                        Dropeo.Amount = CInt(Dropeo.Amount * CardDropBonus)
+                        ' Asegurar que la cantidad sea al menos 1
+                        If Dropeo.Amount < 1 Then Dropeo.Amount = 1
+                    End If
                 End If
             End If
             ' =======================================================

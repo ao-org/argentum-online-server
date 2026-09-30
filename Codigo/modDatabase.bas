@@ -855,3 +855,4 @@ Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)
 End Sub
 
+
