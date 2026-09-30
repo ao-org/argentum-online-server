@@ -2274,8 +2274,11 @@ Public Function Paralice(ByVal SourceIndex As Integer, ByVal TargetIndex As Inte
     End With
 End Function
 
-Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc) As Single
-    GetPhysicalDamageModifier = max(1 + Npc.Modifiers.PhysicalDamageBonus, 0)
+Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc, ByVal TargetType As e_ReferenceType) As Single
+    Dim bonus As Single
+    bonus = Npc.Modifiers.PhysicalDamageBonus
+    If TargetType = eNpc Then bonus = bonus + Npc.Modifiers.PhysicalDamageBonusPve
+    GetPhysicalDamageModifier = max(1 + bonus, 0)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef Npc As t_Npc) As Single
@@ -2450,8 +2453,9 @@ Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackIn
     End With
 End Function
 
-Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
+Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer, ByVal TargetType As e_ReferenceType) As Integer
     GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
+    If TargetType = eNpc Then GetLinearDamageBonus = GetLinearDamageBonus + NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonusPve
 End Function
 
 Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)

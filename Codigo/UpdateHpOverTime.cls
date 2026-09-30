@@ -48,6 +48,7 @@ Dim TimeSinceLastTick    As Long
 Dim TickEffect           As Integer
 Dim Modifiers            As Integer
 Dim EffectBonus          As Single
+Dim PhysicalEffectBonusPve As Single
 Dim SecondTargetModifier As Single
 Private DotInfo          As t_BaseDotInfo
 Private Source           As t_AnyReference
@@ -74,6 +75,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
                 .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
     End With
     EffectBonus = 1
+    PhysicalEffectBonusPve = 0
     If IsValidRef(Source) Then
         If SourceType = eUser Then
             If IsSet(Modifiers, e_ModifierTypes.MagicBonus) Then
@@ -81,6 +83,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
             End If
             If IsSet(Modifiers, e_ModifierTypes.PhysiccalBonus) Then
                 EffectBonus = EffectBonus + UserList(Source.ArrayIndex).Modifiers.PhysicalDamageBonus
+                PhysicalEffectBonusPve = UserList(Source.ArrayIndex).Modifiers.PhysicalDamageBonusPve
             End If
             If IsSet(Modifiers, e_ModifierTypes.MagicHealingBonus) Then
                 EffectBonus = EffectBonus + UserList(Source.ArrayIndex).Modifiers.MagicHealingBonus
@@ -91,6 +94,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
             End If
             If IsSet(Modifiers, e_ModifierTypes.PhysiccalBonus) Then
                 EffectBonus = EffectBonus + NpcList(Source.ArrayIndex).Modifiers.PhysicalDamageBonus
+                PhysicalEffectBonusPve = NpcList(Source.ArrayIndex).Modifiers.PhysicalDamageBonusPve
             End If
             If IsSet(Modifiers, e_ModifierTypes.MagicHealingBonus) Then
                 EffectBonus = EffectBonus + NpcList(Source.ArrayIndex).Modifiers.MagicHealingBonus
@@ -241,7 +245,10 @@ End Sub
 
 Public Sub PerformAction()
     Dim TickHP As Integer
-    TickHP = RandomNumber(DotHpMin, DotHpMax) * EffectBonus
+    Dim tickBonus As Single
+    tickBonus = EffectBonus
+    If DotInfo.TargetRef.RefType = eNpc Then tickBonus = tickBonus + PhysicalEffectBonusPve
+    TickHP = RandomNumber(DotHpMin, DotHpMax) * tickBonus
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
         If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
             TickHP = TickHP * UserMod.GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))

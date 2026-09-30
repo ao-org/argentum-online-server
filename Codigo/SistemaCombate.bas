@@ -298,7 +298,7 @@ End Function
 Private Function GetUserDamage(ByVal UserIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamge_Err
     With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex, TargetType)
     End With
     Exit Function
 GetUserDamge_Err:
@@ -398,7 +398,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         NpcDef = max(0, NpcDef - ArmorPen)
         ' Defensa del NPC
         Damage = DamageBase - NpcDef
-        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
+        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex), eNpc)
         Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
@@ -429,7 +429,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             If RandomNumber(1, 100) <= GetCriticalHitChanceBase(UserIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
                 DamageExtra = DamageBase * 0.33
-                DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
+                DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex), eNpc)
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                 
                 If IsFeatureEnabled("collectible_cards") Then
@@ -508,13 +508,13 @@ Public Function UserDamageToNpc(ByVal attackerIndex As Integer, _
                                 ByVal Damage As Long, _
                                 ByVal Source As e_DamageSourceType, _
                                 ByVal ObjIndex As Integer) As e_DamageResult
-    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex))
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex), eNpc)
     Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
     UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
 End Function
 
-Public Function GetNpcDamage(ByVal NpcIndex As Integer) As Long
-    GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex)
+Public Function GetNpcDamage(ByVal NpcIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
+    GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex, TargetType)
 End Function
 
 Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Long
@@ -523,7 +523,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     Dim Damage   As Integer, Lugar As Integer, absorbido As Integer
     Dim defbarco As Integer
     Dim obj      As t_ObjData
-    Damage = GetNpcDamage(NpcIndex)
+    Damage = GetNpcDamage(NpcIndex, eUser)
     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).invent.EquippedShipObjIndex > 0 Then
         obj = ObjData(UserList(UserIndex).invent.EquippedShipObjIndex)
         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
@@ -558,7 +558,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             End If
     End Select
     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus(UserIndex)
-    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex))
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
     
     ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA =====
@@ -597,7 +597,7 @@ Public Function NpcDoDamageToUser(ByVal attackerIndex As Integer, _
                                   ByVal ObjIndex As Integer) As e_DamageResult
     If NpcList(attackerIndex).pos.Map <> UserList(TargetIndex).pos.Map Then Exit Function
 
-    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
     NpcDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
     If UserList(TargetIndex).ChatCombate = 1 Then
@@ -674,7 +674,7 @@ Public Function NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer
 
     With NpcList(Atacante)
         Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit) _
-                 + NPCs.GetLinearDamageBonus(Atacante) _
+                 + NPCs.GetLinearDamageBonus(Atacante, eNpc) _
                  - NPCs.GetDefenseBonus(Victima) _
                  - NpcList(Victima).Stats.def
     End With
@@ -712,7 +712,7 @@ Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
         End If
         ' ===========================================
         
-        finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+        finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex), eNpc)
         finalDamage = finalDamage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
         
         NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0)
@@ -1212,7 +1212,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         Defensa = max(0, Defensa - ArmorPen)
         ' Restamos la defensa
         Damage = BaseDamage - Defensa
-        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex))
+        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex), eUser)
         Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(VictimaIndex))
         If Damage < 0 Then Damage = 0
         DamageStr = PonerPuntos(Damage)
@@ -1308,7 +1308,7 @@ Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, _
                                    ByVal Damage As Long, _
                                    ByVal Source As e_DamageSourceType, _
                                    ByVal ObjIndex As Integer) As e_DamageResult
-    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex))
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
     UserDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
     Dim DamageStr As String
