@@ -18,12 +18,66 @@ Public Function test_suite_characters() As Boolean
     Call UnitTesting.RunTest("test_erase_char_index", test_erase_char_index())
     Call UnitTesting.RunTest("test_distinct_charindex", test_distinct_charindex())
     Call UnitTesting.RunTest("test_character_slots_by_tier", test_character_slots_by_tier())
+    Call UnitTesting.RunTest("inventory reset before capacity initialization", test_inventory_reset_all_slots(0))
+    Call UnitTesting.RunTest("inventory reset clears normal locked slots", test_inventory_reset_all_slots(get_num_inv_slots_from_tier(tNormal)))
+    Call UnitTesting.RunTest("inventory reset clears adventurer locked slots", test_inventory_reset_all_slots(get_num_inv_slots_from_tier(tAventurero)))
+    Call UnitTesting.RunTest("inventory reset clears hero locked slots", test_inventory_reset_all_slots(get_num_inv_slots_from_tier(tHeroe)))
+    Call UnitTesting.RunTest("inventory reset clears full capacity and tags", test_inventory_reset_all_slots(MAX_INVENTORY_SLOTS))
     
     ' Clean up all characters after suite
     Call CleanupAllChars
     
     Debug.Print "Characters suite took " & sw.ElapsedMilliseconds & " ms"
     test_suite_characters = True
+End Function
+
+' Simulate a recycled server user slot, including items outside the current tier.
+Private Function test_inventory_reset_all_slots(ByVal unlockedSlots As Byte) As Boolean
+    On Error GoTo test_inventory_reset_all_slots_Err
+    Dim originalInventory As t_Inventario
+    Dim originalSlots As Byte
+    Dim slot As Integer
+    Dim passed As Boolean
+
+    originalInventory = UserList(1).invent
+    originalSlots = UserList(1).CurrentInventorySlots
+    With UserList(1)
+        .CurrentInventorySlots = unlockedSlots
+        .invent.NroItems = MAX_INVENTORY_SLOTS
+        .invent.EquippedWeaponObjIndex = 1
+        .invent.EquippedWeaponSlot = 1
+        For slot = 1 To MAX_INVENTORY_SLOTS
+            .invent.Object(slot).ObjIndex = slot
+            .invent.Object(slot).amount = slot + 1
+            .invent.Object(slot).Equipped = 1
+            .invent.Object(slot).ElementalTags = slot
+        Next slot
+    End With
+
+    Call LimpiarInventario(1)
+
+    passed = True
+    With UserList(1)
+        If .CurrentInventorySlots <> unlockedSlots Then passed = False
+        If .invent.NroItems <> 0 Then passed = False
+        If .invent.EquippedWeaponObjIndex <> 0 Then passed = False
+        If .invent.EquippedWeaponSlot <> 0 Then passed = False
+        For slot = 1 To MAX_INVENTORY_SLOTS
+            With .invent.Object(slot)
+                If .ObjIndex <> 0 Or .amount <> 0 Or .Equipped <> 0 Or .ElementalTags <> 0 Then passed = False
+            End With
+        Next slot
+    End With
+
+    UserList(1).invent = originalInventory
+    UserList(1).CurrentInventorySlots = originalSlots
+    test_inventory_reset_all_slots = passed
+    Exit Function
+
+test_inventory_reset_all_slots_Err:
+    UserList(1).invent = originalInventory
+    UserList(1).CurrentInventorySlots = originalSlots
+    test_inventory_reset_all_slots = False
 End Function
 
 Private Function test_character_slots_by_tier() As Boolean
