@@ -68,6 +68,9 @@ Private Type t_GrhData
     mini_map_color As Long
 End Type
 
+Private Const CSM_LAYER_2B_SIGNATURE As Long = &H31423257
+Private Const CSM_LAYER_2B_MAX_RECORDS As Long = 10000
+
 Private Type t_MapHeader
     NumeroBloqueados As Long
     NumeroLayers(1 To 4) As Long
@@ -1623,6 +1626,11 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Get #fh, , MH
     Get #fh, , MapSize
     Get #fh, , MapDat
+    For x = 1 To 100
+        For y = 1 To 100
+            MapData(Map, x, y).Graphic2B = 0
+        Next y
+    Next x
     Rem Get #fh, , L1
     With MH
         'Cargamos Bloqueos
@@ -1771,6 +1779,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                 MapData(Map, TEs(i).x, TEs(i).y).TileExit.y = TEs(i).DestY
             Next i
         End If
+        Call LoadLayer2BExtension(fh, Map, MAPFl)
     End With
     Close fh
     '  Nuevo sistema de restricciones
@@ -1838,6 +1847,53 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 ErrorHandler:
     Close fh
     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
+End Sub
+
+Private Sub LoadLayer2BExtension(ByVal fileHandle As Integer, ByVal Map As Long, ByVal mapFile As String)
+    On Error GoTo LoadLayer2BExtension_Err
+
+    Dim signature       As Long
+    Dim recordCount     As Long
+    Dim layerEntry      As t_DatosGrh
+    Dim recordIndex     As Long
+    Dim invalidRecord   As Boolean
+
+    If LOF(fileHandle) - Loc(fileHandle) < 8 Then Exit Sub
+
+    Get #fileHandle, , signature
+    If signature <> CSM_LAYER_2B_SIGNATURE Then Exit Sub
+
+    Get #fileHandle, , recordCount
+    If recordCount < 0 Or recordCount > CSM_LAYER_2B_MAX_RECORDS Then
+        Call TraceError(5, "Cantidad invalida de Capa 2B: " & recordCount & ". Mapa: " & mapFile & ". Posicion: " & Loc(fileHandle), "FileIO.LoadLayer2BExtension")
+        Exit Sub
+    End If
+
+    If LOF(fileHandle) - Loc(fileHandle) < recordCount * 8 Then
+        Call TraceError(5, "Extension Capa 2B truncada. Cantidad: " & recordCount & ". Mapa: " & mapFile & ". Posicion: " & Loc(fileHandle), "FileIO.LoadLayer2BExtension")
+        Exit Sub
+    End If
+
+    For recordIndex = 1 To recordCount
+        Get #fileHandle, , layerEntry
+        If layerEntry.x >= 1 And layerEntry.x <= 100 _
+                And layerEntry.y >= 1 And layerEntry.y <= 100 _
+                And layerEntry.GrhIndex > 0 Then
+            MapData(Map, layerEntry.x, layerEntry.y).Graphic2B = layerEntry.GrhIndex
+            ' Igual que Capa 2, permite atravesar puentes graficos sobre agua.
+            MapData(Map, layerEntry.x, layerEntry.y).Blocked = MapData(Map, layerEntry.x, layerEntry.y).Blocked And Not FLAG_AGUA
+        Else
+            invalidRecord = True
+        End If
+    Next recordIndex
+
+    If invalidRecord Then
+        Call TraceError(5, "La extension Capa 2B contiene coordenadas o GRH invalidos. Mapa: " & mapFile, "FileIO.LoadLayer2BExtension")
+    End If
+    Exit Sub
+
+LoadLayer2BExtension_Err:
+    Call TraceError(Err.Number, Err.Description & ". Mapa: " & mapFile & ". Posicion: " & Loc(fileHandle), "FileIO.LoadLayer2BExtension", Erl)
 End Sub
 
 Sub AddFishingPoolsToMap(ByVal Map As Integer)

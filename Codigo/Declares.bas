@@ -3571,6 +3571,7 @@ End Type
 Public Type t_MapBlock
     Blocked As Byte
     Graphic(1 To 4) As Long
+    Graphic2B As Long
     UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
