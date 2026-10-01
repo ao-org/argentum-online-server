@@ -428,7 +428,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             ' Si acertó - Doble chance contra NPCs
             If RandomNumber(1, 100) <= GetCriticalHitChanceBase(UserIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
-                DamageExtra = DamageBase * 0.33
+                DamageExtra = Damage * 0.33
                 DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                 
