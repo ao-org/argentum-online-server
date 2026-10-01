@@ -15,6 +15,37 @@ Key functionalities include:
 
 The system is designed to be extensible, with different effect behaviors encapsulated within specific classes that implement a common `IBaseEffectOverTime` interface.
 
+## PvE-only physical damage bonuses
+
+Set `PhysicalBonusPveOnly=1` in `Dat/EffectsOverTime.dat` to restrict an
+effect's `PhysicalLinearBonus` and `PhysicalDamageDone` modifiers to damage
+against NPC targets. Missing or zero keeps the existing unrestricted behavior.
+Other modifiers (magic, defense, speed, healing, etc.) are not restricted by
+this property. It does not prevent casting the buff on a player.
+
+```ini
+[EOT49]
+Type=2
+TickTime=60000
+Limit=1
+Override=1
+BuffType=4
+PhysicalLinearBonus=15
+PhysicalBonusPveOnly=1
+ClientEffectTypeId=39
+RequireWeapon=1
+```
+
+EOT49, EOT50 and EOT51 enable this property with bonuses of 15, 25 and 40.
+The bonus remains active for its normal duration but contributes zero against
+players. NPC targets include pets and summons; this is a target-type rule,
+not an ownership rule. NPC buff holders follow the same target rule.
+
+Restricted bonuses accumulate separately from unrestricted bonuses. Expiry,
+replacement, dispels and target changes use the existing apply/remove lifecycle.
+Periodic effects snapshot the restricted physical bonus separately and check
+the current target type on each tick, including after a target transfer.
+
 ## 2. Relationship with `Codigo/EffectOverTime/` Classes
 
 The `EffectsOverTime.bas` module acts as a manager and factory for various effect classes, many of which are expected to reside in the `Codigo/EffectOverTime/` directory.

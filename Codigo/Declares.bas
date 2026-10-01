@@ -1849,6 +1849,8 @@ Public Type t_ActiveModifiers
     MagicDamageBonus As Single
     MagicHealingBonus As Single
     PhysicalDamageLinearBonus As Integer 'apply direct bonus like +10
+    PhysicalDamageBonusPve As Single
+    PhysicalDamageLinearBonusPve As Integer
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -1894,6 +1896,7 @@ Public Type t_EffectOverTime
     SelfHealingBonus As Single
     MagicHealingBonus As Single
     PhysicalLinearBonus As Integer
+    PhysicalBonusPveOnly As Boolean
     DefenseBonus As Integer
     ClientEffectTypeId As Integer
     Area As Integer
@@ -3960,6 +3963,8 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.MagicDamageBonus = 0
     Modifiers.MagicDamageReduction = 0
     Modifiers.PhysicalDamageBonus = 0
+    Modifiers.PhysicalDamageBonusPve = 0
+    Modifiers.PhysicalDamageLinearBonusPve = 0
     Modifiers.PhysicalDamageReduction = 0
     Modifiers.MovementSpeed = 0
     Modifiers.EvasionBonus = 0

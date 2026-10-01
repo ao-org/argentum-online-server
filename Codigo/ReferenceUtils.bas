@@ -65,7 +65,7 @@ Public Function NpcCanAttack(ByVal NpcIndex As Integer, ByRef Reference As t_Any
     End If
 End Function
 
-Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal value As Single)
+Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal value As Single, Optional ByVal PhysicalBonusPveOnly As Boolean = False)
     If Reference.RefType = eUser Then
         Select Case Modifier
             Case e_ModifierTypes.MagicBonus
@@ -78,7 +78,11 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
             Case e_ModifierTypes.PhysicalReduction
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, value)
             Case e_ModifierTypes.PhysiccalBonus
-                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
+                If PhysicalBonusPveOnly Then
+                    Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonusPve, value)
+                Else
+                    Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
+                End If
             Case e_ModifierTypes.HitBonus
                 Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.HitBonus, value)
             Case e_ModifierTypes.EvasionBonus
@@ -88,7 +92,11 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
             Case e_ModifierTypes.MagicHealingBonus
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, value)
             Case e_ModifierTypes.PhysicalLinearBonus
-                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
+                If PhysicalBonusPveOnly Then
+                    Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonusPve, value)
+                Else
+                    Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
+                End If
             Case e_ModifierTypes.DefenseBonus
                 Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.DefenseBonus, value)
         End Select
@@ -104,7 +112,11 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
             Case e_ModifierTypes.PhysicalReduction
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, value)
             Case e_ModifierTypes.PhysiccalBonus
-                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
+                If PhysicalBonusPveOnly Then
+                    Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonusPve, value)
+                Else
+                    Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, value)
+                End If
             Case e_ModifierTypes.HitBonus
                 Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.HitBonus, value)
             Case e_ModifierTypes.EvasionBonus
@@ -114,7 +126,11 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
             Case e_ModifierTypes.MagicHealingBonus
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, value)
             Case e_ModifierTypes.PhysicalLinearBonus
-                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
+                If PhysicalBonusPveOnly Then
+                    Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonusPve, value)
+                Else
+                    Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, value)
+                End If
             Case e_ModifierTypes.DefenseBonus
                 Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.DefenseBonus, value)
         End Select

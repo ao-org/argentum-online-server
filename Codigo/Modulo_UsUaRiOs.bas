@@ -3047,8 +3047,11 @@ DoDamageOrHeal_Err:
     Call TraceError(Err.Number, Err.Description, "UserMod.DoDamageOrHeal", Erl)
 End Function
 
-Public Function GetPhysicalDamageModifier(ByRef User As t_User) As Single
-    GetPhysicalDamageModifier = max(1 + User.Modifiers.PhysicalDamageBonus, 0)
+Public Function GetPhysicalDamageModifier(ByRef User As t_User, ByVal TargetType As e_ReferenceType) As Single
+    Dim bonus As Single
+    bonus = User.Modifiers.PhysicalDamageBonus
+    If TargetType = eNpc Then bonus = bonus + User.Modifiers.PhysicalDamageBonusPve
+    GetPhysicalDamageModifier = max(1 + bonus, 0)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef User As t_User) As Single
@@ -3208,8 +3211,9 @@ Public Function UserHasSpell(ByVal UserIndex As Integer, ByVal spellID As Intege
     End With
 End Function
 
-Public Function GetLinearDamageBonus(ByVal UserIndex As Integer) As Integer
+Public Function GetLinearDamageBonus(ByVal UserIndex As Integer, ByVal TargetType As e_ReferenceType) As Integer
     GetLinearDamageBonus = UserList(UserIndex).Modifiers.PhysicalDamageLinearBonus
+    If TargetType = eNpc Then GetLinearDamageBonus = GetLinearDamageBonus + UserList(UserIndex).Modifiers.PhysicalDamageLinearBonusPve
 End Function
 
 Public Function GetDefenseBonus(ByVal UserIndex As Integer) As Integer

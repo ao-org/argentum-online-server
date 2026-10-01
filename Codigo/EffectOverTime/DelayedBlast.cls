@@ -220,7 +220,7 @@ Private Sub DoBlast()
                 Else
                     If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex) = eCanAttack Then
                         Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage( _
-                                DotInfo.TargetRef.ArrayIndex)), e_phisical, SourceObjIndex)
+                                DotInfo.TargetRef.ArrayIndex, eUser)), e_phisical, SourceObjIndex)
                     End If
                 End If
             ElseIf MapData(TargetMap, j, i).NpcIndex > 0 Then
@@ -234,7 +234,7 @@ Private Sub DoBlast()
                     End If
                 Else
                     If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
-                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)))
+                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex, eNpc)))
                     End If
                 End If
             End If
