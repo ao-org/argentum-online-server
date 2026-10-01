@@ -2838,6 +2838,9 @@ Sub LoadGuildsConfig()
     
     'Requisito para ver barra de vida
     RequiredGuildLevelShowHPBar = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "ShowHPBarRequiredLevel", "6")))
+
+    'Requisito para marcar NPCs para miembros del clan
+    RequiredGuildLevelMarkNpc = CByte(val(GuildsIni.GetValue("GUILDREWARDS", "MarkNpcRequiredLevel", "3")))
     
     'Precio para aceptar un nuevo miembro según el nivel del clan
     For i = 1 To MAX_LEVEL_GUILD

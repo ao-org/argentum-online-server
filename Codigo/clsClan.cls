@@ -183,6 +183,7 @@ End Property
 Public Sub SetLeader(ByRef leader As Long)
     On Error GoTo SetLeader_Err
     Call UpdateGuildValue("leader", leader)
+    p_Leader = leader
     Exit Sub
 SetLeader_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.SetLeader", Erl)
