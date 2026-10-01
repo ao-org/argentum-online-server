@@ -1103,14 +1103,17 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
                 If Barco.Ropaje = iBarca Then .Char.body = iBarcaArmada
                 If Barco.Ropaje = iGalera Then .Char.body = iGaleraArmada
                 If Barco.Ropaje = iGaleon Then .Char.body = iGaleonArmada
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
                 If Barco.Ropaje = iBarca Then .Char.body = iBarcaCaos
                 If Barco.Ropaje = iGalera Then .Char.body = iGaleraCaos
                 If Barco.Ropaje = iGaleon Then .Char.body = iGaleonCaos
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             Else
                 If Barco.Ropaje = iBarca Then .Char.body = IIf(.Faccion.Status = 0, iBarcaCrimi, iBarcaCiuda)
                 If Barco.Ropaje = iGalera Then .Char.body = IIf(.Faccion.Status = 0, iGaleraCrimi, iGaleraCiuda)
                 If Barco.Ropaje = iGaleon Then .Char.body = IIf(.Faccion.Status = 0, iGaleonCrimi, iGaleonCiuda)
+                If Barco.Ropaje = iGaleonFantasmal Then .Char.body = iGaleonFantasmal
             End If
         End If
         .Char.ShieldAnim = NingunEscudo
@@ -2778,9 +2781,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If IsFeatureEnabled("collectible_cards") Then
                     MiObj.Amount = 1
                     MiObj.ObjIndex = .invent.Object(Slot).ObjIndex
-                    Call AddCollectibleCardToUser(UserIndex, MiObj)
-                    Call QuitarUserInvItem(UserIndex, Slot, 1)
-                    Call UpdateUserInv(False, UserIndex, Slot)
+            
+                    If AddCollectibleCardToUser(UserIndex, MiObj) Then
+                        Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call LogCardConsumption(.Id, .name, .AccountID, MiObj.ObjIndex, 1)
+                        Call UpdateUserInv(False, UserIndex, Slot)
+                    Else
+                        'Msg2292=No podés consumir más cartas de este tipo.
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CONSUMIR_MAS_CARTAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    End If
                 End If
         End Select
     End With

@@ -63,6 +63,7 @@ Private Enum eType_Log
     SafeCommerceTransfer = 21
     SkinConsumption = 22
     QuestEvent = 23
+    CardConsumption = 24
 End Enum
 
 Private Type t_CircularBuffer
@@ -289,6 +290,16 @@ Public Sub LogSkinConsumption(ByVal characterId As Long, ByVal characterName As 
     On Error GoTo ErrHandler
     If itemIndex <= 0 Or amount <= 0 Then Exit Sub
     Call LogThis(eType_Log.SkinConsumption, "[SkinConsumptions.log] Character ID: " & characterId & " | Nick: " & characterName & " | Item: " & ObjData(itemIndex).name & " (" & itemIndex & ") | Amount: " & amount, vbLogEventTypeInformation)
+    Exit Sub
+ErrHandler:
+End Sub
+
+Public Sub LogCardConsumption(ByVal characterId As Long, ByVal characterName As String, ByVal accountId As Long, ByVal itemIndex As Integer, ByVal amount As Long)
+    On Error GoTo ErrHandler
+    If itemIndex <= 0 Or amount <= 0 Then Exit Sub
+    Call LogThis(eType_Log.CardConsumption, "[CardConsumptions.log] Character ID: " & characterId & " | Nick: " & characterName & _
+        " | Account ID: " & accountId & " | Item: " & ObjData(itemIndex).name & " (" & itemIndex & ") | Amount: " & amount & _
+        " | Card Index: " & ObjData(itemIndex).CollectibleCardIndex & " | Rarity: " & ObjData(itemIndex).CollectibleCardRarity, vbLogEventTypeInformation)
     Exit Sub
 ErrHandler:
 End Sub

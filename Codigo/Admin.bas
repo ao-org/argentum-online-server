@@ -511,3 +511,29 @@ Public Function CompararPrivilegios(ByVal Izquierda As e_PlayerType, ByVal Derec
 CompararPrivilegios_Err:
     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 End Function
+
+Public Function CanPrivilegesSeeAdminInvisible(ByVal ViewerPrivileges As e_PlayerType, _
+                                                ByVal TargetPrivileges As e_PlayerType, _
+                                                ByVal TargetAdminInvisible As Boolean) As Boolean
+    On Error GoTo CanPrivilegesSeeAdminInvisible_Err
+    If Not TargetAdminInvisible Then
+        CanPrivilegesSeeAdminInvisible = True
+        Exit Function
+    End If
+    Dim gmPrivileges As e_PlayerType
+    gmPrivileges = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster
+    If (ViewerPrivileges And gmPrivileges) = 0 Then Exit Function
+    CanPrivilegesSeeAdminInvisible = CompararPrivilegios(ViewerPrivileges, TargetPrivileges) >= 0
+    Exit Function
+CanPrivilegesSeeAdminInvisible_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CanPrivilegesSeeAdminInvisible", Erl)
+End Function
+
+Public Function CanUserSeeAdminInvisible(ByVal ViewerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    On Error GoTo CanUserSeeAdminInvisible_Err
+    CanUserSeeAdminInvisible = CanPrivilegesSeeAdminInvisible(UserList(ViewerIndex).flags.Privilegios, _
+            UserList(TargetIndex).flags.Privilegios, UserList(TargetIndex).flags.AdminInvisible = 1)
+    Exit Function
+CanUserSeeAdminInvisible_Err:
+    Call TraceError(Err.Number, Err.Description, "Admin.CanUserSeeAdminInvisible", Erl)
+End Function

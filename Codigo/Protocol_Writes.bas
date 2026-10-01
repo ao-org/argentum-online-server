@@ -3209,7 +3209,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                     PuedeHacerla = False
                 End If
 
-                If GlobalQuestInfo(globalQuestIndex).IsBossAlive Then
+                If IsAnyGlobalQuestBossAlive(globalQuestIndex) Then
                     PuedeHacerla = False
                 End If
 

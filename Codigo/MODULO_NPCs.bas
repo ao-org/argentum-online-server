@@ -176,7 +176,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     'Quitamos el npc
     If MiNPC.flags.GlobalQuestBossIndex Then
-        GlobalQuestInfo(MiNPC.flags.GlobalQuestBossIndex).IsBossAlive = False
+        Call MarkGlobalQuestBossAsDead(MiNPC.flags.GlobalQuestBossIndex, MiNPC.Numero)
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
