@@ -1463,6 +1463,8 @@ End Function
 Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
     On Error GoTo SendUserStatsTxt_Err
     Dim GuildI As Integer
+    Dim TotalMinDef As Integer
+    Dim TotalMaxDef As Integer
     'Msg1295= Estadisticas de: ¬1
     Call WriteLocaleMsg(sendIndex, MSG_ESTADISTICAS_DE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
     Call WriteLocaleMsg(sendIndex, MSG_USER_LEVEL_EXP, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Stats.ELV & "¬" & UserList(UserIndex).Stats.Exp & "¬" & ExpLevelUp(UserList( _
@@ -1476,14 +1478,19 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Call WriteLocaleMsg(sendIndex, MSG_USER_DAMAGE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Stats.MinHIT & "¬" & UserList(UserIndex).Stats.MaxHit) ' Msg1860=Menor Golpe/Mayor Golpe: ¬1/¬2
     End If
     If UserList(UserIndex).invent.EquippedArmorObjIndex > 0 Then
-        If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
-            Call WriteLocaleMsg(sendIndex, MSG_USER_BODY_DEFENSE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef + ObjData(UserList( _
-                    UserIndex).invent.EquippedShieldObjIndex).MinDef & "¬" & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef + ObjData(UserList( _
-                    UserIndex).invent.EquippedShieldObjIndex).MaxDef) ' Msg1861=(CUERPO) Min Def/Max Def: ¬1/¬2
-        Else
-            Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef & "/" & ObjData(UserList( _
-                    UserIndex).invent.EquippedArmorObjIndex).MaxDef, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-        End If
+        TotalMinDef = TotalMinDef + ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MinDef
+        TotalMaxDef = TotalMaxDef + ObjData(UserList(UserIndex).invent.EquippedArmorObjIndex).MaxDef
+    End If
+    If UserList(UserIndex).invent.EquippedShieldObjIndex > 0 Then
+        TotalMinDef = TotalMinDef + ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex).MinDef
+        TotalMaxDef = TotalMaxDef + ObjData(UserList(UserIndex).invent.EquippedShieldObjIndex).MaxDef
+    End If
+    If UserList(UserIndex).invent.EquippedBackpackObjIndex > 0 Then
+        TotalMinDef = TotalMinDef + ObjData(UserList(UserIndex).invent.EquippedBackpackObjIndex).MinDef
+        TotalMaxDef = TotalMaxDef + ObjData(UserList(UserIndex).invent.EquippedBackpackObjIndex).MaxDef
+    End If
+    If TotalMinDef > 0 And TotalMaxDef > 0 Then
+        Call WriteLocaleMsg(sendIndex, MSG_USER_BODY_DEFENSE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, TotalMinDef & "¬" & TotalMaxDef)
     Else
         'Msg1098= (CUERPO) Min Def/Max Def: 0
         Call WriteLocaleMsg(sendIndex, MSG_CUERPO_MIN_DEF_MAX_DEF_0, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -3339,6 +3346,9 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
         End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
+        End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
         End If
@@ -3364,6 +3374,9 @@ Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
         ' Resistencia mágica casco
         If .invent.EquippedHelmetObjIndex > 0 Then
             MR = MR + ObjData(.invent.EquippedHelmetObjIndex).ResistenciaMagica
+        End If
+        If .invent.EquippedBackpackObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EquippedBackpackObjIndex).ResistenciaMagica
         End If
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier
