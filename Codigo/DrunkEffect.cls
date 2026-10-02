@@ -43,6 +43,7 @@ Dim TickTime          As Long
 Dim TimeSinceLastTick As Long
 Private DotInfo       As t_BaseDotInfo
 Private StackCount    As Integer
+Private DisplayTotalTime As Long
 Private DumbActive    As Boolean
 
 Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal Id As Long)
@@ -52,6 +53,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     DumbActive = False
     With EffectOverTime(EffectId)
         TickTime = .TickTime
+        DisplayTotalTime = TickTime
         If TargetType = eUser Then
             If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
         End If
@@ -112,7 +114,7 @@ Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
         StackCount = StackCount - 1
         TimeSinceLastTick = 0
         If DotInfo.TargetRef.RefType = eUser Then
-            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, TickTime, EffectOverTime( _
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime * StackCount, DisplayTotalTime, EffectOverTime( _
                     DotInfo.EotId).buffType, StackCount)
         End If
         If DumbActive And StackCount <= 3 Then
@@ -135,10 +137,11 @@ End Property
 
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
     StackCount = StackCount + 1
+    DisplayTotalTime = TickTime * StackCount
     TimeSinceLastTick = 0
     IBaseEffectOverTime_Reset = True
     If DotInfo.TargetRef.RefType = eUser Then
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, TickTime, EffectOverTime( _
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime * StackCount, DisplayTotalTime, EffectOverTime( _
                 DotInfo.EotId).buffType, StackCount)
     End If
     If Not DumbActive And StackCount >= 5 Then
@@ -158,7 +161,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DumbActive Then
         DumbActive = False
         Call WriteDumbNoMore(DotInfo.TargetRef.ArrayIndex)
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType, _
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType, _
                 StackCount)
     End If
 End Sub

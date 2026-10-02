@@ -1522,6 +1522,12 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
             Call WriteFYA(UserIndex)
         End If
         .flags.DuracionEfecto = 0
+        If .flags.UserLogged Then
+            Call WriteActiveEffectRemoveBoth(UserIndex, 46, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 47, ACTIVE_EFFECT_AGILITY)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
+        End If
         Call VaciarInventario(UserIndex)
         Call ResetCd(UserList(UserIndex))
         Call RellenarInventario(UserIndex)

@@ -60,6 +60,7 @@ Module=ModCuentas; Codigo\ModEmail.bas
 Module=ModRetos; Codigo\ModRetos.bas
 Module=ModClimas; Codigo\ModClimas.bas
 Module=ModGrupos; Codigo\ModGrupos.bas
+Module=modPartyEffects; Codigo\modPartyEffects.bas
 Module=ModEventos; Codigo\ModEventos.bas
 Class=tBaneo; Codigo\tBaneo.cls
 Module=ModTorneos; Codigo\ModTorneos.bas

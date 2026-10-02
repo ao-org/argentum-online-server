@@ -726,6 +726,8 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
                 UserList(TargetRef.ArrayIndex).Counters.Inmovilizado = 0
                 UserList(TargetRef.ArrayIndex).Counters.Paralisis = 0
                 UserList(TargetRef.ArrayIndex).flags.Paralizado = 0
+                Call WriteActiveEffectRemove(TargetRef.ArrayIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
+                Call WriteActiveEffectRemove(TargetRef.ArrayIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
             End If
             Call SetStatusMask(TargetRef, eCCInmunity)
         End If

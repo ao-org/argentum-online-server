@@ -998,6 +998,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
             End If
         Else
             .Counters.Invisibilidad = 0
+            Call WriteActiveEffectRemove(UserIndex, 43, ACTIVE_EFFECT_INVISIBILITY, eBuff)
             .flags.invisible = 0
             .Counters.DisabledInvisibility = 0
             If .flags.Oculto = 0 Then
@@ -1079,6 +1080,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
             End If
             'UserList(UserIndex).Flags.AdministrativeParalisis = 0
             Call WriteParalizeOK(UserIndex)
+            Call WriteActiveEffectRemove(UserIndex, 45, ACTIVE_EFFECT_PARALYZED, eDebuff)
         End If
     End With
     Exit Sub
@@ -1124,6 +1126,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
                 .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
             End If
             Call WriteInmovilizaOK(UserIndex)
+            Call WriteActiveEffectRemove(UserIndex, 44, ACTIVE_EFFECT_IMMOBILIZED, eDebuff)
         End If
     End With
     Exit Sub
@@ -1295,6 +1298,10 @@ Public Sub DuracionPociones(ByVal UserIndex As Integer)
                 UserList(UserIndex).Stats.UserAtributos(LoopX) = UserList(UserIndex).Stats.UserAtributosBackUP(LoopX)
             Next
             Call WriteFYA(UserIndex)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 46, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 47, ACTIVE_EFFECT_AGILITY)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 48, ACTIVE_EFFECT_STRENGTH)
+            Call WriteActiveEffectRemoveBoth(UserIndex, 49, ACTIVE_EFFECT_AGILITY)
         End If
     End If
     Exit Sub
