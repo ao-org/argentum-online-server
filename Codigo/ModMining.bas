@@ -23,7 +23,7 @@ Public Const BLODIUM_PICKAXE_REQUIRED_MSG As Integer = 597
 Public Function CanUserExtractMinerals(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
     With UserList(UserIndex)
         If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Blodium > 0 Then
+        If ObjData(MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex).Blodium > 0 Then
             If Not ObjData(.invent.EquippedWorkingToolObjIndex).Blodium > 0 Then
                 Call WriteLocaleMsg(UserIndex, BLODIUM_PICKAXE_REQUIRED_MSG, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
@@ -51,8 +51,8 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos
             Call ActualizarRecurso(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
-            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
-            Yacimiento = ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex)
+            MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
+            Yacimiento = ObjData(MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.ObjIndex)
             MiObj.ObjIndex = Yacimiento.MineralIndex
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
@@ -60,13 +60,13 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
                 MiObj.amount = RandomNumber(1, 2)
             End If
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
-            If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
-                MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
+            If MiObj.amount > MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount Then
+                MiObj.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount
                 'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
                 .AutomatedAction.IsActive = False
                 .Counters.Trabajando = 0
             End If
-            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
+            MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount - MiObj.amount
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)

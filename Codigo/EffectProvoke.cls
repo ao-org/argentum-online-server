@@ -230,16 +230,16 @@ Private Sub ApplyEffectToArea(ByVal Area As Integer)
     For i = y To h
         For j = x To w
             'we can't taunt someone already taunted
-            If MapData(Map, j, i).UserIndex > 0 Then
-                If UserMod.CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(Map, j, i).UserIndex, UserList(MapData(Map, j, i).UserIndex).VersionId) = eCanAttack Then
-                    Set Effect = FindEffectOnTarget(0, UserList(MapData(Map, j, i).UserIndex).EffectOverTime, TaunteffectId)
-                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(Map, j, i).UserIndex, eUser, TaunteffectId)
-                    Call RegisterNewAttack(MapData(Map, j, i).UserIndex, Source.ArrayIndex)
+            If MapData(j, i, Map).UserIndex > 0 Then
+                If UserMod.CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(j, i, Map).UserIndex, UserList(MapData(j, i, Map).UserIndex).VersionId) = eCanAttack Then
+                    Set Effect = FindEffectOnTarget(0, UserList(MapData(j, i, Map).UserIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(j, i, Map).UserIndex, eUser, TaunteffectId)
+                    Call RegisterNewAttack(MapData(j, i, Map).UserIndex, Source.ArrayIndex)
                 End If
-            ElseIf MapData(Map, j, i).NpcIndex > 0 Then
-                If UserCanAttackNpc(Source.ArrayIndex, MapData(Map, j, i).NpcIndex).CanAttack = True Then
-                    Set Effect = FindEffectOnTarget(0, NpcList(MapData(Map, j, i).NpcIndex).EffectOverTime, TaunteffectId)
-                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(Map, j, i).NpcIndex, eNpc, TaunteffectId)
+            ElseIf MapData(j, i, Map).NpcIndex > 0 Then
+                If UserCanAttackNpc(Source.ArrayIndex, MapData(j, i, Map).NpcIndex).CanAttack = True Then
+                    Set Effect = FindEffectOnTarget(0, NpcList(MapData(j, i, Map).NpcIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(j, i, Map).NpcIndex, eNpc, TaunteffectId)
                 End If
             End If
         Next j

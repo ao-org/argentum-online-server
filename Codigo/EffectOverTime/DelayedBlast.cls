@@ -209,39 +209,39 @@ Private Sub DoBlast()
     For i = y To h
         For j = x To w
             'we can't taunt someone already taunted
-            If MapData(TargetMap, j, i).UserIndex > 0 Then
+            If MapData(j, i, TargetMap).UserIndex > 0 Then
                 If DotInfo.TargetRef.RefType = eUser Then
-                    If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, _
-                            i).UserIndex).VersionId) = eCanAttack Then
-                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                    If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(j, i, TargetMap).UserIndex, UserList(MapData(j, i, _
+                            TargetMap).UserIndex).VersionId) = eCanAttack Then
+                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
                                 DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eUser)), e_phisical, SourceObjIndex)
-                        Call RegisterNewAttack(MapData(TargetMap, j, i).UserIndex, DotInfo.TargetRef.ArrayIndex)
+                        Call RegisterNewAttack(MapData(j, i, TargetMap).UserIndex, DotInfo.TargetRef.ArrayIndex)
                     End If
                 Else
-                    If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex) = eCanAttack Then
-                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage( _
+                    If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).UserIndex) = eCanAttack Then
+                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).UserIndex, GetDamageForTile(j, i, GetNpcDamage( _
                                 DotInfo.TargetRef.ArrayIndex, eUser)), e_phisical, SourceObjIndex)
                     End If
                 End If
-            ElseIf MapData(TargetMap, j, i).NpcIndex > 0 Then
+            ElseIf MapData(j, i, TargetMap).NpcIndex > 0 Then
                 If DotInfo.TargetRef.RefType = eUser Then
                     Dim UserAttackInteractionResult As t_AttackInteractionResult
-                    UserAttackInteractionResult = UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex)
+                    UserAttackInteractionResult = UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).NpcIndex)
                     If UserAttackInteractionResult.CanAttack Then
                         If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(DotInfo.TargetRef.ArrayIndex)
-                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).NpcIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
                                 DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eNpc)), e_phisical, SourceObjIndex)
                     End If
                 Else
-                    If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
-                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex, eNpc)))
+                    If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).NpcIndex) = eCanAttack Then
+                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).NpcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex, eNpc)))
                     End If
                 End If
             End If
             'add damage to itself (only for user as IA can't avoid this)
             If DotInfo.TargetRef.RefType = eUser Then
-                If MapData(TargetMap, j, i).UserIndex = DotInfo.TargetRef.ArrayIndex Then
-                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
+                If MapData(j, i, TargetMap).UserIndex = DotInfo.TargetRef.ArrayIndex Then
+                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(j, i, TargetMap).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem( _
                             DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0, eUser)), e_phisical, SourceObjIndex)
                 End If
             End If

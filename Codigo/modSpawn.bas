@@ -33,13 +33,13 @@ Public Const SPAWN_SEARCH_MAX_RADIUS As Long = 65
 Public Const SPAWN_SEARCH_MAX_RADIUS As Long = 12
 #End If
 
-Private Function MapMinX() As Long: MapMinX = LBound(MapData, 2): End Function
-Private Function MapMaxX() As Long: MapMaxX = UBound(MapData, 2): End Function
-Private Function MapMinY() As Long: MapMinY = LBound(MapData, 3): End Function
-Private Function MapMaxY() As Long: MapMaxY = UBound(MapData, 3): End Function
+Private Function MapMinX() As Long: MapMinX = LBound(MapData, 1): End Function
+Private Function MapMaxX() As Long: MapMaxX = UBound(MapData, 1): End Function
+Private Function MapMinY() As Long: MapMinY = LBound(MapData, 2): End Function
+Private Function MapMaxY() As Long: MapMaxY = UBound(MapData, 2): End Function
 
 Private Function InBounds(ByVal M As Integer, ByVal x As Long, ByVal y As Long) As Boolean
-    If M < LBound(MapData, 1) Or M > UBound(MapData, 1) Then Exit Function
+    If M < LBound(MapData, 3) Or M > UBound(MapData, 3) Then Exit Function
     If x < MapMinX Or x > MapMaxX Then Exit Function
     If y < MapMinY Or y > MapMaxY Then Exit Function
     InBounds = True
@@ -59,7 +59,7 @@ Private Function IsFreeSpawnTile(ByVal M As Integer, ByVal x As Long, ByVal y As
     If Not ok Then Exit Function
 
     ' Finally check for occupancy
-    If MapData(M, x, y).UserIndex = 0 And MapData(M, x, y).NpcIndex = 0 Then
+    If MapData(x, y, M).UserIndex = 0 And MapData(x, y, M).NpcIndex = 0 Then
         IsFreeSpawnTile = True
     End If
 End Function

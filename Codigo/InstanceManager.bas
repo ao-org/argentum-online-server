@@ -82,11 +82,11 @@ Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestM
     Call PerformanceTestStart(PerformanceTimer)
     For PosY = YMinMapSize To YMaxMapSize
         For PosX = XMinMapSize To XMaxMapSize
-            MapData(DestMapIndex, PosX, PosY) = MapData(SourceMapIndex, PosX, PosY)
-            If (MapData(DestMapIndex, PosX, PosY).TileExit.Map > 0) Then
+            MapData(PosX, PosY, DestMapIndex) = MapData(PosX, PosY, SourceMapIndex)
+            If (MapData(PosX, PosY, DestMapIndex).TileExit.Map > 0) Then
                 For i = LBound(TranslationMappings) To UBound(TranslationMappings)
-                    If MapData(DestMapIndex, PosX, PosY).TileExit.Map = TranslationMappings(i).OriginalTarget Then
-                        MapData(DestMapIndex, PosX, PosY).TileExit.Map = TranslationMappings(i).NewTarget
+                    If MapData(PosX, PosY, DestMapIndex).TileExit.Map = TranslationMappings(i).OriginalTarget Then
+                        MapData(PosX, PosY, DestMapIndex).TileExit.Map = TranslationMappings(i).NewTarget
                     End If
                 Next i
             End If

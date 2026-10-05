@@ -52,7 +52,7 @@ Private Function test_create_char_map() As Boolean
     ' Place user 1 at map 1, position (54, 51)
     Call SetupChar(1, 1, 54, 51)
     ' The map tile at (54, 51) should now record UserIndex = 1
-    test_create_char_map = (MapData(1, 54, 51).UserIndex = 1)
+    test_create_char_map = (MapData(54, 51, 1).UserIndex = 1)
     Call CleanupAllChars
     Exit Function
 test_create_char_map_Err:
@@ -86,7 +86,7 @@ Private Function test_erase_char_map() As Boolean
     Call SetupChar(1, 1, 54, 51)
     Call EraseUserChar(1, False, False)
     ' After erasing, the map tile should have UserIndex = 0 (unoccupied)
-    test_erase_char_map = (MapData(1, 54, 51).UserIndex = 0)
+    test_erase_char_map = (MapData(54, 51, 1).UserIndex = 0)
     Call CleanupAllChars
     Exit Function
 test_erase_char_map_Err:

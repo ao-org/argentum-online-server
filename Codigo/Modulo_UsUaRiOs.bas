@@ -531,13 +531,13 @@ Dim tStr                        As String
             .pos.y = Cities(HomeCityId).y
             Call WriteLocaleMsg(UserIndex, MSG_CHARACTER_FOUND_ON_ILLEGAL_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         End If
-        If MapData(.pos.Map, .pos.x, .pos.y).UserIndex <> 0 Or MapData(.pos.Map, .pos.x, .pos.y).NpcIndex <> 0 Then
+        If MapData(.pos.x, .pos.y, .pos.Map).UserIndex <> 0 Or MapData(.pos.x, .pos.y, .pos.Map).NpcIndex <> 0 Then
             Dim FoundPlace As Boolean
             Dim esAgua     As Boolean
             Dim nX         As Long
             Dim nY         As Long
         
-            esAgua = (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0
+            esAgua = (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0
         
             ' Busca el tile libre más cercano (espiral/radial) respetando agua/tierra
             FoundPlace = FindNearestFreeTile(.pos.Map, .pos.x, .pos.y, esAgua, SPAWN_SEARCH_MAX_RADIUS, nX, nY)
@@ -548,7 +548,7 @@ Dim tStr                        As String
             Else
                 ' Sin lugar libre: si hay un usuario debajo, avisamos/cerramos comercio y lo desconectamos.
                 Dim uidBelow As Integer
-                uidBelow = MapData(.pos.Map, .pos.x, .pos.y).UserIndex
+                uidBelow = MapData(.pos.x, .pos.y, .pos.Map).UserIndex
         
                 If uidBelow <> 0 Then
                     ' Notificar al compañero de comercio (si corresponde)
@@ -580,7 +580,7 @@ Dim tStr                        As String
         Dim trigger     As Integer
         Dim slotBarco   As Integer
         Dim itemBuscado As Integer
-        trigger = MapData(.pos.Map, .pos.x, .pos.y).trigger
+        trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
         If trigger = e_Trigger.DETALLEAGUA Then 'Esta en zona de caucho obj 199, 200
             If .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo Then
                 itemBuscado = iObjTrajeBajoNw
@@ -600,10 +600,10 @@ Dim tStr                        As String
                 .invent.EquippedShipSlot = slotBarco
             End If
         End If
-        If .invent.EquippedShipObjIndex > 0 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
+        If .invent.EquippedShipObjIndex > 0 And (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0 Then
             .flags.Navegando = 1
             Call EquiparBarco(UserIndex)
-        ElseIf .flags.Navegando = 1 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
+        ElseIf .flags.Navegando = 1 And (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0 Then
             Dim iSlot As Integer
             For iSlot = 1 To UBound(.invent.Object)
                 If .invent.Object(iSlot).ObjIndex > 0 Then
@@ -946,7 +946,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
         Call QuitarUser(UserIndex, UserList(UserIndex).pos.Map)
         Error = "4"
     #End If
-    MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).UserIndex = 0
+    MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).UserIndex = 0
     Error = "5"
     UserList(UserIndex).Char.charindex = 0
     NumChars = NumChars - 1
@@ -1016,7 +1016,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 End If
             End If
             'Place character on map if needed
-            If toMap Then MapData(Map, x, y).UserIndex = UserIndex
+            If toMap Then MapData(x, y, Map).UserIndex = UserIndex
             'Send make character command to clients
             Dim klan       As String
             Dim clan_nivel As Byte
@@ -1214,7 +1214,7 @@ Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As 
     Call WriteForceCharMove(TargetUser, Heading)
     'Update map and char
     UserList(TargetUser).Char.Heading = Heading
-    MapData(UserList(TargetUser).pos.Map, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y).UserIndex = TargetUser
+    MapData(UserList(TargetUser).pos.x, UserList(TargetUser).pos.y, UserList(TargetUser).pos.Map).UserIndex = TargetUser
     'Actualizamos las areas de ser necesario
     Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
 End Sub
@@ -1225,8 +1225,8 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
     With UserList(UserIndex)
         OriginalPos = .pos
         If MapInfo(.pos.Map).NumUsers > 1 Then
-            If MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex > 0 Then
-                Call SwapTargetUserPos(MapData(NewPos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
+            If MapData(NewPos.x, NewPos.y, NewPos.Map).UserIndex > 0 Then
+                Call SwapTargetUserPos(MapData(NewPos.x, NewPos.y, NewPos.Map).UserIndex, .pos)
             End If
         End If
         If .flags.AdminInvisible = 0 Then
@@ -1236,11 +1236,11 @@ Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos
             Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         End If
         'Update map and user pos
-        If MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex Then
-            MapData(.pos.Map, .pos.x, .pos.y).UserIndex = 0
+        If MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex Then
+            MapData(.pos.x, .pos.y, .pos.Map).UserIndex = 0
         End If
         .pos = NewPos
-        MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+        MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex
         Call WritePosUpdate(UserIndex)
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, .Char.Heading, 0)
@@ -1256,13 +1256,13 @@ End Function
 Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
     Dim NpcIndex         As Integer
     Dim Opposite_Heading As e_Heading
-    NpcIndex = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+    NpcIndex = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex
     If NpcIndex <= 0 Then Exit Sub
     Opposite_Heading = InvertHeading(nHeading)
     Call HeadtoPos(Opposite_Heading, NpcList(NpcIndex).pos)
     Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterMove(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y), False)
-    MapData(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y).NpcIndex = NpcIndex
-    MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex = 0
+    MapData(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, NpcList(NpcIndex).pos.Map).NpcIndex = NpcIndex
+    MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex = 0
     Call CheckUpdateNeededNpc(NpcIndex, Opposite_Heading)
 End Sub
 
@@ -1279,8 +1279,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
             Exit Function
         End If
-        If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.x, _
-                nPos.y).trigger = e_Trigger.NADOCOMBINADO Or MapData(.pos.Map, nPos.x, nPos.y).trigger = e_Trigger.VALIDONADO Or MapData(.pos.Map, nPos.x, nPos.y).trigger = _
+        If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(nPos.x, nPos.y, .pos.Map).trigger = e_Trigger.DETALLEAGUA Or MapData(nPos.x, nPos.y, _
+                .pos.Map).trigger = e_Trigger.NADOCOMBINADO Or MapData(nPos.x, nPos.y, .pos.Map).trigger = e_Trigger.VALIDONADO Or MapData(nPos.x, nPos.y, .pos.Map).trigger = _
                 e_Trigger.NADOBAJOTECHO) Then
             Exit Function
         End If
@@ -1300,7 +1300,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         'Si no estoy solo en el mapa...
         If MapInfo(.pos.Map).NumUsers > 1 Then
             ' Intercambia posición si hay un casper o gm invisible
-            IndexMover = MapData(nPos.Map, nPos.x, nPos.y).UserIndex
+            IndexMover = MapData(nPos.x, nPos.y, nPos.Map).UserIndex
             If IndexMover <> 0 Then
                 ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
                 ' If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
@@ -1318,7 +1318,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 Call WriteForceCharMove(IndexMover, Opposite_Heading)
                 'Update map and char
                 UserList(IndexMover).Char.Heading = Opposite_Heading
-                MapData(UserList(IndexMover).pos.Map, UserList(IndexMover).pos.x, UserList(IndexMover).pos.y).UserIndex = IndexMover
+                MapData(UserList(IndexMover).pos.x, UserList(IndexMover).pos.y, UserList(IndexMover).pos.Map).UserIndex = IndexMover
                 'Actualizamos las areas de ser necesario
                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
             End If
@@ -1344,8 +1344,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                                     If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
                                                         'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
                                                         'Mando tambien el char para q lo borre
-                                                        Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.Map, nPos.x, nPos.y).Graphic(1), MapData(nPos.Map, _
-                                                                nPos.x, nPos.y).Graphic(2), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
+                                                        Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.x, nPos.y, nPos.Map).Graphic(1), _
+                                                                GetWalkableOverlayGraphic(nPos.Map, nPos.x, nPos.y), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
                                                                 Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
                                                     Else
                                                         Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
@@ -1362,7 +1362,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                     'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
                     For x = nPos.x - DISTANCIA_ENVIO_DATOS To nPos.x + DISTANCIA_ENVIO_DATOS
                         For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
-                            tempIndex = MapData(.pos.Map, x, y).UserIndex
+                            tempIndex = MapData(x, y, .pos.Map).UserIndex
                             If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
                                 If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = _
                                         0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < RequiredGuildLevelSeeInvisible) Then
@@ -1377,12 +1377,12 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
         End If
         'Update map and user pos
-        If MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex Then
-            MapData(.pos.Map, .pos.x, .pos.y).UserIndex = 0
+        If MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex Then
+            MapData(.pos.x, .pos.y, .pos.Map).UserIndex = 0
         End If
         .pos = nPos
         .Char.Heading = nHeading
-        MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+        MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex
         'Actualizamos las áreas de ser necesario
         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
         If .Counters.Trabajando Then
@@ -1775,7 +1775,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call ClearAttackerNpc(UserIndex)
         '<< Guardar o matar mascotas >>
         Call HandleUserPetsOnDeath(UserIndex)
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
             If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
                 If .flags.PendienteDelSacrificio = 0 Then
                     Call TirarTodosLosItems(UserIndex)
@@ -2103,10 +2103,10 @@ Sub Tilelibre(ByRef pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_
                     'there is already an item on the floor that differs from the item being dropped
                     'the item on the floor is the same but the elemental tags differ
                     'the amount of items exceeds the max quantity of items on the floor
-                    hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ObjIndex <> obj.ObjIndex)
-                    If Not hayobj Then hayobj = MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags > 0 And MapData(nPos.Map, tX, tY).ObjInfo.ElementalTags <> obj.ElementalTags
-                    If Not hayobj Then hayobj = (MapData(nPos.Map, tX, tY).ObjInfo.amount + obj.amount > GetMaxInvOBJ())
-                    If Not hayobj And MapData(nPos.Map, tX, tY).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
+                    hayobj = (MapData(tX, tY, nPos.Map).ObjInfo.ObjIndex > 0 And MapData(tX, tY, nPos.Map).ObjInfo.ObjIndex <> obj.ObjIndex)
+                    If Not hayobj Then hayobj = MapData(tX, tY, nPos.Map).ObjInfo.ElementalTags > 0 And MapData(tX, tY, nPos.Map).ObjInfo.ElementalTags <> obj.ElementalTags
+                    If Not hayobj Then hayobj = (MapData(tX, tY, nPos.Map).ObjInfo.amount + obj.amount > GetMaxInvOBJ())
+                    If Not hayobj And MapData(tX, tY, nPos.Map).TileExit.Map = 0 And (InitialPos Or (tX <> pos.x And tY <> pos.y)) Then
                         nPos.x = tX
                         nPos.y = tY
                         tX = pos.x + LoopC
@@ -2141,7 +2141,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, _
         For tY = y - LoopC To y + LoopC
             For tX = x - LoopC To x + LoopC
                 If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False, False) Then
-                    If MapData(Map, tX, tY).trigger < 50 Then
+                    If MapData(tX, tY, Map).trigger < 50 Then
                         Call WarpUserChar(UserIndex, Map, tX, tY, FX)
                         Exit Sub
                     End If
@@ -2248,8 +2248,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         End If
         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
         If MapInfo(Map).zone = "DUNGEON" Or _
-           (MapData(Map, x, y).trigger >= e_Trigger.PESCAINVALIDA And _
-            MapData(Map, x, y).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
+           (MapData(x, y, Map).trigger >= e_Trigger.PESCAINVALIDA And _
+            MapData(x, y, Map).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
             If .flags.Montado > 0 Then
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
             End If
@@ -2334,7 +2334,7 @@ End Sub
 Sub VolverCriminal(ByVal UserIndex As Integer)
     On Error GoTo VolverCriminal_Err
     With UserList(UserIndex)
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger = 6 Then Exit Sub
         If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then
             If .Faccion.Status = e_Facciones.Armada Then
                 '  NUNCA debería pasar, pero dejo un log por si las...
@@ -2372,7 +2372,7 @@ End Sub
 Sub VolverCiudadano(ByVal UserIndex As Integer)
     On Error GoTo VolverCiudadano_Err
     With UserList(UserIndex)
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = 6 Then Exit Sub
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger = 6 Then Exit Sub
         If .Faccion.Status = e_Facciones.Criminal Or .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
             .Faccion.FactionScore = 0
         End If
@@ -2908,8 +2908,8 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
         Exit Function
     End If
     'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-    If MapData(UserList(TargetIndex).pos.Map, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
-            attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
+    If MapData(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, UserList(TargetIndex).pos.Map).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y, UserList( _
+            attackerIndex).pos.Map).trigger = e_Trigger.ZonaSegura Then
         CanAttackUser = eSafeArea
         Exit Function
     End If

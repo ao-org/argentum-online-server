@@ -32,7 +32,7 @@ Public Const NET_INMO_DURATION As Long = 10
 
 Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, ByVal MapX As Byte, ByVal MapY As Byte) As Boolean
     Dim ObjIndex As Integer
-    ObjIndex = MapData(Map, MapX, MapY).ObjInfo.ObjIndex
+    ObjIndex = MapData(MapX, MapY, Map).ObjInfo.ObjIndex
     If ObjIndex = 0 Then
         ExpectObjectTypeAt = False
         Exit Function
@@ -41,11 +41,11 @@ Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, B
 End Function
 
 Function IsUserAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte) As Boolean
-    IsUserAtPos = MapData(Map, x, y).UserIndex > 0
+    IsUserAtPos = MapData(x, y, Map).UserIndex > 0
 End Function
 
 Function IsNpcAtPos(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
-    IsNpcAtPos = MapData(Map, x, y).NpcIndex > 0
+    IsNpcAtPos = MapData(x, y, Map).NpcIndex > 0
 End Function
 
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
@@ -704,7 +704,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             Exit Function
         End If
 
-        If ObjData(MapData(Target.Map, Target.x, Target.y).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
+        If ObjData(MapData(Target.x, Target.y, Target.Map).ObjInfo.ObjIndex).Subtipo <> e_AnvilType.BlodiumAnvil Then
             Call WriteLocaleMsg(UserIndex, MSG_BLODIUM_ANVIL_REQUIRED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             HerreroTieneMateriales = False
             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1145,7 +1145,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
         .x = x
         .y = y
     End With
-    If MapData(Map, x, y).ObjInfo.ObjIndex <> 58 Then
+    If MapData(x, y, Map).ObjInfo.ObjIndex <> 58 Then
         ' Msg646=Necesitas clickear sobre Leña para hacer ramitas.
         Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CLICKEAR_SOBRE_LENA_HACER_RAMITAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
@@ -1160,7 +1160,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
         Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_HACER_FOGATAS_ESTANDO_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
     End If
-    If MapData(Map, x, y).ObjInfo.amount < 3 Then
+    If MapData(x, y, Map).ObjInfo.amount < 3 Then
         ' Msg648=Necesitas por lo menos tres troncos para hacer una fogata.
         Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MENOS_TRES_TRONCOS_HACER_FOGATA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
@@ -1175,7 +1175,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal y As Int
     exito = RandomNumber(1, Suerte)
     If exito = 1 Then
         obj.ObjIndex = FOGATA_APAG
-        obj.amount = MapData(Map, x, y).ObjInfo.amount \ 3
+        obj.amount = MapData(x, y, Map).ObjInfo.amount \ 3
         Call WriteLocaleMsg(UserIndex, MSG_HECHO_RAMITAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)  ' Msg1456=Has hecho ¬1 ramitas.
         Call MakeObj(obj, Map, x, y)
         'Seteamos la fogata como el nuevo TargetObj del user
@@ -1547,8 +1547,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
         End If
-        If .flags.Montado = 0 And (MapData(.pos.Map, .pos.x, .pos.y).trigger > e_Trigger.PESCAINVALIDA) _
-           And MapData(.pos.Map, .pos.x, .pos.y).trigger <> e_Trigger.ONLY_PATREON_TILE Then
+        If .flags.Montado = 0 And (MapData(.pos.x, .pos.y, .pos.Map).trigger > e_Trigger.PESCAINVALIDA) _
+           And MapData(.pos.x, .pos.y, .pos.Map).trigger <> e_Trigger.ONLY_PATREON_TILE Then
             ' Msg653=No podés montar aquí.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
@@ -1662,18 +1662,18 @@ End Sub
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo ActualizarRecurso_Err
     Dim ObjIndex As Integer
-    ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
+    ObjIndex = MapData(x, y, Map).ObjInfo.ObjIndex
     Dim TiempoActual As Long
     TiempoActual = GetTickCountRaw()
     ' Data = Ultimo uso
     Dim lastUse As Long
-    lastUse = MapData(Map, x, y).ObjInfo.data
+    lastUse = MapData(x, y, Map).ObjInfo.data
     If lastUse <> &H7FFFFFFF Then
         Dim elapsedMs As Double
         elapsedMs = TicksElapsed(lastUse, TiempoActual)
         If elapsedMs / 1000# > ObjData(ObjIndex).TiempoRegenerar Then
-            MapData(Map, x, y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-            MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+            MapData(x, y, Map).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
+            MapData(x, y, Map).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
         End If
     End If
     Exit Sub
