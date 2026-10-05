@@ -1665,7 +1665,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                                 MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
                                 SailingTiles = SailingTiles + 1
                             End If
-                        Case 2
+                        Case 2, 3
                             MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked And Not FLAG_AGUA
                         Case 4
                             If EsArbol(graphics(i).GrhIndex) Then
@@ -1839,7 +1839,7 @@ End Sub
 
 #If UNIT_TEST = 1 Then
 ' Exercise the real loader using both serialized headers and a populated new layer.
-Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery As Boolean) As Boolean
+Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery As Boolean, Optional ByVal walkableLayer As Long = 0) As Boolean
     On Error GoTo TestCsmLayerLoading_Err
     Dim savedTile As t_MapBlock
     Dim savedInfo As t_MapInfo
@@ -1858,10 +1858,10 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     Const treeGraphic As Long = 11905
     Dim zero As Long
 
-    savedTile = MapData(1, 1, 1)
+    savedTile = MapData(50, 50, 1)
     savedInfo = MapInfo(1)
     saved = True
-    MapData(1, 1, 1) = emptyTile
+    MapData(50, 50, 1) = emptyTile
     fixturePath = App.Path & "\build\five-layer-test.csm"
     If FileExist(fixturePath, vbNormal) Then Kill fixturePath
     fh = FreeFile
@@ -1870,6 +1870,12 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     For layer = 1 To MAP_LAYER_COUNT
         header.NumeroLayers(layer) = 1
     Next layer
+    If walkableLayer > 0 Then
+        For layer = 2 To MAP_LAYER_COUNT
+            header.NumeroLayers(layer) = 0
+        Next layer
+        header.NumeroLayers(walkableLayer) = 1
+    End If
     header.NumeroTriggers = 1
     header.NumeroTE = 1
     If legacy Then
@@ -1896,23 +1902,27 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     metadata.Seguro = 1
     Put #fh, , bounds
     Put #fh, , metadata
-    blocked(1).x = 1
-    blocked(1).y = 1
+    blocked(1).x = 50
+    blocked(1).y = 50
     blocked(1).Lados = 1
+    If walkableLayer > 0 Then blocked(1).Lados = 0
     Put #fh, , blocked
-    graphic(1).x = 1
-    graphic(1).y = 1
+    graphic(1).x = 50
+    graphic(1).y = 50
     For layer = 1 To MAP_LAYER_COUNT
         graphic(1).GrhIndex = layer
         If layer = 3 Or (layer = 4 And treeOnScenery) Then graphic(1).GrhIndex = treeGraphic
-        If Not legacy Or layer <> 3 Then Put #fh, , graphic
+        If walkableLayer > 0 And layer = 1 Then graphic(1).GrhIndex = 1505
+        If header.NumeroLayers(layer) > 0 Then
+            If Not legacy Or layer <> 3 Then Put #fh, , graphic
+        End If
     Next layer
-    trigger(1).x = 1
-    trigger(1).y = 1
+    trigger(1).x = 50
+    trigger(1).y = 50
     trigger(1).trigger = 60
     Put #fh, , trigger
-    tileExit(1).x = 1
-    tileExit(1).y = 1
+    tileExit(1).x = 50
+    tileExit(1).y = 50
     tileExit(1).DestM = 2
     tileExit(1).DestX = 3
     tileExit(1).DestY = 4
@@ -1920,7 +1930,17 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     Close #fh
     fh = 0
     Call CargarMapaFormatoCSM(1, fixturePath)
-    With MapData(1, 1, 1)
+    If walkableLayer > 0 Then
+        If MapData(50, 50, 1).Graphic(1) <> 1505 Then GoTo Cleanup
+        If GetWalkableOverlayGraphic(1, 50, 50) = 0 Then GoTo Cleanup
+        If (MapData(50, 50, 1).Blocked And FLAG_AGUA) <> 0 Then GoTo Cleanup
+        If Not LegalPos(1, 50, 50, False, True) Then GoTo Cleanup
+        MapData(50, 50, 1).Blocked = e_Block.ALL_SIDES
+        If LegalPos(1, 50, 50, False, True) Then GoTo Cleanup
+        TestCsmLayerLoading = True
+        GoTo Cleanup
+    End If
+    With MapData(50, 50, 1)
         If .Graphic(1) <> 1 Or .Graphic(2) <> 2 Or .Graphic(5) <> 5 Then GoTo Cleanup
         If legacy Then
             If .Graphic(3) <> 0 Then GoTo Cleanup
@@ -1940,7 +1960,7 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
 Cleanup:
     If fh <> 0 Then Close #fh
     If saved Then
-        MapData(1, 1, 1) = savedTile
+        MapData(50, 50, 1) = savedTile
         MapInfo(1) = savedInfo
     End If
     If LenB(fixturePath) <> 0 Then

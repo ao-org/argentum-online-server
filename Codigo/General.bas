@@ -245,13 +245,27 @@ BloquearPuerta_Err:
     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
 End Sub
 
+Public Function GetWalkableOverlayGraphic(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Long
+    On Error GoTo GetWalkableOverlayGraphic_Err
+    With MapData(x, y, Map)
+        If .Graphic(3) > 0 Then
+            GetWalkableOverlayGraphic = .Graphic(3)
+        Else
+            GetWalkableOverlayGraphic = .Graphic(2)
+        End If
+    End With
+    Exit Function
+GetWalkableOverlayGraphic_Err:
+    Call TraceError(Err.Number, Err.Description, "General.GetWalkableOverlayGraphic", Erl)
+End Function
+
 Function HayCosta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo HayCosta_Err
     'Ladder 10 - 2 - 2010
     'Chequea si hay costa en los tiles proximos al usuario
     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And y > 0 And y < 101 Then
         If ((MapData(x, y, Map).Graphic(1) >= 22552 And MapData(x, y, Map).Graphic(1) <= 22599) Or (MapData(x, y, Map).Graphic(1) >= 7283 And MapData(x, y, Map).Graphic(1) <= _
-                7378) Or (MapData(x, y, Map).Graphic(1) >= 13387 And MapData(x, y, Map).Graphic(1) <= 13482)) And MapData(x, y, Map).Graphic(2) = 0 Then
+                7378) Or (MapData(x, y, Map).Graphic(1) >= 13387 And MapData(x, y, Map).Graphic(1) <= 13482)) And GetWalkableOverlayGraphic(Map, x, y) = 0 Then
             HayCosta = True
         Else
             HayCosta = False

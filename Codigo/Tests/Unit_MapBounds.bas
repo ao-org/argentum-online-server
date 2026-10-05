@@ -24,6 +24,9 @@ Public Function test_suite_mapbounds() As Boolean
     Call UnitTesting.RunTest("test_csm_third_layer_does_not_block_as_tree", ES.TestCsmLayerLoading(False, False))
     Call UnitTesting.RunTest("test_csm_legacy_layer_remapping", ES.TestCsmLayerLoading(True, True))
 
+    Call UnitTesting.RunTest("test_csm_layer2_walkable_over_water", ES.TestCsmLayerLoading(False, False, 2))
+    Call UnitTesting.RunTest("test_csm_layer3_walkable_over_water", ES.TestCsmLayerLoading(False, False, 3))
+
     test_suite_mapbounds = True
 End Function
 

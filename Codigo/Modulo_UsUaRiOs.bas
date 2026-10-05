@@ -1344,8 +1344,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                                     If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
                                                         'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
                                                         'Mando tambien el char para q lo borre
-                                                        Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.x, nPos.y, nPos.Map).Graphic(1), MapData(nPos.x, _
-                                                                nPos.y, nPos.Map).Graphic(2), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
+                                                        Call WritePlayWaveStep(tempIndex, .Char.charindex, MapData(nPos.x, nPos.y, nPos.Map).Graphic(1), _
+                                                                GetWalkableOverlayGraphic(nPos.Map, nPos.x, nPos.y), Distance(nPos.x, nPos.y, UserList(tempIndex).pos.x, UserList(tempIndex).pos.y), _
                                                                 Sgn(nPos.x - UserList(tempIndex).pos.x), .flags.stepToggle)
                                                     Else
                                                         Call WritePosUpdateChar(tempIndex, nPos.x, nPos.y, .Char.charindex)
