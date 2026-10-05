@@ -115,7 +115,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
     If Not LegalPos(targetMap, targetX, targetY) Then Exit Sub
 
     ' Leer UNA sola vez el objeto del tile
-    currentTileObjIndex = MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex
+    currentTileObjIndex = MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex
 
     ' Validar índice del tile
     If currentTileObjIndex <= 0 Then Exit Sub
@@ -150,7 +150,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
 
         ' Aplicar cambio en el mapa
-        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+        MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex = newDoorObjIndex
 
         ' Actualizar target del usuario para reflejar el nuevo estado
         UserList(UserIndex).flags.TargetObj = newDoorObjIndex
@@ -164,7 +164,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         If newDoorObjIndex <= 0 Then Exit Sub
         If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
 
-        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+        MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex = newDoorObjIndex
         UserList(UserIndex).flags.TargetObj = newDoorObjIndex
 
         Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)

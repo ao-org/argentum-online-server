@@ -60,11 +60,11 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_PREPARANDO_OTRO_USUARIO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, Subasta.Subastador)
         Exit Sub
     End If
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex <= 0 Then
+    If MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).ObjInfo.ObjIndex <= 0 Then
         Call WriteChatOverHead(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Desc, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
         Exit Sub
     End If
-    If Not ObjData(MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex).Subastable = 1 Then
+    If Not ObjData(MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).ObjInfo.ObjIndex).Subastable = 1 Then
         Call WriteLocaleChatOverHead(UserIndex, MSG_SUBASTA_ITEM_NO_SUBASTABLE, "", str$(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
         Exit Sub
     End If
@@ -78,9 +78,9 @@ Public Sub IniciarSubasta(ByVal UserIndex As Integer)
         Call WriteLocaleMsg(UserIndex, MSG_SUBASTA_ORO_INSUFICIENTE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA, PonerPuntos(CLng(SvrConfig.GetValue("CostoPreSubasta"))))
         Exit Sub
     End If
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex > 0 Then
-        Subasta.ObjSubastado = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.ObjIndex
-        Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).ObjInfo.amount
+    If MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).ObjInfo.ObjIndex > 0 Then
+        Subasta.ObjSubastado = MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).ObjInfo.ObjIndex
+        Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).ObjInfo.amount
         Subasta.Subastador = UserList(UserIndex).name
         With UserList(UserIndex)
             .Stats.GLD = .Stats.GLD - CLng(SvrConfig.GetValue("CostoPreSubasta"))
@@ -138,8 +138,8 @@ Public Sub FinalizarSubasta()
             PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
             PosX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
             PosY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
-            If MapData(PosMap, PosX, PosY).ObjInfo.ObjIndex > 0 Then Exit Sub
-            If MapData(PosMap, PosX, PosY).TileExit.Map > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).ObjInfo.ObjIndex > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).TileExit.Map > 0 Then Exit Sub
             If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
             If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
             Call MakeObj(ObjVendido, PosMap, PosX, PosY)
@@ -230,8 +230,8 @@ Public Sub DevolverItem()
             PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
             PosX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
             PosY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
-            If MapData(PosMap, PosX, PosY).ObjInfo.ObjIndex > 0 Then Exit Sub
-            If MapData(PosMap, PosX, PosY).TileExit.Map > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).ObjInfo.ObjIndex > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).TileExit.Map > 0 Then Exit Sub
             If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
             If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
             Call MakeObj(ObjVendido, PosMap, PosX, PosY)
@@ -285,8 +285,8 @@ Public Sub CancelarSubasta()
             PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
             PosX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
             PosY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
-            If MapData(PosMap, PosX, PosY).ObjInfo.ObjIndex > 0 Then Exit Sub
-            If MapData(PosMap, PosX, PosY).TileExit.Map > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).ObjInfo.ObjIndex > 0 Then Exit Sub
+            If MapData(PosX, PosY, PosMap).TileExit.Map > 0 Then Exit Sub
             If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
             If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
             Call MakeObj(ObjVendido, PosMap, PosX, PosY)

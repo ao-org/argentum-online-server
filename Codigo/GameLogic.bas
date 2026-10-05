@@ -68,9 +68,9 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
     'Search for a Legal pos for the user who is being teleported.
     '***************************************************
     On Error GoTo FindLegalPos_Err
-    If MapData(Map, x, y).UserIndex <> 0 Or MapData(Map, x, y).NpcIndex <> 0 Then
+    If MapData(x, y, Map).UserIndex <> 0 Or MapData(x, y, Map).NpcIndex <> 0 Then
         ' Se teletransporta a la misma pos a la que estaba
-        If MapData(Map, x, y).UserIndex = UserIndex Then Exit Sub
+        If MapData(x, y, Map).UserIndex = UserIndex Then Exit Sub
         Dim FoundPlace     As Boolean
         Dim tX             As Long
         Dim tY             As Long
@@ -80,7 +80,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
             For tY = y - Rango To y + Rango
                 For tX = x - Rango To x + Rango
                     'Reviso que no haya User ni NPC
-                    If MapData(Map, tX, tY).UserIndex = 0 And MapData(Map, tX, tY).NpcIndex = 0 Then
+                    If MapData(tX, tY, Map).UserIndex = 0 And MapData(tX, tY, Map).NpcIndex = 0 Then
                         If InMapBounds(Map, tX, tY) Then FoundPlace = True
                         Exit For
                     End If
@@ -95,7 +95,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
         Else
             'Muy poco probable, pero..
             'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-            OtherUserIndex = MapData(Map, x, y).UserIndex
+            OtherUserIndex = MapData(x, y, Map).UserIndex
             If OtherUserIndex <> 0 Then
                 'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
                 If IsValidUserRef(UserList(OtherUserIndex).ComUsu.DestUsu) Then
@@ -325,9 +325,9 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
         
-            If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
-                If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
-                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(map, x, y).trigger) Then
+            If MapData(x, y, Map).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
+                If MapData(x, y, Map).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
+                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(x, y, map).trigger) Then
                         Call WarpUserChar(UserIndex, map, x, y + 1, False)
                         Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
                         Exit Sub
@@ -335,20 +335,20 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                 End If
             End If
             
-            If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+            If MapData(x, y, Map).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
                 If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
             End If
-            If MapData(Map, x, y).trigger = AUTORESU Then
+            If MapData(x, y, Map).trigger = AUTORESU Then
                 Call ResucitarOCurar(UserIndex)
             End If
-            If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-                EsTeleport = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
+            If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
+                EsTeleport = ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
             End If
-            If Not MapData(Map, x, y).Trap Is Nothing Then
+            If Not MapData(x, y, Map).Trap Is Nothing Then
                 Call ModMap.ActivateTrap(UserIndex, eUser, Map, x, y)
             End If
             If EsTeleport Then
-                If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
+                If ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
                     Dim StartTransportIndex As Integer
                     Dim ExitPortal          As Integer
                     StartTransportIndex = GetTransportNextIndex(Map, x, y)
@@ -357,7 +357,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     Else
                         ExitPortal = GetExitTransport(Map, StartTransportIndex)
                     End If
-                    destPos = MapData(Map, MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY).TileExit
+                    destPos = MapData(MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY, Map).TileExit
                     If destPos.Map > 0 And destPos.Map <= NumMaps Then
                         .LastTransportNetwork.Map = Map
                         .LastTransportNetwork.StartIdex = StartTransportIndex
@@ -369,23 +369,23 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     Exit Sub
                 End If
             End If
-            If (MapData(Map, x, y).TileExit.Map > 0) And (MapData(Map, x, y).TileExit.Map <= NumMaps) Then
+            If (MapData(x, y, Map).TileExit.Map > 0) And (MapData(x, y, Map).TileExit.Map <= NumMaps) Then
                 '  Restricciones de mapas
-                If CheckMapRestrictions(UserIndex, MapData(Map, x, y).TileExit.Map) Then
-                    If EsMapaInterdimensional(MapData(Map, x, y).TileExit.Map) And Not EsMapaInterdimensional(.pos.Map) Then
+                If CheckMapRestrictions(UserIndex, MapData(x, y, Map).TileExit.Map) Then
+                    If EsMapaInterdimensional(MapData(x, y, Map).TileExit.Map) And Not EsMapaInterdimensional(.pos.Map) Then
                         .flags.ReturnPos = .pos
                     End If
-                    destPos.Map = MapData(Map, x, y).TileExit.Map
+                    destPos.Map = MapData(x, y, Map).TileExit.Map
                     If EsTeleport Then
-                        destPos.x = RandomNumber(MapData(Map, x, y).TileExit.x - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, MapData(Map, x, y).TileExit.x + ObjData( _
-                                MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
-                        destPos.y = RandomNumber(MapData(Map, x, y).TileExit.y - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, MapData(Map, x, y).TileExit.y + ObjData( _
-                                MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
+                        destPos.x = RandomNumber(MapData(x, y, Map).TileExit.x - ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Radio, MapData(x, y, Map).TileExit.x + ObjData( _
+                                MapData(x, y, Map).ObjInfo.ObjIndex).Radio)
+                        destPos.y = RandomNumber(MapData(x, y, Map).TileExit.y - ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Radio, MapData(x, y, Map).TileExit.y + ObjData( _
+                                MapData(x, y, Map).ObjInfo.ObjIndex).Radio)
                     Else
-                        destPos.x = MapData(Map, x, y).TileExit.x
-                        destPos.y = MapData(Map, x, y).TileExit.y
+                        destPos.x = MapData(x, y, Map).TileExit.x
+                        destPos.y = MapData(x, y, Map).TileExit.y
                     End If
-                    preserveNpcPursuit = IsVerifiedNpcSpatialTransition(Map, x, y, MapData(Map, x, y).TileExit, EsTeleport)
+                    preserveNpcPursuit = IsVerifiedNpcSpatialTransition(Map, x, y, MapData(x, y, Map).TileExit, EsTeleport)
                     If IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
                         Call LogInfoServidor("NPC cross-map transition fromMap=" & Map & " exit=(" & x & "," & y & ") toMap=" & destPos.Map & " destination=(" & destPos.x & "," & destPos.y & ") teleport=" & CStr(EsTeleport) & " verified=" & CStr(preserveNpcPursuit))
                     End If
@@ -401,10 +401,10 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
                     End If
                 End If
-                preserveNpcPursuit = preserveNpcPursuit And UserList(UserIndex).pos.Map = MapData(Map, x, y).TileExit.Map
+                preserveNpcPursuit = preserveNpcPursuit And UserList(UserIndex).pos.Map = MapData(x, y, Map).TileExit.Map
                 'Non-spatial transitions keep the existing target-clearing behavior.
                 Call ClearAttackerNpc(UserIndex, preserveNpcPursuit)
-            ElseIf MapData(Map, x, y).TileExit.Map < 0 Then
+            ElseIf MapData(x, y, Map).TileExit.Map < 0 Then
                 If .flags.ReturnPos.Map <> 0 Then
                     If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
                         Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, False)
@@ -506,7 +506,7 @@ End Function
 Public Function TileRequiresPatreon(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TileRequiresPatreon_Err
     If Not InMapBounds(Map, x, y) Then Exit Function
-    TileRequiresPatreon = MapData(Map, x, y).trigger = e_Trigger.ONLY_PATREON_TILE
+    TileRequiresPatreon = MapData(x, y, Map).trigger = e_Trigger.ONLY_PATREON_TILE
     Exit Function
 TileRequiresPatreon_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
@@ -628,7 +628,7 @@ Sub ClosestStablePos(pos As t_WorldPos, ByRef nPos As t_WorldPos)
         End If
         For tY = pos.y - LoopC To pos.y + LoopC
             For tX = pos.x - LoopC To pos.x + LoopC
-                If LegalPos(nPos.Map, tX, tY) And MapData(nPos.Map, tX, tY).TileExit.Map = 0 Then
+                If LegalPos(nPos.Map, tX, tY) And MapData(tX, tY, nPos.Map).TileExit.Map = 0 Then
                     nPos.x = tX
                     nPos.y = tY
                     '¿Hay objeto?
@@ -791,7 +791,7 @@ Function LegalPos(ByVal Map As Integer, _
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then Exit Function
         If .UserIndex <> 0 Then Exit Function
         If Not PuedeTraslado Then
@@ -827,7 +827,7 @@ Function LegalPosDestrabar(ByVal Map As Integer, _
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then Exit Function
         If Not PuedeTraslado Then
             If .TileExit.Map > 0 Then Exit Function
@@ -932,7 +932,7 @@ Function LegalWalk(ByVal Map As Integer, _
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then
             If Not IsSet(NpcList(.NpcIndex).flags.StatusMask, e_StatusMask.eDontBlockTile) Then Exit Function
         End If
@@ -976,15 +976,15 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     On Error GoTo LegalPosNPC_Err
     If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or y < MinYBorder Or y > MaxYBorder) Then
         LegalPosNPC = False
-    ElseIf MapData(Map, x, y).TileExit.Map > 0 Then
+    ElseIf MapData(x, y, Map).TileExit.Map > 0 Then
         LegalPosNPC = False
     Else
         If AguaValida = 0 Then
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(Map, x, y).Blocked And FLAG_AGUA) = 0
+            LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
+                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(x, y, Map).Blocked And FLAG_AGUA) = 0
         Else
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet)
+            LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
+                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet)
         End If
     End If
     Exit Function
@@ -1006,7 +1006,7 @@ Function LegalWalkNPC(ByVal Map As Integer, _
     If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or y < MinYBorder Or y > MaxYBorder) Then
         Exit Function
     End If
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .TileExit.Map Then Exit Function
         If Not PuedeAgua Then
             If .Blocked And FLAG_AGUA Then
@@ -1092,30 +1092,30 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         UserList(UserIndex).flags.TargetX = x
         UserList(UserIndex).flags.TargetY = y
         '¿Es un obj?
-        If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+        If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
             'Informa el nombre
             UserList(UserIndex).flags.TargetObjMap = Map
             UserList(UserIndex).flags.TargetObjX = x
             UserList(UserIndex).flags.TargetObjY = y
             FoundSomething = 1
-        ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
+        ElseIf MapData(x + 1, y, Map).ObjInfo.ObjIndex > 0 Then
             'Informa el nombre
-            If ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+            If ObjData(MapData(x + 1, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x + 1
                 UserList(UserIndex).flags.TargetObjY = y
                 FoundSomething = 1
             End If
-        ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
-            If ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+        ElseIf MapData(x + 1, y + 1, Map).ObjInfo.ObjIndex > 0 Then
+            If ObjData(MapData(x + 1, y + 1, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 'Informa el nombre
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x + 1
                 UserList(UserIndex).flags.TargetObjY = y + 1
                 FoundSomething = 1
             End If
-        ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
-            If ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+        ElseIf MapData(x, y + 1, Map).ObjInfo.ObjIndex > 0 Then
+            If ObjData(MapData(x, y + 1, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 'Informa el nombre
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x
@@ -1124,26 +1124,26 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             End If
         End If
         If FoundSomething = 1 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+            UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.ObjIndex
             If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otCastleSpawner Then
-                Call SendCastleInfo(UserIndex, MapData(UserList(UserIndex).flags.TargetMap, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.CastleSlot)
+                Call SendCastleInfo(UserIndex, MapData(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, UserList(UserIndex).flags.TargetMap).ObjInfo.CastleSlot)
             ElseIf MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
-                Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList( _
-                        UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & " *" & (MapData(Map, x, y).ObjInfo.ElementalTags Or ObjData(MapData( _
-                        Map, x, y).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList( _
+                        UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, UserList(UserIndex).flags.TargetObjMap).ObjInfo.amount & " *" & (MapData(x, y, Map).ObjInfo.ElementalTags Or ObjData(MapData( _
+                        x, y, Map).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otOreDeposit Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, MSG_MINERALES_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
-                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
+                    Call WriteLocaleMsg(UserIndex, MSG_MINERALES_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(UserList( _
+                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTrees Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, MSG_RECURSOS_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
-                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
+                    Call WriteLocaleMsg(UserIndex, MSG_RECURSOS_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(UserList( _
+                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
-                    If MapData(Map, x, y).TileExit.Map > 0 Then
-                        If LenB(MapInfo(MapData(Map, x, y).TileExit.Map).map_name) <> 0 Then
-                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(Map, x, y).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
+                    If MapData(x, y, Map).TileExit.Map > 0 Then
+                        If LenB(MapInfo(MapData(x, y, Map).TileExit.Map).map_name) <> 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(x, y, Map).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
                         Else
                             'Msg492=Portal a un mapa desconocido...
                             Call WriteLocaleMsg(UserIndex, MSG_PORTAL_MAPA_DESCONOCIDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -1160,27 +1160,27 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         Dim yy As Byte
         If y + 1 <= YMaxMapSize Then
             'it's a character?
-            If MapData(Map, x, y + 1).UserIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y + 1).UserIndex
+            If MapData(x, y + 1, Map).UserIndex > 0 Then
+                TempCharIndex = MapData(x, y + 1, Map).UserIndex
                 yy = y + 1
                 FoundChar = 1
             End If
             'it's an npc?
-            If MapData(Map, x, y + 1).NpcIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y + 1).NpcIndex
+            If MapData(x, y + 1, Map).NpcIndex > 0 Then
+                TempCharIndex = MapData(x, y + 1, Map).NpcIndex
                 FoundChar = 2
             End If
         End If
         If FoundChar = 0 Then
             'it's a character?
-            If MapData(Map, x, y).UserIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y).UserIndex
+            If MapData(x, y, Map).UserIndex > 0 Then
+                TempCharIndex = MapData(x, y, Map).UserIndex
                 yy = y
                 FoundChar = 1
             End If
             'it's an npc?
-            If MapData(Map, x, y).NpcIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y).NpcIndex
+            If MapData(x, y, Map).NpcIndex > 0 Then
+                TempCharIndex = MapData(x, y, Map).NpcIndex
                 FoundChar = 2
             End If
         End If
@@ -1188,7 +1188,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             If UserList(TempCharIndex).pos.x <> x Or UserList(TempCharIndex).pos.y <> yy Then
                 'Mapblock bugeado
-                MapData(Map, x, yy).UserIndex = 0
+                MapData(x, yy, Map).UserIndex = 0
                 Call TraceError(999, "Hay un mapblock con un usuario y el usuario tiene otra posicion. Index: " & TempCharIndex & ", user: " & UserList(TempCharIndex).name & _
                         ", mapblock: " & Map & "," & x & "," & y & ", userpos: " & UserList(TempCharIndex).pos.Map & "," & UserList(TempCharIndex).pos.x & "," & UserList( _
                         TempCharIndex).pos.y, "LookatTile")
@@ -1408,9 +1408,9 @@ EsObjetoFijo_Err:
 End Function
 
 Public Function HayPuerta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-        HayPuerta = (ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors) And ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData( _
-                Map, x, y).ObjInfo.ObjIndex).Llave = 0)
+    If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
+        HayPuerta = (ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors) And ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData( _
+                x, y, Map).ObjInfo.ObjIndex).Llave = 0)
     End If
 End Function
 

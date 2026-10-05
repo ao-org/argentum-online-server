@@ -19,6 +19,11 @@ Public Function test_suite_mapbounds() As Boolean
     Call UnitTesting.RunTest("test_prop_in_map_bounds_boundary_completeness", test_prop_in_map_bounds_boundary_completeness())
     Call UnitTesting.RunTest("test_prop_head_to_pos_inverse_symmetry", test_prop_head_to_pos_inverse_symmetry())
 
+    Call UnitTesting.RunTest("test_map_storage_contiguous", test_map_storage_contiguous())
+    Call UnitTesting.RunTest("test_csm_five_layer_tree_blocking", ES.TestCsmLayerLoading(False, True))
+    Call UnitTesting.RunTest("test_csm_third_layer_does_not_block_as_tree", ES.TestCsmLayerLoading(False, False))
+    Call UnitTesting.RunTest("test_csm_legacy_layer_remapping", ES.TestCsmLayerLoading(True, True))
+
     test_suite_mapbounds = True
 End Function
 
@@ -312,6 +317,25 @@ Private Function test_prop_head_to_pos_inverse_symmetry() As Boolean
     Exit Function
 Err_Handler:
     test_prop_head_to_pos_inverse_symmetry = False
+End Function
+
+' VB6 stores the first array dimension fastest: X, then Y, then map.
+Private Function test_map_storage_contiguous() As Boolean
+    On Error GoTo Err_Handler
+    Dim stride As Long
+    Dim width As Long
+    Dim height As Long
+    stride = LenB(MapData(1, 1, 1))
+    width = UBound(MapData, 1) - LBound(MapData, 1) + 1
+    height = UBound(MapData, 2) - LBound(MapData, 2) + 1
+    If VarPtr(MapData(2, 1, 1).Blocked) - VarPtr(MapData(1, 1, 1).Blocked) <> stride Then Exit Function
+    If VarPtr(MapData(1, 2, 1).Blocked) - VarPtr(MapData(1, 1, 1).Blocked) <> stride * width Then Exit Function
+    If VarPtr(MapData(1, 1, 2).Blocked) - VarPtr(MapData(1, 1, 1).Blocked) <> stride * width * height Then Exit Function
+    If VarPtr(MapData(1, 1, 1).Graphic(5)) - VarPtr(MapData(1, 1, 1).Graphic(1)) <> 16 Then Exit Function
+    test_map_storage_contiguous = True
+    Exit Function
+Err_Handler:
+    test_map_storage_contiguous = False
 End Function
 
 #End If

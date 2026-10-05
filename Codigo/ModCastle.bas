@@ -321,17 +321,17 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         Exit Function
     End If
 
-    If MapData(UserTargetMap, UserTargetX, UserTargetY).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
+    If MapData(UserTargetX, UserTargetY, UserTargetMap).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
         Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
-    If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX Then
+    If MapData(UserTargetX, UserTargetY, UserTargetMap).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX Then
         Call WriteLocaleMsg(UserIndex, MSG_CANT_FOUND_CASTLE_ON_TOP_OF_ANOTHER, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
 
-    If MapData(UserTargetMap, UserTargetX, UserTargetY).ObjInfo.ObjIndex <> CASTLE_SIGN_POST_OBJ_INDEX Then
+    If MapData(UserTargetX, UserTargetY, UserTargetMap).ObjInfo.ObjIndex <> CASTLE_SIGN_POST_OBJ_INDEX Then
         Call WriteLocaleMsg(UserIndex, MSG_CANOT_FOUND_WITHOUT_SIGN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
@@ -395,15 +395,15 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
             For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
-            MapData(map, i, j).Blocked = 0
-            MapData(map, i, j).trigger = e_Trigger.nada
+            MapData(i, j, map).Blocked = 0
+            MapData(i, j, map).trigger = e_Trigger.nada
 
-            If MapData(map, i, j).ObjInfo.ObjIndex > 0 Then
-                Call EraseObj(MapData(map, i, j).ObjInfo.Amount, map, i, j)
+            If MapData(i, j, map).ObjInfo.ObjIndex > 0 Then
+                Call EraseObj(MapData(i, j, map).ObjInfo.Amount, map, i, j)
             End If
 
-            If MapData(map, i, j).NpcIndex > 0 Then
-                Call QuitarNPC(MapData(map, i, j).NpcIndex, eAiResetNpc)
+            If MapData(i, j, map).NpcIndex > 0 Then
+                Call QuitarNPC(MapData(i, j, map).NpcIndex, eAiResetNpc)
             End If
 
             Next j
@@ -411,110 +411,110 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
 
 
         'first layer from the bottom
-        MapData(map, x - 3, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y).Blocked = e_Block.ALL_SIDES
-        MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
-        MapData(map, x - 1, y).trigger = .trigger
-        MapData(map, x - 2, y).trigger = .trigger
-        MapData(map, x - 1, y + 1).trigger = .trigger
-        MapData(map, x - 2, y + 1).trigger = .trigger
+        MapData(x - 3, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y, map).Blocked = e_Block.ALL_SIDES
+        MapData(x, y, map).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
+        MapData(x - 1, y, map).trigger = .trigger
+        MapData(x - 2, y, map).trigger = .trigger
+        MapData(x - 1, y + 1, map).trigger = .trigger
+        MapData(x - 2, y + 1, map).trigger = .trigger
 
 
         'second layer form the bottom
-        MapData(map, x, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 1).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 1).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 1, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 1, map).Blocked = e_Block.ALL_SIDES
 
-        MapData(map, x - 1, y - 1).TileExit.map = .castle_coordinates.inside.map
-        MapData(map, x - 1, y - 1).TileExit.x = .castle_coordinates.inside.x
-        MapData(map, x - 1, y - 1).TileExit.y = .castle_coordinates.inside.y
+        MapData(x - 1, y - 1, map).TileExit.map = .castle_coordinates.inside.map
+        MapData(x - 1, y - 1, map).TileExit.x = .castle_coordinates.inside.x
+        MapData(x - 1, y - 1, map).TileExit.y = .castle_coordinates.inside.y
 
-        MapData(map, x - 2, y - 1).TileExit.map = .castle_coordinates.inside.map
-        MapData(map, x - 2, y - 1).TileExit.x = .castle_coordinates.inside.x
-        MapData(map, x - 2, y - 1).TileExit.y = .castle_coordinates.inside.y
+        MapData(x - 2, y - 1, map).TileExit.map = .castle_coordinates.inside.map
+        MapData(x - 2, y - 1, map).TileExit.x = .castle_coordinates.inside.x
+        MapData(x - 2, y - 1, map).TileExit.y = .castle_coordinates.inside.y
 
         'third layer form the bottom
-        MapData(map, x, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 2).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 2).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 2, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 2, map).Blocked = e_Block.ALL_SIDES
 
          'fourth layer form the bottom
-        MapData(map, x, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 3).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 3).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 3, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 3, map).Blocked = e_Block.ALL_SIDES
 
          'fifth layer form the bottom
-        MapData(map, x, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 4).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 4).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 4, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 4, map).Blocked = e_Block.ALL_SIDES
 
          'sixth layer form the bottom
-        MapData(map, x, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 5).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 5).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 5, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 5, map).Blocked = e_Block.ALL_SIDES
 
          'seventh layer form the bottom
-        MapData(map, x, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 6).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 6).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 6, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 6, map).Blocked = e_Block.ALL_SIDES
 
          'eighth layer form the bottom
-        MapData(map, x, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 1, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 2, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 3, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 4, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 5, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x - 6, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 1, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 2, y - 7).Blocked = e_Block.ALL_SIDES
-        MapData(map, x + 3, y - 7).Blocked = e_Block.ALL_SIDES
+        MapData(x, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 1, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 2, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 3, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 4, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 5, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x - 6, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 1, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 2, y - 7, map).Blocked = e_Block.ALL_SIDES
+        MapData(x + 3, y - 7, map).Blocked = e_Block.ALL_SIDES
 
         'create castle inside tile exits to the outside part
         If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
@@ -533,17 +533,17 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             Exit Sub
         End If
 
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.map = .castle_coordinates.outside.map
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.x = .castle_coordinates.outside.x - 2
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.y = .castle_coordinates.outside.y + 1
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.map = .castle_coordinates.outside.map
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.x = .castle_coordinates.outside.x - 2
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.y = .castle_coordinates.outside.y + 1
 
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.map = .castle_coordinates.outside.map
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.x = .castle_coordinates.outside.x - 1
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.y = .castle_coordinates.outside.y + 1
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.map = .castle_coordinates.outside.map
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.x = .castle_coordinates.outside.x - 1
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.y = .castle_coordinates.outside.y + 1
 
         'erase castle sign
-        If MapData(map, x, y).ObjInfo.Amount > 0 Then
-            Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+        If MapData(x, y, map).ObjInfo.Amount > 0 Then
+            Call EraseObj(MapData(x, y, map).ObjInfo.Amount, map, x, y)
         End If
         'create castle visual mockup
         Dim CastleObj As t_Obj
@@ -566,8 +566,8 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
         Exit Sub
     End If
 
-    If MapData(map, x, y).ObjInfo.Amount > 0 Then
-        Call EraseObj(MapData(map, x, y).ObjInfo.Amount, map, x, y)
+    If MapData(x, y, map).ObjInfo.Amount > 0 Then
+        Call EraseObj(MapData(x, y, map).ObjInfo.Amount, map, x, y)
     End If
 
      'remove everything
@@ -587,30 +587,30 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     For i = CastleTopLeftCorner.x To CastleBottomRightCorner.x
         For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
-        MapData(map, i, j).Blocked = 0
-        MapData(map, i, j).trigger = e_Trigger.nada
+        MapData(i, j, map).Blocked = 0
+        MapData(i, j, map).trigger = e_Trigger.nada
 
-        If MapData(map, i, j).ObjInfo.ObjIndex > 0 Then
-            Call EraseObj(MapData(map, i, j).ObjInfo.Amount, map, i, j)
+        If MapData(i, j, map).ObjInfo.ObjIndex > 0 Then
+            Call EraseObj(MapData(i, j, map).ObjInfo.Amount, map, i, j)
         End If
 
-        If MapData(map, i, j).NpcIndex > 0 Then
-            Call QuitarNPC(MapData(map, i, j).NpcIndex, eAiResetNpc)
+        If MapData(i, j, map).NpcIndex > 0 Then
+            Call QuitarNPC(MapData(i, j, map).NpcIndex, eAiResetNpc)
         End If
 
         Next j
     Next i
 
-    MapData(map, x - 1, y - 1).TileExit.map = 0
-    MapData(map, x - 1, y - 1).TileExit.x = 0
-    MapData(map, x - 1, y - 1).TileExit.y = 0
+    MapData(x - 1, y - 1, map).TileExit.map = 0
+    MapData(x - 1, y - 1, map).TileExit.x = 0
+    MapData(x - 1, y - 1, map).TileExit.y = 0
 
-    MapData(map, x - 2, y - 1).TileExit.map = 0
-    MapData(map, x - 2, y - 1).TileExit.x = 0
-    MapData(map, x - 2, y - 1).TileExit.y = 0
+    MapData(x - 2, y - 1, map).TileExit.map = 0
+    MapData(x - 2, y - 1, map).TileExit.x = 0
+    MapData(x - 2, y - 1, map).TileExit.y = 0
 
      'restore castle foundation trigger
-    MapData(map, x, y).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
+    MapData(x, y, map).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
 
      With CastleData(CastleIndex)
         If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
@@ -629,13 +629,13 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
             Exit Sub
         End If
 
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.map = 0
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.x = 0
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1).TileExit.y = 0
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.map = 0
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.x = 0
+        MapData(.castle_coordinates.inside.x, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.y = 0
 
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.map = 0
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.x = 0
-        MapData(.castle_coordinates.inside.map, .castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1).TileExit.y = 0
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.map = 0
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.x = 0
+        MapData(.castle_coordinates.inside.x + 1, .castle_coordinates.inside.y + 1, .castle_coordinates.inside.map).TileExit.y = 0
     End With
 
     'create castle sign post
@@ -659,7 +659,7 @@ Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVa
                     Exit Function
                 End If
 
-                If (MapData(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
+                If (MapData(.castle_coordinates.outside.x, .castle_coordinates.outside.y, .castle_coordinates.outside.map).ObjInfo.ObjIndex = CASTLE_MOCKUP_OBJ_INDEX) Then
                     IsEmperorCastleCreated = True
                     CastleIndex = i
                 End If

@@ -106,10 +106,10 @@ End Function
 
 Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal WorkingToolIndex As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer)
     With UserList(UserIndex)
-        If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
+        If MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex = 0 Then
             Exit Function
         End If
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).OBJType <> WorkingToolIndex Then
+        If ObjData(MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex).OBJType <> WorkingToolIndex Then
             Exit Function
         End If
         ValidResourceAtPos = True

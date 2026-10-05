@@ -616,7 +616,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         NpcAtacaUser = False
         Exit Function
     End If
-    If ((MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).Blocked And 2 ^ (Heading - 1)) <> 0) Then
+    If ((MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).Blocked And 2 ^ (Heading - 1)) <> 0) Then
         NpcAtacaUser = False
         Exit Function
     End If
@@ -902,18 +902,18 @@ End Sub
 Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
     'Exit if not legal
     If TargetPos.x >= XMinMapSize And TargetPos.x <= XMaxMapSize And TargetPos.y >= YMinMapSize And TargetPos.y <= YMaxMapSize Then
-        If ((MapData(TargetPos.Map, TargetPos.x, TargetPos.y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
+        If ((MapData(TargetPos.x, TargetPos.y, TargetPos.Map).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
             Exit Sub
         End If
         Dim Index As Integer
-        Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex
+        Index = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex
         'Look for user
         If Index > 0 Then
             Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
             'Look for NPC
-        ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex > 0 Then
-            Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+        ElseIf MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex > 0 Then
+            Index = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex
             If NpcList(Index).Attackable Then
                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
                     'Msg1041= No podés atacar mascotas en zonas seguras
@@ -1581,8 +1581,8 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         Exit Function
     End If
     'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-    If MapData(UserList(VictimIndex).pos.Map, UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
-            attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
+    If MapData(UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y, UserList(VictimIndex).pos.Map).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y, UserList( _
+            attackerIndex).pos.Map).trigger = e_Trigger.ZonaSegura Then
         'Msg1063= No podes pelear aqui.
         Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_PELEAR_EN_ESTA_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
@@ -1867,8 +1867,8 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
     On Error GoTo ErrHandler
     Dim tOrg As e_Trigger
     Dim tDst As e_Trigger
-    tOrg = MapData(UserList(Origen).pos.Map, UserList(Origen).pos.x, UserList(Origen).pos.y).trigger
-    tDst = MapData(UserList(Destino).pos.Map, UserList(Destino).pos.x, UserList(Destino).pos.y).trigger
+    tOrg = MapData(UserList(Origen).pos.x, UserList(Origen).pos.y, UserList(Origen).pos.Map).trigger
+    tDst = MapData(UserList(Destino).pos.x, UserList(Destino).pos.y, UserList(Destino).pos.Map).trigger
     If tOrg = e_Trigger.ZONAPELEA Or tDst = e_Trigger.ZONAPELEA Then
         If tOrg = tDst Then
             TriggerZonaPelea = TRIGGER6_PERMITE
@@ -2230,19 +2230,19 @@ End Sub
 Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos) As Boolean
     On Error GoTo ThrowArrowToTile_Err
     ThrowArrowToTile = False
-    If MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex > 0 Then
-        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, UserList(MapData(TargetPos.Map, _
-                TargetPos.x, TargetPos.y).UserIndex).VersionId) = eCanAttack Then
-            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, eUser)
+    If MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex > 0 Then
+        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex, UserList(MapData(TargetPos.x, _
+                TargetPos.y, TargetPos.Map).UserIndex).VersionId) = eCanAttack Then
+            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex, eUser)
             ThrowArrowToTile = True
         End If
-    ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex > 0 Then
+    ElseIf MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex > 0 Then
         Dim UserAttackInteractionResult As t_AttackInteractionResult
-        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex)
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
         If UserAttackInteractionResult.CanAttack Then
             If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex, eNpc)
+            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex, eNpc)
             ThrowArrowToTile = True
         Else
             Exit Function

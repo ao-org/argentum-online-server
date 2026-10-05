@@ -36,11 +36,11 @@ Public Function CanUserSmelt(ByVal UserIndex As Integer, ByVal ResourceType As e
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
-        If MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex = 0 Then
+        If MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex = 0 Then
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).OBJType <> otForge Then
+        If ObjData(MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex).OBJType <> otForge Then
             Call ResetUserAutomatedActions(UserIndex)
             Exit Function
         End If

@@ -2672,14 +2672,14 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         Call LookatTile(UserIndex, .pos.Map, x, y)
         Dim ClickedUserIndex As Integer
         Dim ClickedNpcIndex As Integer
-        ClickedUserIndex = MapData(.pos.Map, x, y).UserIndex
-        ClickedNpcIndex = MapData(.pos.Map, x, y).NpcIndex
+        ClickedUserIndex = MapData(x, y, .pos.Map).UserIndex
+        ClickedNpcIndex = MapData(x, y, .pos.Map).NpcIndex
         If y < YMaxMapSize Then
             If ClickedUserIndex = 0 Then
-                ClickedUserIndex = MapData(.pos.Map, x, y + 1).UserIndex
+                ClickedUserIndex = MapData(x, y + 1, .pos.Map).UserIndex
             End If
             If ClickedNpcIndex = 0 Then
-                ClickedNpcIndex = MapData(.pos.Map, x, y + 1).NpcIndex
+                ClickedNpcIndex = MapData(x, y + 1, .pos.Map).NpcIndex
             End If
         End If
         If ClickedUserIndex = 0 Then
@@ -3193,14 +3193,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteLocaleMsg(UserIndex, MSG_PROHIBIDO_CORTAR_RAICES_CIUDADES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
-                        If MapData(.pos.Map, x, y).ObjInfo.amount <= 0 Then
+                        If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_ARBOL_PUEDE_ENTREGAR_MAS_RAICES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
                         End If
-                        DummyInt = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
+                        DummyInt = MapData(x, y, .pos.Map).ObjInfo.ObjIndex
                         If DummyInt > 0 Then
                             If Abs(.pos.x - x) + Abs(.pos.y - y) > 2 Then
                                 Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -3253,13 +3253,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 '17/09/02
                                 'Check the trigger
-                                If MapData(UserList(tU).pos.Map, UserList(tU).pos.x, UserList(tU).pos.y).trigger = e_Trigger.ZonaSegura Then
+                                If MapData(UserList(tU).pos.x, UserList(tU).pos.y, UserList(tU).pos.Map).trigger = e_Trigger.ZonaSegura Then
                                     ' Msg714=No podés robar aquí.
                                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
                                 End If
-                                If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura Then
+                                If MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.ZonaSegura Then
                                     ' Msg714=No podés robar aquí.
                                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -7865,7 +7865,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             Exit Sub
         End If
         'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-        If MapInfo(.pos.Map).zone = "NEWBIE" Or MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+        If MapInfo(.pos.Map).zone = "NEWBIE" Or MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
             'Msg1273= No pueder viajar a tu hogar desde este mapa.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDER_VIAJAR_HOGAR_DESDE_MAPA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
