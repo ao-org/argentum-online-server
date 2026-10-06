@@ -7,6 +7,8 @@ Public Function test_suite_player_trade() As Boolean
     Call UnitTesting.RunTest("trade_full_board_is_atomic", TestFullBoard())
     Call UnitTesting.RunTest("trade_gold_checks_total_without_overflow", TestGoldLimit())
     Call UnitTesting.RunTest("trade_counts_duplicate_stacks", TestAggregateAmount())
+    Call UnitTesting.RunTest("trade_rejection_clears_pending_offer", TestClearRequest())
+    Call UnitTesting.RunTest("trade_invitation_requires_current_recipient", TestInvitationMatch())
     test_suite_player_trade = True
 End Function
 
@@ -92,5 +94,32 @@ Private Function TestAggregateAmount() As Boolean
     Exit Function
 TestAggregateAmount_Err:
     Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestAggregateAmount", Erl)
+End Function
+Private Function TestClearRequest() As Boolean
+    On Error GoTo TestClearRequest_Err
+    Dim request As t_ComercioUsuario
+    request.DestUsu.ArrayIndex = 2: request.DestUsu.VersionId = 20
+    request.InvitationFrom.ArrayIndex = 1: request.InvitationFrom.VersionId = 10
+    request.DestNick = "Other": request.Acepto = True: request.Oro = 1234
+    request.itemsAenviar(6).ObjIndex = 1: request.itemsAenviar(6).amount = 10
+    Call ClearSafeTradeRequest(request)
+    TestClearRequest = request.DestUsu.ArrayIndex = 0 And request.InvitationFrom.ArrayIndex = 0 And Len(request.DestNick) = 0 And Not request.Acepto And request.Oro = 0 And request.itemsAenviar(6).ObjIndex = 0
+    Exit Function
+TestClearRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestClearRequest", Erl)
+End Function
+
+Private Function TestInvitationMatch() As Boolean
+    On Error GoTo TestInvitationMatch_Err
+    Dim request As t_ComercioUsuario
+    request.DestUsu.ArrayIndex = 2: request.DestUsu.VersionId = 20
+    If Not SafeTradeInvitationMatches(request, 2, 20) Then Exit Function
+    If SafeTradeInvitationMatches(request, 3, 20) Then Exit Function
+    If SafeTradeInvitationMatches(request, 2, 21) Then Exit Function
+    Call ClearSafeTradeRequest(request)
+    TestInvitationMatch = Not SafeTradeInvitationMatches(request, 2, 20)
+    Exit Function
+TestInvitationMatch_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestInvitationMatch", Erl)
 End Function
 #End If

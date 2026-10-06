@@ -7137,28 +7137,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     End If
                 Case 4
                     Log = "Repuesta Afirmativa 4"
-                    If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-                        Dim TargetIndex As Integer
-                        TargetIndex = UserList(UserIndex).flags.TargetUser.ArrayIndex
-                        ' Ensure the target index is within bounds
-                        If TargetIndex >= LBound(UserList) And TargetIndex <= UBound(UserList) Then
-                            UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
-                            UserList(UserIndex).ComUsu.DestNick = GetUserRealName(TargetIndex)
-                            UserList(UserIndex).ComUsu.cant = 0
-                            UserList(UserIndex).ComUsu.Objeto = 0
-                            UserList(UserIndex).ComUsu.Acepto = False
-                            ' Routine to start trading with another user
-                            Call IniciarComercioConUsuario(UserIndex, TargetIndex)
-                        Else
-                            ' Invalid index; send error message
-                            ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
-                        End If
-                    Else
-                        ' Invalid reference; send error message
-                        ' Msg726=Servidor » Solicitud de comercio invalida, reintente...
-                        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
-                    End If
+                    Call AcceptSafeTradeInvitation(UserIndex)
                 Case 5
                     Dim i As Integer, j As Integer
                     With UserList(UserIndex)
@@ -7224,10 +7203,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
                 Case 4
                     Log = "Repuesta negativa 4"
-                    If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-                        'Msg1248= El usuario no desea comerciar en este momento.
-                        Call WriteLocaleMsg(UserList(UserIndex).flags.TargetUser.ArrayIndex, MSG_EL_USUARIO_NO_DESEA_COMERCIAR_EN_ESTE_MOMENTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                    End If
+                    Call RejectSafeTradeInvitation(UserIndex)
                 Case 5
                     Log = "Repuesta negativa 5"
                 Case Else

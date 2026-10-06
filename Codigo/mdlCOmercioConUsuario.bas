@@ -60,12 +60,24 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
         UserList(Origen).ComUsu.Oro = 0
         UserList(Origen).ComUsu.Acepto = False
         UserList(Destino).ComUsu.Acepto = False
+        Call ClearUserRef(UserList(Origen).ComUsu.InvitationFrom)
+        Call ClearUserRef(UserList(Destino).ComUsu.InvitationFrom)
+        If UserList(Origen).flags.pregunta = 4 Then
+            UserList(Origen).flags.pregunta = 0
+            UserList(Origen).flags.RespondiendoPregunta = False
+        End If
+        If UserList(Destino).flags.pregunta = 4 Then
+            UserList(Destino).flags.pregunta = 0
+            UserList(Destino).flags.RespondiendoPregunta = False
+        End If
         'Call EnviarObjetoTransaccion(Origen)
     Else
         'Es el primero que comercia ?
         'Call WriteConsoleMsg(Destino, UserList(Origen).Name & " desea comerciar. Si deseas aceptar, Escribe /COMERCIAR.", e_FontTypeNames.FONTTYPE_TALK)
         Call SetUserRef(UserList(Destino).flags.TargetUser, Origen)
+        Call SetUserRef(UserList(Destino).ComUsu.InvitationFrom, Origen)
         UserList(Destino).flags.pregunta = 4
+        UserList(Destino).flags.RespondiendoPregunta = True
         Call WritePreguntaBox(Destino, MSG_DESEA_COMERCIAR_CONTIGO_ACEPTAS, UserList(Origen).name) 'Msg1594= ¬1 desea comerciar contigo. ¿Aceptás?
     End If
     IniciarComercioConUsuario = True
@@ -73,6 +85,89 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
 ErrHandler:
     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 End Function
+
+Public Sub AcceptSafeTradeInvitation(ByVal UserIndex As Integer)
+    On Error GoTo AcceptSafeTradeInvitation_Err
+    Dim invitation As t_UserReference
+    Dim TargetIndex As Integer
+    With UserList(UserIndex)
+        If .flags.pregunta <> 4 Then Exit Sub
+        .flags.RespondiendoPregunta = False
+        invitation = .ComUsu.InvitationFrom
+        Call ClearUserRef(.ComUsu.InvitationFrom)
+        .flags.pregunta = 0
+        If IsValidUserRef(invitation) Then
+            TargetIndex = invitation.ArrayIndex
+            If SafeTradeInvitationMatches(UserList(TargetIndex).ComUsu, UserIndex, .VersionId) And _
+                    UserList(TargetIndex).flags.UserLogged And Not UserList(TargetIndex).flags.Comerciando And _
+                    Not .flags.Comerciando And .flags.Muerto = 0 And UserList(TargetIndex).flags.Muerto = 0 And _
+                    .pos.Map = UserList(TargetIndex).pos.Map And Distancia(.pos, UserList(TargetIndex).pos) <= 3 And MapInfo(.pos.Map).Seguro <> 0 Then
+                .ComUsu.DestUsu = invitation
+                .ComUsu.DestNick = GetUserRealName(TargetIndex)
+                .ComUsu.cant = 0
+                .ComUsu.Objeto = 0
+                .ComUsu.Acepto = False
+                Call IniciarComercioConUsuario(UserIndex, TargetIndex)
+            Else
+                If SafeTradeInvitationMatches(UserList(TargetIndex).ComUsu, UserIndex, .VersionId) And Not UserList(TargetIndex).flags.Comerciando Then
+                    Call ClearSafeTradeRequest(UserList(TargetIndex).ComUsu)
+                End If
+                Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+            End If
+        Else
+            Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_COMERCIO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
+        End If
+    End With
+    Exit Sub
+AcceptSafeTradeInvitation_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AcceptSafeTradeInvitation", Erl)
+End Sub
+
+Public Sub RejectSafeTradeInvitation(ByVal UserIndex As Integer)
+    On Error GoTo RejectSafeTradeInvitation_Err
+    Dim invitation As t_UserReference
+    Dim TargetIndex As Integer
+    With UserList(UserIndex)
+        If .flags.pregunta <> 4 Then Exit Sub
+        .flags.RespondiendoPregunta = False
+        invitation = .ComUsu.InvitationFrom
+        Call ClearUserRef(.ComUsu.InvitationFrom)
+        .flags.pregunta = 0
+        If IsValidUserRef(invitation) Then
+            TargetIndex = invitation.ArrayIndex
+            If SafeTradeInvitationMatches(UserList(TargetIndex).ComUsu, UserIndex, .VersionId) And Not UserList(TargetIndex).flags.Comerciando Then
+                Call WriteLocaleMsg(TargetIndex, MSG_EL_USUARIO_NO_DESEA_COMERCIAR_EN_ESTE_MOMENTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Call ClearSafeTradeRequest(UserList(TargetIndex).ComUsu)
+            End If
+        End If
+    End With
+    Exit Sub
+RejectSafeTradeInvitation_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.RejectSafeTradeInvitation", Erl)
+End Sub
+
+Public Function SafeTradeInvitationMatches(ByRef request As t_ComercioUsuario, ByVal recipient As Integer, ByVal recipientVersion As Integer) As Boolean
+    On Error GoTo SafeTradeInvitationMatches_Err
+    SafeTradeInvitationMatches = recipient > 0 And request.DestUsu.ArrayIndex = recipient And request.DestUsu.VersionId = recipientVersion
+    Exit Function
+SafeTradeInvitationMatches_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.SafeTradeInvitationMatches", Erl)
+End Function
+
+Public Sub ClearSafeTradeRequest(ByRef request As t_ComercioUsuario)
+    On Error GoTo ClearSafeTradeRequest_Err
+    Call ClearUserRef(request.DestUsu)
+    Call ClearUserRef(request.InvitationFrom)
+    request.DestNick = vbNullString
+    request.Objeto = 0
+    request.cant = 0
+    request.Oro = 0
+    request.Acepto = False
+    Erase request.itemsAenviar
+    Exit Sub
+ClearSafeTradeRequest_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.ClearSafeTradeRequest", Erl)
+End Sub
 
 Public Function SafeTradeOfferedAmount(ByRef items() As t_Obj, ByVal objectIndex As Integer, ByVal tags As Long) As Long
     On Error GoTo SafeTradeOfferedAmount_Err
@@ -167,11 +262,11 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer, Optional ByVal Invalido A
         If IsValidUserRef(.ComUsu.DestUsu) And Not Invalido Then
             Call WriteUserCommerceEnd(UserIndex)
         End If
-        .ComUsu.Acepto = False
-        .ComUsu.cant = 0
-        Call SetUserRef(.ComUsu.DestUsu, 0)
-        .ComUsu.Objeto = 0
-        .ComUsu.DestNick = vbNullString
+        Call ClearSafeTradeRequest(.ComUsu)
+        If .flags.pregunta = 4 Then
+            .flags.pregunta = 0
+            .flags.RespondiendoPregunta = False
+        End If
         .flags.Comerciando = False
     End With
     Exit Sub

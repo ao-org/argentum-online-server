@@ -2880,6 +2880,7 @@ End Type
 
 Public Type t_ComercioUsuario
     itemsAenviar(1 To 6) As t_Obj ' Mas de 6 no se puede, la UI muestra solo eso.
+    InvitationFrom As t_UserReference 'Inviter captured independently of the selected target
     DestUsu As t_UserReference 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
