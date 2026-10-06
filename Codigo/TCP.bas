@@ -95,6 +95,8 @@ End Sub
 
 Sub RellenarInventario(ByVal UserIndex As String)
     On Error GoTo RellenarInventario_Err
+    ' Clear every slot before assigning and saving a new character's starter items.
+    Call LimpiarInventario(UserIndex)
     With UserList(UserIndex)
         Dim NumItems As Integer
         Dim i As Integer
