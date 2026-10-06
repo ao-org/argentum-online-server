@@ -169,7 +169,7 @@ End Function
 
 Public Function IsNpcAuthorizedSpatialExit(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     If Not NpcPathMayUseExit(NpcIndex, x, y) Then Exit Function
-    IsNpcAuthorizedSpatialExit = (MapData(NpcList(NpcIndex).pos.Map, x, y).TileExit.Map = NpcList(NpcIndex).CrossMapRoute.NextMap)
+    IsNpcAuthorizedSpatialExit = (MapData(x, y, NpcList(NpcIndex).pos.Map).TileExit.Map = NpcList(NpcIndex).CrossMapRoute.NextMap)
 End Function
 
 Public Function CrossNpcSpatialExit(ByVal NpcIndex As Integer, ByVal ExitX As Integer, ByVal ExitY As Integer) As Boolean
@@ -179,7 +179,7 @@ Public Function CrossNpcSpatialExit(ByVal NpcIndex As Integer, ByVal ExitX As In
     With NpcList(NpcIndex)
         If Abs(.pos.x - ExitX) + Abs(.pos.y - ExitY) <> 1 Then Exit Function
         Dim destination As t_WorldPos
-        destination = MapData(.pos.Map, ExitX, ExitY).TileExit
+        destination = MapData(ExitX, ExitY, .pos.Map).TileExit
         If destination.Map <> .CrossMapRoute.NextMap Then Exit Function
         If destination.x <> .CrossMapRoute.DestinationX Or destination.y <> .CrossMapRoute.DestinationY Then Exit Function
         If Not NpcDestinationAvailable(NpcIndex, destination) Then
@@ -294,7 +294,7 @@ Private Function ResolveNpcSpatialExit(ByVal NpcIndex As Integer, ByVal NextMap 
 
     For x = MinXBorder To MaxXBorder
         For y = MinYBorder To MaxYBorder
-            destination = MapData(NpcList(NpcIndex).pos.Map, x, y).TileExit
+            destination = MapData(x, y, NpcList(NpcIndex).pos.Map).TileExit
             If destination.Map = NextMap Then
                 If SpatialTransitionMatchesEdge(NpcList(NpcIndex).pos.Map, x, y, destination.Map, destination.x, destination.y) Then
                     If NpcDestinationSurfaceAllowed(NpcIndex, destination) Then
@@ -318,7 +318,7 @@ End Function
 
 Private Function NpcDestinationSurfaceAllowed(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos) As Boolean
     If Not InMapBounds(destination.Map, destination.x, destination.y) Then Exit Function
-    With MapData(destination.Map, destination.x, destination.y)
+    With MapData(destination.x, destination.y, destination.Map)
         If (.Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Then Exit Function
         If .trigger = e_Trigger.POSINVALIDA Then Exit Function
         If (.Blocked And FLAG_AGUA) <> 0 Then
@@ -333,7 +333,7 @@ End Function
 
 Private Function NpcDestinationAvailable(ByVal NpcIndex As Integer, ByRef destination As t_WorldPos) As Boolean
     If Not NpcDestinationSurfaceAllowed(NpcIndex, destination) Then Exit Function
-    With MapData(destination.Map, destination.x, destination.y)
+    With MapData(destination.x, destination.y, destination.Map)
         If .NpcIndex <> 0 Or .UserIndex <> 0 Then Exit Function
     End With
     NpcDestinationAvailable = True

@@ -206,16 +206,16 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             TargetY = .AutomatedAction.y
             fishingPoolId = SvrConfig.GetValue("FISHING_POOL_ID")
             If fishingPoolId > 0 And IsValidMapPosition(.pos.Map, TargetX, TargetY) Then
-                If fishingPoolId = MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex Then
-                    If fishingCatch.amount > MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount Then
-                        fishingCatch.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount
+                If fishingPoolId = MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex Then
+                    If fishingCatch.amount > MapData(TargetX, TargetY, .pos.Map).ObjInfo.amount Then
+                        fishingCatch.amount = MapData(TargetX, TargetY, .pos.Map).ObjInfo.amount
                         Call CreateFishingPool(.pos.Map)
-                        Call EraseObj(MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount, .pos.Map, TargetX, TargetY)
+                        Call EraseObj(MapData(TargetX, TargetY, .pos.Map).ObjInfo.amount, .pos.Map, TargetX, TargetY)
                         Call WriteLocaleMsg(UserIndex, MSG_NO_MORE_FISH_HERE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                         .AutomatedAction.IsActive = False
                         .Counters.Trabajando = 0
                     End If
-                    MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount = MapData(.pos.Map, TargetX, TargetY).ObjInfo.amount - fishingCatch.amount
+                    MapData(TargetX, TargetY, .pos.Map).ObjInfo.amount = MapData(TargetX, TargetY, .pos.Map).ObjInfo.amount - fishingCatch.amount
                 End If
             End If
         End If
@@ -407,13 +407,13 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
             Call TraceError(1003, "Invalid map index in PerformFishing: " & .pos.Map, "modFishing.PerformFishing", Erl)
             Exit Function
         End If
-        If (MapData(.pos.Map, TargetX, TargetY).Blocked And FLAG_AGUA) = 0 Then
+        If (MapData(TargetX, TargetY, .pos.Map).Blocked And FLAG_AGUA) = 0 Then
             ' No water at target position
             Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)  ' Zona de pesca no Autorizada
             Exit Function
         End If
         ' Check for invalid fishing trigger
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.PESCAINVALIDA Then
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.PESCAINVALIDA Then
             Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
@@ -437,10 +437,10 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                     Call WriteLocaleMsg(UserIndex, MSG_ONLY_CAN_FISH_FROM_BOAT_WITH_NET, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
-                If (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_AREA) And _
-                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK) And _
-                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
-                   (MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
+                If (MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex <> OBJ_FISH_AREA) And _
+                   (MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex <> OBJ_SHRIMP_BANK) And _
+                   (MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex <> OBJ_SQUID_BANK) And _
+                   (MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex <> OBJ_FISH_BANK) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MUST_FIND_FISHING_AREA_FOR_NET, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Function
                 End If
@@ -463,14 +463,14 @@ End Function
 
 ' Helper function to check if position has water
 Private Function IsStandingOnWater(ByRef pos As t_WorldPos) As Boolean
-    IsStandingOnWater = (MapData(pos.Map, pos.x, pos.y).Blocked And FLAG_AGUA) <> 0
+    IsStandingOnWater = (MapData(pos.x, pos.y, pos.Map).Blocked And FLAG_AGUA) <> 0
 End Function
 
 ' Helper function to check if any adjacent tile has water
 Private Function IsAdjacentToWater(ByRef pos As t_WorldPos) As Boolean
     IsAdjacentToWater = _
-        (MapData(pos.Map, pos.x + 1, pos.y).Blocked And FLAG_AGUA) <> 0 Or _
-        (MapData(pos.Map, pos.x - 1, pos.y).Blocked And FLAG_AGUA) <> 0 Or _
-        (MapData(pos.Map, pos.x, pos.y + 1).Blocked And FLAG_AGUA) <> 0 Or _
-        (MapData(pos.Map, pos.x, pos.y - 1).Blocked And FLAG_AGUA) <> 0
+        (MapData(pos.x + 1, pos.y, pos.Map).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.x - 1, pos.y, pos.Map).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.x, pos.y + 1, pos.Map).Blocked And FLAG_AGUA) <> 0 Or _
+        (MapData(pos.x, pos.y - 1, pos.Map).Blocked And FLAG_AGUA) <> 0
 End Function

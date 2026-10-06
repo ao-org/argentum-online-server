@@ -405,7 +405,7 @@ Private Sub restaurarBandera(ByVal team As Byte)
     MiPos.Map = mapaEquipo(team)
     MiPos.x = xEquipo(team)
     MiPos.y = yEquipo(team)
-    If MapData(MiPos.Map, MiPos.x, MiPos.y).ObjInfo.amount <= 0 Then
+    If MapData(MiPos.x, MiPos.y, MiPos.Map).ObjInfo.amount <= 0 Then
         Call TirarItemAlPiso(MiPos, MiObj, False)
     End If
 End Sub

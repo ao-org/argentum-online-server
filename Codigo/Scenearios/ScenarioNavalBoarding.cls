@@ -823,7 +823,7 @@ End Sub
 Public Function IInventoryInterface_UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
         Dim ObjIndex As Integer
-        ObjIndex = MapData(.pos.Map, .pos.x, .pos.y).ObjInfo.ObjIndex
+        ObjIndex = MapData(.pos.x, .pos.y, .pos.Map).ObjInfo.ObjIndex
         Dim ItemTeam As Integer
         ItemTeam = GetCargoItemTeam(ObjIndex)
         If ItemTeam > 0 Then
@@ -862,7 +862,7 @@ Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer
         Dim ItemTeam As Integer
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
         If ItemTeam > 0 Then
-            If MapData(Map, TileX, TileY).ObjInfo.ObjIndex > 0 Then
+            If MapData(TileX, TileY, Map).ObjInfo.ObjIndex > 0 Then
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                 Exit Function
             End If
@@ -940,7 +940,7 @@ Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         Dim ObjIndex As Integer
-        ObjIndex = MapData(.pos.Map, .pos.x, .pos.y).ObjInfo.ObjIndex
+        ObjIndex = MapData(.pos.x, .pos.y, .pos.Map).ObjInfo.ObjIndex
         Dim ItemTeam As Integer
         ItemTeam = GetCargoItemTeam(ObjIndex)
         If ItemTeam > 0 Then
@@ -985,14 +985,14 @@ Private Function GetTeamCargoCount(ByVal team As Integer) As Integer
     Dim CargoCount As Integer
     For i = TeamCargo(team).OriginalCargoArea.TopLeft.PosX To TeamCargo(team).OriginalCargoArea.BottomRight.PosX
         For j = TeamCargo(team).OriginalCargoArea.TopLeft.PosY To TeamCargo(team).OriginalCargoArea.BottomRight.PosY
-            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
+            If MapData(i, j, MapNumbers(1)).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(i, j, MapNumbers(1)).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
                 CargoCount = CargoCount + 1
             End If
         Next j
     Next i
     For i = TeamCargo(team).DropArea.TopLeft.PosX To TeamCargo(team).DropArea.BottomRight.PosX
         For j = TeamCargo(team).DropArea.TopLeft.PosY To TeamCargo(team).DropArea.BottomRight.PosY
-            If MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(MapNumbers(1), i, j).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
+            If MapData(i, j, MapNumbers(1)).ObjInfo.ObjIndex = TeamCargo(1).CargoItemId Or MapData(i, j, MapNumbers(1)).ObjInfo.ObjIndex = TeamCargo(2).CargoItemId Then
                 CargoCount = CargoCount + 1
             End If
         Next j

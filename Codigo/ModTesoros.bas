@@ -148,8 +148,8 @@ Public Sub PerderTesoro()
     Iterations = 0
     Do While Not EncontreLugar
         Iterations = Iterations + 1
-        If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
-            If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
+        If (MapData(TesoroX, TesoroY, TesoroNumMapa).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
+            If (MapData(TesoroX, TesoroY, TesoroNumMapa).Blocked And FLAG_AGUA) = 0 Then
                 EncontreLugar = True
             Else
                 EncontreLugar = False
@@ -186,8 +186,8 @@ Public Sub PerderRegalo()
     If RegaloNumMapa <= 0 Then Exit Sub
     Do While Not EncontreLugar
         Iterations = Iterations + 1
-        If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
-            If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
+        If (MapData(RegaloX, RegaloY, RegaloNumMapa).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
+            If (MapData(RegaloX, RegaloY, RegaloNumMapa).Blocked And FLAG_AGUA) = 0 Then
                 EncontreLugar = True
             Else
                 EncontreLugar = False

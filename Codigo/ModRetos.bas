@@ -796,7 +796,7 @@ Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
         If .pos.Map = 0 Or .pos.x = 0 Or .pos.y = 0 Then Exit Function
         If MapInfo(.pos.Map).Seguro = 0 Then Exit Function
         If .flags.EnTorneo Then Exit Function
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then Exit Function
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then Exit Function
     End With
     PuedeReto = True
 End Function
@@ -823,7 +823,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_IR_RETO_PARTICIPAS_TORNEO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1978=No puedes ir a un reto si participas de un torneo.
             Exit Function
         End If
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
             Call WriteLocaleMsg(UserIndex, MSG_ENCARCELADO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, vbNullString) ' Msg1979=¡Estás encarcelado!
             Exit Function
         End If

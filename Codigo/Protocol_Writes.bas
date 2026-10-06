@@ -1141,8 +1141,8 @@ End Sub
 
 Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, ByVal LuzColor As Long, ByVal Rango As Byte, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo WriteLightFloorCreate_Err
-    MapData(Map, x, y).Luz.Color = LuzColor
-    MapData(Map, x, y).Luz.Rango = Rango
+    MapData(x, y, Map).Luz.Color = LuzColor
+    MapData(x, y, Map).Luz.Rango = Rango
     If Rango = 0 Then
         Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLightFXToFloor(x, y, LuzColor, Rango))
     End If

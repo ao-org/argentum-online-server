@@ -196,7 +196,7 @@ Private Sub SetPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY 
     mWorldPosition.Map = Map
     mWorldPosition.x = PosX
     mWorldPosition.y = PosY
-    Set MapData(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y).Trap = Me
+    Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Me
     Call modSendData.SendToAreaByPos(Map, PosX, PosY, PrepareTrapUpdate(1, PosX, PosY))
 End Sub
 
@@ -208,7 +208,7 @@ Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
 
 Private Sub RemoveFromMap()
-    Set MapData(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y).Trap = Nothing
+    Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Nothing
     Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareTrapUpdate(0, mWorldPosition.x, mWorldPosition.y))
 End Sub
 

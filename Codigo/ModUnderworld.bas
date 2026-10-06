@@ -105,11 +105,11 @@ Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_World
         Debug.Assert False
         Exit Sub
     End If
-    If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex <> UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
-    Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.Map = 0
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.x = 0
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.y = 0
+    If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex <> UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
+    Call EraseObj(MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.Map = 0
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.x = 0
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.y = 0
 End Sub
 
 Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
@@ -118,17 +118,17 @@ Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldP
         Exit Sub
     End If
     If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
-        If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
-        If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex > 0 Then
-            Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+        If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
+        If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex > 0 Then
+            Call EraseObj(MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
         End If
         Dim Objeto As t_Obj
         Objeto.Amount = 1
         Objeto.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX
         Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.Map = Dest.Map
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.x = Dest.x
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.y = Dest.y
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.Map = Dest.Map
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.x = Dest.x
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.y = Dest.y
 End Sub
 
 Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)

@@ -106,7 +106,7 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal
     On Error GoTo ErrHandler
     Dim Map As Integer
     Map = NpcList(NpcIndex).pos.Map
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         ' Otro NPC
         If .NpcIndex Then Exit Function
         ' Usuario

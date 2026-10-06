@@ -298,7 +298,7 @@ End Function
 Private Function GetUserDamage(ByVal UserIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
     On Error GoTo GetUserDamge_Err
     With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.EquippedWeaponObjIndex, .invent.EquippedMunitionObjIndex, TargetType) + UserMod.GetLinearDamageBonus(UserIndex, TargetType)
     End With
     Exit Function
 GetUserDamge_Err:
@@ -398,7 +398,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
         NpcDef = max(0, NpcDef - ArmorPen)
         ' Defensa del NPC
         Damage = DamageBase - NpcDef
-        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
+        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex), eNpc)
         Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
         If IsFeatureEnabled("elemental_tags") Then
             Call CalculateElementalTagsModifiers(UserIndex, NpcIndex, Damage)
@@ -429,7 +429,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             If RandomNumber(1, 100) <= GetCriticalHitChanceBase(UserIndex) Then
                 ' Daño del golpe crítico (usamos el daño base)
                 DamageExtra = DamageBase * 0.33
-                DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
+                DamageExtra = DamageExtra * UserMod.GetPhysicalDamageModifier(UserList(UserIndex), eNpc)
                 DamageExtra = DamageExtra * NPCs.GetPhysicDamageReduction(NpcList(NpcIndex))
                 
                 If IsFeatureEnabled("collectible_cards") Then
@@ -508,13 +508,13 @@ Public Function UserDamageToNpc(ByVal attackerIndex As Integer, _
                                 ByVal Damage As Long, _
                                 ByVal Source As e_DamageSourceType, _
                                 ByVal ObjIndex As Integer) As e_DamageResult
-    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex))
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex), eNpc)
     Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
     UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
 End Function
 
-Public Function GetNpcDamage(ByVal NpcIndex As Integer) As Long
-    GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex)
+Public Function GetNpcDamage(ByVal NpcIndex As Integer, ByVal TargetType As e_ReferenceType) As Long
+    GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex, TargetType)
 End Function
 
 Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Long
@@ -523,7 +523,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     Dim Damage   As Integer, Lugar As Integer, absorbido As Integer
     Dim defbarco As Integer
     Dim obj      As t_ObjData
-    Damage = GetNpcDamage(NpcIndex)
+    Damage = GetNpcDamage(NpcIndex, eUser)
     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).invent.EquippedShipObjIndex > 0 Then
         obj = ObjData(UserList(UserIndex).invent.EquippedShipObjIndex)
         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
@@ -563,7 +563,7 @@ Private Function NpcDamage(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             End If
     End Select
     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus(UserIndex)
-    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex))
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(NpcIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
     
     ' ===== APLICAR REDUCCIÓN DE DAÑO POR CARTA =====
@@ -602,7 +602,7 @@ Public Function NpcDoDamageToUser(ByVal attackerIndex As Integer, _
                                   ByVal ObjIndex As Integer) As e_DamageResult
     If NpcList(attackerIndex).pos.Map <> UserList(TargetIndex).pos.Map Then Exit Function
 
-    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
     NpcDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
     If UserList(TargetIndex).ChatCombate = 1 Then
@@ -621,7 +621,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         NpcAtacaUser = False
         Exit Function
     End If
-    If ((MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y).Blocked And 2 ^ (Heading - 1)) <> 0) Then
+    If ((MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).Blocked And 2 ^ (Heading - 1)) <> 0) Then
         NpcAtacaUser = False
         Exit Function
     End If
@@ -679,7 +679,7 @@ Public Function NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer
 
     With NpcList(Atacante)
         Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit) _
-                 + NPCs.GetLinearDamageBonus(Atacante) _
+                 + NPCs.GetLinearDamageBonus(Atacante, eNpc) _
                  - NPCs.GetDefenseBonus(Victima) _
                  - NpcList(Victima).Stats.def
     End With
@@ -717,7 +717,7 @@ Public Function NpcDamageToNpc(ByVal attackerIndex As Integer, _
         End If
         ' ===========================================
         
-        finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+        finalDamage = finalDamage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex), eNpc)
         finalDamage = finalDamage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
         
         NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -finalDamage, e_phisical, 0)
@@ -907,18 +907,18 @@ End Sub
 Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
     'Exit if not legal
     If TargetPos.x >= XMinMapSize And TargetPos.x <= XMaxMapSize And TargetPos.y >= YMinMapSize And TargetPos.y <= YMaxMapSize Then
-        If ((MapData(TargetPos.Map, TargetPos.x, TargetPos.y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
+        If ((MapData(TargetPos.x, TargetPos.y, TargetPos.Map).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
             Exit Sub
         End If
         Dim Index As Integer
-        Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex
+        Index = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex
         'Look for user
         If Index > 0 Then
             Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
             'Look for NPC
-        ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex > 0 Then
-            Index = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+        ElseIf MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex > 0 Then
+            Index = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex
             If NpcList(Index).Attackable Then
                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
                     'Msg1041= No podés atacar mascotas en zonas seguras
@@ -1222,7 +1222,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         Defensa = max(0, Defensa - ArmorPen)
         ' Restamos la defensa
         Damage = BaseDamage - Defensa
-        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex))
+        Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex), eUser)
         Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(VictimaIndex))
         If Damage < 0 Then Damage = 0
         DamageStr = PonerPuntos(Damage)
@@ -1318,7 +1318,7 @@ Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, _
                                    ByVal Damage As Long, _
                                    ByVal Source As e_DamageSourceType, _
                                    ByVal ObjIndex As Integer) As e_DamageResult
-    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex))
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(attackerIndex), eUser)
     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
     UserDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
     Dim DamageStr As String
@@ -1591,8 +1591,8 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         Exit Function
     End If
     'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-    If MapData(UserList(VictimIndex).pos.Map, UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList( _
-            attackerIndex).pos.Map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
+    If MapData(UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y, UserList(VictimIndex).pos.Map).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y, UserList( _
+            attackerIndex).pos.Map).trigger = e_Trigger.ZonaSegura Then
         'Msg1063= No podes pelear aqui.
         Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_PELEAR_EN_ESTA_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
@@ -1877,8 +1877,8 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
     On Error GoTo ErrHandler
     Dim tOrg As e_Trigger
     Dim tDst As e_Trigger
-    tOrg = MapData(UserList(Origen).pos.Map, UserList(Origen).pos.x, UserList(Origen).pos.y).trigger
-    tDst = MapData(UserList(Destino).pos.Map, UserList(Destino).pos.x, UserList(Destino).pos.y).trigger
+    tOrg = MapData(UserList(Origen).pos.x, UserList(Origen).pos.y, UserList(Origen).pos.Map).trigger
+    tDst = MapData(UserList(Destino).pos.x, UserList(Destino).pos.y, UserList(Destino).pos.Map).trigger
     If tOrg = e_Trigger.ZONAPELEA Or tDst = e_Trigger.ZONAPELEA Then
         If tOrg = tDst Then
             TriggerZonaPelea = TRIGGER6_PERMITE
@@ -2240,19 +2240,19 @@ End Sub
 Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos) As Boolean
     On Error GoTo ThrowArrowToTile_Err
     ThrowArrowToTile = False
-    If MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex > 0 Then
-        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, UserList(MapData(TargetPos.Map, _
-                TargetPos.x, TargetPos.y).UserIndex).VersionId) = eCanAttack Then
-            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).UserIndex, eUser)
+    If MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex > 0 Then
+        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex, UserList(MapData(TargetPos.x, _
+                TargetPos.y, TargetPos.Map).UserIndex).VersionId) = eCanAttack Then
+            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).UserIndex, eUser)
             ThrowArrowToTile = True
         End If
-    ElseIf MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex > 0 Then
+    ElseIf MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex > 0 Then
         Dim UserAttackInteractionResult As t_AttackInteractionResult
-        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex)
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex)
         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
         If UserAttackInteractionResult.CanAttack Then
             If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex, eNpc)
+            Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex, eNpc)
             ThrowArrowToTile = True
         Else
             Exit Function

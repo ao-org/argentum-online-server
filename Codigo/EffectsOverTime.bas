@@ -707,7 +707,7 @@ End Function
 Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
     If IsValidRef(TargetRef) Then
         Call UpdateIncreaseModifier(TargetRef, MagicBonus, EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier)
-        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier, EffectStats.PhysicalBonusPveOnly)
         Call UpdateIncreaseModifier(TargetRef, MagicReduction, EffectStats.MagicDamageReduction + EffectStats.MagicDamageReduction * Modifier)
         Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, EffectStats.PhysicalDamageReduction + EffectStats.PhysicalDamageReduction * Modifier)
         Call UpdateIncreaseModifier(TargetRef, MovementSpeed, EffectStats.SpeedModifier + EffectStats.SpeedModifier * Modifier)
@@ -715,7 +715,7 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, EffectStats.EvasionModifier + EffectStats.EvasionModifier * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier, EffectStats.PhysicalBonusPveOnly)
         If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
             If TargetRef.RefType = eUser Then
                 If UserList(TargetRef.ArrayIndex).flags.Inmovilizado = 1 Then
@@ -736,7 +736,7 @@ End Function
 Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
     If IsValidRef(TargetRef) Then
         Call UpdateIncreaseModifier(TargetRef, MagicBonus, -(EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier))
-        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, -(EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, -(EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier), EffectStats.PhysicalBonusPveOnly)
         Call UpdateIncreaseModifier(TargetRef, MagicReduction, -(EffectStats.MagicDamageReduction + EffectStats.MagicDamageReduction * Modifier))
         Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, -(EffectStats.PhysicalDamageReduction + EffectStats.PhysicalDamageReduction * Modifier))
         Call UpdateIncreaseModifier(TargetRef, MovementSpeed, -(EffectStats.SpeedModifier + EffectStats.SpeedModifier * Modifier))
@@ -744,7 +744,7 @@ Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effec
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, -(EffectStats.EvasionModifier + EffectStats.EvasionModifier * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -(EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -(EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier))
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, -(EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, -(EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier), EffectStats.PhysicalBonusPveOnly)
         If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
             Call UnsetStatusMask(TargetRef, eCCInmunity)
         End If

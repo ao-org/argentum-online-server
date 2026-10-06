@@ -151,11 +151,11 @@ End Function
 Function test_make_user_char() As Boolean
     'Create first User
     Call test_make_user(1, 1, 54, 51)
-    Debug.Assert (MapData(1, 54, 51).UserIndex = 1)
+    Debug.Assert (MapData(54, 51, 1).UserIndex = 1)
     Debug.Assert (UserList(1).Char.charindex <> 0)
     'Delete first user
     Call EraseUserChar(1, False, False)
-    Debug.Assert (MapData(1, 54, 55).UserIndex = 0)
+    Debug.Assert (MapData(54, 55, 1).UserIndex = 0)
     Debug.Assert (UserList(1).Char.charindex = 0)
     'Delete all NPCs5
     Dim i
@@ -167,21 +167,21 @@ Function test_make_user_char() As Boolean
     
     'Create two users on the same map pos
     Call test_make_user(2, 1, 54, 56)
-    Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
+    Debug.Assert (MapData(54, 56, 1).UserIndex = 2)
     Debug.Assert (UserList(2).Char.charindex <> 0)
     
     Call test_make_user(1, 1, 50, 46)
-    Debug.Assert (MapData(1, 50, 46).UserIndex = 1)
+    Debug.Assert (MapData(50, 46, 1).UserIndex = 1)
     Debug.Assert (UserList(1).Char.charindex <> 0)
     Debug.Assert (UserList(2).Char.charindex <> UserList(1).Char.charindex)
     
     'Delete user 2
     Call EraseUserChar(2, False, False)
-    Debug.Assert (MapData(1, 54, 56).UserIndex = 0)
+    Debug.Assert (MapData(54, 56, 1).UserIndex = 0)
     Debug.Assert (UserList(2).Char.charindex = 0)
     'Create user 2 again
     Call test_make_user(2, 1, 54, 56)
-    Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
+    Debug.Assert (MapData(54, 56, 1).UserIndex = 2)
     Debug.Assert (UserList(2).Char.charindex <> 0)
     
     For i = 1 To UBound(UserList)
@@ -191,13 +191,13 @@ Function test_make_user_char() As Boolean
     Next i
     
     Call test_make_user(1, 1, 64, 66)
-    Debug.Assert (MapData(1, 64, 66).UserIndex = 1)
+    Debug.Assert (MapData(64, 66, 1).UserIndex = 1)
     Debug.Assert (UserList(1).Char.charindex <> 0)
     Debug.Assert (UserList(1).Char.charindex = 1)
     
     
     Call test_make_user(1, 1, 68, 66)
-    Debug.Assert (MapData(1, 68, 66).UserIndex = 1)
+    Debug.Assert (MapData(68, 66, 1).UserIndex = 1)
     Debug.Assert (UserList(1).Char.charindex <> 0)
     test_make_user_char = True
 End Function
@@ -447,12 +447,12 @@ Private Function test_house_door_actions() As Boolean
     Next i
     Dim OriginalTileObj As t_Obj
     Dim OriginalPairObj As t_Obj
-    OriginalTileObj = MapData(1, 50, 50).ObjInfo
-    OriginalPairObj = MapData(1, 47, 51).ObjInfo
+    OriginalTileObj = MapData(50, 50, 1).ObjInfo
+    OriginalPairObj = MapData(47, 51, 1).ObjInfo
     Dim OriginalBlocked As Byte
     Dim OriginalBlockedSouth As Byte
-    OriginalBlocked = MapData(1, 50, 50).Blocked
-    OriginalBlockedSouth = MapData(1, 50, 51).Blocked
+    OriginalBlocked = MapData(50, 50, 1).Blocked
+    OriginalBlockedSouth = MapData(50, 51, 1).Blocked
     Dim OriginalMap As Integer
     Dim OriginalX As Byte
     Dim OriginalY As Byte
@@ -481,46 +481,46 @@ Private Function test_house_door_actions() As Boolean
     ObjData(3).Cerrada = 1: ObjData(3).Llave = 1
     ObjData(4).OBJType = e_OBJType.otKeys: ObjData(4).clave = 410
     UserList(1).pos.Map = 1: UserList(1).pos.x = 50: UserList(1).pos.y = 50
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
-    MapData(1, 50, 50).ObjInfo.amount = 1
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 2
+    MapData(50, 50, 1).ObjInfo.amount = 1
 
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Close, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
     If ExecuteHooHouseDoorAction(1, 250, 50, 50) <> eHooHouseDoorActionResult_InvalidAction Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
     UserList(1).pos.x = 1: UserList(1).pos.y = 1
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_TooFarAway Then GoTo TestDone
     UserList(1).pos.x = 50: UserList(1).pos.y = 50
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 4
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 4
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_NotDoor Then GoTo TestDone
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 2
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_NoAccess Then GoTo TestDone
     UserList(1).Keys(1) = 4
     UserList(1).Counters.TimerUsar = 0
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Lock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
     UserList(1).Counters.TimerUsar = GetTickCountRaw()
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Cooldown Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 3 Then GoTo TestDone
     UserList(1).Counters.TimerUsar = 0
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Unlock, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 3
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 3
     UserList(1).Counters.TimerUsar = 0
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_UnlockAndOpen, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 2
     ObjData(1).Subtipo = 1
-    MapData(1, 47, 51).ObjInfo.ObjIndex = 2
-    MapData(1, 47, 51).ObjInfo.amount = 1
+    MapData(47, 51, 1).ObjInfo.ObjIndex = 2
+    MapData(47, 51, 1).ObjInfo.amount = 1
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Success Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 1 Or MapData(1, 47, 51).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
-    MapData(1, 50, 50).ObjInfo.ObjIndex = 2
-    MapData(1, 47, 51).ObjInfo.ObjIndex = 0
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 1 Or MapData(47, 51, 1).ObjInfo.ObjIndex <> 1 Then GoTo TestDone
+    MapData(50, 50, 1).ObjInfo.ObjIndex = 2
+    MapData(47, 51, 1).ObjInfo.ObjIndex = 0
     If ExecuteHooHouseDoorAction(1, eHooHouseDoorAction_Open, 50, 50) <> eHooHouseDoorActionResult_Unavailable Then GoTo TestDone
-    If MapData(1, 50, 50).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
+    If MapData(50, 50, 1).ObjInfo.ObjIndex <> 2 Then GoTo TestDone
     test_house_door_actions = True
 TestDone:
     For i = 1 To 4
@@ -530,10 +530,10 @@ TestDone:
     For i = 5 To MAXKEYS
         UserList(1).Keys(i) = OriginalKeys(i)
     Next i
-    MapData(1, 50, 50).ObjInfo = OriginalTileObj
-    MapData(1, 47, 51).ObjInfo = OriginalPairObj
-    MapData(1, 50, 50).Blocked = OriginalBlocked
-    MapData(1, 50, 51).Blocked = OriginalBlockedSouth
+    MapData(50, 50, 1).ObjInfo = OriginalTileObj
+    MapData(47, 51, 1).ObjInfo = OriginalPairObj
+    MapData(50, 50, 1).Blocked = OriginalBlocked
+    MapData(50, 51, 1).Blocked = OriginalBlockedSouth
     UserList(1).pos.Map = OriginalMap
     UserList(1).pos.x = OriginalX
     UserList(1).pos.y = OriginalY

@@ -370,7 +370,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
         For x = 1 To .AreaRadio
             For y = 1 To .AreaRadio
                 If InMapBounds(NpcList(NpcIndex).pos.Map, x + PosCasteadaX - mitadAreaRadio, PosCasteadaY + y - mitadAreaRadio) Then
-                    TargetMap = MapData(NpcList(NpcIndex).pos.Map, x + PosCasteadaX - mitadAreaRadio, PosCasteadaY + y - mitadAreaRadio)
+                    TargetMap = MapData(x + PosCasteadaX - mitadAreaRadio, PosCasteadaY + y - mitadAreaRadio, NpcList(NpcIndex).pos.Map)
                     If afectaUsers And TargetMap.UserIndex > 0 Then
                         If Not UserList(TargetMap.UserIndex).flags.Muerto And Not EsGM(TargetMap.UserIndex) Then
                             Call NpcLanzaSpellSobreUser(NpcIndex, TargetMap.UserIndex, SpellIndex, True)
@@ -909,13 +909,13 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
         For TempX = PosCasteadaX - 11 To PosCasteadaX + 11
             For TempY = PosCasteadaY - 11 To PosCasteadaY + 11
                 If InMapBounds(PosCasteadaM, TempX, TempY) Then
-                    If MapData(PosCasteadaM, TempX, TempY).UserIndex > 0 Then
+                    If MapData(TempX, TempY, PosCasteadaM).UserIndex > 0 Then
                         'hay un user
-                        If UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 1 And UserList(MapData(PosCasteadaM, TempX, _
-                                TempY).UserIndex).flags.NoDetectable = 0 Then
-                            UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 0
-                            Call WriteLocaleMsg(MapData(PosCasteadaM, TempX, TempY).UserIndex, MSG_INVISIBILIDAD_NO_TIENE_EFECTO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1869=Tu invisibilidad ya no tiene efecto.
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).Char.charindex, _
+                        If UserList(MapData(TempX, TempY, PosCasteadaM).UserIndex).flags.invisible = 1 And UserList(MapData(TempX, TempY, _
+                                PosCasteadaM).UserIndex).flags.NoDetectable = 0 Then
+                            UserList(MapData(TempX, TempY, PosCasteadaM).UserIndex).flags.invisible = 0
+                            Call WriteLocaleMsg(MapData(TempX, TempY, PosCasteadaM).UserIndex, MSG_INVISIBILIDAD_NO_TIENE_EFECTO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1869=Tu invisibilidad ya no tiene efecto.
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(MapData(TempX, TempY, PosCasteadaM).UserIndex).Char.charindex, _
                                     False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
                         End If
                     End If
@@ -956,7 +956,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
     afectaNPCs = (Hechizos(h).AreaAfecta = 2 Or Hechizos(h).AreaAfecta = 3)
     For x = 1 To Hechizos(h).AreaRadio
         For y = 1 To Hechizos(h).AreaRadio
-            TargetMap = MapData(UserList(UserIndex).pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + y - CInt(Hechizos(h).AreaRadio / 2))
+            TargetMap = MapData(x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + y - CInt(Hechizos(h).AreaRadio / 2), UserList(UserIndex).pos.Map)
             If afectaUsers And TargetMap.UserIndex > 0 Then
                 If UserList(TargetMap.UserIndex).flags.Muerto = 0 Then
                     Call AreaHechizo(UserIndex, TargetMap.UserIndex, PosCasteadaX, PosCasteadaY, False)
@@ -998,8 +998,8 @@ Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     Dim h   As Integer
     Dim MAT As t_Obj
     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-    If MapData(UserList(UserIndex).pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or MapData(UserList(UserIndex).pos.Map, _
-            UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked Then
+    If MapData(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, UserList(UserIndex).pos.Map).ObjInfo.amount > 0 Or MapData(UserList(UserIndex).flags.TargetX, _
+            UserList(UserIndex).flags.TargetY, UserList(UserIndex).pos.Map).Blocked Then
         b = False
         Call WriteLocaleMsg(UserIndex, MSG_NO_SPACE_ON_GROUND, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         ' Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)

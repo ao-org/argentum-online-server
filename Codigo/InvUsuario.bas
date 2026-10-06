@@ -378,12 +378,12 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal num As Integer
             End If
             If ObjData(obj.ObjIndex).Destruye = 0 Then
                 Dim Suma As Long
-                Suma = num + MapData(Map, x, y).ObjInfo.amount
+                Suma = num + MapData(x, y, Map).ObjInfo.amount
                 'Check objeto en el suelo
-                If MapData(Map, x, y).ObjInfo.ObjIndex = 0 Or (MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = _
+                If MapData(x, y, Map).ObjInfo.ObjIndex = 0 Or (MapData(x, y, Map).ObjInfo.ObjIndex = obj.ObjIndex And MapData(x, y, Map).ObjInfo.ElementalTags = _
                         obj.ElementalTags And Suma <= GetMaxInvOBJ()) Then
                     If Suma > GetMaxInvOBJ() Then
-                        num = GetMaxInvOBJ() - MapData(Map, x, y).ObjInfo.amount
+                        num = GetMaxInvOBJ() - MapData(x, y, Map).ObjInfo.amount
                     End If
                     ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
                     If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
@@ -420,11 +420,11 @@ End Sub
 Sub EraseObj(ByVal amount As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo EraseObj_Err
     Dim Rango As Byte
-    MapData(map, x, y).ObjInfo.amount = MapData(map, x, y).ObjInfo.amount - amount
-    If MapData(Map, x, y).ObjInfo.amount <= 0 Then
-        MapData(Map, x, y).ObjInfo.ObjIndex = 0
-        MapData(Map, x, y).ObjInfo.amount = 0
-        MapData(Map, x, y).ObjInfo.ElementalTags = 0
+    MapData(x, y, map).ObjInfo.amount = MapData(x, y, map).ObjInfo.amount - amount
+    If MapData(x, y, Map).ObjInfo.amount <= 0 Then
+        MapData(x, y, Map).ObjInfo.ObjIndex = 0
+        MapData(x, y, Map).ObjInfo.amount = 0
+        MapData(x, y, Map).ObjInfo.ElementalTags = 0
         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectDelete(x, y))
     End If
     Exit Sub
@@ -437,19 +437,19 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal x As Integer, ByVal 
     Dim Color As Long
     Dim Rango As Byte
     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
-        If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex And MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags Then
-            MapData(Map, x, y).ObjInfo.amount = MapData(Map, x, y).ObjInfo.amount + obj.amount
+        If MapData(x, y, Map).ObjInfo.ObjIndex = obj.ObjIndex And MapData(x, y, Map).ObjInfo.ElementalTags = obj.ElementalTags Then
+            MapData(x, y, Map).ObjInfo.amount = MapData(x, y, Map).ObjInfo.amount + obj.amount
         Else
-            MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex
-            MapData(Map, x, y).ObjInfo.ElementalTags = obj.ElementalTags
+            MapData(x, y, Map).ObjInfo.ObjIndex = obj.ObjIndex
+            MapData(x, y, Map).ObjInfo.ElementalTags = obj.ElementalTags
             If ObjData(obj.ObjIndex).VidaUtil <> 0 Then
-                MapData(Map, x, y).ObjInfo.amount = ObjData(obj.ObjIndex).VidaUtil
+                MapData(x, y, Map).ObjInfo.amount = ObjData(obj.ObjIndex).VidaUtil
             Else
-                MapData(Map, x, y).ObjInfo.amount = obj.amount
+                MapData(x, y, Map).ObjInfo.amount = obj.amount
             End If
-            MapData(map, x, y).ObjInfo.CastleSlot = Obj.CastleSlot
+            MapData(x, y, map).ObjInfo.CastleSlot = Obj.CastleSlot
         End If
-        Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+        Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(x, y, Map).ObjInfo.amount, x, y, MapData(x, y, Map).ObjInfo.ElementalTags))
     End If
     Exit Sub
 MakeObj_Err:
@@ -606,9 +606,9 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
         Call WriteLocaleMsg(UserIndex, MSG_CANNOT_DROP_ITEMS_IN_JAIL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString)
         Exit Sub
     End If
-    If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+    If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
         '¿Esta permitido agarrar este obj?
-        If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Agarrable <> 1 Then
+        If ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Agarrable <> 1 Then
             If UserList(UserIndex).flags.Montado = 1 Then
                 ' Msg672=Debes descender de tu montura para agarrar objetos del suelo.
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_DESCENDER_MONTURA_AGARRAR_OBJETOS_SUELO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
@@ -618,18 +618,18 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
                 Exit Sub
             End If
             ' Gold and capture-the-flag objects do not have ordinary slot semantics.
-            If DestinationSlot > 0 And (MapData(Map, x, y).ObjInfo.ObjIndex = 12 Or UserList(UserIndex).flags.jugando_captura = 1) Then Exit Sub
+            If DestinationSlot > 0 And (MapData(x, y, Map).ObjInfo.ObjIndex = 12 Or UserList(UserIndex).flags.jugando_captura = 1) Then Exit Sub
             If UserList(UserIndex).flags.jugando_captura = 1 Then
                 If Not InstanciaCaptura Is Nothing Then
-                    If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex) Then
+                    If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(x, y, Map).ObjInfo.ObjIndex) Then
                         Exit Sub
                     End If
                 End If
             End If
-            obj = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex)
-            MiObj.amount = MapData(Map, x, y).ObjInfo.amount
-            MiObj.ObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
-            MiObj.ElementalTags = MapData(Map, x, y).ObjInfo.ElementalTags
+            obj = ObjData(MapData(x, y, Map).ObjInfo.ObjIndex)
+            MiObj.amount = MapData(x, y, Map).ObjInfo.amount
+            MiObj.ObjIndex = MapData(x, y, Map).ObjInfo.ObjIndex
+            MiObj.ElementalTags = MapData(x, y, Map).ObjInfo.ElementalTags
             Dim TransferredAmount As Long
             Dim Inserted As Boolean
             If DestinationSlot = 0 Then
@@ -647,8 +647,8 @@ Public Sub PickObjAt(ByVal UserIndex As Integer, _
                     Call UpdateUserInv(False, UserIndex, DestinationSlot)
                     UserList(UserIndex).flags.ModificoInventario = True
                 End If
-                If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-                    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+                If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
+                    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(x, y, Map).ObjInfo.ObjIndex, MapData(x, y, Map).ObjInfo.amount, x, y, MapData(x, y, Map).ObjInfo.ElementalTags))
                 End If
                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.User Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData( _
                         MiObj.ObjIndex).name)
@@ -1437,7 +1437,7 @@ Dim Ropaje                      As Integer
                 'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
-                        If Not MapData(.pos.Map, .pos.x, .pos.y).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
+                        If Not MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
                             If .Stats.MinAGU < .Stats.MaxAGU Or _
                                 .Stats.MinHam < .Stats.MaxHam Or _
                                 .Stats.MinHp < .Stats.MaxHp Or _
@@ -2190,7 +2190,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                         ' Poción runa
                     Case 14
-                        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+                        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2441,10 +2441,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         If TargObj.Llave > 0 Then
                             Dim ClaveLlave As Integer
                             If TargObj.clave = obj.clave Then
-                                MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
-                                .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+                                MapData(.flags.TargetObjX, .flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjX, UserList( _
+                                   UserIndex).flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex).IndexCerrada
+                                .flags.TargetObj = MapData(.flags.TargetObjX, UserList( _
+                                   UserIndex).flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex
                                 'Msg897= Has abierto la puerta.
                                 Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                                 ClaveLlave = obj.clave
@@ -2457,12 +2457,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                         Else
                             If TargObj.clave = obj.clave Then
-                                MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = _
-                                   ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, UserList( _
-                                   UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
+                                MapData(.flags.TargetObjX, .flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex = _
+                                   ObjData(MapData(.flags.TargetObjX, UserList( _
+                                   UserIndex).flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex).IndexCerradaLlave
                                 'Msg899= Has cerrado con llave la puerta.
                                 Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                                .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
+                                .flags.TargetObj = MapData(.flags.TargetObjX, .flags.TargetObjY, .flags.TargetObjMap).ObjInfo.ObjIndex
                                 Exit Sub
                             Else
                                 'Msg900= La llave no sirve.
@@ -2484,7 +2484,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 If Not InMapBounds(.flags.TargetMap, .flags.TargetX, .flags.TargetY) Then
                     Exit Sub
                 End If
-                If (MapData(.pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
+                If (MapData(.flags.TargetX, .flags.TargetY, .pos.Map).Blocked And FLAG_AGUA) = 0 Then
                     'Msg902= No hay agua allí.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_AGUA_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
@@ -2589,21 +2589,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Exit Sub
                     End If
                 ElseIf .invent.Object(Slot).ObjIndex = iObjTrajeAltoNw Or .invent.Object(Slot).ObjIndex = iObjTrajeBajoNw Then
-                    If (.flags.Navegando = 0 Or (.invent.EquippedShipObjIndex <> iObjTrajeAltoNw And .invent.EquippedShipObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.Map, _
-                       .pos.x + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, _
-                       .pos.x, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
+                    If (.flags.Navegando = 0 Or (.invent.EquippedShipObjIndex <> iObjTrajeAltoNw And .invent.EquippedShipObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.x + 1, _
+                       .pos.y, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x, _
+                       .pos.y + 1, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.DETALLEAGUA Then
                         'Msg913= Este traje es para aguas contaminadas.
                         Call WriteLocaleMsg(UserIndex, MSG_TRAJE_AGUAS_CONTAMINADAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 ElseIf .invent.Object(Slot).ObjIndex = iObjTraje Then
-                    If (.flags.Navegando = 0 Or .invent.EquippedShipObjIndex <> iObjTraje) And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And _
-                       MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO _
-                       And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> _
-                       e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y + 1).trigger <> _
-                       e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.x + 1, .pos.y).trigger <> _
-                       e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y + _
-                       1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.x, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
+                    If (.flags.Navegando = 0 Or .invent.EquippedShipObjIndex <> iObjTraje) And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And _
+                       MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.x, .pos.y + 1, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO _
+                       And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> _
+                       e_Trigger.VALIDONADO And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.VALIDONADO And MapData(.pos.x, .pos.y + 1, .pos.Map).trigger <> _
+                       e_Trigger.VALIDONADO And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.VALIDONADO And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> _
+                       e_Trigger.NADOBAJOTECHO And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.x, .pos.y + _
+                       1, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO Then
                         'Msg914= Este traje es para zonas poco profundas.
                         Call WriteLocaleMsg(UserIndex, MSG_TRAJE_ZONAS_POCO_PROFUNDAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -2656,7 +2656,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
                         End If
-                        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+                        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2714,7 +2714,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
                 End If
-                If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+                If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
                     ' Msg691=No podés usar la runa estando en la cárcel.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
@@ -2779,6 +2779,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
                     If AddCollectibleCardToUser(UserIndex, MiObj) Then
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+                        Call LogCardConsumption(.Id, .name, .AccountID, MiObj.ObjIndex, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
                     Else
                         'Msg2292=No podés consumir más cartas de este tipo.

@@ -28,24 +28,24 @@ Attribute VB_Name = "ModMap"
 Option Explicit
 
 Public Function CanAddTrapAt(ByVal mapIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer) As Boolean
-    If Not MapData(mapIndex, PosX, PosY).Trap Is Nothing Then
+    If Not MapData(PosX, PosY, mapIndex).Trap Is Nothing Then
         Exit Function
     End If
-    If MapData(mapIndex, PosX, PosY).Blocked Then Exit Function
-    If MapData(mapIndex, PosX, PosY).NpcIndex > 0 Then Exit Function
-    If MapData(mapIndex, PosX, PosY).UserIndex > 0 Then Exit Function
-    If MapData(mapIndex, PosX, PosY).ObjInfo.ObjIndex > 0 Then Exit Function
+    If MapData(PosX, PosY, mapIndex).Blocked Then Exit Function
+    If MapData(PosX, PosY, mapIndex).NpcIndex > 0 Then Exit Function
+    If MapData(PosX, PosY, mapIndex).UserIndex > 0 Then Exit Function
+    If MapData(PosX, PosY, mapIndex).ObjInfo.ObjIndex > 0 Then Exit Function
     CanAddTrapAt = True
 End Function
 
 Public Sub ActivateTrap(ByVal TargetIndex, ByVal TargetType As e_ReferenceType, ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-    If MapData(Map, PosX, PosY).Trap Is Nothing Then
+    If MapData(PosX, PosY, Map).Trap Is Nothing Then
         Exit Sub
     End If
-    If Not MapData(Map, PosX, PosY).Trap.CanAffectTarget(TargetIndex, TargetType) Then
+    If Not MapData(PosX, PosY, Map).Trap.CanAffectTarget(TargetIndex, TargetType) Then
         Exit Sub
     End If
-    Call MapData(Map, PosX, PosY).Trap.trigger(TargetIndex, TargetType)
+    Call MapData(PosX, PosY, Map).Trap.trigger(TargetIndex, TargetType)
 End Sub
 
 Public Function IsValidMapIndex(ByVal mapIndex As Integer) As Boolean

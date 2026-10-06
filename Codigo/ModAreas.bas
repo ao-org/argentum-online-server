@@ -201,8 +201,8 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         For x = MinX To MaxX
             For y = MinY To MaxY
                 '<<< User >>>
-                If MapData(Map, x, y).UserIndex Then
-                    TempInt = MapData(Map, x, y).UserIndex
+                If MapData(x, y, Map).UserIndex Then
+                    TempInt = MapData(x, y, Map).UserIndex
                     If UserIndex <> TempInt Then
                         'NOTIFICO AL USUARIO QUE ESTABA EN EL AREA
                         Call NotifyUser(TempInt, UserIndex)
@@ -213,24 +213,24 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
                     End If
                 End If
                 '<<< Npc >>>
-                If MapData(Map, x, y).NpcIndex Then
-                    Call MakeNPCChar(False, UserIndex, MapData(Map, x, y).NpcIndex, Map, x, y)
+                If MapData(x, y, Map).NpcIndex Then
+                    Call MakeNPCChar(False, UserIndex, MapData(x, y, Map).NpcIndex, Map, x, y)
                 End If
                 '<<< Item >>>
-                If MapData(Map, x, y).ObjInfo.ObjIndex Then
-                    TempInt = MapData(Map, x, y).ObjInfo.ObjIndex
+                If MapData(x, y, Map).ObjInfo.ObjIndex Then
+                    TempInt = MapData(x, y, Map).ObjInfo.ObjIndex
                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
-                        Call WriteObjectCreate(UserIndex, TempInt, MapData(Map, x, y).ObjInfo.amount, x, y)
+                        Call WriteObjectCreate(UserIndex, TempInt, MapData(x, y, Map).ObjInfo.amount, x, y)
                         If ObjData(TempInt).OBJType = e_OBJType.otDoors And InMapBounds(Map, x, y) Then
                             Call MostrarBloqueosPuerta(False, UserIndex, x, y)
                         End If
                     End If
                 End If
-                If Not MapData(Map, x, y).Trap Is Nothing Then
+                If Not MapData(x, y, Map).Trap Is Nothing Then
                     Call WriteUpdateTrapState(UserIndex, 1, x, y)
                 End If
                 ' Bloqueo GM
-                If (MapData(Map, x, y).Blocked And e_Block.GM) <> 0 Then
+                If (MapData(x, y, Map).Blocked And e_Block.GM) <> 0 Then
                     Call Bloquear(False, UserIndex, x, y, e_Block.ALL_SIDES)
                 End If
             Next y
@@ -324,7 +324,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
         If MapInfo(.pos.Map).NumUsers <> 0 Then
             For x = MinX To MaxX
                 For y = MinY To MaxY
-                    If MapData(.pos.Map, x, y).UserIndex Then Call MakeNPCChar(False, MapData(.pos.Map, x, y).UserIndex, NpcIndex, .pos.Map, .pos.x, .pos.y)
+                    If MapData(x, y, .pos.Map).UserIndex Then Call MakeNPCChar(False, MapData(x, y, .pos.Map).UserIndex, NpcIndex, .pos.Map, .pos.x, .pos.y)
                 Next y
             Next x
         End If
