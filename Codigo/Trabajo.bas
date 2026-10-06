@@ -323,7 +323,7 @@ DoNavega_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 End Sub
 
-Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
+Function TieneObjetos(ByVal ItemIndex As Long, ByVal cant As Long, ByVal UserIndex As Long, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
     On Error GoTo TieneObjetos_Err
     Dim i     As Long
     Dim total As Long

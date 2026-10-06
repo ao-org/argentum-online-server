@@ -253,6 +253,8 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
     Exit Sub
 EnviarObjetoTransaccion_Err:
     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
+    ' Resolve the pending offer even when validation raises an unexpected error.
+    Call WriteChangeUserTradeSlot(UserIndex, UserList(UserIndex).ComUsu.itemsAenviar, UserList(UserIndex).ComUsu.Oro, True)
 End Sub
 
 Public Sub FinComerciarUsu(ByVal UserIndex As Integer, Optional ByVal Invalido As Boolean = False)

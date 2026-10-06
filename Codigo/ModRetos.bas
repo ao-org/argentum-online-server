@@ -90,7 +90,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             Exit Sub
         End If
         If PocionesMaximas >= 0 Then
-            If TieneObjetos(38, PocionesMaximas + 1, UserIndex) Then
+            If TieneObjetos(38, CLng(PocionesMaximas) + 1, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA_1443, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PocionesMaximas) ' Msg1443=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                 Exit Sub
             End If
@@ -189,7 +189,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
             Exit Sub
         End If
         If .PocionesMaximas >= 0 Then
-            If TieneObjetos(38, .PocionesMaximas + 1, UserIndex) Then
+            If TieneObjetos(38, CLng(.PocionesMaximas) + 1, UserIndex) Then
                 Call WriteLocaleMsg(UserIndex, MSG_TIENES_DEMASIADAS_POCIONES_ROJAS_CANTIDAD_MAXIMA, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, .PocionesMaximas) ' Msg1963=Tienes demasiadas pociones rojas (Cantidad máxima: ¬1).
                 Exit Sub
             End If
@@ -867,7 +867,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
             Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " no tiene las monedas de oro suficientes.")
             Exit Function
         ElseIf .PocionesMaximas >= 0 Then
-            If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
+            If TieneObjetos(38, CLng(.PocionesMaximas) + 1, Oferente) Then
                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
                 Exit Function
             End If
@@ -881,7 +881,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
                 Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex.ArrayIndex).name & " no tiene las monedas de oro suficientes.")
                 Exit Function
             ElseIf .PocionesMaximas >= 0 Then
-                If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
+                If TieneObjetos(38, CLng(.PocionesMaximas) + 1, Oferente) Then
                     Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex.ArrayIndex).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & _
                             .PocionesMaximas & ").")
                     Exit Function

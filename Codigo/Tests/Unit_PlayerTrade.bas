@@ -9,6 +9,10 @@ Public Function test_suite_player_trade() As Boolean
     Call UnitTesting.RunTest("trade_counts_duplicate_stacks", TestAggregateAmount())
     Call UnitTesting.RunTest("trade_rejection_clears_pending_offer", TestClearRequest())
     Call UnitTesting.RunTest("trade_invitation_requires_current_recipient", TestInvitationMatch())
+    Call UnitTesting.RunTest("inventory_requires_long_quantity_across_stacks", TestLongInventoryAmounts())
+    Call UnitTesting.RunTest("inventory_long_quantity_preserves_elemental_tags", TestLongInventoryTags())
+    Call UnitTesting.RunTest("inventory_gold_requirement_accepts_long_range", TestLongInventoryGold())
+    Call UnitTesting.RunTest("inventory_potion_limit_addition_uses_long", TestLongPotionLimit())
     test_suite_player_trade = True
 End Function
 
@@ -121,5 +125,88 @@ Private Function TestInvitationMatch() As Boolean
     Exit Function
 TestInvitationMatch_Err:
     Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestInvitationMatch", Erl)
+End Function
+
+' Save and restore the fixture so these checks never alter an existing user.
+Private Function CheckLongInventoryRequirement(ByVal objectIndex As Long, ByVal requiredAmount As Long, ByVal tags As Long, ByVal availableGold As Long) As Boolean
+    On Error GoTo CheckLongInventoryRequirement_Err
+    Dim savedInventory As t_Inventario
+    Dim savedGold      As Long
+    Dim savedSlots     As Byte
+    Dim backupReady    As Boolean
+    Dim emptyInventory As t_Inventario
+    Dim i              As Long
+    savedInventory = UserList(1).invent
+    savedGold = UserList(1).Stats.GLD
+    savedSlots = UserList(1).CurrentInventorySlots
+    backupReady = True
+    UserList(1).invent = emptyInventory
+    UserList(1).Stats.GLD = availableGold
+    UserList(1).CurrentInventorySlots = 8
+    For i = 1 To 6
+        UserList(1).invent.Object(i).ObjIndex = GOLD_OBJ_INDEX + 1
+        UserList(1).invent.Object(i).amount = 10000
+        UserList(1).invent.Object(i).ElementalTags = 1
+    Next i
+    ' Different tags and a different object must not count toward the total.
+    UserList(1).invent.Object(7).ObjIndex = GOLD_OBJ_INDEX + 1
+    UserList(1).invent.Object(7).amount = 10000
+    UserList(1).invent.Object(7).ElementalTags = 2
+    UserList(1).invent.Object(8).ObjIndex = GOLD_OBJ_INDEX + 2
+    UserList(1).invent.Object(8).amount = 10000
+    UserList(1).invent.Object(8).ElementalTags = 1
+    CheckLongInventoryRequirement = TieneObjetos(objectIndex, requiredAmount, 1, tags)
+    UserList(1).invent = savedInventory
+    UserList(1).Stats.GLD = savedGold
+    UserList(1).CurrentInventorySlots = savedSlots
+    Exit Function
+CheckLongInventoryRequirement_Err:
+    If backupReady Then
+        UserList(1).invent = savedInventory
+        UserList(1).Stats.GLD = savedGold
+        UserList(1).CurrentInventorySlots = savedSlots
+    End If
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.CheckLongInventoryRequirement", Erl)
+End Function
+
+Private Function TestLongInventoryAmounts() As Boolean
+    On Error GoTo TestLongInventoryAmounts_Err
+    TestLongInventoryAmounts = CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 32767, 1, 0) And _
+        CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 32768, 1, 0) And _
+        CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 60000, 1, 0) And _
+        Not CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 60001, 1, 0)
+    Exit Function
+TestLongInventoryAmounts_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestLongInventoryAmounts", Erl)
+End Function
+
+Private Function TestLongInventoryTags() As Boolean
+    On Error GoTo TestLongInventoryTags_Err
+    TestLongInventoryTags = CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 10000, 2, 0) And _
+        Not CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 32768, 2, 0) And _
+        Not CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, 1, 0, 0)
+    Exit Function
+TestLongInventoryTags_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestLongInventoryTags", Erl)
+End Function
+
+Private Function TestLongInventoryGold() As Boolean
+    On Error GoTo TestLongInventoryGold_Err
+    TestLongInventoryGold = CheckLongInventoryRequirement(GOLD_OBJ_INDEX, 50000, 0, 50000) And _
+        Not CheckLongInventoryRequirement(GOLD_OBJ_INDEX, 50001, 0, 50000) And _
+        CheckLongInventoryRequirement(GOLD_OBJ_INDEX, 2147483647, 0, 2147483647)
+    Exit Function
+TestLongInventoryGold_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestLongInventoryGold", Erl)
+End Function
+
+Private Function TestLongPotionLimit() As Boolean
+    On Error GoTo TestLongPotionLimit_Err
+    Dim potionLimit As Integer
+    potionLimit = 32767
+    TestLongPotionLimit = CheckLongInventoryRequirement(GOLD_OBJ_INDEX + 1, CLng(potionLimit) + 1, 1, 0)
+    Exit Function
+TestLongPotionLimit_Err:
+    Call TraceError(Err.Number, Err.Description, "Unit_PlayerTrade.TestLongPotionLimit", Erl)
 End Function
 #End If
