@@ -1483,7 +1483,7 @@ Private Sub tPiqueteC_Timer()
     Dim i As Long
     For i = 1 To LastUser
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).pos.Map, UserList(i).pos.x, UserList(i).pos.y).trigger = e_Trigger.ANTIPIQUETE Then
+            If MapData(UserList(i).pos.x, UserList(i).pos.y, UserList(i).pos.Map).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 ' Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then

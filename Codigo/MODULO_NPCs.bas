@@ -472,7 +472,7 @@ End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TestSpawnTrigger_Err
-    TestSpawnTrigger = MapData(Map, x, y).trigger < 1 Or (MapData(Map, x, y).trigger > 3 And MapData(Map, x, y).trigger < 12)
+    TestSpawnTrigger = MapData(x, y, Map).trigger < 1 Or (MapData(x, y, Map).trigger > 3 And MapData(x, y, Map).trigger < 12)
     Exit Function
 TestSpawnTrigger_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
@@ -564,7 +564,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             .Char.charindex = charindex
             CharList(charindex) = NpcIndex
         End If
-        MapData(Map, x, y).NpcIndex = NpcIndex
+        MapData(x, y, Map).NpcIndex = NpcIndex
         Dim Simbolo As Byte
         Dim GG      As String
         Dim tmpByte As Byte
@@ -721,7 +721,7 @@ Sub EraseNPCChar(ByVal NpcIndex As Integer)
     End If
     Call RemoveNpc(NpcIndex)
     'Quitamos del mapa
-    MapData(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y).NpcIndex = 0
+    MapData(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, NpcList(NpcIndex).pos.Map).NpcIndex = 0
     'Actualizamos los clientes
     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterRemove(5, NpcList(NpcIndex).Char.charindex, True))
     'Update la lista npc
@@ -736,15 +736,15 @@ End Sub
 Public Sub TranslateNpcChar(ByVal NpcIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
     On Error GoTo TranslateNpcChar_Err
     With NpcList(NpcIndex)
-        If MapData(.pos.Map, NewPos.x, NewPos.y).UserIndex Then
-            Call SwapTargetUserPos(MapData(.pos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
+        If MapData(NewPos.x, NewPos.y, .pos.Map).UserIndex Then
+            Call SwapTargetUserPos(MapData(NewPos.x, NewPos.y, .pos.Map).UserIndex, .pos)
         End If
         'Update map and user pos
-        MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+        MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
         Dim PrevPos As t_WorldPos
         PrevPos = .pos
         .pos = NewPos
-        MapData(.pos.Map, NewPos.x, NewPos.y).NpcIndex = NpcIndex
+        MapData(NewPos.x, NewPos.y, .pos.Map).NpcIndex = NpcIndex
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         Call CheckUpdateNeededNpc(NpcIndex, GetHeadingFromWorldPos(PrevPos, NewPos))
     End With
@@ -766,15 +766,15 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         If .flags.LavaValida = 1 And Not HayLava(nPos.Map, nPos.x, nPos.y) Then Exit Function
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
-            UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
+            UserIndex = MapData(nPos.x, nPos.y, .pos.Map).UserIndex
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
             If UserIndex > 0 Then
                 With UserList(UserIndex)
                     ' Actualizamos posicion y mapa
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = 0
+                    MapData(.pos.x, .pos.y, .pos.Map).UserIndex = 0
                     .pos.x = NpcList(NpcIndex).pos.x
                     .pos.y = NpcList(NpcIndex).pos.y
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+                    MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex
                     ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.charindex, .pos.x, .pos.y))
                     Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
@@ -796,12 +796,12 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             Call AnimacionIdle(NpcIndex, False)
             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
             'Update map and user pos
-            MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+            MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
             .pos = nPos
             .Char.Heading = nHeading
-            MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
+            MapData(nPos.x, nPos.y, .pos.Map).NpcIndex = NpcIndex
             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
-            If Not MapData(.pos.Map, nPos.x, nPos.y).Trap Is Nothing Then
+            If Not MapData(nPos.x, nPos.y, .pos.Map).Trap Is Nothing Then
                 Call ModMap.ActivateTrap(NpcIndex, eNpc, .pos.Map, nPos.x, nPos.y)
             End If
             ' Npc has moved
@@ -2274,8 +2274,11 @@ Public Function Paralice(ByVal SourceIndex As Integer, ByVal TargetIndex As Inte
     End With
 End Function
 
-Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc) As Single
-    GetPhysicalDamageModifier = max(1 + Npc.Modifiers.PhysicalDamageBonus, 0)
+Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc, ByVal TargetType As e_ReferenceType) As Single
+    Dim bonus As Single
+    bonus = Npc.Modifiers.PhysicalDamageBonus
+    If TargetType = eNpc Then bonus = bonus + Npc.Modifiers.PhysicalDamageBonusPve
+    GetPhysicalDamageModifier = max(1 + bonus, 0)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef Npc As t_Npc) As Single
@@ -2450,8 +2453,9 @@ Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackIn
     End With
 End Function
 
-Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
+Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer, ByVal TargetType As e_ReferenceType) As Integer
     GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
+    If TargetType = eNpc Then GetLinearDamageBonus = GetLinearDamageBonus + NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonusPve
 End Function
 
 Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)

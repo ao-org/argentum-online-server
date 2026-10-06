@@ -1849,6 +1849,8 @@ Public Type t_ActiveModifiers
     MagicDamageBonus As Single
     MagicHealingBonus As Single
     PhysicalDamageLinearBonus As Integer 'apply direct bonus like +10
+    PhysicalDamageBonusPve As Single
+    PhysicalDamageLinearBonusPve As Integer
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -1894,6 +1896,7 @@ Public Type t_EffectOverTime
     SelfHealingBonus As Single
     MagicHealingBonus As Single
     PhysicalLinearBonus As Integer
+    PhysicalBonusPveOnly As Boolean
     DefenseBonus As Integer
     ClientEffectTypeId As Integer
     Area As Integer
@@ -3568,9 +3571,11 @@ Public Type t_TransportNetworkExit
     TileY As Byte
 End Type
 
+Public Const MAP_LAYER_COUNT As Long = 5
+
 Public Type t_MapBlock
     Blocked As Byte
-    Graphic(1 To 4) As Long
+    Graphic(1 To MAP_LAYER_COUNT) As Long
     UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
@@ -3695,6 +3700,7 @@ Public UserList()                             As t_User 'USUARIOS
 Public NpcList(1 To MaxNPCs)                  As t_Npc 'NPCS
 Public NpcInfoCache()                          As t_NpcInfoCache
 Public NpcInfoCacheInitialized                As Boolean
+' X is the fastest dimension; each map owns a contiguous tile slab.
 Public MapData()                              As t_MapBlock
 Public MapInfo()                              As t_MapInfo
 Public Hechizos()                             As t_Hechizo
@@ -3960,6 +3966,8 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.MagicDamageBonus = 0
     Modifiers.MagicDamageReduction = 0
     Modifiers.PhysicalDamageBonus = 0
+    Modifiers.PhysicalDamageBonusPve = 0
+    Modifiers.PhysicalDamageLinearBonusPve = 0
     Modifiers.PhysicalDamageReduction = 0
     Modifiers.MovementSpeed = 0
     Modifiers.EvasionBonus = 0

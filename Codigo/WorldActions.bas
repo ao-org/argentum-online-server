@@ -198,9 +198,9 @@ End Function
 Private Function TryHandleNpcWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     Dim TempCharIndex As Integer
 
-    If MapData(Map, x, y).NpcIndex <= 0 Then Exit Function
+    If MapData(x, y, Map).NpcIndex <= 0 Then Exit Function
 
-    TempCharIndex = MapData(Map, x, y).NpcIndex
+    TempCharIndex = MapData(x, y, Map).NpcIndex
     'Set the target NPC
     Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
     UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).npcType
@@ -470,10 +470,10 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
 End Sub
 
 Private Function TryHandleObjectWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    If MapData(Map, x, y).ObjInfo.ObjIndex <= 0 Then Exit Function
+    If MapData(x, y, Map).ObjInfo.ObjIndex <= 0 Then Exit Function
 
-            UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
-            Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
+            UserList(UserIndex).flags.TargetObj = MapData(x, y, Map).ObjInfo.ObjIndex
+            Select Case ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType
                 Case e_OBJType.otDoors 'Es una puerta
                     Call HandleDoorAction(Map, x, y, UserIndex)
                 Case e_OBJType.otSignBoards 'Es un cartel
@@ -485,7 +485,7 @@ Private Function TryHandleObjectWorldAction(ByVal UserIndex As Integer, ByVal Ma
                 Case e_OBJType.otAnvil 'Pozos
                     Call HandleAnvilAction(Map, x, y, UserIndex)
                 Case e_OBJType.otWood    'Leña
-                    If MapData(Map, x, y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
+                    If MapData(x, y, Map).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
                         Call HandleCampfireTwigAction(Map, x, y, UserIndex)
                     End If
                 Case Else
@@ -515,10 +515,10 @@ End Function
 
 Private Function TryHandleObjectAtOffset(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     If Not InMapBounds(Map, x, y) Then Exit Function
-    If MapData(Map, x, y).ObjInfo.ObjIndex <= 0 Then Exit Function
+    If MapData(x, y, Map).ObjInfo.ObjIndex <= 0 Then Exit Function
 
-    UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
-    Select Case ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType
+    UserList(UserIndex).flags.TargetObj = MapData(x, y, Map).ObjInfo.ObjIndex
+    Select Case ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType
         Case e_OBJType.otDoors 'Es una puerta
             Call HandleDoorAction(Map, x, y, UserIndex)
             TryHandleObjectAtOffset = True
@@ -564,7 +564,7 @@ Sub HandleDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByV
         Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
     End If
-    puerta = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex)
+    puerta = ObjData(MapData(x, y, Map).ObjInfo.ObjIndex)
     If puerta.Llave = 1 And Not SinDistancia Then
         If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
             'Msg1073= Al parecer, alguien cerró esta puerta. Debe haber algún interruptor por algún lado...
@@ -576,26 +576,26 @@ Sub HandleDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByV
         Exit Sub
     End If
     If puerta.Cerrada = 1 Then 'Abre la puerta
-        MapData(Map, x, y).ObjInfo.ObjIndex = puerta.IndexAbierta
+        MapData(x, y, Map).ObjInfo.ObjIndex = puerta.IndexAbierta
         Call BloquearPuerta(Map, x, y, False)
         If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
             'Msg1075= Has abierto la compuerta del ducto.
             Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_COMPUERTA_DUCTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
         End If
     Else 'Cierra puerta
-        MapData(Map, x, y).ObjInfo.ObjIndex = puerta.IndexCerrada
+        MapData(x, y, Map).ObjInfo.ObjIndex = puerta.IndexCerrada
         Call BloquearPuerta(Map, x, y, True)
     End If
-    If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Subtipo = 1 Then
+    If ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Subtipo = 1 Then
         Call HandleDoorAction(Map, x - 3, y + 1, UserIndex, True)
     End If
-    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(x, y, Map).ObjInfo.ObjIndex, MapData(x, y, Map).ObjInfo.amount, x, y))
     If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Or puerta.GrhIndex = 59878 Or puerta.GrhIndex = 59877 Then
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA_DUCTO, x, y))
     Else
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, x, y))
     End If
-    UserList(UserIndex).flags.TargetObj = MapData(Map, x, y).ObjInfo.ObjIndex
+    UserList(UserIndex).flags.TargetObj = MapData(x, y, Map).ObjInfo.ObjIndex
     Exit Sub
 Handler:
     Call TraceError(Err.Number, Err.Description, "WorldActions.HandleDoorAction", Erl)
@@ -665,12 +665,12 @@ Private Function UserHasMatchingHooDoorKey(ByVal UserIndex As Integer, ByVal Doo
 End Function
 
 Private Sub SetHooDoorTileState(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal DestinationObjIndex As Integer, ByVal DestinationBlocked As Boolean)
-    MapData(Map, x, y).ObjInfo.ObjIndex = DestinationObjIndex
+    MapData(x, y, Map).ObjInfo.ObjIndex = DestinationObjIndex
     Call BloquearPuerta(Map, x, y, DestinationBlocked)
 End Sub
 
 Private Sub BroadcastHooDoorTile(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte)
-    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y, MapData(Map, x, y).ObjInfo.ElementalTags))
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(x, y, Map).ObjInfo.ObjIndex, MapData(x, y, Map).ObjInfo.amount, x, y, MapData(x, y, Map).ObjInfo.ElementalTags))
 End Sub
 
 Private Function HooDoorSound(ByVal ObjIndex As Integer) As Integer
@@ -695,7 +695,7 @@ Public Function ExecuteHooHouseDoorAction(ByVal UserIndex As Integer, ByVal Acti
         Exit Function
     End If
     Dim CurrentObjIndex As Integer
-    CurrentObjIndex = MapData(Map, x, y).ObjInfo.ObjIndex
+    CurrentObjIndex = MapData(x, y, Map).ObjInfo.ObjIndex
     If CurrentObjIndex <= 0 Then Exit Function
     If Not IsValidHooDoorObject(CurrentObjIndex) Then
         ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_NotDoor
@@ -725,7 +725,7 @@ Public Function ExecuteHooHouseDoorAction(ByVal UserIndex As Integer, ByVal Acti
             ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
             Exit Function
         End If
-        PairCurrentObjIndex = MapData(Map, PairX, PairY).ObjInfo.ObjIndex
+        PairCurrentObjIndex = MapData(PairX, PairY, Map).ObjInfo.ObjIndex
         If Not ResolveHooDoorDestination(PairCurrentObjIndex, ActionValue, PairDestinationObjIndex, PairDestinationBlocked) Then
             ExecuteHooHouseDoorAction = eHooHouseDoorActionResult_Unavailable
             Exit Function
@@ -766,15 +766,15 @@ End Function
 Sub HandleNpcDoorAction(ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal NpcIndex As Integer)
     On Error GoTo Handler
     Dim puerta As t_ObjData 'ver ReyarB
-    puerta = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex)
+    puerta = ObjData(MapData(x, y, Map).ObjInfo.ObjIndex)
     If puerta.Cerrada = 1 Then 'Abre la puerta
-        MapData(Map, x, y).ObjInfo.ObjIndex = puerta.IndexAbierta
+        MapData(x, y, Map).ObjInfo.ObjIndex = puerta.IndexAbierta
         Call BloquearPuerta(Map, x, y, False)
     Else 'Cierra puerta
-        MapData(Map, x, y).ObjInfo.ObjIndex = puerta.IndexCerrada
+        MapData(x, y, Map).ObjInfo.ObjIndex = puerta.IndexCerrada
         Call BloquearPuerta(Map, x, y, True)
     End If
-    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(Map, x, y).ObjInfo.ObjIndex, MapData(Map, x, y).ObjInfo.amount, x, y))
+    Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(MapData(x, y, Map).ObjInfo.ObjIndex, MapData(x, y, Map).ObjInfo.amount, x, y))
     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, x, y))
     Exit Sub
 Handler:
@@ -783,8 +783,8 @@ End Sub
 
 Sub HandleSignAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
     On Error GoTo Handler
-    If Len(ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).texto) > 0 Then
-        Call WriteShowSignal(UserIndex, MapData(Map, x, y).ObjInfo.ObjIndex)
+    If Len(ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).texto) > 0 Then
+        Call WriteShowSignal(UserIndex, MapData(x, y, Map).ObjInfo.ObjIndex)
     Else
         Call WriteShowPapiro(UserIndex)
     End If
@@ -812,13 +812,13 @@ Sub HandleCampfireTwigAction(ByVal Map As Integer, ByVal x As Integer, ByVal y A
             Call WriteLocaleMsg(UserIndex, MSG_NO_LLOVIENDO_PODES_ENCENDER_FOGATA_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If MapData(Map, x, y).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro = 1 Then
+        If MapData(x, y, Map).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro = 1 Then
             'Msg1077= En zona segura no podés hacer fogatas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_PODES_HACER_FOGATAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If MapData(Map, x - 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x + 1, y).ObjInfo.ObjIndex = FOGATA Or MapData(Map, x, y - 1).ObjInfo.ObjIndex = FOGATA Or MapData( _
-           Map, x, y + 1).ObjInfo.ObjIndex = FOGATA Then
+        If MapData(x - 1, y, Map).ObjInfo.ObjIndex = FOGATA Or MapData(x + 1, y, Map).ObjInfo.ObjIndex = FOGATA Or MapData(x, y - 1, Map).ObjInfo.ObjIndex = FOGATA Or MapData( _
+           x, y + 1, Map).ObjInfo.ObjIndex = FOGATA Then
             'Msg1078= Debes alejarte un poco de la otra fogata.
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_ALEJARTE_POCO_OTRA_FOGATA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub

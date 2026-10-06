@@ -35,27 +35,27 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
             Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj
             Call ActualizarRecurso(.pos.Map, .AutomatedAction.x, .AutomatedAction.y)
-            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
+            MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.data = GetTickCountRaw() ' Ultimo uso
             If .clase = Trabajador Then
                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
             Else
                 MiObj.amount = RandomNumber(1, 2)
             End If
             MiObj.amount = MiObj.amount * SvrConfig.GetValue("RecoleccionMult")
-            If ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).Elfico = 1 Then
+            If ObjData(MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.ObjIndex).Elfico = 1 Then
                 MiObj.ObjIndex = ElvenWood
-            ElseIf ObjData(MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.ObjIndex).Pino = 1 Then
+            ElseIf ObjData(MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.ObjIndex).Pino = 1 Then
                 MiObj.ObjIndex = PinoWood
             Else
                 MiObj.ObjIndex = Wood
             End If
-            If MiObj.amount > MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount Then
-                MiObj.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount
+            If MiObj.amount > MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount Then
+                MiObj.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount
                 'dont call to ResetUserAutomatedAction(UserIndex) because .Automated.x and .Automated.y are being used
                 .AutomatedAction.IsActive = False
                 .Counters.Trabajando = 0
             End If
-            MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount = MapData(.pos.Map, .AutomatedAction.x, .AutomatedAction.y).ObjInfo.amount - MiObj.amount
+            MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount - MiObj.amount
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                 Call TirarItemAlPiso(.pos, MiObj)
@@ -78,7 +78,7 @@ End Sub
 Public Function CanUserExtractWood(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
     With UserList(UserIndex)
         If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
-        If ObjData(MapData(.pos.Map, TargetX, TargetY).ObjInfo.ObjIndex).Elfico > 0 Then
+        If ObjData(MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex).Elfico > 0 Then
             If Not ObjData(.invent.EquippedWorkingToolObjIndex).Elfico > 0 Then
                 Call WriteLocaleMsg(UserIndex, MSG_ONLY_ELVISH_AXE_ALLOWED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function

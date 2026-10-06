@@ -697,7 +697,7 @@ Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As
         NPCHasAUserInFront = False
         Exit Function
     End If
-    UserIndex = MapData(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y).UserIndex
+    UserIndex = MapData(NextPosNPC.x, NextPosNPC.y, NextPosNPC.Map).UserIndex
     NPCHasAUserInFront = (UserIndex > 0)
     Exit Function
 NPCHasAUserInFront_Err:
@@ -741,7 +741,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
             End If
             Dim UserIndexFront As Integer
             NextPosNPC = ComputeNextHeadingPos(AtackerNpcIndex)
-            UserIndexFront = MapData(NextPosNPC.Map, NextPosNPC.x, NextPosNPC.y).UserIndex
+            UserIndexFront = MapData(NextPosNPC.x, NextPosNPC.y, NextPosNPC.Map).UserIndex
             AtacaAlDelFrente = (UserIndexFront > 0)
             If AtacaAlDelFrente And NPCs.CanAttack(.Contadores, .flags) Then
                 Call AnimacionIdle(AtackerNpcIndex, True)
@@ -1049,18 +1049,18 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer, Optional ByVal Searc
         For x = (.Orig.x - SearchRadius) To (.Orig.x + SearchRadius)
             For y = (.Orig.y - SearchRadius) To (.Orig.y + SearchRadius)
                 If InMapBounds(.Orig.Map, x, y) Then
-                    If MapData(.Orig.Map, x, y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, x, y).NpcIndex Then
+                    If MapData(x, y, .Orig.Map).NpcIndex > 0 And NpcIndex <> MapData(x, y, .Orig.Map).NpcIndex Then
                     Dim foundNpc As Integer
-                    foundNpc = MapData(.Orig.Map, x, y).NpcIndex
+                    foundNpc = MapData(x, y, .Orig.Map).NpcIndex
                     If NpcList(foundNpc).flags.OldHostil <> 0 And _
                             NpcList(foundNpc).Attackable <> 0 And _
                             Not IsValidUserRef(NpcList(foundNpc).MaestroUser) And _
                             Not IsGuardNpcType(NpcList(foundNpc).npcType) Then
                         If Not IsValidUserRef(NpcList(foundNpc).TargetUser) Then
-                            BuscarNpcEnArea = MapData(.Orig.Map, x, y).NpcIndex
+                            BuscarNpcEnArea = MapData(x, y, .Orig.Map).NpcIndex
                             Exit Function
                         ElseIf UserList(NpcList(foundNpc).TargetUser.ArrayIndex).flags.NPCAtacado.ArrayIndex <> foundNpc Then
-                            BuscarNpcEnArea = MapData(.Orig.Map, x, y).NpcIndex
+                            BuscarNpcEnArea = MapData(x, y, .Orig.Map).NpcIndex
                             Exit Function
                         End If
                     End If
@@ -1180,13 +1180,13 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
             NextTile = .pos
             Call HeadtoPos(Heading, NextTile)
             ' Si hay un NPC
-            MoveChar = MapData(NextTile.Map, NextTile.x, NextTile.y).NpcIndex
+            MoveChar = MapData(NextTile.x, NextTile.y, NextTile.Map).NpcIndex
             If MoveChar Then
                 ' Lo movemos hacia un lado
                 Call MoveNpcToSide(MoveChar, Heading)
             End If
             ' Si hay un user
-            MoveChar = MapData(NextTile.Map, NextTile.x, NextTile.y).UserIndex
+            MoveChar = MapData(NextTile.x, NextTile.y, NextTile.Map).UserIndex
             If MoveChar Then
                 ' Si no esta muerto o es admin invisible (porque a esos los atraviesa)
                 If UserList(MoveChar).flags.AdminInvisible = 0 Or UserList(MoveChar).flags.Muerto = 0 Then

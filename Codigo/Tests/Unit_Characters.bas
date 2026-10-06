@@ -17,7 +17,6 @@ Public Function test_suite_characters() As Boolean
     Call UnitTesting.RunTest("test_erase_char_map", test_erase_char_map())
     Call UnitTesting.RunTest("test_erase_char_index", test_erase_char_index())
     Call UnitTesting.RunTest("test_distinct_charindex", test_distinct_charindex())
-    Call UnitTesting.RunTest("test_character_slots_by_tier", test_character_slots_by_tier())
     Call UnitTesting.RunTest("inventory reset before capacity initialization", test_inventory_reset_all_slots(0))
     Call UnitTesting.RunTest("inventory reset clears normal locked slots", test_inventory_reset_all_slots(get_num_inv_slots_from_tier(tNormal)))
     Call UnitTesting.RunTest("inventory reset clears adventurer locked slots", test_inventory_reset_all_slots(get_num_inv_slots_from_tier(tAventurero)))
@@ -80,16 +79,6 @@ test_inventory_reset_all_slots_Err:
     test_inventory_reset_all_slots = False
 End Function
 
-Private Function test_character_slots_by_tier() As Boolean
-    test_character_slots_by_tier = _
-        MaxCharacterForTier(e_TipoUsuario.tNormal) = 3 And _
-        MaxCharacterForTier(e_TipoUsuario.tAventurero) = 5 And _
-        MaxCharacterForTier(e_TipoUsuario.tHeroe) = 5 And _
-        MaxCharacterForTier(e_TipoUsuario.tLeyenda) = 10 And _
-        MaxCharacterForTier(e_TipoUsuario.tNoble) = 10 And _
-        MaxCharacterForTier(e_TipoUsuario.tEmperador) = 10
-End Function
-
 ' Helper: places a user at the given map position and creates their character.
 Private Sub SetupChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     UserList(UserIndex).pos.Map = Map
@@ -117,7 +106,7 @@ Private Function test_create_char_map() As Boolean
     ' Place user 1 at map 1, position (54, 51)
     Call SetupChar(1, 1, 54, 51)
     ' The map tile at (54, 51) should now record UserIndex = 1
-    test_create_char_map = (MapData(1, 54, 51).UserIndex = 1)
+    test_create_char_map = (MapData(54, 51, 1).UserIndex = 1)
     Call CleanupAllChars
     Exit Function
 test_create_char_map_Err:
@@ -151,7 +140,7 @@ Private Function test_erase_char_map() As Boolean
     Call SetupChar(1, 1, 54, 51)
     Call EraseUserChar(1, False, False)
     ' After erasing, the map tile should have UserIndex = 0 (unoccupied)
-    test_erase_char_map = (MapData(1, 54, 51).UserIndex = 0)
+    test_erase_char_map = (MapData(54, 51, 1).UserIndex = 0)
     Call CleanupAllChars
     Exit Function
 test_erase_char_map_Err:

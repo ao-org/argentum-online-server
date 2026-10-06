@@ -451,7 +451,7 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
     Dim x As Integer, y As Integer
     For y = UserList(Index).pos.y - MinYBorder + 1 To UserList(Index).pos.y + MinYBorder - 1
         For x = UserList(Index).pos.x - MinXBorder + 1 To UserList(Index).pos.x + MinXBorder - 1
-            If MapData(UserList(Index).pos.Map, x, y).UserIndex = Index2 Then
+            If MapData(x, y, UserList(Index).pos.Map).UserIndex = Index2 Then
                 EstaPCarea = True
                 Exit Function
             End If
@@ -469,11 +469,11 @@ Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer,
     For tY = y - MinYBorder + 1 To y + MinYBorder - 1
         For tX = x - MinXBorder + 1 To x + MinXBorder - 1
             If InMapBounds(Map, tX, tY) Then
-                If MapData(Map, tX, tY).UserIndex > 0 Then
+                If MapData(tX, tY, Map).UserIndex > 0 Then
                     If Not ignoreUserMuerto Then
                         HayPCarea = True
                     Else
-                        If UserList(MapData(Map, tX, tY).UserIndex).flags.Muerto = 0 Then HayPCarea = True
+                        If UserList(MapData(tX, tY, Map).UserIndex).flags.Muerto = 0 Then HayPCarea = True
                     End If
                     Exit Function
                 End If
@@ -491,7 +491,7 @@ Function HayOBJarea(pos As t_WorldPos, ObjIndex As Integer) As Boolean
     Dim x As Integer, y As Integer
     For y = pos.y - MinYBorder + 1 To pos.y + MinYBorder - 1
         For x = pos.x - MinXBorder + 1 To pos.x + MinXBorder - 1
-            If MapData(pos.Map, x, y).ObjInfo.ObjIndex = ObjIndex Then
+            If MapData(x, y, pos.Map).ObjInfo.ObjIndex = ObjIndex Then
                 HayOBJarea = True
                 Exit Function
             End If

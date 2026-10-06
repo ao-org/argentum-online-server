@@ -380,7 +380,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
                         For x = UserList(tUser.ArrayIndex).pos.x - i To UserList(tUser.ArrayIndex).pos.x + i
                             For y = UserList(tUser.ArrayIndex).pos.y - i To UserList(tUser.ArrayIndex).pos.y + i
-                                If MapData(UserList(tUser.ArrayIndex).pos.Map, x, y).UserIndex = 0 Then
+                                If MapData(x, y, UserList(tUser.ArrayIndex).pos.Map).UserIndex = 0 Then
                                     If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) And MapInfo(UserList(tUser.ArrayIndex).pos.Map).Seguro = 0 Then
                                         ' Msg1319=No puedes ir en este momento al Usuario esta en zona insegura. Intenta mas tarde, puedes responderle con un mensaje.
                                         Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_IR_MOMENTO_USUARIO_ZONA_INSEGURA_INTENTA_MAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -2134,14 +2134,14 @@ Public Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         End If
         Call LogGM(GetUserRealName(UserIndex), "/CT " & Mapa & "," & x & "," & y & "," & Motivo)
         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, x, y) Then Exit Sub
-        If MapData(.pos.Map, .pos.x, .pos.y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
-        If MapData(.pos.Map, .pos.x, .pos.y - 1).TileExit.Map > 0 Then Exit Sub
-        If MapData(Mapa, x, y).ObjInfo.ObjIndex > 0 Then
+        If MapData(.pos.x, .pos.y - 1, .pos.Map).ObjInfo.ObjIndex > 0 Then Exit Sub
+        If MapData(.pos.x, .pos.y - 1, .pos.Map).TileExit.Map > 0 Then Exit Sub
+        If MapData(x, y, Mapa).ObjInfo.ObjIndex > 0 Then
             'Msg973= Hay un objeto en el piso en ese lugar
             Call WriteLocaleMsg(UserIndex, MSG_HAY_OBJETO_PISO_ESE_LUGAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        If MapData(Mapa, x, y).TileExit.Map > 0 Then
+        If MapData(x, y, Mapa).TileExit.Map > 0 Then
             'Msg974= No podÃ©s crear un teleport que apunte a la entrada de otro.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CREAR_TELEPORT_APUNTE_ENTRADA_OTRO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
@@ -2157,7 +2157,7 @@ Public Sub HandleTeleportCreate(ByVal UserIndex As Integer)
                 Objeto.ObjIndex = 378
         End Select
         Call MakeObj(Objeto, .pos.Map, .pos.x, .pos.y - 1)
-        With MapData(.pos.Map, .pos.x, .pos.y - 1)
+        With MapData(.pos.x, .pos.y - 1, .pos.Map)
             .TileExit.Map = Mapa
             .TileExit.x = x
             .TileExit.y = y
@@ -2185,7 +2185,7 @@ Public Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
         x = .flags.TargetX
         y = .flags.TargetY
         If Not InMapBounds(Mapa, x, y) Then Exit Sub
-        With MapData(Mapa, x, y)
+        With MapData(x, y, Mapa)
             'Si no tengo objeto y no tengo traslado
             If .ObjInfo.ObjIndex = 0 And .TileExit.Map = 0 Then Exit Sub
             'Si no tengo objeto pero tengo traslado
@@ -2198,7 +2198,7 @@ Public Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
             ElseIf .ObjInfo.ObjIndex > 0 And ObjData(.ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport Then
                 Call LogGM(UserList(UserIndex).name, "/DT: " & Mapa & "," & x & "," & y)
                 Call EraseObj(.ObjInfo.amount, Mapa, x, y)
-                If MapData(.TileExit.Map, .TileExit.x, .TileExit.y).ObjInfo.ObjIndex = 651 Then
+                If MapData(.TileExit.x, .TileExit.y, .TileExit.Map).ObjInfo.ObjIndex = 651 Then
                     Call EraseObj(1, .TileExit.Map, .TileExit.x, .TileExit.y)
                 End If
                 .TileExit.Map = 0
@@ -2352,8 +2352,8 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         For y = .pos.y - MinYBorder + 1 To .pos.y + MinYBorder - 1
             For x = .pos.x - MinXBorder + 1 To .pos.x + MinXBorder - 1
                 If x > 0 And y > 0 And x < 101 And y < 101 Then
-                    If MapData(.pos.Map, x, y).ObjInfo.ObjIndex > 0 Then
-                        If ItemNoEsDeMapa(MapData(.pos.Map, x, y).ObjInfo.ObjIndex) Then
+                    If MapData(x, y, .pos.Map).ObjInfo.ObjIndex > 0 Then
+                        If ItemNoEsDeMapa(MapData(x, y, .pos.Map).ObjInfo.ObjIndex) Then
                             Call EraseObj(GetMaxInvOBJ(), .pos.Map, x, y)
                         End If
                     End If
@@ -2382,7 +2382,7 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         Dim y     As Long
         For x = 5 To 95
             For y = 5 To 95
-                tObj = MapData(.pos.Map, x, y).ObjInfo.ObjIndex
+                tObj = MapData(x, y, .pos.Map).ObjInfo.ObjIndex
                 If tObj > 0 Then
                     If ObjData(tObj).OBJType <> e_OBJType.otTrees Then
                         Call WriteConsoleMsg(UserIndex, "(" & x & "," & y & ") " & ObjData(tObj).name, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2451,7 +2451,7 @@ Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
         tTrigger = reader.ReadInt8()
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         If tTrigger >= 0 Then
-            MapData(.pos.Map, .pos.x, .pos.y).trigger = tTrigger
+            MapData(.pos.x, .pos.y, .pos.Map).trigger = tTrigger
             tLog = "Trigger " & tTrigger & " on the map " & .pos.Map & " " & .pos.x & "," & .pos.y
             Call LogGM(GetUserRealName(UserIndex), tLog)
             Call WriteConsoleMsg(UserIndex, tLog, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2468,7 +2468,7 @@ Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
     Dim tTrigger As Byte
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        tTrigger = MapData(.pos.Map, .pos.x, .pos.y).trigger
+        tTrigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
         Call LogGM(GetUserRealName(UserIndex), "Miro el trigger en " & .pos.Map & "," & .pos.x & "," & .pos.y & ". Era " & tTrigger)
         Call WriteLocaleMsg(UserIndex, MSG_TRIGGER, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, "MAP " & .pos.Map & "," & .pos.x & "," & .pos.y & ". = " & tTrigger) ' Msg1498=Trigger Â¬1
     End With
@@ -2547,7 +2547,7 @@ Public Sub HandleDestroyItems(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_COMANDO_DESHABILITADO_CARGO, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
             Exit Sub
         End If
-        If MapData(.pos.Map, .pos.x, .pos.y).ObjInfo.ObjIndex = 0 Then Exit Sub
+        If MapData(.pos.x, .pos.y, .pos.Map).ObjInfo.ObjIndex = 0 Then Exit Sub
         Call LogGM(GetUserRealName(UserIndex), "/DEST")
         Call EraseObj(GetMaxInvOBJ(), .pos.Map, .pos.x, .pos.y)
     End With
@@ -2638,12 +2638,12 @@ Public Sub HandleTile_BlockedToggle(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Call LogGM(GetUserRealName(UserIndex), "/BLOQ")
-        If MapData(.pos.Map, .pos.x, .pos.y).Blocked = 0 Then
-            MapData(.pos.Map, .pos.x, .pos.y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
+        If MapData(.pos.x, .pos.y, .pos.Map).Blocked = 0 Then
+            MapData(.pos.x, .pos.y, .pos.Map).Blocked = e_Block.ALL_SIDES Or e_Block.GM
         Else
-            MapData(.pos.Map, .pos.x, .pos.y).Blocked = 0
+            MapData(.pos.x, .pos.y, .pos.Map).Blocked = 0
         End If
-        Call Bloquear(True, .pos.Map, .pos.x, .pos.y, IIf(MapData(.pos.Map, .pos.x, .pos.y).Blocked > 0, e_Block.ALL_SIDES, 0))
+        Call Bloquear(True, .pos.Map, .pos.x, .pos.y, IIf(MapData(.pos.x, .pos.y, .pos.Map).Blocked > 0, e_Block.ALL_SIDES, 0))
     End With
     Exit Sub
 HandleTile_BlockedToggle_Err:
@@ -2685,8 +2685,8 @@ Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         For y = .pos.y - MinYBorder + 1 To .pos.y + MinYBorder - 1
             For x = .pos.x - MinXBorder + 1 To .pos.x + MinXBorder - 1
                 If x > 0 And y > 0 And x < 101 And y < 101 Then
-                    If MapData(.pos.Map, x, y).NpcIndex > 0 Then
-                        Call QuitarNPC(MapData(.pos.Map, x, y).NpcIndex, eGMCommand)
+                    If MapData(x, y, .pos.Map).NpcIndex > 0 Then
+                        Call QuitarNPC(MapData(x, y, .pos.Map).NpcIndex, eGMCommand)
                     End If
                 End If
             Next x
@@ -3389,8 +3389,8 @@ Public Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
             For i = StartX To EndX
                 For j = StartY To EndY
                     If InMapBounds(.pos.Map, i, j) Then
-                        If MapData(.pos.Map, i, j).UserIndex > 0 Then
-                            Call UserMod.Inmovilize(UserIndex, MapData(.pos.Map, i, j).UserIndex, CuentaRegresivaTimer, 0)
+                        If MapData(i, j, .pos.Map).UserIndex > 0 Then
+                            Call UserMod.Inmovilize(UserIndex, MapData(i, j, .pos.Map).UserIndex, CuentaRegresivaTimer, 0)
                         End If
                     End If
                 Next j
