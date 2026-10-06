@@ -102,6 +102,7 @@ Module=Unit_ElapsedTime; Codigo\Tests\Unit_ElapsedTime.bas
 Module=Unit_Timer; Codigo\Tests\Unit_Timer.bas
 Module=Unit_Queue; Codigo\Tests\Unit_Queue.bas
 Module=Unit_UserNames; Codigo\Tests\Unit_UserNames.bas
+Module=Unit_PlayerTrade; Codigo\Tests\Unit_PlayerTrade.bas
 Module=Unit_General; Codigo\Tests\Unit_General.bas
 Module=Unit_Factions; Codigo\Tests\Unit_Factions.bas
 Module=Unit_Commerce; Codigo\Tests\Unit_Commerce.bas

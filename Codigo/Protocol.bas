@@ -3859,6 +3859,14 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         Dim ElementalTags As Long
         Slot = reader.ReadInt8()
         amount = reader.ReadInt32()
+        If ((Slot < 1 Or Slot > .CurrentInventorySlots) And Slot <> FLAGORO) Or amount <= 0 Then
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
+            Exit Sub
+        End If
+        If Not .flags.Comerciando Or .flags.Muerto = 1 Then
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
+            Exit Sub
+        End If
         If Slot <> FLAGORO Then
             'Natural elemental tags are the one in the object
             'User added elemental tags are the one in the user slots
@@ -3867,26 +3875,31 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         'Is the commerce attempt valid??
         If Not IsValidUserRef(.ComUsu.DestUsu) Then
             Call FinComerciarUsu(UserIndex)
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
             Exit Sub
         End If
         'Get the other player
         tUser = .ComUsu.DestUsu.ArrayIndex
         If UserList(tUser).ComUsu.DestUsu.ArrayIndex <> UserIndex Then
             Call FinComerciarUsu(UserIndex)
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
             Exit Sub
         End If
-        'If Amount is invalid, or slot is invalid and it's not gold, then ignore it.
-        If ((Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots) And Slot <> FLAGORO) Or amount <= 0 Then Exit Sub
         'Is the other player valid??
-        If tUser < 1 Or tUser > MaxUsers Then Exit Sub
+        If tUser < 1 Or tUser > MaxUsers Then
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
+            Exit Sub
+        End If
         'Is he still logged??
         If Not UserList(tUser).flags.UserLogged Then
             Call FinComerciarUsu(UserIndex)
+            Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
             Exit Sub
         Else
             'Is he alive??
             If UserList(tUser).flags.Muerto = 1 Then
                 Call FinComerciarUsu(UserIndex)
+                Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                 Exit Sub
             End If
             'Has he got enough??
@@ -3895,6 +3908,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 If amount > .Stats.GLD Then
                     'Msg1138= No tienes esa cantidad.
                     Call WriteLocaleMsg(UserIndex, MSG_TIENES_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                     Exit Sub
                 End If
             Else
@@ -3902,25 +3916,27 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 If amount > .invent.Object(Slot).amount Then
                     'Msg1139= No tienes esa cantidad.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_1139, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                     Exit Sub
                 End If
                 If .invent.Object(Slot).ObjIndex > 0 Then
                     If ObjData(.invent.Object(Slot).ObjIndex).Instransferible = 1 Then
                         'Msg1140= Este objeto es intransferible, no podés venderlo.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_OBJETO_INTRANSFERIBLE_PODES_VENDERLO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+                        Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                         Exit Sub
                     End If
                     If ObjData(.invent.Object(Slot).ObjIndex).Newbie = 1 Then
                         'Msg1141= No puedes comerciar objetos newbie.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_COMERCIAR_OBJETOS_NEWBIE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+                        Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                         Exit Sub
                     End If
                 End If
             End If
-            'Prevent offer changes (otherwise people would ripp off other players)
-            If .ComUsu.Objeto > 0 Then
-                'Msg1142= No podés cambiar tu oferta.
-                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_CAMBIAR_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+            'Accepted proposals stay locked until the other offer changes.
+            If .ComUsu.Acepto Then
+                Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                 Exit Sub
             End If
             'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
@@ -3928,6 +3944,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 If .invent.EquippedShipSlot = Slot Then
                     'Msg1143= No podés vender tu barco mientras lo estás usando.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_BARCO_MIENTRAS_USANDO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                     Exit Sub
                 End If
             End If
@@ -3935,16 +3952,12 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 If .invent.EquippedSaddleSlot = Slot Then
                     'Msg1144= No podés vender tu montura mientras la estás usando.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_VENDER_MONTURA_MIENTRAS_USANDO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    Call WriteChangeUserTradeSlot(UserIndex, .ComUsu.itemsAenviar, .ComUsu.Oro, True)
                     Exit Sub
                 End If
             End If
             .ComUsu.Objeto = Slot
             .ComUsu.cant = amount
-            'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
-            If UserList(tUser).ComUsu.Acepto Then
-                UserList(tUser).ComUsu.Acepto = False
-                Call WriteLocaleMsg(tUser, MSG_CAMBIADO_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, GetUserDisplayName(UserIndex)) ' Msg1951=¬1 ha cambiado su oferta.
-            End If
             Dim ObjAEnviar As t_Obj
             ObjAEnviar.amount = amount
             ObjAEnviar.ElementalTags = ElementalTags

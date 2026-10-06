@@ -58,6 +58,8 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
         Erase UserList(Destino).ComUsu.itemsAenviar
         UserList(Destino).ComUsu.Oro = 0
         UserList(Origen).ComUsu.Oro = 0
+        UserList(Origen).ComUsu.Acepto = False
+        UserList(Destino).ComUsu.Acepto = False
         'Call EnviarObjetoTransaccion(Origen)
     Else
         'Es el primero que comercia ?
@@ -72,82 +74,86 @@ ErrHandler:
     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 End Function
 
+Public Function SafeTradeOfferedAmount(ByRef items() As t_Obj, ByVal objectIndex As Integer, ByVal tags As Long) As Long
+    On Error GoTo SafeTradeOfferedAmount_Err
+    Dim i As Long
+    For i = LBound(items) To UBound(items)
+        If items(i).ObjIndex = objectIndex And items(i).ElementalTags = tags Then
+            SafeTradeOfferedAmount = SafeTradeOfferedAmount + items(i).amount
+        End If
+    Next i
+    Exit Function
+SafeTradeOfferedAmount_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.SafeTradeOfferedAmount", Erl)
+End Function
+
+' Apply an addition atomically. A full board cannot silently drop a remainder
+' or lose elemental tags when splitting a stack between two offer positions.
+Public Function AddSafeTradeOffer(ByRef items() As t_Obj, ByRef offeredGold As Long, ByRef item As t_Obj, ByVal availableGold As Long, ByVal maxStack As Long) As Boolean
+    On Error GoTo AddSafeTradeOffer_Err
+    If item.amount <= 0 Or maxStack <= 0 Then Exit Function
+    If item.ObjIndex = 0 Then
+        If item.amount > availableGold - offeredGold Then Exit Function
+        offeredGold = offeredGold + item.amount
+        AddSafeTradeOffer = True
+        Exit Function
+    End If
+    Dim proposed() As t_Obj
+    Dim i          As Long
+    Dim remaining  As Long
+    Dim addition   As Long
+    ReDim proposed(LBound(items) To UBound(items))
+    For i = LBound(items) To UBound(items)
+        proposed(i) = items(i)
+    Next i
+    remaining = item.amount
+    For i = LBound(proposed) To UBound(proposed)
+        If proposed(i).ObjIndex = item.ObjIndex And proposed(i).ElementalTags = item.ElementalTags Then
+            addition = min(remaining, maxStack - proposed(i).amount)
+            If addition > 0 Then
+                proposed(i).amount = proposed(i).amount + addition
+                remaining = remaining - addition
+            End If
+        End If
+    Next i
+    For i = LBound(proposed) To UBound(proposed)
+        If remaining > 0 And proposed(i).ObjIndex = 0 Then
+            proposed(i) = item
+            proposed(i).amount = min(remaining, maxStack)
+            remaining = remaining - proposed(i).amount
+        End If
+    Next i
+    If remaining > 0 Then Exit Function
+    For i = LBound(items) To UBound(items)
+        items(i) = proposed(i)
+    Next i
+    AddSafeTradeOffer = True
+    Exit Function
+AddSafeTradeOffer_Err:
+    Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AddSafeTradeOffer", Erl)
+End Function
+
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
     On Error GoTo EnviarObjetoTransaccion_Err
-    Dim FirstEmptyPos     As Byte
-    Dim FoundPos          As Byte
-    Dim nada              As Boolean
-    Dim cantidadTotalItem As Long
-    'Me fijo si recibe oro
-    If ObjAEnviar.ObjIndex = 0 Then
-        'Si es oro simplemente me fijo si ya había agregado antes y se lo sumo
-        If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
-            UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
-        Else
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1936=No tienes esa cantidad disponible para agregar.
-            Exit Sub
-        End If
-    Else
-        Dim j As Long
-        'me fijo si tiene esas cantidades para que no duplique items
-        For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
-            If UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(j).ElementalTags = ObjAEnviar.ElementalTags _
-                    Then
-                cantidadTotalItem = cantidadTotalItem + UserList(UserIndex).ComUsu.itemsAenviar(j).amount
-            End If
-        Next j
-        cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
-        If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex, ObjAEnviar.ElementalTags) Then
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR_1997, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1997=No tienes esa cantidad disponible para agregar.
-            Exit Sub
-        End If
-        'Si es un item recorro todo el array para ver si ese elemento ya está agregado y de paso me guardo la primer posición vacía
-        Dim i As Long
-        For i = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
-            'Si encuentro el item y tiene lugar pongo Found en la posición que lo encontré
-            If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).ElementalTags = ObjAEnviar.ElementalTags _
-                    And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
-                'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
-                If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= GetMaxInvOBJ() Then
-                    'Si le entra simplemente le agrego las cantidades
-                    UserList(UserIndex).ComUsu.itemsAenviar(i).amount = UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount
-                    nada = True
-                    Exit For
-                    'Si no le entra la cantidad en ese slot me guardo la posición y mas adelante me fijo si hay otra posición libre.
-                Else
-                    FoundPos = i
-                End If
-                'Si no encuentra item en la pos y todavía no guardó ninguna primera posición me la guardo.
-            ElseIf UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = 0 And FirstEmptyPos = 0 Then
-                FirstEmptyPos = i
-            End If
-        Next i
-        With UserList(UserIndex).ComUsu
-            'Si tengo una posición encontrada con un item y a su ves 1 slot vacío para agregar los restantes de ese item
-            If FoundPos > 0 And FirstEmptyPos > 0 Then
-                Dim restante As Long
-                restante = .itemsAenviar(FoundPos).amount + ObjAEnviar.amount - 10000
-                If FoundPos > FirstEmptyPos Then
-                    .itemsAenviar(FoundPos).amount = restante
-                    .itemsAenviar(FirstEmptyPos).amount = 10000
-                Else
-                    .itemsAenviar(FoundPos).amount = 10000
-                    .itemsAenviar(FirstEmptyPos).amount = restante
-                End If
-                .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
-            ElseIf FoundPos = 0 And FirstEmptyPos <> 0 Then
-                'Si entré aca es porque tengo que guardar el item en la pos vacía que encontré
-                .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
-                .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
-                .itemsAenviar(FirstEmptyPos).ElementalTags = ObjAEnviar.ElementalTags
-            ElseIf FirstEmptyPos = 0 And nada = False Then
-                'le aviso que no le entran los items
-                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString) ' Msg1998=No tienes suficiente lugar para agregar esa cantidad o item.
-            End If
-        End With
+    Dim hasItems As Boolean
+    hasItems = True
+    If ObjAEnviar.ObjIndex > 0 Then
+        hasItems = TieneObjetos(ObjAEnviar.ObjIndex, SafeTradeOfferedAmount(UserList(UserIndex).ComUsu.itemsAenviar, ObjAEnviar.ObjIndex, ObjAEnviar.ElementalTags) + ObjAEnviar.amount, UserIndex, ObjAEnviar.ElementalTags)
     End If
-    'Le envío la data al cliente para agregar en la lista.
-    Call WriteChangeUserTradeSlot(AQuien, UserList(UserIndex).ComUsu.itemsAenviar, UserList(UserIndex).ComUsu.Oro, False)
+    If Not hasItems Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_AGREGAR_1997, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString)
+    ElseIf Not AddSafeTradeOffer(UserList(UserIndex).ComUsu.itemsAenviar, UserList(UserIndex).ComUsu.Oro, ObjAEnviar, UserList(UserIndex).Stats.GLD, GetMaxInvOBJ()) Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_LUGAR_AGREGAR_ESA_CANTIDAD, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, vbNullString)
+    Else
+        ' Keep the existing accept packet and server authority. An addition
+        ' invalidates the OTHER player's prior acceptance before publishing it.
+        If UserList(AQuien).ComUsu.Acepto Then
+            UserList(AQuien).ComUsu.Acepto = False
+            Call WriteLocaleMsg(AQuien, MSG_CAMBIADO_OFERTA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR, GetUserDisplayName(UserIndex))
+        End If
+        Call WriteChangeUserTradeSlot(AQuien, UserList(UserIndex).ComUsu.itemsAenviar, UserList(UserIndex).ComUsu.Oro, False)
+    End If
+    ' Echo even an unchanged board after a rejected addition.
     Call WriteChangeUserTradeSlot(UserIndex, UserList(UserIndex).ComUsu.itemsAenviar, UserList(UserIndex).ComUsu.Oro, True)
     Exit Sub
 EnviarObjetoTransaccion_Err:
@@ -212,12 +218,12 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     Dim i As Long
     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
-        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex, objOfrecido.elementalTags) Then
+        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, SafeTradeOfferedAmount(UserList(OtroUserIndex).ComUsu.itemsAenviar, objOfrecido.ObjIndex, objOfrecido.elementalTags), OtroUserIndex, objOfrecido.elementalTags) Then
             Call WriteLocaleMsg(OtroUserIndex, MSG_NO_OTRO_USUARIO_TIENE_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1599= El otro usuario no tiene esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
-        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex, objOfrecido.elementalTags) Then
+        If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, SafeTradeOfferedAmount(UserList(UserIndex).ComUsu.itemsAenviar, objOfrecido.ObjIndex, objOfrecido.elementalTags), UserIndex, objOfrecido.elementalTags) Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ESA_CANTIDAD_DISPONIBLE_OFRECER, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja) 'Msg1598= No tienes esa cantidad disponible para ofrecer.
             GoTo FinalizarComercio
         End If
