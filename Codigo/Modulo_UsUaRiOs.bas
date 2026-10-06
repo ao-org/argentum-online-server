@@ -2262,17 +2262,14 @@ End Sub
 
 Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Boolean = False)
     On Error GoTo Cerrar_Usuario_Err
+    Dim logoutMap As Integer
     With UserList(UserIndex)
         If IsFeatureEnabled("debug_connections") Then
             Call AddLogToCircularBuffer("Cerrar_Usuario: " & UserIndex & ", force close: " & forceClose & ", usrLogged: " & .flags.UserLogged & ", Saliendo: " & .Counters.Saliendo)
         End If
         If .flags.UserLogged And Not .Counters.Saliendo Then
-            .Counters.Saliendo = True
-            If MapInfo(.pos.Map).zone = "DUNGEON" Then
-                .Counters.Salir = IntervaloCerrarConexionEnDungeon
-            Else
-                .Counters.Salir = IntervaloCerrarConexion
-            End If
+            ' Capture cleanup can warp the user; preserve the original map's logout delay.
+            logoutMap = .pos.Map
             If .flags.Traveling = 1 Then
                 ' Msg576=Se ha cancelado el viaje a casa
                 Call WriteLocaleMsg(UserIndex, MSG_HA_CANCELADO_VIAJE_CASA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2293,11 +2290,18 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                     Call InstanciaCaptura.eliminarParticipante(InstanciaCaptura.GetPlayer(UserIndex))
                 End If
             End If
-            Call WriteLocaleMsg(UserIndex, MSG_GAME_CLOSING_IN_SECONDS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
-            If EsGM(UserIndex) Or MapInfo(.pos.Map).Seguro = 1 Or forceClose Then
+            If EsGM(UserIndex) Or .flags.Muerto = 1 Or MapInfo(.pos.Map).Seguro = 1 Or forceClose Then
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
+                Exit Sub
             End If
+            .Counters.Saliendo = True
+            If MapInfo(logoutMap).zone = "DUNGEON" Then
+                .Counters.Salir = IntervaloCerrarConexionEnDungeon
+            Else
+                .Counters.Salir = IntervaloCerrarConexion
+            End If
+            Call WriteLocaleMsg(UserIndex, MSG_GAME_CLOSING_IN_SECONDS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
         End If
     End With
     Exit Sub
