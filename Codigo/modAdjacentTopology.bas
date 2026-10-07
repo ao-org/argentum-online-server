@@ -222,7 +222,7 @@ Public Function SpatialTransitionMatchesEdge(ByVal FromMap As Integer, _
 End Function
 
 Private Function IsTopologyMapSafe(ByVal MapId As Integer) As Boolean
-    If MapId > 0 And MapId <= NumMaps Then IsTopologyMapSafe = (MapInfo(MapId).Seguro <> 0)
+    If MapId > 0 And MapId <= NumMaps Then IsTopologyMapSafe = (HasMapZoneFlag(MapId, e_ZoneFlags.Safe))
 End Function
 
 Private Function EdgeKey(ByVal FromMap As Long, ByVal ToMap As Long) As String

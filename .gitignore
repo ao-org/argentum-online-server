@@ -37,3 +37,7 @@ vb6build.log
 *.pdb
 /dumps
 _assets
+
+# Python migration/test caches
+__pycache__/
+*.pyc

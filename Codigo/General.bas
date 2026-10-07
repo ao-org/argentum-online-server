@@ -402,7 +402,7 @@ Sub ApagarFogatas()
     For MapaActual = 1 To NumMaps
         For y = YMinMapSize To YMaxMapSize
             For x = XMinMapSize To XMaxMapSize
-                If MapInfo(MapaActual).lluvia Then
+                If HasMapZoneFlag(MapaActual, e_ZoneFlags.Rain) Then
                     If MapData(x, y, MapaActual).ObjInfo.ObjIndex = FOGATA Then
                         Call EraseObj(GetMaxInvOBJ(), MapaActual, x, y)
                         Call MakeObj(obj, MapaActual, x, y)
@@ -648,9 +648,9 @@ Sub Main()
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
             Call ResetShipTravelTimer
-            MapInfo(BarcoNavegandoForgatNix.Map).ForceUpdate = True
-            MapInfo(BarcoNavegandoNixArghal.Map).ForceUpdate = True
-            MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
+            Call SetMapZoneFlag(BarcoNavegandoForgatNix.Map, e_ZoneFlags.ForceUpdateAi, True)
+            Call SetMapZoneFlag(BarcoNavegandoNixArghal.Map, e_ZoneFlags.ForceUpdateAi, True)
+            Call SetMapZoneFlag(BarcoNavegandoArghalForgat.Map, e_ZoneFlags.ForceUpdateAi, True)
         End If
     End With
     Call ResetGameEventsTimer
@@ -826,9 +826,7 @@ End Sub
 Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
     On Error GoTo Intemperie_Err
     If MapInfo(UserList(UserIndex).pos.Map).zone <> "DUNGEON" Then
-        If MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger <> 1 And MapData(UserList( _
-                UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger <> 2 And MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger _
-                < 10 Then Intemperie = True
+        Intemperie = Not HasTileFlag(MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger, e_Trigger.UnderRoof)
     Else
         Intemperie = False
     End If
@@ -1147,11 +1145,8 @@ End Sub
 
 Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
     On Error GoTo RecStamina_Err
-    Dim trigger As Long
     Dim Suerte  As Integer
     With UserList(UserIndex)
-        trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
-        If trigger = 1 And trigger = 2 And trigger = 4 Then Exit Sub
         If .Stats.MinSta < .Stats.MaxSta Then
             If .Counters.STACounter < Intervalo Then
                 .Counters.STACounter = .Counters.STACounter + 1
@@ -1354,8 +1349,6 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
     On Error GoTo Sanar_Err
     ' Desnudo no regenera vida
     If UserList(UserIndex).flags.Desnudo = 1 Then Exit Sub
-    If MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger = 1 And MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, _
-            UserList(UserIndex).pos.Map).trigger = 2 And MapData(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(UserIndex).pos.Map).trigger = 4 Then Exit Sub
     Dim mashit As Integer
     'con el paso del tiempo va sanando....pero muy lentamente ;-)
     If UserList(UserIndex).flags.RegeneracionHP = 1 Then
@@ -1878,18 +1871,30 @@ Private Function GetElapsed() As Single
 End Function
 
 Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
-    Dim script As String
-    script = FileText(FilePath)
-    script = Replace(Replace(script, Chr(10), ""), Chr(13), "")
-    Dim RS As Recordset
-    If script <> vbNullString Then
-        Set RS = Query(script)
-        If RS Is Nothing Then
-            RunScriptInFile = False
-            Exit Function
-        End If
-    End If
+    On Error GoTo RunScriptInFile_Err
+    Dim statements As Collection, statement As Variant, RS As Recordset
+    Dim scriptError As String, attemptedSql As Boolean
+    Set statements = SplitMigrationSql(FileText(FilePath))
+    For Each statement In statements
+        attemptedSql = True
+        Set RS = Query(CStr(statement))
+        If RS Is Nothing Then GoTo RollbackScript
+        If RS.State = adStateOpen Then Call RS.Close()
+    Next statement
     RunScriptInFile = True
+    Exit Function
+RunScriptInFile_Err:
+    DBError = Err.Description
+    If Not attemptedSql Then Exit Function
+RollbackScript:
+    ' A later statement may fail after BEGIN. Keep the original diagnostic even
+    ' if rollback itself reports that no transaction was open.
+    scriptError = DBError
+    Set RS = Query("ROLLBACK;")
+    DBError = scriptError
+    If Not RS Is Nothing Then
+        If RS.State = adStateOpen Then Call RS.Close()
+    End If
 End Function
 
 'Reads the files inside the ScriptsDB folder, it can be a create table, alter, etc.

@@ -123,7 +123,7 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal
             If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
         End If
         ' Trigger inválido para NPCs
-        If .trigger = e_Trigger.POSINVALIDA Then
+        If HasTileFlag(.trigger, e_Trigger.AntiNpcRespawn) Then
             ' Si no es mascota
             If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then Exit Function
         End If

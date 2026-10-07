@@ -687,6 +687,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
     Call Writer.WriteInt16(Map)
     Call Writer.WriteInt16(MapInfo(Map).MapResource)
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call ReplayTileProperties(UserIndex, Map)
     Exit Sub
 WriteChangeMap_Err:
     Call Writer.Clear
@@ -4774,4 +4775,19 @@ Public Sub WriteShowPickUpObj(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 WriteShowPickUpObj_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPickUpObj", Erl)
+End Sub
+
+Public Sub WriteHooTileProperties(ByVal userIndex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal flags As Long)
+    On Error GoTo WriteHooTileProperties_Err
+    If Not UserSupportsHooCapability(userIndex, HOO_CAP_TILE_PROPERTIES_V1) Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooTileProperties)
+    Call Writer.WriteInt16(map)
+    Call Writer.WriteInt16(x)
+    Call Writer.WriteInt16(y)
+    Call Writer.WriteInt32(flags)
+    Call modSendData.SendData(ToIndex, userIndex)
+    Exit Sub
+WriteHooTileProperties_Err:
+    Call Writer.Clear()
+    Call TraceError(Err.Number, Err.Description, "WriteHooTileProperties", Erl)
 End Sub

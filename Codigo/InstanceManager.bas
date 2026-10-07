@@ -74,6 +74,11 @@ End Sub
 
 Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestMapIndex As Integer, ByRef TranslationMappings() As t_TranslationMapping)
     MapInfo(DestMapIndex) = MapInfo(SourceMapIndex)
+    Set MapInfo(DestMapIndex).CastleEntrances = CopyPropertyDictionary(MapInfo(SourceMapIndex).CastleEntrances)
+    Set MapInfo(DestMapIndex).StaticCastleEntrances = CopyPropertyDictionary(MapInfo(SourceMapIndex).StaticCastleEntrances)
+    Set MapInfo(DestMapIndex).LegacyCastleEntrances = CopyPropertyDictionary(MapInfo(SourceMapIndex).LegacyCastleEntrances)
+    Set MapInfo(DestMapIndex).RoofSeams = CopyPropertyDictionary(MapInfo(SourceMapIndex).RoofSeams)
+    Set MapInfo(DestMapIndex).TileOverrides = CopyPropertyDictionary(MapInfo(SourceMapIndex).TileOverrides)
     MapInfo(DestMapIndex).MapResource = SourceMapIndex
     Dim PosX             As Integer
     Dim PosY             As Integer

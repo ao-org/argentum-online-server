@@ -22,13 +22,19 @@ function Extract-Block([string]$source, [string]$pattern) {
 # No server startup, network connection, database, or live map files are used.
 $commands = Read-Source 'Codigo/Protocol_GmCommands.bas'
 $declares = Read-Source 'Codigo/Declares.bas'
+$tileProperties = Read-Source 'Codigo/modTileProperties.bas'
+$gameLogic = Read-Source 'Codigo/GameLogic.bas'
 $blocks = @(
     'Attribute VB_Name = "TriggerUnderTest"',
     'Option Explicit',
+    (Extract-Block $tileProperties '^Public Const KNOWN_TILE_FLAGS As Long = [0-9]+'),
     (Extract-Block $declares '^Public Enum e_PlayerType\r?\n.*?^End Enum'),
     (Extract-Block $declares '^Public Enum e_Trigger\r?\n.*?^End Enum'),
     (Extract-Block $commands '^Public Sub HandleSetTrigger\(.*?^End Sub'),
-    (Extract-Block $commands '^Public Sub HandleAskTrigger\(.*?^End Sub')
+    (Extract-Block $commands '^Public Sub HandleAskTrigger\(.*?^End Sub'),
+    (Extract-Block $tileProperties '^Public Function SetTileTriggerFlags\(.*?^End Function'),
+    (Extract-Block $tileProperties '^Public Function TilePropertyKey\(.*?^End Function'),
+    (Extract-Block $gameLogic '^Public Function EsGM\(.*?^End Function')
 )
 [IO.File]::WriteAllText((Join-Path $output 'trigger_under_test.bas'), ($blocks -join "`r`n`r`n"), $encoding)
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'harness.bas') -Destination $output
@@ -39,6 +45,7 @@ $networkReference = $networkReference.Replace('#Aurora.Network.dll#', '#..\..\Au
 $project = @(
     'Type=Exe',
     $networkReference,
+    'Reference=*\G{420B2830-E718-11CF-893D-00A0C9054228}#1.0#0#C:\Windows\SysWOW64\scrrun.dll#Microsoft Scripting Runtime',
     'Module=TriggerUnderTest; trigger_under_test.bas',
     'Module=TriggerHarness; harness.bas',
     'Startup="Sub Main"',

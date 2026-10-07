@@ -541,7 +541,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         If .flags.Privilegios And e_PlayerType.Consejero Then
             Exit Function
         End If
-        If MapInfo(.pos.Map).SinMagia And Not IsSet(Hechizos(HechizoIndex).SpellRequirementMask, eIsSkill) Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic) And Not IsSet(Hechizos(HechizoIndex).SpellRequirementMask, eIsSkill) Then
             'Msg779= Una fuerza mística te impide lanzar hechizos en esta zona.
             Call WriteLocaleMsg(UserIndex, MSG_FUERZA_MISTICA_IMPIDE_LANZAR_HECHIZOS_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Function
@@ -770,7 +770,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         Select Case Hechizos(spellId).Invoca
             Case 1
                 ' Invocar nuevas criaturas
-                If MapInfo(.pos.Map).NoMascotas Then
+                If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoPets) Then
                     Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
@@ -841,7 +841,7 @@ Public Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     Exit Sub
                 End If
 
-                If MapInfo(.pos.Map).NoMascotas Then
+                If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoPets) Then
                     Call WriteLocaleMsg(UserIndex, MSG_GRAN_PODER_IMPIDE_INVOCAR_CRIATURAS_MAPA_786, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
@@ -1222,7 +1222,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             If .Stats.MinSta < 0 Then .Stats.MinSta = 0
             If IsSet(Hechizos(uh).Effects, e_SpellEffects.Resurrect) Then
                 If Not PeleaSegura(UserIndex, .flags.TargetUser.ArrayIndex) Then
-                    If MapInfo(.pos.Map).Seguro = 0 Then
+                    If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                         Dim costoVidaResu As Long
                         costoVidaResu = UserList(.flags.TargetUser.ArrayIndex).Stats.ELV * 1.5 + .Stats.MinHp * 0.45
                         Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
@@ -1518,7 +1518,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
         End If
-        If MapInfo(UserList(targetUserIndex).pos.Map).SinInviOcul Then
+        If HasMapZoneFlag(UserList(targetUserIndex).pos.Map, e_ZoneFlags.NoInvisibility) Then
             'Msg797= Una fuerza divina te impide usar invisibilidad en esta zona.
             Call WriteLocaleMsg(UserIndex, MSG_FUERZA_DIVINA_IMPIDE_USAR_INVISIBILIDAD_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
@@ -3063,6 +3063,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             b = False
             Exit Sub
         End If
+        If CrossesPvPArenaBoundary(UserIndex, tempChr) And Not HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.SafeFight) And HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) Then
+            b = False
+            Exit Sub
+        End If
         'Para poder tirar curar a un pk en el ring
         If Not PeleaSegura(UserIndex, tempChr) Then
             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
@@ -3077,12 +3081,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                     Exit Sub
                 End If
             End If
-            Dim trigger As e_Trigger6
-            trigger = TriggerZonaPelea(UserIndex, tempChr)
-            ' Están en zona segura en un ring e intenta curarse desde afuera hacia adentro o viceversa
-        ElseIf trigger = TRIGGER6_PROHIBE And MapInfo(UserList(UserIndex).pos.Map).Seguro <> 0 Then
-            b = False
-            Exit Sub
         End If
         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
         Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
@@ -3345,6 +3343,10 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         If UserList(targetUserIndex).flags.Muerto = 1 Then
             'Msg77=¡¡Estás muerto!!.
             Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+            b = False
+            Exit Sub
+        End If
+        If CrossesPvPArenaBoundary(UserIndex, targetUserIndex) And Not HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.SafeFight) And HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) Then
             b = False
             Exit Sub
         End If

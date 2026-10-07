@@ -807,12 +807,12 @@ Sub HandleCampfireTwigAction(ByVal Map As Integer, ByVal x As Integer, ByVal y A
             Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If MapInfo(Map).lluvia And Lloviendo Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.Rain) And Lloviendo Then
             'Msg1076= Esta lloviendo, no podés encender una fogata aquí.
             Call WriteLocaleMsg(UserIndex, MSG_NO_LLOVIENDO_PODES_ENCENDER_FOGATA_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If MapData(x, y, Map).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro = 1 Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.Safe) Then
             'Msg1077= En zona segura no podés hacer fogatas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_PODES_HACER_FOGATAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub

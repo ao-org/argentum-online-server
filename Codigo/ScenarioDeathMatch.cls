@@ -279,10 +279,10 @@ Private Sub ClearMap()
     On Error GoTo ClearMap_Err:
     CustomScenarios.RemoveCustomScenario (MapNumber)
     CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-    MapInfo(MapNumber).DropItems = MapDropItems
-    MapInfo(MapNumber).Seguro = PrevMapState
-    MapInfo(MapNumber).SafeFightMap = SafeFigthState
-    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.DropItems, MapDropItems)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, PrevMapState)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.SafeFight, SafeFigthState)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.FriendlyFire, FriendlyFireState)
     Dim i As Integer
     If FightAreaTopLeft.x < FightAreaBottomRight.x Then
         For i = FightAreaTopLeft.x - 1 To FightAreaBottomRight.x + 1
@@ -520,7 +520,7 @@ Private Sub Respawn(ByVal player As Integer)
 End Sub
 
 Private Sub MatchCompleted()
-    MapInfo(MapNumber).Seguro = 1
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, 1)
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
@@ -535,8 +535,8 @@ Private Sub MatchCompleted()
         Call GiveRewards
     End If
     Call CustomScenarios.ClearMap(MapNumber)
-    MapInfo(MapNumber).Seguro = 1
-    MapInfo(MapNumber).SafeFightMap = False
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, 1)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.SafeFight, False)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
@@ -611,20 +611,20 @@ Private Sub SpawnItem(ByVal ItemId As Integer, ByVal StackSize As Integer)
 End Sub
 
 Private Sub ConfigMapEvent()
-    MapInfo(MapNumber).Seguro = 0
-    MapInfo(MapNumber).SinInviOcul = True
-    MapInfo(MapNumber).SafeFightMap = True
-    MapInfo(MapNumber).FriendlyFire = False
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, 0)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.NoInvisibility, True)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.SafeFight, True)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.FriendlyFire, False)
 End Sub
 
 Private Sub ConfigMapLobby()
-    PrevMapState = MapInfo(MapNumber).Seguro
-    MapDropItems = MapInfo(MapNumber).DropItems
-    SafeFigthState = MapInfo(MapNumber).SafeFightMap
-    FriendlyFireState = MapInfo(MapNumber).FriendlyFire
-    MapInfo(MapNumber).Seguro = 1
-    MapInfo(MapNumber).SinInviOcul = True
-    MapInfo(MapNumber).DropItems = False
+    PrevMapState = HasMapZoneFlag(MapNumber, e_ZoneFlags.Safe)
+    MapDropItems = HasMapZoneFlag(MapNumber, e_ZoneFlags.DropItems)
+    SafeFigthState = HasMapZoneFlag(MapNumber, e_ZoneFlags.SafeFight)
+    FriendlyFireState = HasMapZoneFlag(MapNumber, e_ZoneFlags.FriendlyFire)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, 1)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.NoInvisibility, True)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.DropItems, False)
 End Sub
 
 Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)

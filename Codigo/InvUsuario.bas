@@ -1428,7 +1428,7 @@ Dim Ropaje                      As Integer
                 'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
-                        If Not MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.ZonaSegura And Not MapInfo(.pos.Map).Seguro = 1 Then
+                        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                             If .Stats.MinAGU < .Stats.MaxAGU Or _
                                 .Stats.MinHam < .Stats.MaxHam Or _
                                 .Stats.MinHp < .Stats.MaxHp Or _
@@ -1721,7 +1721,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
         Dim TimeSinceLastUse As Double: TimeSinceLastUse = TicksElapsed(.CdTimes(obj.cdType), nowRaw)
         If TimeSinceLastUse < obj.Cooldown Then Exit Sub
         If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
-            If MapInfo(.pos.Map).Seguro = 0 Then
+            If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                 ' Msg678=Solo podes usar este objeto en mapas seguros.
                 Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_OBJETO_MAPAS_SEGUROS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Exit Sub
@@ -2193,7 +2193,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         End If
                         ' Poción runa
                     Case 14
-                        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
+                        If IsPrisonMap(.pos.Map) Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2547,7 +2547,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 If obj.Real Then    '¿Es el Cuerno Real?
                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
-                        If MapInfo(.pos.Map).Seguro = 1 Then
+                        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                             'Msg907= No hay Peligro aquí. Es Zona Segura
                             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2561,7 +2561,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     End If
                 ElseIf obj.Caos Then    '¿Es el Cuerno Legión?
                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
-                        If MapInfo(.pos.Map).Seguro = 1 Then
+                        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                             'Msg909= No hay Peligro aquí. Es Zona Segura
                             Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PELIGRO_AQUI_ZONA_SEGURA_909, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2591,23 +2591,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call WriteLocaleMsg(UserIndex, MSG_RECORRER_MARES_DEBES_NIVEL_SUPERIOR_912, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                         Exit Sub
                     End If
-                ElseIf .invent.Object(Slot).ObjIndex = iObjTrajeAltoNw Or .invent.Object(Slot).ObjIndex = iObjTrajeBajoNw Then
-                    If (.flags.Navegando = 0 Or (.invent.EquippedShipObjIndex <> iObjTrajeAltoNw And .invent.EquippedShipObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.x + 1, _
-                       .pos.y, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x, _
-                       .pos.y + 1, .pos.Map).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.DETALLEAGUA Then
-                        'Msg913= Este traje es para aguas contaminadas.
-                        Call WriteLocaleMsg(UserIndex, MSG_TRAJE_AGUAS_CONTAMINADAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                ElseIf .invent.Object(Slot).ObjIndex = iObjTraje Then
-                    If (.flags.Navegando = 0 Or .invent.EquippedShipObjIndex <> iObjTraje) And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And _
-                       MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.x, .pos.y + 1, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO _
-                       And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> _
-                       e_Trigger.VALIDONADO And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.VALIDONADO And MapData(.pos.x, .pos.y + 1, .pos.Map).trigger <> _
-                       e_Trigger.VALIDONADO And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.VALIDONADO And MapData(.pos.x + 1, .pos.y, .pos.Map).trigger <> _
-                       e_Trigger.NADOBAJOTECHO And MapData(.pos.x - 1, .pos.y, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.x, .pos.y + _
-                       1, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.x, .pos.y - 1, .pos.Map).trigger <> e_Trigger.NADOBAJOTECHO Then
-                        'Msg914= Este traje es para zonas poco profundas.
+                ElseIf IsSwimmingSuit(.invent.Object(Slot).ObjIndex) Then
+                    If (.flags.Navegando = 0 Or Not IsSwimmingSuit(.invent.EquippedShipObjIndex)) And Not HasAdjacentSwimSuitPath(.pos.Map, .pos.x, .pos.y) Then
                         Call WriteLocaleMsg(UserIndex, MSG_TRAJE_ZONAS_POCO_PROFUNDAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -2659,7 +2644,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
                         End If
-                        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
+                        If IsPrisonMap(.pos.Map) Then
                             ' Msg691=No podés usar la runa estando en la cárcel.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Exit Sub
@@ -2717,12 +2702,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
                 End If
-                If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
+                If IsPrisonMap(.pos.Map) Then
                     ' Msg691=No podés usar la runa estando en la cárcel.
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
                 End If
-                If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+                If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) And .flags.Muerto = 0 Then
                     ' Msg692=Solo podes usar tu runa en zonas seguras.
                     Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
@@ -2815,13 +2800,11 @@ Public Function IsConsumableFreeZone(ByVal UserIndex As Integer) As Boolean
     Dim isSpecialZone  As Boolean
     Dim isTrainingZone As Boolean
     Dim isArena        As Boolean
-    Dim triggerStatus As e_Trigger6
 
-    triggerStatus = TriggerZonaPelea(UserIndex, UserIndex)
     ' Obtener el mapa actual del usuario
     currentMap = UserList(UserIndex).pos.Map
     ' Verificar si está en zona con trigger activo
-    isTriggerZone = (triggerStatus = e_Trigger6.TRIGGER6_PERMITE)
+    isTriggerZone = IsInPvPArena(UserIndex)
     ' Verificar si es un usuario con tier de suscripción
     isTierUser = IsPatreon(UserIndex)
     ' Zona de casas/sotanos arenas: mapas del 600 al 749 con trigger activo

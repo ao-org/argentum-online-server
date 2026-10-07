@@ -351,7 +351,7 @@ End Sub
             If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
                 If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList( _
+                        If UserList(tempIndex).flags.Muerto = 0 Or HasMapZoneFlag(UserList(tempIndex).pos.Map, e_ZoneFlags.Safe) Or (UserList(UserIndex).GuildIndex > 0 And UserList( _
                                 UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Or IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
                             enviaDatos = True
                             If UserList(UserIndex).flags.AdminInvisible = 1 Then
@@ -599,7 +599,7 @@ SendToUserAreaButindex_Err:
         If SourceUser.flags.AdminInvisible = 1 Then
             If Not CanPrivilegesSeeAdminInvisible(TargetUser.flags.Privilegios, SourceUser.flags.Privilegios, True) Then Exit Function
         End If
-        If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet( _
+        If Not (TargetUser.flags.Muerto = 0 Or HasMapZoneFlag(TargetUser.pos.Map, e_ZoneFlags.Safe) Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet( _
                 TargetUser.flags.StatusMask, e_StatusMask.eTalkToDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalkToDead)) Then Exit Function
         If Not EsGM(TargetIndex) Then
             If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not CheckGuildSend(SourceUser, TargetUser) And SourceUser.flags.Navegando = 0 Then
