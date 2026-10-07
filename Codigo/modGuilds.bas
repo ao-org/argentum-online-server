@@ -148,7 +148,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 UserList(UserReference.ArrayIndex).GuildIndex = 0
                 Map = UserList(UserReference.ArrayIndex).pos.Map
-                If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+                If HasMapZoneFlag(Map, e_ZoneFlags.ClansOnly) And MapInfo(Map).Salida.Map <> 0 Then
                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.x, MapInfo(Map).Salida.y, True)
                     Call WriteLocaleMsg(UserReference.ArrayIndex, MSG_NECESITAS_CLAN_PERTENECER_MAPA, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1941=Necesitas un clan para pertenecer en este mapa.
                 Else
@@ -170,7 +170,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 Call guilds(GI).ExpulsarMiembro(ExpellUserId)
                 Call LogClanes(ExpelledName & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
                 Map = GetMapDatabase(ExpelledName)
-                If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+                If HasMapZoneFlag(Map, e_ZoneFlags.ClansOnly) And MapInfo(Map).Salida.Map <> 0 Then
                     Call SetPositionDatabase(ExpelledName, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.x, MapInfo(Map).Salida.y)
                 End If
                 m_EcharMiembroDeClan = GI

@@ -109,7 +109,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         End If
         ' Update animation
         Dim sendTarget As sendTarget
-        sendTarget = IIf(MapInfo(.pos.Map).Seguro = 1, ToIndex, ToPCAliveArea)
+        sendTarget = IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe), ToIndex, ToPCAliveArea)
         Call SendData(sendTarget, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         ' Validate fishing tool
         Dim WorkingTool As t_Obj
@@ -140,7 +140,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         levelBonus = 1 + FishingLevelBonus(fishingLevel)
         fishingRodBonus = PoderCanas(ObjData(WorkingTool.ObjIndex).Power) / 10
         totalBonus = fishingRodBonus * levelBonus * SvrConfig.GetValue("RecoleccionMult")
-        If MapInfo(.pos.Map).Seguro <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
             totalBonus = totalBonus * PorcentajePescaSegura / 100
         End If
         ' Attempt to catch fish
@@ -173,7 +173,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         ' Handle unique map fish replacement
         If IsUniqueMapFish(fishingCatch.ObjIndex) And .pos.Map <> SvrConfig.GetValue("FISHING_MAP_SPECIAL_FISH1_ID") Then
             fishingCatch.ObjIndex = SvrConfig.GetValue("FISHING_SPECIALFISH1_REMPLAZO_ID")
-            If MapInfo(.pos.Map).Seguro = 0 Then
+            If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                 Dim NpcIndex As Integer
                 NpcIndex = SpawnNpc(SvrConfig.GetValue("NPC_WATCHMAN_ID"), .pos, True, False)
             End If
@@ -198,7 +198,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             Exit Sub
         End If
         ' Handle fishing pool depletion (only in non-safe zones)
-        If MapInfo(.pos.Map).Seguro = 0 Then
+        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
             Dim fishingPoolId As Integer
             Dim TargetX       As Integer
             Dim TargetY       As Integer
@@ -247,7 +247,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         End If
 SkillImprovement:
         ' Improve fishing skill (only outside safe zones)
-        If MapInfo(.pos.Map).Seguro = 0 Then
+        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
             Call SubirSkill(UserIndex, e_Skill.Pescar)
         End If
         .Counters.Trabajando = .Counters.Trabajando + 1
@@ -413,7 +413,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
             Exit Function
         End If
         ' Check for invalid fishing trigger
-        If MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.PESCAINVALIDA Then
+        If HasTileFlag(MapData(.pos.x, .pos.y, .pos.Map).trigger, e_Trigger.NoFishing) Then
             Call WriteLocaleMsg(UserIndex, MSG_FISHING_AREA_NOT_AUTHORIZED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If

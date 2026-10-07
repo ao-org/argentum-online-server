@@ -318,7 +318,7 @@ Public Function CanPlayerJoin(ByRef instance As t_Lobby, ByVal UserIndex As Inte
             CanPlayerJoin.Message = MsgNotEnouthMoneyToParticipate
             Exit Function
         End If
-        If MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
+        If IsPrisonMap(.pos.Map) Then
             CanPlayerJoin.Success = False
             CanPlayerJoin.Message = MsgYouAreInJail
             Exit Function

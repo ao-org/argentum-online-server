@@ -185,14 +185,14 @@ Sub WorldSave()
     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
     Dim j As Integer, k As Integer
     For j = 1 To NumMaps
-        If MapInfo(j).backup_mode = 1 Then k = k + 1
+        If HasMapZoneFlag(j, e_ZoneFlags.Backup) Then k = k + 1
     Next j
     FrmStat.ProgressBar1.Min = 0
     FrmStat.ProgressBar1.max = k
     FrmStat.ProgressBar1.value = 0
     For LoopX = 1 To NumMaps
         'DoEvents
-        If MapInfo(LoopX).backup_mode = 1 Then
+        If HasMapZoneFlag(LoopX, e_ZoneFlags.Backup) Then
             FrmStat.ProgressBar1.value = FrmStat.ProgressBar1.value + 1
         End If
     Next LoopX

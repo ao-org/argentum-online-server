@@ -1,16 +1,16 @@
 # Trigger and map schema migration
 
-The server, Heroes of Old (HOO), and `argentum-online-assets` will move from exclusive numeric tile triggers to independent tile flags, map-wide zone flags, spatial roof regions, and castle references. This specification defines the coordinated implementation and data conversion. It is a design-only deliverable; the gameplay, database, and binary map migrations require later implementation. The preparatory GM-only `/trigger` command is delivered in separate HOO and server PRs: its set payload becomes a nonnegative 32-bit value, and HOO gains query and set commands.
+The server, Heroes of Old (HOO), and `argentum-online-assets` will move from exclusive numeric tile triggers to independent tile flags, map-wide zone flags, spatial roof regions, and castle references. This specification defines the coordinated implementation and data conversion. The migration is implemented on the coordinated migration branches; production deployment still requires the offline database conversion, matched client/server builds, and converted assets. The preparatory GM-only `/trigger` command is delivered in separate HOO and server PRs: its set payload becomes a nonnegative 32-bit value, and HOO gains query and set commands.
 
-The three planning PRs share branch `codex/trigger-map-schema-migration` and title **Prepare trigger and map schema migration**. Command implementation uses separate `codex/trigger-command-long` branches and PRs. HOO and assets keep repository-specific checklists in `docs/trigger_migration.md` and `docs/trigger-migration.md`, respectively. Review bit allocation, header layout, and roof seams as proposed contracts before implementing them.
+The three migration PRs share branch `codex/trigger-map-schema-migration` and title **Migrate triggers and map properties to bitmasks**. Command implementation uses separate `codex/trigger-command-long` branches and PRs. HOO and assets keep repository-specific checklists in `docs/trigger_migration.md` and `docs/trigger-migration.md`, respectively. Bit allocation, header layout, and roof seams are shared implementation contracts.
 
 ## Repository responsibilities
 
 | Repository | Required work |
 |---|---|
-| `argentum-online-server` | Flag definitions and consumers, map-wide prison checks, new map reader, castle schema migration and ID lookup, runtime entrance bindings, 32-bit GM command, authoritative tile-change notification, regression tests. |
+| `argentum-online-server` | Flag definitions and consumers, all map flags in ZoneFlags, map-wide prison checks, new map reader, castle schema migration and ID lookup, runtime entrance bindings, 32-bit GM command, authoritative tile-change notification, regression tests. |
 | `heroes-of-old` | Matching flags and binary reader, world state and movement consumers, roof flood fill and fading, GM command and help, tile-change handling, parser and rendering tests. Keep implementation in the owning modules; the application composition root only wires services. |
-| `argentum-online-assets` | Convert every distributed map to the new binary schema, update trigger labels and map tooling, publish format fixtures and a conversion manifest, rebuild asset packs containing maps. The local checkout currently named `Recursos` has this repository as its origin. |
+| `argentum-online-assets` | Convert every distributed map to the new binary schema and map flags, update trigger labels and map tooling, publish format fixtures and a conversion manifest, rebuild asset packs containing maps. The local checkout currently named `Recursos` has this repository as its origin. |
 
 Ship compatible server, HOO, and assets revisions together. The old VB6 client is outside the implementation target; an old client cannot safely send the new set-trigger packet or read the new maps.
 
@@ -23,7 +23,7 @@ Use PascalCase for every new trigger member. Historical IDs identify conversion 
 | `None` | None | 0 | `0x00000000` |
 | `UnderRoof` | 0 | 1 | `0x00000001` |
 | `AntiNpcRespawn` | 1 | 2 | `0x00000002` |
-| `WayUnblocker` | 2 | 4 | `0x00000004` |
+| `PathUnblocker` | 2 | 4 | `0x00000004` |
 | `PvPArena` | 3 | 8 | `0x00000008` |
 | `AutoResurrection` | 4 | 16 | `0x00000010` |
 | `SwimSuitPath` | 5 | 32 | `0x00000020` |
@@ -44,7 +44,7 @@ Test a single flag with `(flags And flag) <> 0`. When testing a collection, dist
 | 2 | `trigger_2` | `AntiNpcRespawn` |
 | 3 | `POSINVALIDA` | `AntiNpcRespawn`; merge both NPC behaviors |
 | 4 | `ZonaSegura` | Clear completely |
-| 5 | `ANTIPIQUETE` | `WayUnblocker` |
+| 5 | `ANTIPIQUETE` | `PathUnblocker` |
 | 6 | `ZONAPELEA` | `PvPArena` |
 | 7 | `AUTORESU` | `AutoResurrection` |
 | 8 | `DETALLEAGUA` | `SwimSuitPath` |
@@ -73,9 +73,9 @@ Clearing a trigger removes its dedicated behavior. It does not delete graphics, 
 
 `AntiNpcRespawn` prevents NPC spawning and ordinary NPC movement/pathfinding onto the tile. This intentionally adds the old ID 3 movement restriction to tiles that previously had ID 2. Preserve explicit pet and movement-ignore exceptions where the owning NPC functions already provide them. It has no rendering behavior.
 
-`WayUnblocker` retains the current obstruction timer, warnings, reset behavior, and eventual disconnect. `AutoResurrection` retains resurrection and healing. `NoFishing` only controls fishing. `GhostOnlyTranslator` retains the dead-only tile-transfer rule and is evaluated before executing that transfer.
+`PathUnblocker` retains the current obstruction timer, warnings, reset behavior, and eventual disconnect. `AutoResurrection` retains resurrection and healing. `NoFishing` only controls fishing. `GhostOnlyTranslator` retains the dead-only tile-transfer rule and is evaluated before executing that transfer.
 
-`SwimSuitPath` replaces the separate path categories for rubber suits, ordinary swimming suits, and combined swimming. Use one path predicate for movement, login equipment selection, and equip/unequip checks. Both existing suit families should qualify for this path during the transition; retain an already equipped valid suit and use a deterministic existing inventory order when selecting one at login. Removing item definitions or changing suit bonuses is a separate item-system change. Preserve water on converted ID 8, 11, and 18 tiles explicitly, because the old loaders restore `FLAG_AGUA` from these IDs. Do not restore water implicitly from cleared ID 16.
+`SwimSuitPath` replaces the separate path categories for rubber suits, ordinary swimming suits, and combined swimming. Use one path predicate for movement, login equipment selection, and equip/unequip checks. Both existing suit families should qualify for this path during the transition; retain an already equipped valid suit and use a deterministic existing inventory order when selecting one at login. Removing item definitions or changing suit bonuses is a separate item-system change. Preserve water on converted ID 8, 11, and 18 tiles explicitly, because the old loaders restore `FLAG_AGUA` from these IDs. Do not restore water implicitly from cleared ID 16. Live `SwimSuitPath` edits also affect the authoritative server water predicate: it checks the swimming flag or independently authored physical water. Clearing the flag never removes authored water bits.
 
 Remove numeric-range rules such as `trigger < 12`, `trigger > 10`, and `trigger < 50`. They currently mix NPC spawning, mounting, weather exposure, and warp placement with unrelated trigger IDs. Implement each rule from the relevant named property, physical terrain, tile exit, or existing map setting. Do not carry incidental restrictions into the new flags solely because a historical number happened to satisfy a range. Under-roof weather shelter comes from `UnderRoof` plus existing map environment settings. Any additional mounting policy needs an explicit design decision, not another ordering dependency.
 
@@ -90,15 +90,46 @@ Remove numeric-range rules such as `trigger < 12`, `trigger > 10`, and `trigger 
 | Yes | No | Arena boundary crossing |
 | No | Yes | Arena boundary crossing |
 
-Use small predicates such as `IsInPvPArena`, `BothInPvPArena`, and `CrossesPvPArenaBoundary`. Preserve existing explicit map-wide `SafeFightMap` overrides in the owning combat policy. Theft remains prohibited if either participant is in an arena. Death, drop, citizenship, and equipment callers that compare a user with itself use the single-user predicate. Healing must evaluate the boundary predicate before using its result; the current `modHechizos.bas` branch assigns a local result in one branch and examines it in another.
+Use small predicates such as `IsInPvPArena`, `BothInPvPArena`, and `CrossesPvPArenaBoundary`. Preserve existing explicit map-wide `ZoneFlags.SafeFight` overrides in the owning combat policy. Theft remains prohibited if either participant is in an arena. Death, drop, citizenship, and equipment callers that compare a user with itself use the single-user predicate. Healing must evaluate the boundary predicate before using its result; the current `modHechizos.bas` branch assigns a local result in one branch and examines it in another.
 
 Two arena tiles can have different additional flags and still allow arena combat. Never compare their complete masks for equality.
 
-## Map-wide prison property
+## Map-wide ZoneFlags
 
-Add `ZoneFlags As Long` to server map information and a matching 32-bit field to HOO map metadata. Define PascalCase zone members independently of tile flags: `None = 0`, `Prison = 1`.
+Store every former `MapInfo` Boolean or flag byte in one authoritative `ZoneFlags As Long`, with matching 32-bit values in HOO and the map header. These flags apply to the entire map. `zonas.dat` and rectangular region overrides are outside this change. Tile flags and map flags are separate enums even when their numbers overlap.
 
-If any legacy tile has ID 19, set `Prison` for the entire map and clear all ID 19 tiles. For the scanned baseline, map 66 becomes a prison throughout its bounds. Replace every former jail-tile restriction with a check of the current map's `Prison` property, including lobby, challenge, teleport, item, and command restrictions. This expansion from painted prison tiles to the whole map is intentional. Existing textual map zones and safety settings remain independent fields in the initial migration.
+| Flag | Bit | Decimal |
+|---|---:|---:|
+| `None` | None | 0 |
+| `Prison` | 0 | 1 |
+| `Safe` | 1 | 2 |
+| `NewbieOnly` | 2 | 4 |
+| `NoMagic` | 3 | 8 |
+| `NoCriminals` | 4 | 16 |
+| `NoCitizens` | 5 | 32 |
+| `NoInvisibility` | 6 | 64 |
+| `ClansOnly` | 7 | 128 |
+| `NoPets` | 8 | 256 |
+| `GroupsOnly` | 9 | 512 |
+| `PatreonOnly` | 10 | 1024 |
+| `CityResurrection` | 11 | 2048 |
+| `DropItems` | 12 | 4096 |
+| `SafeFight` | 13 | 8192 |
+| `FriendlyFire` | 14 | 16384 |
+| `KeepInvisibilityOnAttack` | 15 | 32768 |
+| `Rain` | 16 | 65536 |
+| `Snow` | 17 | 131072 |
+| `Fog` | 18 | 262144 |
+| `Backup` | 19 | 524288 |
+| `ForceUpdateAi` | 20 | 1048576 |
+
+The known map mask is `2097151` (`0x001FFFFF`); bits 21 through 30 remain reserved. `HasMapZoneFlag` reads one flag and `SetMapZoneFlag` changes it while preserving all other bits. GM handlers, event scenarios, backup selection, AI scheduling, combat, weather and movement consume this same mask. Remove the individual flag fields from runtime `MapInfo`; retain ordinary names, music, terrain, light values, level limits, positions, counts and collections as their existing data types.
+
+If any legacy tile has ID 19, set `Prison` for the entire map and clear all ID 19 tiles. For the scanned baseline, map 66 becomes a prison throughout its bounds. Every former jail-tile restriction checks the current map's `Prison`, including lobby, challenge, teleport, item and command restrictions. This expansion from painted prison tiles to the whole map is intentional.
+
+At the legacy boundary, shift the nine `restrict_mode` bits into ZoneFlags bits 2 through 10; case-insensitive `NEWBIE` means restriction bit 1, and other nonnumeric values mean zero. Convert nonzero `Seguro`, backup, rain, snow and fog bytes into their corresponding flags. Add `CityResurrection`, `KeepInvisibilityOnAttack` and `ForceUpdateAi` from the map's nonzero entries in `Map.dat` sections `RESUCIUDAD`, `KeepInviOnAttack` and `ForceUpdateAi`; missing entries are false. Start `FriendlyFire` true and `SafeFight` false. Start `DropItems` true unless the map ID appears among `MapasEspeciales.dat` `[MapasNoDrop]` `Mapa1` through `Mapa<Cantidad>` entries. Runtime scenario changes and boat AI scheduling continue to change the corresponding flags. Conversion records the exact configuration input checksums.
+
+CSM3 version 2 reads its flags exclusively from the header. It does not reapply legacy metadata, `Map.dat` or legacy no-drop defaults. The writer saves current flags, so changed map properties survive a write/read cycle without a second, contradictory source of truth.
 
 ## Roof detection and fading
 
@@ -123,7 +154,7 @@ For an outside anchor `(x, y)`, the current castle builder creates four restrict
 
 Resolve the castle by the entrance's ID, then check that castle's placement, activity, ownership, and whitelist before transfer. Owner lookup is a separate operation used when finding a player's castle. Remove the current owner-or-trigger search: it can select a player's own castle when that player is entering another one.
 
-Creation, relocation, destruction, and map reload must update these bindings without clearing unrelated tile flags. Validate a relocation before publishing it, remove all old entrance bindings, and register the new ones with the matching portal changes. Unknown or invalid castle references deny access with an actionable log. Whitelists can store normalized character names as membership; their values no longer need to contain an old trigger number.
+Creation, relocation, destruction, and map reload must update these bindings without clearing unrelated tile flags. Validate a relocation before publishing it, remove all old entrance bindings, and register the new ones with the matching portal changes. Unknown or invalid castle references deny access with an actionable log. A founding or relocation relic resolves its configured stable castle ID before looking up the runtime slot. Unowned slots may be founded; an already-owned slot requires the same account before any old placement is removed. A relic cannot overwrite another account’s castle. Whitelists can store normalized character names as membership; their values no longer need to contain an old trigger number.
 
 ## Production castle baseline
 
@@ -191,7 +222,7 @@ Implement the database operation as a versioned migration with these steps:
 3. Preflight coordinate bounds and parent references. Classify castle 2 as owned and unplaced and castles 16 through 20 as unconfigured. Partial zero triples, orphan references, duplicate bindings, or invalid nonzero coordinates require correction before publication.
 4. In one transaction, create and populate replacement tables using explicit `INSERT ... SELECT` columns. Preserve IDs and raw stored timestamp/name values. Convert only `(0,0,0)` outside coordinates to `(NULL,NULL,NULL)`. Preserve all 20 castles and exactly the 15 existing coordinate rows.
 5. Use SQLite's table-rebuild procedure on the installed SQLite version, including preservation of indexes and inbound foreign keys. If foreign-key enforcement must be disabled for the rebuild, do so before beginning the transaction, never rely on changing it inside a transaction, and restore it afterward. Do not use a destructive historical castle seed script: it would erase the owners and dates shown above.
-6. Verify foreign keys, bidirectional row comparisons excluding the intentionally removed `trigger` column, normalized coordinate comparisons, whitelist equality, and primary-key/autoincrement continuity before committing. Record the schema migration version. A repeated run validates the target version and performs no second conversion.
+6. Verify foreign keys, bidirectional row comparisons excluding the intentionally removed `trigger` column, normalized coordinate comparisons, whitelist equality, and primary-key/autoincrement continuity before committing. Record the dated migration in the existing `migrations` history. A repeated run validates the target schema and performs no second conversion.
 7. Rebuild the runtime entrance dictionaries and verify the eight expected bindings. Save and reload every retained castle state by stable ID. Keep the legacy mapping in the migration report for audit and rollback; gameplay no longer consults it.
 
 Rehearse on a production backup. Rollback restores the pre-migration database together with the matching old binaries and assets; do not attempt a lossy reverse conversion after new combinations or relocations have been saved.
@@ -200,14 +231,14 @@ Rehearse on a production backup. Rollback restores the pre-migration database to
 
 Introduce a distinct `CSM3` signature. Do not widen a field inside the existing four-layer or five-layer format without changing its signature. Keep readers for the legacy formats during migration, using the conversion table to produce the same new in-memory representation. New writers emit only the new format.
 
-All numeric fields use little endian, with explicit field widths and no implicit compiler padding or VB6 whole-UDT serialization. The proposed version 1 header is:
+All numeric fields use little endian, with explicit field widths and no implicit compiler padding or VB6 whole-UDT serialization. The version 2 header is 76 bytes before metadata:
 
 | Field in order | Encoding |
 |---|---|
 | Magic | Four bytes `43 53 4D 33` (`CSM3`) |
-| SchemaVersion | UInt16, value 1 |
+| SchemaVersion | UInt16, value 2 |
 | LayerCount | UInt16, value 5 |
-| ZoneFlags | UInt32, initially only `Prison` supported |
+| ZoneFlags | UInt32, known mask `2097151` |
 | BlockedCount | UInt32 |
 | LayerCounts | Five UInt32 values |
 | TriggerCount | UInt32 |
@@ -219,9 +250,13 @@ All numeric fields use little endian, with explicit field widths and no implicit
 | CastleEntryCount | UInt32 |
 | RoofSeamCount | UInt32 |
 | Bounds | Existing four Int16 fields in order XMax, XMin, YMax, YMin |
-| Metadata | Existing metadata fields, order, and string encoding, serialized explicitly |
+| Metadata | Compact version 2 fields listed below, serialized explicitly |
 
-After metadata, retain the existing section order: blocks, graphics layers 1 through 5, triggers, particles, lights, NPCs, objects, and tile exits. Append castle entries and roof seams. Preserve all unaffected record fields and their existing byte encodings.
+Version 2 metadata retains this exact order: `map_name` string, `music_numberHi` Int32, `music_numberLow` Int32, `zone` string, `terrain` string, `ambient` string, `base_light` Int32, `letter_grh` Int32, `level` Int32, `extra2` Int32, `Salida` string. Each string has a UInt16 byte length followed by that many Windows-1252 bytes, without a terminator. The former backup byte, restriction string, safety byte, and trailing rain/snow/fog bytes are removed; their properties exist only in ZoneFlags. CSM3 version 1 was a development intermediate and is rejected. Legacy four-layer and W5L2 readers retain their old metadata layout solely for explicit conversion.
+
+Legacy all-zero bounds are a sentinel for the existing 100 by 100 grid. Legacy readers resolve that sentinel to `(XMax, XMin, YMax, YMin) = (100, 1, 100, 1)`; the converter writes those explicit bounds and records the normalization. CSM3 rejects zero or reversed bounds. No other bounds values are inferred.
+
+After metadata, retain the existing section order: blocks, graphics layers 1 through 5, triggers, particles, lights, objects, NPCs, and tile exits. Append castle entries and roof seams. Preserve all unaffected record fields and their existing byte encodings.
 
 | Changed or new record | Fields |
 |---|---|
@@ -270,3 +305,22 @@ Acceptance requires all 773 baseline maps to parse after conversion, all retaine
 - Castle history: `ScriptsDB/20260624-03-create castle whitelist table.sql`, `20260624-04-create castle coordinates.sql`, and the July 2026 castle scripts. Use them to understand the schema, not to reseed production.
 - HOO: `source/pymmoclient/assets/csm_map.h`, `assets/csm_parser.cpp`, `world/world_map.*`, `client/game_command_*`, `client/game_console_input_controller.*`, `client/ingame_ui_flow.cpp`, and `networking/game/vb6_protocol.*`.
 - Assets: `Mapas/*.csm` and `init/triggers.ini`; inventory additional map readers/writers and packed copies before release.
+
+
+## Server implementation and validation
+
+`modTileProperties.bas` owns flag predicates, legacy conversion, sparse castle entrance lookup, map-wide prison checks, runtime GM edits, and replay of accepted edits. `FileIO.bas` reads scalar fields with explicit widths, validates all sections before publishing a map or spawning NPCs, and provides `SaveMapCsm3`. This writer requires a new output path, preserves source metadata, and saves only authored castle references; production placements remain database state. Instance cloning copies dictionaries to avoid sharing mutable overrides between maps.
+
+The authoritative tile update is server packet **206**, followed by `map: Int16`, `x: Int16`, `y: Int16`, and `flags: Int32` (12 bytes including packet ID). Capability protocol version 1 bit **0x10** gates transmission. Accepted changes are replayed on map entry and capability negotiation. Unauthorized GM commands and unknown mask bits do not alter a tile. The migration branch routes the existing set handler through this validation; the separate command PR #1849 supplies its Int32 input payload. Deploy both changes together. Query locals are widened here because `CastleFoundationPosition = 256` must remain readable.
+
+The canonical database migration is `ScriptsDB/20261007-01-migrate castle identities.sql`, executed by the existing dated SQL migration runner. Its normal `migrations.date` key is `20261007-01`. The offline tool `tools/castle_migration.py` rehearses and validates that same SQL using a consistent source snapshot and separate output, with no in-place or overwrite mode:
+
+```text
+python tools/castle_migration.py --source backup.db --maps converted-maps --dry-run
+python tools/castle_migration.py --source backup.db --maps converted-maps --output migrated.db
+python -m unittest discover -s tools -p test_castle_migration.py
+```
+
+The target records `20261007-01` in the existing `migrations` history and retains `castle_legacy_trigger_map` only for loading historical maps. There is no separate castle migration history table. Server startup validates this history entry, removal of the legacy trigger column, nullable outside-coordinate columns and valid castle mapping identities. The existing ODBC driver accepts one SQL statement per execution. The migration runner splits statements outside single/double/backtick/bracket quotes and line/block comments, parses the whole script before execution, and rolls back failures while preserving the original database error. Compound CREATE TRIGGER bodies are rejected explicitly; none of the existing dated scripts define one. The castle SQL requires SQLite 3.35 or newer for DROP COLUMN. Ownership and entry access use stable castle IDs. Active unplaced castles and slots with no interior remain preserved; those slots cannot be placed until configured.
+
+`tools/test_map_schema.py` generates an isolated VB6 harness directly from the production parser, writer, flag helpers, and packet writer. It stubs gameplay services and never starts the server or opens a database. Run `tools/test_map_schema.ps1 -Fixtures <assets>/tools/fixtures/csm3 -Maps <assets>/Mapas` to compile and execute the generated `build/map-schema-tests/tests.vbp` with the native compiler. Pass the candidate converted directory to `-Maps` to validate the release batch. `tools/map_schema_harness.bas` checks invalid input rejection, the shared all-section fixture, writer round trips, the complete 773-map inventory, merged flags, prison, castle references, arena combinations, GM authorization, capability gating, exact packet bytes, late-user replay, and dictionary isolation. Use a process-local `__COMPAT_LAYER=RunAsInvoker` for VB6 compilation to avoid requesting Windows administrator elevation.

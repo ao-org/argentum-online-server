@@ -29,7 +29,7 @@ Private Function test_safe_destination_allowed() As Boolean
 
     originalToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE)
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
-    If MapInfo(1).Seguro = 0 Then GoTo Cleanup
+    If Not HasMapZoneFlag(1, e_ZoneFlags.Safe) Then GoTo Cleanup
 
     destination.Map = 1
     destination.x = 31
@@ -48,7 +48,7 @@ Private Function test_respawn_uses_original_map() As Boolean
 End Function
 
 Private Function test_safe_destination_blocked() As Boolean
-    If MapInfo(1).Seguro = 0 Then Exit Function
+    If Not HasMapZoneFlag(1, e_ZoneFlags.Safe) Then Exit Function
     test_safe_destination_blocked = Not NpcCrossMapMapAllowedByPolicy(1, False)
 End Function
 
@@ -59,10 +59,10 @@ Private Function test_route_keeps_ai_active() As Boolean
 
     npcIndex = UBound(NpcList)
     originalUsers = MapInfo(34).NumUsers
-    originalForceUpdate = MapInfo(34).ForceUpdate
+    originalForceUpdate = HasMapZoneFlag(34, e_ZoneFlags.ForceUpdateAi)
     NpcList(npcIndex).pos.Map = 34
     MapInfo(34).NumUsers = 0
-    MapInfo(34).ForceUpdate = False
+    Call SetMapZoneFlag(34, e_ZoneFlags.ForceUpdateAi, False)
 
     Call ResetNpcCrossMapRoute(npcIndex)
     If NpcRequiresAiUpdate(npcIndex) Then GoTo Cleanup
@@ -73,7 +73,7 @@ Cleanup:
     Call ResetNpcCrossMapRoute(npcIndex)
     NpcList(npcIndex).pos.Map = 0
     MapInfo(34).NumUsers = originalUsers
-    MapInfo(34).ForceUpdate = originalForceUpdate
+    Call SetMapZoneFlag(34, e_ZoneFlags.ForceUpdateAi, originalForceUpdate)
 End Function
 
 Private Function test_target_retention() As Boolean

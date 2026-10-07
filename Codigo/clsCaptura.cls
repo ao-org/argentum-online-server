@@ -503,7 +503,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
             Exit Sub
         End If
         'Zona segura
-        If MapInfo(.pos.Map).Seguro = 0 Then
+        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
             'Msg928= Solamente podrás ingresar al evento en zona segura.
             Call WriteLocaleMsg(UserIndex, MSG_SOLAMENTE_PODRAS_INGRESAR_EVENTO_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub

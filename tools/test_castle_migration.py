@@ -11,7 +11,7 @@ import tempfile
 import unittest
 
 from castle_migration import (
-    CASTLE_COLUMNS, COORDINATE_COLUMNS, MigrationError, columns,
+    CASTLE_COLUMNS, COORDINATE_COLUMNS, MIGRATION_FILE, MIGRATION_KEY, MigrationError, columns,
     convert_snapshot, map_bounds, migrate, rows,
 )
 
@@ -72,7 +72,7 @@ class CastleMigrationTests(unittest.TestCase):
         self.assertEqual(self.db.execute("PRAGMA foreign_keys").fetchone()[0], 1)
         self.assertEqual(self.db.execute("PRAGMA foreign_key_check").fetchall(), [])
 
-    def test_idempotence_preserves_migration_timestamp_and_data(self):
+    def test_idempotence_preserves_normal_migration_history_and_data(self):
         migrate(self.db, BOUNDS)
         snapshot = list(self.db.iterdump())
         self.assertTrue(migrate(self.db, BOUNDS)["already_migrated"])
@@ -150,8 +150,8 @@ class CastleMigrationTests(unittest.TestCase):
             migrate(self.db, BOUNDS)
         self.assertIn("trigger", columns(self.db, "castle"))
 
-    def test_failure_during_rebuild_rolls_back_all_changes(self):
-        self.db.execute("CREATE TABLE castle_new(do_not_replace INTEGER)")
+    def test_failure_during_sql_rolls_back_all_changes(self):
+        self.db.execute("CREATE TABLE castle_legacy_trigger_map(do_not_replace INTEGER)")
         before = list(self.db.iterdump())
         with self.assertRaises(sqlite3.OperationalError):
             migrate(self.db, BOUNDS)
@@ -195,16 +195,44 @@ class CastleMigrationTests(unittest.TestCase):
             migrate(other, BOUNDS)
         self.assertEqual(list(other.iterdump()), before)
 
-    def test_rejects_unknown_columns_and_future_schema_versions(self):
+    def test_rejects_unknown_columns_and_preserves_other_migration_history(self):
         self.db.execute("ALTER TABLE castle ADD COLUMN custom_state TEXT")
         with self.assertRaisesRegex(MigrationError, "Unexpected castle columns"):
             migrate(self.db, BOUNDS)
         self.db.execute("ALTER TABLE castle DROP COLUMN custom_state")
         migrate(self.db, BOUNDS)
-        self.db.execute("UPDATE castle_schema_migrations SET version=2")
+        self.db.execute("INSERT INTO migrations(date, description) VALUES ('20261008-01', 'unrelated later migration')")
         self.db.commit()
-        with self.assertRaisesRegex(MigrationError, "Unsupported castle migration"):
-            migrate(self.db, BOUNDS)
+        self.assertTrue(migrate(self.db, BOUNDS)["already_migrated"])
+        self.assertEqual(self.db.execute("SELECT date FROM migrations ORDER BY id").fetchall(),
+                         [(MIGRATION_KEY,), ('20261008-01',)])
+
+    def test_exact_scriptsdb_sql_with_runner_newline_removal(self):
+        original = rows(self.db, "castle", CASTLE_COLUMNS)
+        whitelist = rows(self.db, "castle_whitelist", ("id", "character_name", "castle_id"))
+        self.db.execute("PRAGMA foreign_keys=ON")
+        self.db.execute("CREATE TABLE entrance_audit(coordinate_id INTEGER REFERENCES castle_coordinates(id))")
+        self.db.execute("INSERT INTO entrance_audit VALUES(16)")
+        self.db.commit()
+        script = MIGRATION_FILE.read_text(encoding="utf-8").replace("\r", "").replace("\n", "")
+        self.db.executescript(script)
+        self.assertEqual(rows(self.db, "castle", CASTLE_COLUMNS), original)
+        self.assertEqual(rows(self.db, "castle_whitelist", ("id", "character_name", "castle_id")), whitelist)
+        self.assertEqual(self.db.execute("SELECT * FROM entrance_audit").fetchall(), [(16,)])
+        self.assertEqual(self.db.execute("SELECT outside_map,outside_x,outside_y FROM castle_coordinates WHERE castle_id=2").fetchone(), (None, None, None))
+        self.assertEqual(self.db.execute("PRAGMA foreign_key_check").fetchall(), [])
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.db.execute("UPDATE castle_coordinates SET outside_map=27 WHERE castle_id=2")
+
+    def test_scriptsdb_sql_failure_can_roll_back_entire_transaction(self):
+        self.db.execute("UPDATE castle_coordinates SET outside_x=10 WHERE castle_id=2")
+        self.db.commit()
+        before = list(self.db.iterdump())
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.db.executescript(MIGRATION_FILE.read_text(encoding="utf-8"))
+        self.assertTrue(self.db.in_transaction)
+        self.db.rollback()
+        self.assertEqual(list(self.db.iterdump()), before)
 
     def test_reads_bounds_from_all_three_map_versions(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1209,7 +1209,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
     On Error GoTo ErrHandler
     Dim OtroUserIndex As Integer
     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
-    If MapInfo(UserList(VictimaIndex).pos.Map).Seguro = 1 Then Exit Sub
+    If HasMapZoneFlag(UserList(VictimaIndex).pos.Map, e_ZoneFlags.Safe) Then Exit Sub
     If Not UserMod.CanMove(UserList(VictimaIndex).flags, UserList(VictimaIndex).Counters) Then
         'Msg1028= No podes robarle a objetivos inmovilizados.
         Call WriteLocaleMsg(LadronIndex, MSG_NO_PODES_ROBARLE_A_OBJETIVOS_INMOVILIZADOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1252,7 +1252,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 End If
             End If
         End If
-        If TriggerZonaPelea(LadronIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
+        If (IsInPvPArena(LadronIndex) Or IsInPvPArena(VictimaIndex)) Then Exit Sub
         ' Tiene energia?
         If .Stats.MinSta < 15 Then
             If .genero = e_Genero.Hombre Then
@@ -1547,12 +1547,6 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_RETO, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
         End If
-        If .flags.Montado = 0 And (MapData(.pos.x, .pos.y, .pos.Map).trigger > e_Trigger.PESCAINVALIDA) _
-           And MapData(.pos.x, .pos.y, .pos.Map).trigger <> e_Trigger.ONLY_PATREON_TILE Then
-            ' Msg653=No podés montar aquí.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_MONTAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Sub
-        End If
         If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
             ' Msg654=Pierdes el efecto del mimetismo.
             Call WriteLocaleMsg(UserIndex, MSG_PIERDES_EFECTO_MIMETISMO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1771,7 +1765,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 ' Msg657=La criatura te ha aceptado como su amo.
                 Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                 ' Es zona segura?
-                If MapInfo(.pos.Map).NoMascotas = 1 Then
+                If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoPets) Then
                     petType = NpcList(NpcIndex).Numero
                     NroPets = .NroMascotas
                     Call QuitarNPC(NpcIndex, eNewPet)
@@ -1850,7 +1844,7 @@ Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If ObjData(.invent.EquippedWorkingToolObjIndex).OBJType <> e_OBJType.otWorkingTools Then Exit Sub
         If ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.FishingNet Then
-            If MapInfo(.pos.Map).Seguro = 1 Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
+            If HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Or Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
                 If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
                     ThrowNetToTarget (UserIndex)
                     Call WriteWorkRequestTarget(UserIndex, 0)

@@ -46,7 +46,7 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
         Dim skill      As Integer
         skill = .Stats.UserSkills(e_Skill.Mineria)
         Suerte = Int(-0.00125 * skill * skill - 0.3 * skill + 49)
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 2, Suerte))
+        res = RandomNumber(1, IIf(HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe), Suerte + 2, Suerte))
         If res <= 5 Then
             Dim MiObj As t_Obj
             Dim nPos  As t_WorldPos

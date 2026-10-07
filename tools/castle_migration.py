@@ -15,7 +15,8 @@ import struct
 import tempfile
 
 
-VERSION = 1
+MIGRATION_KEY = "20261007-01"
+MIGRATION_FILE = Path(__file__).resolve().parents[1] / "ScriptsDB" / "20261007-01-migrate castle identities.sql"
 CASTLE_COLUMNS = (
     "id", "owner_account_id", "owner_character_id", "spawner_obj_id",
     "inside_key_obj_id", "foundation_date", "is_active", "name",
@@ -24,32 +25,6 @@ COORDINATE_COLUMNS = (
     "id", "castle_id", "outside_map", "outside_x", "outside_y",
     "inside_map", "inside_x", "inside_y",
 )
-CREATE_CASTLE = """CREATE TABLE castle_new (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    owner_account_id INTEGER NULL UNIQUE,
-    owner_character_id INTEGER NULL UNIQUE,
-    spawner_obj_id INTEGER NOT NULL UNIQUE,
-    inside_key_obj_id INTEGER NOT NULL UNIQUE,
-    foundation_date TIMESTAMP DEFAULT NULL,
-    is_active INTEGER DEFAULT 0,
-    name VARCHAR(255) DEFAULT NULL,
-    FOREIGN KEY(owner_account_id) REFERENCES account(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(owner_character_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
-)"""
-CREATE_COORDINATES = """CREATE TABLE castle_coordinates_new (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    castle_id INTEGER NOT NULL UNIQUE,
-    outside_map INTEGER DEFAULT NULL,
-    outside_x INTEGER DEFAULT NULL,
-    outside_y INTEGER DEFAULT NULL,
-    inside_map INTEGER NOT NULL,
-    inside_x INTEGER NOT NULL,
-    inside_y INTEGER NOT NULL,
-    CHECK ((outside_map IS NULL AND outside_x IS NULL AND outside_y IS NULL)
-        OR (outside_map IS NOT NULL AND outside_x IS NOT NULL AND outside_y IS NOT NULL
-            AND outside_map > 0 AND outside_x > 0 AND outside_y > 0)),
-    FOREIGN KEY(castle_id) REFERENCES castle(id) ON DELETE CASCADE ON UPDATE CASCADE
-)"""
 
 
 class MigrationError(RuntimeError):
@@ -164,7 +139,7 @@ def validate(connection: sqlite3.Connection, bounds: dict[int, tuple[int, int, i
     whitelist = rows(connection, "castle_whitelist", ("id", "character_name", "castle_id"))
     require(all(row[2] in castle_ids for row in whitelist), "Orphan whitelist entry")
     return {
-        "version": VERSION, "castles": len(castle_rows), "coordinates": len(configured),
+        "migration": MIGRATION_KEY, "castles": len(castle_rows), "coordinates": len(configured),
         "whitelist_rows": len(whitelist), "legacy_trigger_map": dict(mapping),
         "placements": placements, "entrance_bindings": len(entrance_tiles),
         "owned_unplaced_ids": [row[0] for row in castle_rows if row[1] is not None and row[0] not in placed],
@@ -174,17 +149,16 @@ def validate(connection: sqlite3.Connection, bounds: dict[int, tuple[int, int, i
 
 def migrate(connection: sqlite3.Connection, bounds: dict[int, tuple[int, int, int, int]]) -> dict:
     require(not connection.in_transaction, "Migration requires a connection outside a transaction")
+    require(sqlite3.sqlite_version_info >= (3, 35, 0), "Castle SQL migration requires SQLite 3.35 or newer")
     connection.execute("PRAGMA foreign_keys=ON")
-    versioned = bool(columns(connection, "castle_schema_migrations"))
-    if versioned:
-        versions = connection.execute("SELECT version FROM castle_schema_migrations").fetchall()
-        require(versions == [(VERSION,)], f"Unsupported castle migration history: {versions}")
+    applied = bool(columns(connection, "migrations")) and connection.execute(
+        "SELECT 1 FROM migrations WHERE date = ?", (MIGRATION_KEY,)).fetchone()
+    if applied:
         report = validate(connection, bounds, legacy=False)
         report["already_migrated"] = True
         return report
     before = validate(connection, bounds, legacy=True)
-    # Only rebuild the documented production schema. Unrecognized constraints
-    # require explicit review rather than silently losing them in a replacement.
+    # Check the documented production constraints before rehearsing the SQL.
     expected_unique = {
         "castle": {("owner_account_id",), ("owner_character_id",), ("spawner_obj_id",), ("inside_key_obj_id",)},
         "castle_coordinates": {("castle_id",)},
@@ -197,7 +171,7 @@ def migrate(connection: sqlite3.Connection, bounds: dict[int, tuple[int, int, in
     for table in expected_unique:
         sql = connection.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone()[0]
         require(not re.search(r"\b(CHECK|COLLATE|GENERATED|WITHOUT|STRICT)\b", sql, re.IGNORECASE),
-                f"Unrecognized constraints on {table}; review before rebuilding")
+                f"Unrecognized constraints on {table}; review before migration")
         uniques = {tuple(part[2] for part in connection.execute(f"PRAGMA index_info({quote(index[1])})"))
                    for index in connection.execute(f"PRAGMA index_list({quote(table)})")
                    if index[2] and index[3] == "u"}
@@ -218,46 +192,39 @@ def migrate(connection: sqlite3.Connection, bounds: dict[int, tuple[int, int, in
         occurrences = len(re.findall(r"\btrigger\b", sql, re.IGNORECASE))
         require(occurrences <= (1 if kind == "trigger" else 0),
                 f"Schema object {name} may reference removed trigger column; migrate it explicitly")
-    connection.execute("PRAGMA foreign_keys=OFF")
     try:
-        connection.execute("BEGIN IMMEDIATE")
-        connection.execute(CREATE_CASTLE)
-        connection.execute(CREATE_COORDINATES)
-        connection.execute("CREATE TABLE castle_legacy_trigger_map (legacy_trigger INTEGER PRIMARY KEY, castle_id INTEGER NOT NULL REFERENCES castle(id) ON DELETE CASCADE ON UPDATE CASCADE)")
-        connection.execute('INSERT INTO castle_legacy_trigger_map SELECT "trigger", id FROM castle')
-        fields = ", ".join(map(quote, CASTLE_COLUMNS))
-        connection.execute(f"INSERT INTO castle_new ({fields}) SELECT {fields} FROM castle")
-        fields = ", ".join(map(quote, COORDINATE_COLUMNS))
-        placeholders = ", ".join("?" for _ in COORDINATE_COLUMNS)
-        connection.executemany(f"INSERT INTO castle_coordinates_new ({fields}) VALUES ({placeholders})", coordinate_rows)
-        for name, _ in views:
-            connection.execute(f"DROP VIEW {quote(name)}")
-        connection.execute("DROP TABLE castle_coordinates")
-        connection.execute("DROP TABLE castle")
-        connection.execute("ALTER TABLE castle_new RENAME TO castle")
-        connection.execute("ALTER TABLE castle_coordinates_new RENAME TO castle_coordinates")
-        for _, _, sql in schema_objects:
-            connection.execute(sql)
-        for _, sql in views:
-            connection.execute(sql)
-        for name, sequence in sequences.items():
-            connection.execute("UPDATE sqlite_sequence SET seq = MAX(seq, ?) WHERE name = ?", (sequence, name))
-        connection.execute("CREATE TABLE castle_schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)")
-        connection.execute("INSERT INTO castle_schema_migrations VALUES (?, strftime('%Y-%m-%dT%H:%M:%fZ','now'))", (VERSION,))
+        # Execute the dated SQL itself. Delay its COMMIT until the rehearsal's
+        # preservation checks pass, then record the normal runner history row.
+        pending = ""
+        found_commit = False
+        for line in MIGRATION_FILE.read_text(encoding="utf-8").splitlines(keepends=True):
+            pending += line
+            if sqlite3.complete_statement(pending):
+                if pending.strip().upper() == "COMMIT;":
+                    found_commit = True
+                else:
+                    require(not found_commit, "Unexpected SQL after migration COMMIT")
+                    connection.execute(pending)
+                pending = ""
+        require(found_commit and not pending.strip() and connection.in_transaction,
+                "Migration SQL must finish its explicit transaction with COMMIT")
         require(rows(connection, "castle", CASTLE_COLUMNS) == castle_rows, "Castle preservation check failed")
         require(rows(connection, "castle_coordinates", COORDINATE_COLUMNS) == coordinate_rows, "Coordinate preservation check failed")
         require(rows(connection, "castle_whitelist", ("id", "character_name", "castle_id")) == whitelist_rows, "Whitelist preservation check failed")
+        require(dict(connection.execute("SELECT name, seq FROM sqlite_sequence WHERE name IN ('castle', 'castle_coordinates')")) == sequences,
+                "Autoincrement sequence preservation check failed")
         for (name,) in connection.execute("SELECT name FROM sqlite_master WHERE type='view'"):
             connection.execute(f"SELECT * FROM {quote(name)} LIMIT 0")
         after = validate(connection, bounds, legacy=False)
         require(after == before, "Migration changed castle placement or reference inventory")
         require(connection.execute("PRAGMA integrity_check").fetchall() == [("ok",)], "Database integrity check failed")
+        connection.execute('CREATE TABLE IF NOT EXISTS migrations (id INTEGER NOT NULL PRIMARY KEY, date VARCHAR(11) NOT NULL, description VARCHAR(50) NULL)')
+        connection.execute("INSERT INTO migrations(date, description) VALUES (?, ?)",
+                           (MIGRATION_KEY, "migrate castle identities"))
         connection.commit()
     except BaseException:
         connection.rollback()
         raise
-    finally:
-        connection.execute("PRAGMA foreign_keys=ON")
     after["already_migrated"] = False
     return after
 

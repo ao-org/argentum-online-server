@@ -28,6 +28,7 @@ Attribute VB_Name = "ES"
 Option Explicit
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 Private Const CSM_FIVE_LAYER_SIGNATURE As Long = &H324C3557
+Private Const CSM3_SIGNATURE As Long = &H334D5343
 
 Private Type t_Position
     x As Integer
@@ -78,6 +79,8 @@ Private Type t_MapHeader
     NumeroNPCs As Long
     NumeroOBJs As Long
     NumeroTE As Long
+    NumeroCastles As Long
+    NumeroSeams As Long
 End Type
 
 Private Type t_DatosBloqueados
@@ -92,10 +95,14 @@ Private Type t_DatosGrh
     GrhIndex As Long
 End Type
 
+Private Type t_MapGraphicLayer
+    Entries() As t_DatosGrh
+End Type
+
 Private Type t_DatosTrigger
     x As Integer
     y As Integer
-    trigger As Integer
+    trigger As Long
 End Type
 
 Private Type t_DatosLuces
@@ -161,6 +168,9 @@ End Type
 
 Private MapSize        As t_MapSize
 Private MapDat         As t_MapDat
+Private SavedMapMetadata() As t_MapDat
+Private SavedMapBounds() As t_MapSize
+Private savedMetadataCount As Long
 Private FeatureToggles As Dictionary
 
 Public Sub load_stats()
@@ -1543,7 +1553,10 @@ Sub CargarBackUp()
     frmCargando.ToMapLbl.Visible = False
     Exit Sub
 CargarBackUp_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
+    Dim backupError As Long, backupDescription As String
+    backupError = Err.Number: backupDescription = Err.Description
+    Call TraceError(backupError, backupDescription, "ES.CargarBackUp", Erl)
+    Call Err.Raise(backupError, "ES.CargarBackUp", backupDescription)
 End Sub
 
 Sub LoadMapData()
@@ -1581,8 +1594,10 @@ Sub LoadMapData()
     Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NormalMapsCount + 1)
     Exit Sub
 man:
-    Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-    Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
+    Dim loadError As Long, loadDescription As String
+    loadError = Err.Number: loadDescription = Err.Description
+    Call LogError("Map loading failed: " & CStr(Map) & ": " & loadDescription)
+    Call Err.Raise(loadError, "ES.LoadMapData", loadDescription)
 End Sub
 
 Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
@@ -1592,7 +1607,14 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim MH                                          As t_MapHeader
     Dim signatureOrBlocked                          As Long
     Dim layer                                       As Long
-    Dim graphics()                                  As t_DatosGrh
+    Dim isCsm3 As Boolean, version As Integer, layerCount As Integer
+    Dim zoneFlags As Long, legacyTrigger As Integer, tileCount As Long
+    Dim recordBytes As Double, castleId As Long, direction As Byte
+    Dim seen As Dictionary, key As Long, legacyRoofs As Dictionary
+    Dim castleEntries As Dictionary, roofSeams As Dictionary, legacyCastles As Dictionary
+    Dim graphicsByLayer(1 To MAP_LAYER_COUNT) As t_MapGraphicLayer
+    Dim triggerFlagsByTile As Dictionary
+    Dim emptyTile As t_MapBlock
     Dim Blqs()                                      As t_DatosBloqueados
     Dim Triggers()                                  As t_DatosTrigger
     Dim Luces()                                     As t_DatosLuces
@@ -1610,20 +1632,52 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim i                                           As Long
     Dim j                                           As Long
     Dim x                                           As Integer, y As Integer
+    Dim failureNumber As Long, failureDescription As String
     randomTeleportCount = 0
     If Not FileExist(MAPFl, vbNormal) Then
         Call TraceError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
-        Exit Sub
+        Call Err.Raise(53, , "Missing map: " & MAPFl)
     End If
     If FileLen(MAPFl) = 0 Then
         Call TraceError(500, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
-        Exit Sub
+        Call Err.Raise(62, , "Empty map: " & MAPFl)
     End If
     fh = FreeFile
     Open MAPFl For Binary As fh
+    Call RequireCsmBytes(fh, 4)
     Get #fh, , signatureOrBlocked
-    If signatureOrBlocked = CSM_FIVE_LAYER_SIGNATURE Then
-        Get #fh, , MH
+    isCsm3 = signatureOrBlocked = CSM3_SIGNATURE
+    If isCsm3 Then
+        Call RequireCsmBytes(fh, 72)
+        Get #fh, , version
+        Get #fh, , layerCount
+        If version <> 2 Or layerCount <> MAP_LAYER_COUNT Then Call Err.Raise(5, , "Unsupported CSM3 version or layer count")
+        Get #fh, , zoneFlags
+        If (zoneFlags And Not KNOWN_ZONE_FLAGS) <> 0 Then Call Err.Raise(5, , "Unknown CSM3 zone flags")
+        Get #fh, , MH.NumeroBloqueados
+        For layer = 1 To MAP_LAYER_COUNT
+            Get #fh, , MH.NumeroLayers(layer)
+        Next layer
+        Get #fh, , MH.NumeroTriggers
+        Get #fh, , MH.NumeroLuces
+        Get #fh, , MH.NumeroParticulas
+        Get #fh, , MH.NumeroNPCs
+        Get #fh, , MH.NumeroOBJs
+        Get #fh, , MH.NumeroTE
+        Get #fh, , MH.NumeroCastles
+        Get #fh, , MH.NumeroSeams
+    ElseIf signatureOrBlocked = CSM_FIVE_LAYER_SIGNATURE Then
+        Call RequireCsmBytes(fh, 48)
+        Get #fh, , MH.NumeroBloqueados
+        For layer = 1 To MAP_LAYER_COUNT
+            Get #fh, , MH.NumeroLayers(layer)
+        Next layer
+        Get #fh, , MH.NumeroTriggers
+        Get #fh, , MH.NumeroLuces
+        Get #fh, , MH.NumeroParticulas
+        Get #fh, , MH.NumeroNPCs
+        Get #fh, , MH.NumeroOBJs
+        Get #fh, , MH.NumeroTE
     Else
         ' Legacy four-layer files have no signature. Remap scenery/roofs.
         MH.NumeroBloqueados = signatureOrBlocked
@@ -1638,26 +1692,210 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
         Get #fh, , MH.NumeroOBJs
         Get #fh, , MH.NumeroTE
     End If
-    Get #fh, , MapSize
-    Get #fh, , MapDat
+    Call RequireCsmBytes(fh, 8)
+    Get #fh, , MapSize.XMax
+    Get #fh, , MapSize.XMin
+    Get #fh, , MapSize.YMax
+    Get #fh, , MapSize.YMin
+    If Not isCsm3 And MapSize.XMax = 0 And MapSize.XMin = 0 And MapSize.YMax = 0 And MapSize.YMin = 0 Then
+        MapSize.XMax = XMaxMapSize: MapSize.XMin = XMinMapSize
+        MapSize.YMax = YMaxMapSize: MapSize.YMin = YMinMapSize
+    End If
+    If MapSize.XMin < XMinMapSize Or MapSize.XMax > XMaxMapSize Or MapSize.YMin < YMinMapSize Or MapSize.YMax > YMaxMapSize Or MapSize.XMin > MapSize.XMax Or MapSize.YMin > MapSize.YMax Then Call Err.Raise(5, , "Invalid CSM map bounds")
+    tileCount = CLng(MapSize.XMax - MapSize.XMin + 1) * (MapSize.YMax - MapSize.YMin + 1)
+    Call ReadCsmMetadata(fh, MapDat, Not isCsm3)
+    If Not isCsm3 Then zoneFlags = LegacyMapZoneFlags(Map, MapDat)
+    recordBytes = CsmSectionSize(MH.NumeroBloqueados, 5, tileCount)
+    For layer = 1 To MAP_LAYER_COUNT
+        recordBytes = recordBytes + CsmSectionSize(MH.NumeroLayers(layer), 8, tileCount)
+    Next layer
+    recordBytes = recordBytes + CsmSectionSize(MH.NumeroTriggers, IIf(isCsm3, 8, 6), tileCount)
+    recordBytes = recordBytes + CsmSectionSize(MH.NumeroParticulas, 8, tileCount) + CsmSectionSize(MH.NumeroLuces, 9, tileCount)
+    recordBytes = recordBytes + CsmSectionSize(MH.NumeroOBJs, 8, tileCount) + CsmSectionSize(MH.NumeroNPCs, 6, tileCount)
+    recordBytes = recordBytes + CsmSectionSize(MH.NumeroTE, 10, tileCount) + CsmSectionSize(MH.NumeroCastles, 8, tileCount) + CsmSectionSize(MH.NumeroSeams, 5, tileCount * 2)
+    If recordBytes <> LOF(fh) - Seek(fh) + 1 Then Call Err.Raise(5, , "CSM section sizes do not match file length")
+    Set seen = New Dictionary
+    Set triggerFlagsByTile = New Dictionary
+    Set legacyRoofs = New Dictionary
+    Set castleEntries = New Dictionary
+    Set roofSeams = New Dictionary
+    Set legacyCastles = New Dictionary
     With MH
         'Cargamos Bloqueos
         If .NumeroBloqueados > 0 Then
             ReDim Blqs(1 To .NumeroBloqueados)
-            Get #fh, , Blqs
+            Call seen.RemoveAll()
             For i = 1 To .NumeroBloqueados
-                MapData(Blqs(i).x, Blqs(i).y, Map).Blocked = Blqs(i).Lados
+                Get #fh, , Blqs(i).x
+                Get #fh, , Blqs(i).y
+                Get #fh, , Blqs(i).Lados
+                Call ValidateCsmCoordinate(Blqs(i).x, Blqs(i).y)
+                key = TilePropertyKey(Blqs(i).x, Blqs(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
             Next i
         End If
         ' One contiguous scratch array, applied to inline tile graphics.
         For layer = 1 To MAP_LAYER_COUNT
             If .NumeroLayers(layer) > 0 Then
-                ReDim graphics(1 To .NumeroLayers(layer))
-                Get #fh, , graphics
+                ReDim graphicsByLayer(layer).Entries(1 To .NumeroLayers(layer))
+                Call seen.RemoveAll()
                 For i = 1 To .NumeroLayers(layer)
-                    x = graphics(i).x
-                    y = graphics(i).y
-                    MapData(x, y, Map).Graphic(layer) = graphics(i).GrhIndex
+                    Get #fh, , graphicsByLayer(layer).Entries(i).x
+                    Get #fh, , graphicsByLayer(layer).Entries(i).y
+                    Get #fh, , graphicsByLayer(layer).Entries(i).GrhIndex
+                    Call ValidateCsmCoordinate(graphicsByLayer(layer).Entries(i).x, graphicsByLayer(layer).Entries(i).y)
+                    key = TilePropertyKey(graphicsByLayer(layer).Entries(i).x, graphicsByLayer(layer).Entries(i).y)
+                    If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                    Call seen.Add(key, True)
+                Next i
+            End If
+        Next layer
+        If .NumeroTriggers > 0 Then
+            ReDim Triggers(1 To .NumeroTriggers)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroTriggers
+                Get #fh, , Triggers(i).x
+                Get #fh, , Triggers(i).y
+                If isCsm3 Then
+                    Get #fh, , Triggers(i).trigger
+                    If Triggers(i).trigger = 0 Or (Triggers(i).trigger And Not KNOWN_TILE_FLAGS) <> 0 Then Call Err.Raise(5, , "Invalid CSM3 tile flags")
+                Else
+                    Get #fh, , legacyTrigger
+                    Triggers(i).trigger = ConvertLegacyTrigger(legacyTrigger, zoneFlags)
+                    key = TilePropertyKey(Triggers(i).x, Triggers(i).y)
+                    If HasTileFlag(Triggers(i).trigger, e_Trigger.UnderRoof) Then legacyRoofs.Item(key) = legacyTrigger
+                    If legacyTrigger >= 21 And legacyTrigger <= 40 Then legacyCastles.Item(key) = legacyTrigger
+                End If
+                Call ValidateCsmCoordinate(Triggers(i).x, Triggers(i).y)
+                key = TilePropertyKey(Triggers(i).x, Triggers(i).y)
+                triggerFlagsByTile.Item(key) = Triggers(i).trigger
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+        End If
+        If .NumeroParticulas > 0 Then
+            ReDim Particulas(1 To .NumeroParticulas)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroParticulas
+                Get #fh, , Particulas(i).x
+                Get #fh, , Particulas(i).y
+                Get #fh, , Particulas(i).Particula
+                Call ValidateCsmCoordinate(Particulas(i).x, Particulas(i).y)
+                key = TilePropertyKey(Particulas(i).x, Particulas(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+        End If
+        If .NumeroLuces > 0 Then
+            ReDim Luces(1 To .NumeroLuces)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroLuces
+                Get #fh, , Luces(i).x
+                Get #fh, , Luces(i).y
+                Get #fh, , Luces(i).Color
+                Get #fh, , Luces(i).Rango
+                Call ValidateCsmCoordinate(Luces(i).x, Luces(i).y)
+                key = TilePropertyKey(Luces(i).x, Luces(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+        End If
+        If .NumeroOBJs > 0 Then
+            ReDim Objetos(1 To .NumeroOBJs)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroOBJs
+                Get #fh, , Objetos(i).x
+                Get #fh, , Objetos(i).y
+                Get #fh, , Objetos(i).ObjIndex
+                Get #fh, , Objetos(i).ObjAmmount
+                If Objetos(i).ObjIndex <= 0 Or Objetos(i).ObjIndex > UBound(ObjData) Or Objetos(i).ObjAmmount < 0 Then Call Err.Raise(5, , "Invalid map object reference or amount")
+                Call ValidateCsmCoordinate(Objetos(i).x, Objetos(i).y)
+                key = TilePropertyKey(Objetos(i).x, Objetos(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+        End If
+        If .NumeroNPCs > 0 Then
+            ReDim NPCs(1 To .NumeroNPCs)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroNPCs
+                Get #fh, , NPCs(i).x
+                Get #fh, , NPCs(i).y
+                Get #fh, , NPCs(i).NpcIndex
+                If NPCs(i).NpcIndex < 0 Then Call Err.Raise(5, , "Invalid map NPC reference")
+                Call ValidateCsmCoordinate(NPCs(i).x, NPCs(i).y)
+                key = TilePropertyKey(NPCs(i).x, NPCs(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+            Dim NumNpc As Integer, NpcIndex As Integer
+        End If
+        If .NumeroTE > 0 Then
+            ReDim TEs(1 To .NumeroTE)
+            Call seen.RemoveAll()
+            For i = 1 To .NumeroTE
+                Get #fh, , TEs(i).x
+                Get #fh, , TEs(i).y
+                Get #fh, , TEs(i).DestM
+                Get #fh, , TEs(i).DestX
+                Get #fh, , TEs(i).DestY
+                If TEs(i).DestX < 0 Or TEs(i).DestX > 255 Or TEs(i).DestY < 0 Or TEs(i).DestY > 255 Then Call Err.Raise(5, , "Invalid tile exit destination")
+                Call ValidateCsmCoordinate(TEs(i).x, TEs(i).y)
+                key = TilePropertyKey(TEs(i).x, TEs(i).y)
+                If seen.Exists(key) Then Call Err.Raise(5, , "Duplicate CSM section coordinate")
+                Call seen.Add(key, True)
+            Next i
+        End If
+    End With
+    For i = 1 To MH.NumeroCastles
+        Get #fh, , x
+        Get #fh, , y
+        Get #fh, , castleId
+        Call ValidateCsmCoordinate(x, y)
+        key = TilePropertyKey(x, y)
+        If castleId <= 0 Or castleEntries.Exists(key) Then Call Err.Raise(5, , "Invalid or duplicate castle reference")
+        Call castleEntries.Add(key, castleId)
+    Next i
+    For i = 1 To MH.NumeroSeams
+        Get #fh, , x
+        Get #fh, , y
+        Get #fh, , direction
+        Call ValidateCsmCoordinate(x, y)
+        If direction > 1 Then Call Err.Raise(5, , "Invalid roof seam direction")
+        If direction = 0 Then
+            Call ValidateCsmCoordinate(x + 1, y)
+            If Not HasTileFlag(CLng(triggerFlagsByTile.Item(TilePropertyKey(x + 1, y))), e_Trigger.UnderRoof) Then Call Err.Raise(5, , "Seam neighbor is not under a roof")
+        Else
+            Call ValidateCsmCoordinate(x, y + 1)
+            If Not HasTileFlag(CLng(triggerFlagsByTile.Item(TilePropertyKey(x, y + 1))), e_Trigger.UnderRoof) Then Call Err.Raise(5, , "Seam neighbor is not under a roof")
+        End If
+        If Not HasTileFlag(CLng(triggerFlagsByTile.Item(TilePropertyKey(x, y))), e_Trigger.UnderRoof) Then Call Err.Raise(5, , "Seam tile is not under a roof")
+        key = TilePropertyKey(x, y) * 2 + direction
+        If roofSeams.Exists(key) Then Call Err.Raise(5, , "Duplicate roof seam")
+        Call roofSeams.Add(key, True)
+    Next i
+    If Not isCsm3 Then Call BuildLegacyRoofSeams(legacyRoofs, roofSeams)
+    ' All sections validate before any world state or NPC is published.
+    For x = XMinMapSize To XMaxMapSize
+        For y = YMinMapSize To YMaxMapSize
+            MapData(x, y, Map) = emptyTile
+        Next y
+    Next x
+    MapInfo(Map).ZoneFlags = zoneFlags
+    Set MapInfo(Map).CastleEntrances = Nothing
+    Set MapInfo(Map).StaticCastleEntrances = Nothing
+    Set MapInfo(Map).LegacyCastleEntrances = Nothing
+    Set MapInfo(Map).RoofSeams = Nothing
+    With MH
+            For i = 1 To .NumeroBloqueados
+                MapData(Blqs(i).x, Blqs(i).y, Map).Blocked = Blqs(i).Lados
+            Next i
+        For layer = 1 To MAP_LAYER_COUNT
+                For i = 1 To .NumeroLayers(layer)
+                    x = graphicsByLayer(layer).Entries(i).x
+                    y = graphicsByLayer(layer).Entries(i).y
+                    MapData(x, y, Map).Graphic(layer) = graphicsByLayer(layer).Entries(i).GrhIndex
                     Select Case layer
                         Case 1
                             TotalTiles = TotalTiles + 1
@@ -1668,52 +1906,33 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Case 2, 3
                             MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked And Not FLAG_AGUA
                         Case 4
-                            If EsArbol(graphics(i).GrhIndex) Then
+                            If EsArbol(graphicsByLayer(layer).Entries(i).GrhIndex) Then
                                 MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_ARBOL
                             End If
                     End Select
                 Next i
-            End If
         Next layer
-        If .NumeroTriggers > 0 Then
-            ReDim Triggers(1 To .NumeroTriggers)
-            Get #fh, , Triggers
+        ' CSM3 stores authored water explicitly; graphic overlays must not erase it.
+        If isCsm3 Then
+            For i = 1 To .NumeroBloqueados
+                MapData(Blqs(i).x, Blqs(i).y, Map).Blocked = MapData(Blqs(i).x, Blqs(i).y, Map).Blocked Or (Blqs(i).Lados And FLAG_AGUA)
+            Next i
+        End If
             For i = 1 To .NumeroTriggers
                 x = Triggers(i).x
                 y = Triggers(i).y
                 MapData(x, y, Map).trigger = Triggers(i).trigger
-                ' Trigger detalles en agua
-                If Triggers(i).trigger = e_Trigger.DETALLEAGUA Then
-                    ' Vuelvo a poner flag agua
-                    MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
-                End If
-                If Triggers(i).trigger = e_Trigger.VALIDONADO Or Triggers(i).trigger = e_Trigger.NADOCOMBINADO Or Triggers(i).trigger = e_Trigger.NADOBAJOTECHO Then
-                    ' Vuelvo a poner flag agua
+                If Not isCsm3 And HasTileFlag(Triggers(i).trigger, e_Trigger.SwimSuitPath) Then
                     MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
                 End If
             Next i
-        End If
-        If .NumeroParticulas > 0 Then
-            ReDim Particulas(1 To .NumeroParticulas)
-            Get #fh, , Particulas
             For i = 1 To .NumeroParticulas
                 MapData(Particulas(i).x, Particulas(i).y, Map).ParticulaIndex = Particulas(i).Particula
-                MapData(Particulas(i).x, Particulas(i).y, Map).ParticulaIndex = 0
             Next i
-        End If
-        If .NumeroLuces > 0 Then
-            ReDim Luces(1 To .NumeroLuces)
-            Get #fh, , Luces
             For i = 1 To .NumeroLuces
                 MapData(Luces(i).x, Luces(i).y, Map).Luz.Color = Luces(i).Color
                 MapData(Luces(i).x, Luces(i).y, Map).Luz.Rango = Luces(i).Rango
-                MapData(Luces(i).x, Luces(i).y, Map).Luz.Color = 0
-                MapData(Luces(i).x, Luces(i).y, Map).Luz.Rango = 0
             Next i
-        End If
-        If .NumeroOBJs > 0 Then
-            ReDim Objetos(1 To .NumeroOBJs)
-            Get #fh, , Objetos
             For i = 1 To .NumeroOBJs
                 MapData(Objetos(i).x, Objetos(i).y, Map).ObjInfo.ObjIndex = Objetos(i).ObjIndex
                 With ObjData(Objetos(i).ObjIndex)
@@ -1730,11 +1949,6 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                     End If
                 End With
             Next i
-        End If
-        If .NumeroNPCs > 0 Then
-            ReDim NPCs(1 To .NumeroNPCs)
-            Get #fh, , NPCs
-            Dim NumNpc As Integer, NpcIndex As Integer
             For i = 1 To .NumeroNPCs
                 NumNpc = NPCs(i).NpcIndex
                 If NumNpc > 0 Then
@@ -1758,28 +1972,28 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                     End If
                 End If
             Next i
-        End If
-        If .NumeroTE > 0 Then
-            ReDim TEs(1 To .NumeroTE)
-            Get #fh, , TEs
             For i = 1 To .NumeroTE
                 MapData(TEs(i).x, TEs(i).y, Map).TileExit.Map = TEs(i).DestM
                 MapData(TEs(i).x, TEs(i).y, Map).TileExit.x = TEs(i).DestX
                 MapData(TEs(i).x, TEs(i).y, Map).TileExit.y = TEs(i).DestY
             Next i
-        End If
     End With
-    Close fh
-    '  Nuevo sistema de restricciones
-    If Not IsNumeric(MapDat.restrict_mode) Then
-        ' Solo se usaba el "NEWBIE"
-        If UCase$(MapDat.restrict_mode) = "NEWBIE" Then
-            MapDat.restrict_mode = "1"
-        Else
-            MapDat.restrict_mode = "0"
-        End If
+    If castleEntries.Count > 0 Then
+        Set MapInfo(Map).CastleEntrances = castleEntries
+        Set MapInfo(Map).StaticCastleEntrances = CopyPropertyDictionary(castleEntries)
     End If
-    If MapDat.Seguro = 0 And TotalTiles > 0 Then
+    If roofSeams.Count > 0 Then Set MapInfo(Map).RoofSeams = roofSeams
+    If legacyCastles.Count > 0 Then Set MapInfo(Map).LegacyCastleEntrances = legacyCastles
+    If Map > savedMetadataCount Then
+        savedMetadataCount = Map
+        ReDim Preserve SavedMapMetadata(1 To savedMetadataCount)
+        ReDim Preserve SavedMapBounds(1 To savedMetadataCount)
+    End If
+    SavedMapMetadata(Map) = MapDat
+    SavedMapBounds(Map) = MapSize
+    Close #fh
+    fh = 0
+    If Not HasMapZoneFlag(Map, e_ZoneFlags.Safe) And TotalTiles > 0 Then
         If (CDbl(SailingTiles) / CDbl(TotalTiles)) * 100# > CDbl(SvrConfig.GetValue("FISHING_REQUIRED_PERCENT")) Then
             Call AddFishingPoolsToMap(Map)
         End If
@@ -1787,42 +2001,22 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     MapInfo(Map).map_name = MapDat.map_name
     MapInfo(Map).MapResource = Map
     MapInfo(Map).ambient = MapDat.ambient
-    MapInfo(Map).backup_mode = MapDat.backup_mode
     MapInfo(Map).base_light = MapDat.base_light
-    MapInfo(Map).Newbie = (val(MapDat.restrict_mode) And 1) <> 0
-    MapInfo(Map).SinMagia = (val(MapDat.restrict_mode) And 2) <> 0
-    MapInfo(Map).NoPKs = (val(MapDat.restrict_mode) And 4) <> 0
-    MapInfo(Map).NoCiudadanos = (val(MapDat.restrict_mode) And 8) <> 0
-    MapInfo(Map).SinInviOcul = (val(MapDat.restrict_mode) And 16) <> 0
-    MapInfo(Map).SoloClanes = (val(MapDat.restrict_mode) And 32) <> 0
-    MapInfo(Map).NoMascotas = (val(MapDat.restrict_mode) And 64) <> 0
-    MapInfo(Map).OnlyGroups = (val(MapDat.restrict_mode) And 128) <> 0
-    MapInfo(Map).OnlyPatreon = (val(MapDat.restrict_mode) And 256) <> 0
-    MapInfo(Map).ResuCiudad = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map)) <> 0
     MapInfo(Map).letter_grh = MapDat.letter_grh
-    MapInfo(Map).lluvia = MapDat.lluvia
     MapInfo(Map).music_numberHi = MapDat.music_numberHi
     MapInfo(Map).music_numberLow = MapDat.music_numberLow
-    MapInfo(Map).niebla = MapDat.niebla
-    MapInfo(Map).Nieve = MapDat.Nieve
     MapInfo(Map).MinLevel = MapDat.level And &HFF
     MapInfo(Map).MaxLevel = (MapDat.level And &HFF00) / &H100
-    MapInfo(Map).Seguro = MapDat.Seguro
     MapInfo(Map).terrain = MapDat.terrain
     MapInfo(Map).zone = MapDat.zone
-    MapInfo(Map).DropItems = True
-    If EsMapaNoDrop(Map) Then
-        MapInfo(Map).DropItems = False
-    End If
-    MapInfo(Map).FriendlyFire = True
-    MapInfo(Map).KeepInviOnAttack = val(GetVar(DatPath & "Map.dat", "KeepInviOnAttack", Map)) <> 0
-    MapInfo(Map).ForceUpdate = val(GetVar(DatPath & "Map.dat", "ForceUpdateAi", Map)) <> 0
     If LenB(MapDat.Salida) <> 0 Then
         Dim Fields() As String
         Fields = Split(MapDat.Salida, "-")
-        MapInfo(Map).Salida.Map = val(Fields(0))
-        MapInfo(Map).Salida.x = val(Fields(1))
-        MapInfo(Map).Salida.y = val(Fields(2))
+        If UBound(Fields) = 2 Then
+            MapInfo(Map).Salida.Map = val(Fields(0))
+            MapInfo(Map).Salida.x = val(Fields(1))
+            MapInfo(Map).Salida.y = val(Fields(2))
+        End If
     End If
     If randomTeleportCount > 0 Then
         ReDim MapInfo(Map).TransportNetwork(randomTeleportCount - 1) As t_TransportNetworkExit
@@ -1831,10 +2025,22 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
             MapInfo(Map).TransportNetwork(i).TileY = Objetos(RandomTeleports(i)).y
         Next i
     End If
+    Dim overrideKey As Variant
+    If Not MapInfo(Map).TileOverrides Is Nothing Then
+        For Each overrideKey In MapInfo(Map).TileOverrides.Keys
+            x = CInt(CLng(overrideKey) And &HFFFF&): y = CInt(CLng(overrideKey) \ 65536)
+            Call ValidateCsmCoordinate(x, y)
+            MapData(x, y, Map).trigger = MapInfo(Map).TileOverrides.Item(overrideKey)
+        Next overrideKey
+    End If
+    Call RestoreCastlePlacementsOnMap(CInt(Map))
     Exit Sub
 ErrorHandler:
-    Close fh
-    Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    If fh > 0 Then Close #fh
+    Call TraceError(failureNumber, failureDescription, "ES.CargarMapaFormatoCSM", Erl)
+    Call Err.Raise(failureNumber, "ES.CargarMapaFormatoCSM", failureDescription)
 End Sub
 
 #If UNIT_TEST = 1 Then
@@ -1891,7 +2097,16 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
         Put #fh, , header.NumeroTE
     Else
         Put #fh, , CSM_FIVE_LAYER_SIGNATURE
-        Put #fh, , header
+        Put #fh, , header.NumeroBloqueados
+        For layer = 1 To MAP_LAYER_COUNT
+            Put #fh, , header.NumeroLayers(layer)
+        Next layer
+        Put #fh, , header.NumeroTriggers
+        Put #fh, , header.NumeroLuces
+        Put #fh, , header.NumeroParticulas
+        Put #fh, , header.NumeroNPCs
+        Put #fh, , header.NumeroOBJs
+        Put #fh, , header.NumeroTE
     End If
     bounds.XMin = 1
     bounds.XMax = 100
@@ -1920,7 +2135,11 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     trigger(1).x = 50
     trigger(1).y = 50
     trigger(1).trigger = 60
-    Put #fh, , trigger
+    Put #fh, , trigger(1).x
+    Put #fh, , trigger(1).y
+    Dim oldTrigger As Integer
+    oldTrigger = trigger(1).trigger
+    Put #fh, , oldTrigger
     tileExit(1).x = 50
     tileExit(1).y = 50
     tileExit(1).DestM = 2
@@ -1952,7 +2171,7 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
         Else
             If .Graphic(4) <> 4 Or (.Blocked And FLAG_ARBOL) <> 0 Then GoTo Cleanup
         End If
-        If .trigger <> 60 Then GoTo Cleanup
+        If .trigger <> e_Trigger.UnderRoof Then GoTo Cleanup
         If .TileExit.Map <> 2 Or .TileExit.x <> 3 Or .TileExit.y <> 4 Then GoTo Cleanup
     End With
     If MapInfo(1).map_name <> metadata.map_name Then GoTo Cleanup
@@ -3023,3 +3242,324 @@ Sub LoadMeditations()
 LoadMeditations_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadMeditations", Erl)
 End Sub
+
+Private Sub RequireCsmBytes(ByVal fh As Integer, ByVal count As Long)
+    If count < 0 Or CDbl(count) > CDbl(LOF(fh)) - Seek(fh) + 1 Then Call Err.Raise(62, "CSM", "Truncated map data")
+End Sub
+
+Private Function CsmSectionSize(ByVal count As Long, ByVal width As Long, ByVal maximum As Long) As Double
+    If count < 0 Or count > maximum Then Call Err.Raise(5, "CSM", "Impossible map section count")
+    CsmSectionSize = CDbl(count) * width
+End Function
+
+Private Sub ValidateCsmCoordinate(ByVal x As Integer, ByVal y As Integer)
+    If x < MapSize.XMin Or x > MapSize.XMax Or y < MapSize.YMin Or y > MapSize.YMax Then Call Err.Raise(5, "CSM", "Map record is outside declared bounds")
+End Sub
+
+Private Function ReadCsmString(ByVal fh As Integer) As String
+    Dim signedLength As Integer, byteCount As Long, bytes() As Byte
+    Call RequireCsmBytes(fh, 2)
+    Get #fh, , signedLength
+    byteCount = CLng(signedLength) And &HFFFF&
+    Call RequireCsmBytes(fh, byteCount)
+    If byteCount = 0 Then Exit Function
+    ReDim bytes(0 To byteCount - 1)
+    Get #fh, , bytes
+    ReadCsmString = StrConv(bytes, vbUnicode, 1033)
+End Function
+
+Private Sub ReadCsmMetadata(ByVal fh As Integer, ByRef metadata As t_MapDat, ByVal legacy As Boolean)
+    Dim emptyMetadata As t_MapDat
+    metadata = emptyMetadata
+    With metadata
+        .map_name = ReadCsmString(fh)
+        If legacy Then
+            Call RequireCsmBytes(fh, 1)
+            Get #fh, , .backup_mode
+            .restrict_mode = ReadCsmString(fh)
+        End If
+        Call RequireCsmBytes(fh, 8)
+        Get #fh, , .music_numberHi
+        Get #fh, , .music_numberLow
+        If legacy Then
+            Call RequireCsmBytes(fh, 1)
+            Get #fh, , .Seguro
+        End If
+        .zone = ReadCsmString(fh)
+        .terrain = ReadCsmString(fh)
+        .ambient = ReadCsmString(fh)
+        Call RequireCsmBytes(fh, 16)
+        Get #fh, , .base_light
+        Get #fh, , .letter_grh
+        Get #fh, , .level
+        Get #fh, , .extra2
+        .Salida = ReadCsmString(fh)
+        If legacy Then
+            Call RequireCsmBytes(fh, 3)
+            Get #fh, , .lluvia
+            Get #fh, , .Nieve
+            Get #fh, , .niebla
+        End If
+    End With
+End Sub
+
+Private Function LegacyMapZoneFlags(ByVal map As Long, ByRef metadata As t_MapDat) As Long
+    Dim flags As Long, restrictions As Long
+    If IsNumeric(metadata.restrict_mode) Then
+        restrictions = CLng(val(metadata.restrict_mode))
+    ElseIf UCase$(metadata.restrict_mode) = "NEWBIE" Then
+        restrictions = 1
+    End If
+    ' The nine historical restriction bits occupy bits 2..10 in ZoneFlags.
+    flags = (restrictions And 511) * 4
+    If metadata.Seguro <> 0 Then flags = flags Or e_ZoneFlags.Safe
+    If metadata.backup_mode <> 0 Then flags = flags Or e_ZoneFlags.Backup
+    If metadata.lluvia <> 0 Then flags = flags Or e_ZoneFlags.Rain
+    If metadata.Nieve <> 0 Then flags = flags Or e_ZoneFlags.Snow
+    If metadata.niebla <> 0 Then flags = flags Or e_ZoneFlags.Fog
+    If val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", map)) <> 0 Then flags = flags Or e_ZoneFlags.CityResurrection
+    If val(GetVar(DatPath & "Map.dat", "KeepInviOnAttack", map)) <> 0 Then flags = flags Or e_ZoneFlags.KeepInvisibilityOnAttack
+    If val(GetVar(DatPath & "Map.dat", "ForceUpdateAi", map)) <> 0 Then flags = flags Or e_ZoneFlags.ForceUpdateAi
+    If Not EsMapaNoDrop(map) Then flags = flags Or e_ZoneFlags.DropItems
+    flags = flags Or e_ZoneFlags.FriendlyFire
+    LegacyMapZoneFlags = flags
+End Function
+
+Private Sub BuildLegacyRoofSeams(ByVal roofs As Dictionary, ByVal seams As Dictionary)
+    Dim key As Variant, neighbor As Long, x As Integer, y As Integer
+    For Each key In roofs.Keys
+        x = CInt(CLng(key) And &HFFFF&)
+        y = CInt(CLng(key) \ 65536)
+        If x < MapSize.XMax Then
+            neighbor = TilePropertyKey(x + 1, y)
+            If roofs.Exists(neighbor) Then
+                If roofs.Item(key) <> roofs.Item(neighbor) Then seams.Item(CLng(key) * 2) = True
+            End If
+        End If
+        If y < MapSize.YMax Then
+            neighbor = TilePropertyKey(x, y + 1)
+            If roofs.Exists(neighbor) Then
+                If roofs.Item(key) <> roofs.Item(neighbor) Then seams.Item(CLng(key) * 2 + 1) = True
+            End If
+        End If
+    Next key
+End Sub
+
+' Explicit CSM3 writer for server-authored snapshots. Dynamic castle placements
+' remain in SQLite; only authored static references are saved in shared maps.
+Public Sub SaveMapCsm3(ByVal map As Long, ByVal path As String)
+    On Error GoTo SaveMapCsm3_Err
+    Dim fh As Integer, header As t_MapHeader, bounds As t_MapSize, metadata As t_MapDat
+    Dim sourceMap As Long, x As Integer, y As Integer, layer As Long, key As Variant
+    Dim failureNumber As Long, failureDescription As String, direction As Byte, tileKey As Long
+    sourceMap = MapInfo(map).MapResource
+    If sourceMap <= 0 Then sourceMap = map
+    If sourceMap > savedMetadataCount Then Call Err.Raise(5, , "Map has no validated source metadata")
+    bounds = SavedMapBounds(sourceMap)
+    metadata = SavedMapMetadata(sourceMap)
+    If bounds.XMin < 1 Then Call Err.Raise(5, , "Map has no validated source bounds")
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            With MapData(x, y, map)
+                If .Blocked <> 0 Then header.NumeroBloqueados = header.NumeroBloqueados + 1
+                For layer = 1 To MAP_LAYER_COUNT
+                    If .Graphic(layer) <> 0 Then header.NumeroLayers(layer) = header.NumeroLayers(layer) + 1
+                Next layer
+                If (.trigger And Not KNOWN_TILE_FLAGS) <> 0 Then Call Err.Raise(5, , "Cannot save unknown tile flags")
+                If .trigger <> 0 Then header.NumeroTriggers = header.NumeroTriggers + 1
+                If .ParticulaIndex <> 0 Then header.NumeroParticulas = header.NumeroParticulas + 1
+                If .Luz.Color <> 0 Or .Luz.Rango <> 0 Then header.NumeroLuces = header.NumeroLuces + 1
+                If .ObjInfo.ObjIndex <> 0 Then
+                    If .ObjInfo.amount < 0 Or .ObjInfo.amount > 32767 Then Call Err.Raise(5, , "Object amount cannot fit a CSM record")
+                    header.NumeroOBJs = header.NumeroOBJs + 1
+                End If
+                If .NpcIndex <> 0 Then header.NumeroNPCs = header.NumeroNPCs + 1
+                If .TileExit.Map <> 0 Then header.NumeroTE = header.NumeroTE + 1
+            End With
+        Next y
+    Next x
+    If (MapInfo(map).ZoneFlags And Not KNOWN_ZONE_FLAGS) <> 0 Then Call Err.Raise(5, , "Cannot save unknown zone flags")
+    If Not MapInfo(map).StaticCastleEntrances Is Nothing Then header.NumeroCastles = MapInfo(map).StaticCastleEntrances.Count
+    If Not MapInfo(map).RoofSeams Is Nothing Then
+        For Each key In MapInfo(map).RoofSeams.Keys
+            If IsActiveRoofSeam(map, CLng(key)) Then header.NumeroSeams = header.NumeroSeams + 1
+        Next key
+    End If
+    If FileExist(path, vbNormal) Then Call Err.Raise(58, , "Choose a new output path; CSM writer does not overwrite maps")
+    fh = FreeFile()
+    Open path For Binary As #fh
+    Put #fh, , CSM3_SIGNATURE
+    Call WriteCsmInt16(fh, 2)
+    Call WriteCsmInt16(fh, MAP_LAYER_COUNT)
+    Put #fh, , MapInfo(map).ZoneFlags
+    Put #fh, , header.NumeroBloqueados
+    For layer = 1 To MAP_LAYER_COUNT
+        Put #fh, , header.NumeroLayers(layer)
+    Next layer
+    Put #fh, , header.NumeroTriggers
+    Put #fh, , header.NumeroLuces
+    Put #fh, , header.NumeroParticulas
+    Put #fh, , header.NumeroNPCs
+    Put #fh, , header.NumeroOBJs
+    Put #fh, , header.NumeroTE
+    Put #fh, , header.NumeroCastles
+    Put #fh, , header.NumeroSeams
+    Put #fh, , bounds.XMax
+    Put #fh, , bounds.XMin
+    Put #fh, , bounds.YMax
+    Put #fh, , bounds.YMin
+    Call WriteCsmMetadata(fh, metadata)
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            If MapData(x, y, map).Blocked <> 0 Then
+                Call WriteCsmPosition(fh, x, y)
+                Call WriteCsmByte(fh, CByte(MapData(x, y, map).Blocked))
+            End If
+        Next y
+    Next x
+    For layer = 1 To MAP_LAYER_COUNT
+        For x = bounds.XMin To bounds.XMax
+            For y = bounds.YMin To bounds.YMax
+                If MapData(x, y, map).Graphic(layer) <> 0 Then
+                    Call WriteCsmPosition(fh, x, y)
+                    Put #fh, , MapData(x, y, map).Graphic(layer)
+                End If
+            Next y
+        Next x
+    Next layer
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            If MapData(x, y, map).trigger <> 0 Then
+                Call WriteCsmPosition(fh, x, y)
+                Put #fh, , MapData(x, y, map).trigger
+            End If
+        Next y
+    Next x
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            If MapData(x, y, map).ParticulaIndex <> 0 Then
+                Call WriteCsmPosition(fh, x, y)
+                Call WriteCsmInt32(fh, CLng(MapData(x, y, map).ParticulaIndex))
+            End If
+        Next y
+    Next x
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            With MapData(x, y, map).Luz
+                If .Color <> 0 Or .Rango <> 0 Then
+                    Call WriteCsmPosition(fh, x, y)
+                    Put #fh, , .Color
+                    Call WriteCsmByte(fh, CByte(.Rango))
+                End If
+            End With
+        Next y
+    Next x
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            With MapData(x, y, map).ObjInfo
+                If .ObjIndex <> 0 Then
+                    Call WriteCsmPosition(fh, x, y)
+                    Put #fh, , .ObjIndex
+                    Call WriteCsmInt16(fh, CInt(.amount))
+                End If
+            End With
+        Next y
+    Next x
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            If MapData(x, y, map).NpcIndex <> 0 Then
+                Call WriteCsmPosition(fh, x, y)
+                Call WriteCsmInt16(fh, NpcList(MapData(x, y, map).NpcIndex).Numero)
+            End If
+        Next y
+    Next x
+    For x = bounds.XMin To bounds.XMax
+        For y = bounds.YMin To bounds.YMax
+            With MapData(x, y, map).TileExit
+                If .Map <> 0 Then
+                    Call WriteCsmPosition(fh, x, y)
+                    Call WriteCsmInt16(fh, .Map)
+                    Call WriteCsmPosition(fh, CInt(.x), CInt(.y))
+                End If
+            End With
+        Next y
+    Next x
+    If header.NumeroCastles > 0 Then
+        For Each key In MapInfo(map).StaticCastleEntrances.Keys
+            Call WriteCsmPosition(fh, CInt(CLng(key) And &HFFFF&), CInt(CLng(key) \ 65536))
+            Call WriteCsmInt32(fh, CLng(MapInfo(map).StaticCastleEntrances.Item(key)))
+        Next key
+    End If
+    If header.NumeroSeams > 0 Then
+        For Each key In MapInfo(map).RoofSeams.Keys
+            If IsActiveRoofSeam(map, CLng(key)) Then
+                direction = CByte(CLng(key) And 1)
+                tileKey = CLng(key) \ 2
+                Call WriteCsmPosition(fh, CInt(tileKey And &HFFFF&), CInt(tileKey \ 65536))
+                Put #fh, , direction
+            End If
+        Next key
+    End If
+    Close #fh
+    Exit Sub
+SaveMapCsm3_Err:
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    If fh > 0 Then Close #fh
+    Call Err.Raise(failureNumber, "SaveMapCsm3", failureDescription)
+End Sub
+
+Private Sub WriteCsmInt16(ByVal fh As Integer, ByVal value As Integer)
+    Put #fh, , value
+End Sub
+
+Private Sub WriteCsmInt32(ByVal fh As Integer, ByVal value As Long)
+    Put #fh, , value
+End Sub
+
+Private Sub WriteCsmByte(ByVal fh As Integer, ByVal value As Byte)
+    Put #fh, , value
+End Sub
+
+Private Sub WriteCsmPosition(ByVal fh As Integer, ByVal x As Integer, ByVal y As Integer)
+    Put #fh, , x
+    Put #fh, , y
+End Sub
+
+Private Sub WriteCsmString(ByVal fh As Integer, ByVal value As String)
+    Dim bytes() As Byte, size As Long, signedSize As Integer
+    If Len(value) > 0 Then
+        bytes = StrConv(value, vbFromUnicode, 1033)
+        size = UBound(bytes) + 1
+    End If
+    If size > 65535 Then Call Err.Raise(5, , "CSM metadata string is too long")
+    If size > 32767 Then signedSize = CInt(size - 65536) Else signedSize = CInt(size)
+    Put #fh, , signedSize
+    If size > 0 Then Put #fh, , bytes
+End Sub
+
+Private Sub WriteCsmMetadata(ByVal fh As Integer, ByRef metadata As t_MapDat)
+    With metadata
+        Call WriteCsmString(fh, .map_name)
+        Put #fh, , .music_numberHi
+        Put #fh, , .music_numberLow
+        Call WriteCsmString(fh, .zone)
+        Call WriteCsmString(fh, .terrain)
+        Call WriteCsmString(fh, .ambient)
+        Put #fh, , .base_light
+        Put #fh, , .letter_grh
+        Put #fh, , .level
+        Put #fh, , .extra2
+        Call WriteCsmString(fh, .Salida)
+    End With
+End Sub
+
+Private Function IsActiveRoofSeam(ByVal map As Integer, ByVal seamKey As Long) As Boolean
+    Dim x As Integer, y As Integer, otherX As Integer, otherY As Integer
+    x = CInt((seamKey \ 2) And &HFFFF&)
+    y = CInt((seamKey \ 2) \ 65536)
+    otherX = x: otherY = y
+    If (seamKey And 1) = 0 Then otherX = x + 1 Else otherY = y + 1
+    If Not IsMapDataCoordinate(map, x, y) Or Not IsMapDataCoordinate(map, otherX, otherY) Then Exit Function
+    IsActiveRoofSeam = HasTileFlag(MapData(x, y, map).trigger, e_Trigger.UnderRoof) And HasTileFlag(MapData(otherX, otherY, map).trigger, e_Trigger.UnderRoof)
+End Function

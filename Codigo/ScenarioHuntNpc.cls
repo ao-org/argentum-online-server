@@ -81,10 +81,10 @@ Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionar
 End Sub
 
 Private Sub ConfigMapLobby()
-    PrevMapState = MapInfo(MapNumber).Seguro
-    MapDropItems = MapInfo(MapNumber).DropItems
-    MapInfo(MapNumber).Seguro = 1
-    MapInfo(MapNumber).DropItems = False
+    PrevMapState = HasMapZoneFlag(MapNumber, e_ZoneFlags.Safe)
+    MapDropItems = HasMapZoneFlag(MapNumber, e_ZoneFlags.DropItems)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, 1)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.DropItems, False)
 End Sub
 
 Private Sub Class_Initialize()
@@ -133,8 +133,8 @@ Private Sub ClearMap()
     On Error GoTo ClearMap_Err:
     CustomScenarios.RemoveCustomScenario (MapNumber)
     CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-    MapInfo(MapNumber).Seguro = PrevMapState
-    MapInfo(MapNumber).DropItems = MapDropItems
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.Safe, PrevMapState)
+    Call SetMapZoneFlag(MapNumber, e_ZoneFlags.DropItems, MapDropItems)
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
