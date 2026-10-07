@@ -115,7 +115,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
     If Not LegalPos(targetMap, targetX, targetY) Then Exit Sub
 
     ' Leer UNA sola vez el objeto del tile
-    currentTileObjIndex = MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex
+    currentTileObjIndex = MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex
 
     ' Validar índice del tile
     If currentTileObjIndex <= 0 Then Exit Sub
@@ -130,13 +130,13 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
     ' Si no está cerrada, no hay nada que hacer
     If TargObj.Cerrada <> 1 Then
-        Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_CERRADA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
     End If
 
     ' Validar que la llave coincida
     If TargObj.clave <> LlaveObj.clave Then
-        Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         Exit Sub
     End If
 
@@ -150,12 +150,12 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
 
         ' Aplicar cambio en el mapa
-        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+        MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex = newDoorObjIndex
 
         ' Actualizar target del usuario para reflejar el nuevo estado
         UserList(UserIndex).flags.TargetObj = newDoorObjIndex
 
-        Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_ABIERTO_PUERTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
 
     Else
         ' Caso: puerta que pasa a estado "cerrada con llave"
@@ -164,10 +164,10 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         If newDoorObjIndex <= 0 Then Exit Sub
         If newDoorObjIndex < LBound(ObjData) Or newDoorObjIndex > UBound(ObjData) Then Exit Sub
 
-        MapData(targetMap, targetX, targetY).ObjInfo.ObjIndex = newDoorObjIndex
+        MapData(targetX, targetY, targetMap).ObjInfo.ObjIndex = newDoorObjIndex
         UserList(UserIndex).flags.TargetObj = newDoorObjIndex
 
-        Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_CERRADO_LLAVE_PUERTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     End If
 
     Exit Sub

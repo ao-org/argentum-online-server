@@ -40,7 +40,7 @@ Public Sub MaybeSpawnUnderworldPortals()
                 DestinationPosition.y = UnderworldMapPool(i).y
                 Call CreateUnderworldTp(SourcePosition, DestinationPosition)
             Next i
-                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN))
+                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(UNDERWORLD_BROADCAST_MSG_ID, vbNullString, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN))
                 Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.Flames, 50, 50))
                 ALREADY_OPENED_PORTALS = True
         End If
@@ -75,31 +75,27 @@ Public Sub KickUsersFromUnderworld()
     For i = 1 To UBound(UnderworldMapPool)
         If Not MapaValido(UnderworldMapPool(i).Map) Then
             Debug.Assert False 'invalid map shouldn't happen
-            Exit Sub
+            Call TraceError(1, UnderworldMapPool(i).map & " is invalid", "KickUsersFromUnderworld()", 1)
         End If
         For LoopC = 1 To ConnGroups(UnderworldMapPool(i).Map).CountEntrys
             tempIndex = ConnGroups(UnderworldMapPool(i).Map).UserEntrys(LoopC)
             With UserList(tempIndex)
                 HomeCityId = .Hogar
-                If .ConnectionDetails.ConnIDValida Then
-                    Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
-                End If
+                Call WarpUserChar(tempIndex, Cities(HomeCityId).map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
             End With
         Next LoopC
     Next i
     
     If Not MapaValido(UNDERWORLD_CENTER_MAP_NUMBER) Then
         Debug.Assert False 'invalid map shouldn't happen
-        Exit Sub
+        Call TraceError(1, "Center of the underworld is invalid", "KickUsersFromUnderworld()", 1)
     End If
     
     For LoopC = 1 To ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).CountEntrys
         tempIndex = ConnGroups(UNDERWORLD_CENTER_MAP_NUMBER).UserEntrys(LoopC)
         With UserList(tempIndex)
-            If .ConnectionDetails.ConnIDValida Then
-                HomeCityId = .Hogar
-                Call WarpUserChar(tempIndex, Cities(HomeCityId).Map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
-            End If
+            HomeCityId = .Hogar
+            Call WarpUserChar(tempIndex, Cities(HomeCityId).map, Cities(HomeCityId).x, Cities(HomeCityId).y, True)
         End With
     Next LoopC
 End Sub
@@ -109,11 +105,11 @@ Public Sub DestroyUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_World
         Debug.Assert False
         Exit Sub
     End If
-    If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex <> UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
-    Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.Map = 0
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.x = 0
-    MapData(Source.Map, Source.x, Source.y - 4).TileExit.y = 0
+    If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex <> UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
+    Call EraseObj(MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.Map = 0
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.x = 0
+    MapData(Source.x, Source.y - 4, Source.Map).TileExit.y = 0
 End Sub
 
 Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldPos)
@@ -122,17 +118,17 @@ Public Sub CreateUnderworldTp(ByRef Source As t_WorldPos, ByRef Dest As t_WorldP
         Exit Sub
     End If
     If Not MapaValido(Dest.Map) Or Not InMapBounds(Dest.Map, Dest.x, Dest.y) Then Exit Sub
-        If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
-        If MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex > 0 Then
-            Call EraseObj(MapData(Source.Map, Source.x, Source.y).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
+        If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX Then Exit Sub
+        If MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex > 0 Then
+            Call EraseObj(MapData(Source.x, Source.y, Source.Map).ObjInfo.ObjIndex, Source.Map, Source.x, Source.y)
         End If
         Dim Objeto As t_Obj
         Objeto.Amount = 1
         Objeto.ObjIndex = UNDERWORLD_PORTAL_OBJ_IDX
         Call MakeObj(Objeto, Source.Map, Source.x, Source.y)
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.Map = Dest.Map
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.x = Dest.x
-        MapData(Source.Map, Source.x, Source.y - 4).TileExit.y = Dest.y
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.Map = Dest.Map
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.x = Dest.x
+        MapData(Source.x, Source.y - 4, Source.Map).TileExit.y = Dest.y
 End Sub
 
 Public Function IsUserIndexInsideTheUnderworld(ByVal UserIndex As Integer)

@@ -27,6 +27,7 @@ Attribute VB_Name = "ES"
 '
 Option Explicit
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
+Private Const CSM_FIVE_LAYER_SIGNATURE As Long = &H324C3557
 
 Private Type t_Position
     x As Integer
@@ -70,7 +71,7 @@ End Type
 
 Private Type t_MapHeader
     NumeroBloqueados As Long
-    NumeroLayers(1 To 4) As Long
+    NumeroLayers(1 To MAP_LAYER_COUNT) As Long
     NumeroTriggers As Long
     NumeroLuces As Long
     NumeroParticulas As Long
@@ -593,9 +594,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
         frmCargando.cargar.value = frmCargando.cargar.value + 1
-        Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
-        Hechizos(Hechizo).RequiereInstrumento = val(Leer.GetValue("Hechizo" & Hechizo, "RequiereInstrumento"))
-        Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
+        Hechizos(Hechizo).MagicPowerNeeded = val(Leer.GetValue("Hechizo" & Hechizo, "MagicPowerNeeded"))
         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
         Hechizos(Hechizo).MaxLevelCasteable = val(Leer.GetValue("Hechizo" & Hechizo, "MaxLevelCasteable"))
         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
@@ -664,6 +663,7 @@ Public Sub LoadEffectOverTime()
         EffectOverTime(i).MagicHealingBonus = val(Leer.GetValue("EOT" & i, "MagicHealingBonus"))
         EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
         EffectOverTime(i).PhysicalLinearBonus = val(Leer.GetValue("EOT" & i, "PhysicalLinearBonus"))
+        EffectOverTime(i).PhysicalBonusPveOnly = val(Leer.GetValue("EOT" & i, "PhysicalBonusPveOnly")) <> 0
         EffectOverTime(i).DefenseBonus = val(Leer.GetValue("EOT" & i, "DefenseBonus"))
         EffectOverTime(i).buffType = val(Leer.GetValue("EOT" & i, "BuffType"))
         EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
@@ -902,6 +902,13 @@ Sub LoadBalance()
     For i = 1 To STAT_MAXELV
         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
     Next
+        ' Costo de /hogar por tramos de nivel
+    For i = 1 To HOME_COST_TIER_COUNT
+        HomeCostTierMinLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MinLevel", "0")))
+        HomeCostTierMaxLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MaxLevel", "0")))
+        HomeCostTierFloorGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "FloorGLD", "0")))
+        HomeCostTierCapGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "CapGLD", "0")))
+    Next i
     'ElementalMatrixForNpcs
     Dim vals() As String
     Dim row    As String
@@ -912,11 +919,62 @@ Sub LoadBalance()
             ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
         Next j
     Next i
+    Call ValidateHomeCostTiers
     Set BalanceIni = Nothing
     AgregarAConsola "Se cargó el balance (Balance.dat)"
     Exit Sub
 LoadBalance_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+End Sub
+
+Private Sub ValidateHomeCostTiers()
+    On Error GoTo ValidateHomeCostTiers_Err
+    Dim i As Byte
+    Dim ErrorMessage As String
+
+    HomeCostTiersValid = True
+
+    For i = 1 To HOME_COST_TIER_COUNT
+        If HomeCostTierMinLevel(i) <= 0 Or HomeCostTierMaxLevel(i) <= 0 _
+            Or HomeCostTierMinLevel(i) > HomeCostTierMaxLevel(i) _
+            Or HomeCostTierFloorGLD(i) <= 0 Or HomeCostTierCapGLD(i) < HomeCostTierFloorGLD(i) Then
+            ErrorMessage = "Tramo de costo de hogar invalido. Tier=" & i & _
+                " MinLevel=" & HomeCostTierMinLevel(i) & _
+                " MaxLevel=" & HomeCostTierMaxLevel(i) & _
+                " FloorGLD=" & HomeCostTierFloorGLD(i) & _
+                " CapGLD=" & HomeCostTierCapGLD(i)
+            Call LogError(ErrorMessage)
+            Debug.Print ErrorMessage
+            HomeCostTiersValid = False
+        ElseIf i > 1 Then
+            If HomeCostTierMinLevel(i) <> HomeCostTierMaxLevel(i - 1) + 1 Then
+                ErrorMessage = "Tramos de costo de hogar no son contiguos. Tier=" & i & _
+                    " MinLevel=" & HomeCostTierMinLevel(i) & _
+                    " Tier anterior MaxLevel=" & HomeCostTierMaxLevel(i - 1)
+                Call LogError(ErrorMessage)
+                Debug.Print ErrorMessage
+                HomeCostTiersValid = False
+            End If
+        End If
+    Next i
+
+    If HomeCostTierMinLevel(1) <> 1 Then
+        Call LogError("El primer tramo de costo de hogar no arranca en nivel 1. MinLevel=" & HomeCostTierMinLevel(1))
+        HomeCostTiersValid = False
+    End If
+
+    If HomeCostTierMaxLevel(HOME_COST_TIER_COUNT) < STAT_MAXELV Then
+        Call LogError("El ultimo tramo de costo de hogar no cubre el nivel maximo. MaxLevel=" & HomeCostTierMaxLevel(HOME_COST_TIER_COUNT) & " STAT_MAXELV=" & STAT_MAXELV)
+        HomeCostTiersValid = False
+    End If
+
+    If Not HomeCostTiersValid Then
+        Debug.Assert False
+    End If
+
+    Exit Sub
+ValidateHomeCostTiers_Err:
+    Call TraceError(Err.Number, Err.Description, "ES.ValidateHomeCostTiers", Erl)
 End Sub
 
 Sub LoadObjCarpintero()
@@ -1027,7 +1085,6 @@ Sub LoadOBJData()
             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
             .MaxLEV = val(Leer.GetValue(ObjKey, "MaxLEV"))
-            .InstrumentoRequerido = val(Leer.GetValue(ObjKey, "InstrumentoRequerido"))
             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
             .Blodium = val(Leer.GetValue(ObjKey, "Blodium"))
@@ -1052,6 +1109,7 @@ Sub LoadOBJData()
             If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
             If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
             If val(Leer.GetValue(ObjKey, "JailObject")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_JailObject)
+            If val(Leer.GetValue(ObjKey, "NoTradeableToNPC")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_NoTradeableToNPC)
             Dim i As Integer
             Select Case .OBJType
                 Case e_OBJType.otWorkingTools
@@ -1090,6 +1148,7 @@ Sub LoadOBJData()
                     '.BackpackAnim = val(Leer.GetValue(ObjKey, "Anim"))
                 Case e_OBJType.otMagicalInstrument
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otWeapon, e_OBJType.otSkinsWeapons
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
@@ -1108,7 +1167,7 @@ Sub LoadOBJData()
                     .ExtraCritAndStabChance = val(Leer.GetValue(ObjKey, "ExtraCritAndStabChance"))
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
-                    .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
                     .LeadersOnly = val(Leer.GetValue(ObjKey, "LeadersOnly")) <> 0
@@ -1249,6 +1308,7 @@ Sub LoadOBJData()
                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 Case e_OBJType.otRingAccesory
                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Power = val(Leer.GetValue(ObjKey, "MagicPower"))
                 Case e_OBJType.otMinerals
                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                 Case e_OBJType.otUsableOntarget
@@ -1472,7 +1532,7 @@ Sub CargarBackUp()
     frmCargando.cargar.max = NumMaps
     frmCargando.cargar.value = 0
     frmCargando.ToMapLbl.Visible = True
-    ReDim MapData(1 To (NumMaps + InstanceMapCount), XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
+    ReDim MapData(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize, 1 To (NumMaps + InstanceMapCount)) As t_MapBlock
     ReDim MapInfo(1 To (NumMaps + InstanceMapCount)) As t_MapInfo
     For Map = 1 To NumMaps
         frmCargando.ToMapLbl = Map & "/" & NumMaps
@@ -1510,7 +1570,7 @@ Sub LoadMapData()
     frmCargando.cargar.max = NormalMapsCount
     frmCargando.cargar.value = 0
     frmCargando.ToMapLbl.Visible = True
-    ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
+    ReDim MapData(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize, 1 To NumMaps) As t_MapBlock
     ReDim MapInfo(1 To NumMaps) As t_MapInfo
     For Map = 1 To NormalMapsCount
         frmCargando.ToMapLbl = Map & "/" & NormalMapsCount
@@ -1531,11 +1591,10 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim npcfile                                     As String
     Dim fh                                          As Integer
     Dim MH                                          As t_MapHeader
+    Dim signatureOrBlocked                          As Long
+    Dim layer                                       As Long
+    Dim graphics()                                  As t_DatosGrh
     Dim Blqs()                                      As t_DatosBloqueados
-    Dim L1()                                        As t_DatosGrh
-    Dim L2()                                        As t_DatosGrh
-    Dim L3()                                        As t_DatosGrh
-    Dim L4()                                        As t_DatosGrh
     Dim Triggers()                                  As t_DatosTrigger
     Dim Luces()                                     As t_DatosLuces
     Dim Particulas()                                As t_DatosParticulas
@@ -1563,79 +1622,75 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     End If
     fh = FreeFile
     Open MAPFl For Binary As fh
-    Get #fh, , MH
+    Get #fh, , signatureOrBlocked
+    If signatureOrBlocked = CSM_FIVE_LAYER_SIGNATURE Then
+        Get #fh, , MH
+    Else
+        ' Legacy four-layer files have no signature. Remap scenery/roofs.
+        MH.NumeroBloqueados = signatureOrBlocked
+        Get #fh, , MH.NumeroLayers(1)
+        Get #fh, , MH.NumeroLayers(2)
+        Get #fh, , MH.NumeroLayers(4)
+        Get #fh, , MH.NumeroLayers(5)
+        Get #fh, , MH.NumeroTriggers
+        Get #fh, , MH.NumeroLuces
+        Get #fh, , MH.NumeroParticulas
+        Get #fh, , MH.NumeroNPCs
+        Get #fh, , MH.NumeroOBJs
+        Get #fh, , MH.NumeroTE
+    End If
     Get #fh, , MapSize
     Get #fh, , MapDat
-    Rem Get #fh, , L1
     With MH
         'Cargamos Bloqueos
         If .NumeroBloqueados > 0 Then
             ReDim Blqs(1 To .NumeroBloqueados)
             Get #fh, , Blqs
             For i = 1 To .NumeroBloqueados
-                MapData(Map, Blqs(i).x, Blqs(i).y).Blocked = Blqs(i).Lados
+                MapData(Blqs(i).x, Blqs(i).y, Map).Blocked = Blqs(i).Lados
             Next i
         End If
-        'Cargamos Layer 1
-        If .NumeroLayers(1) > 0 Then
-            ReDim L1(1 To .NumeroLayers(1))
-            Get #fh, , L1
-            For i = 1 To .NumeroLayers(1)
-                x = L1(i).x
-                y = L1(i).y
-                MapData(Map, x, y).Graphic(1) = L1(i).GrhIndex
-                TotalTiles = TotalTiles + 1
-                If HayAgua(Map, x, y) Then
-                    MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_AGUA
-                    SailingTiles = SailingTiles + 1
-                End If
-            Next i
-        End If
-        'Cargamos Layer 2
-        If .NumeroLayers(2) > 0 Then
-            ReDim L2(1 To .NumeroLayers(2))
-            Get #fh, , L2
-            For i = 1 To .NumeroLayers(2)
-                x = L2(i).x
-                y = L2(i).y
-                MapData(Map, x, y).Graphic(2) = L2(i).GrhIndex
-                MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked And Not FLAG_AGUA
-            Next i
-        End If
-        If .NumeroLayers(3) > 0 Then
-            ReDim L3(1 To .NumeroLayers(3))
-            Get #fh, , L3
-            For i = 1 To .NumeroLayers(3)
-                x = L3(i).x
-                y = L3(i).y
-                MapData(Map, x, y).Graphic(3) = L3(i).GrhIndex
-                If EsArbol(L3(i).GrhIndex) Then
-                    MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_ARBOL
-                End If
-            Next i
-        End If
-        If .NumeroLayers(4) > 0 Then
-            ReDim L4(1 To .NumeroLayers(4))
-            Get #fh, , L4
-            For i = 1 To .NumeroLayers(4)
-                MapData(Map, L4(i).x, L4(i).y).Graphic(4) = L4(i).GrhIndex
-            Next i
-        End If
+        ' One contiguous scratch array, applied to inline tile graphics.
+        For layer = 1 To MAP_LAYER_COUNT
+            If .NumeroLayers(layer) > 0 Then
+                ReDim graphics(1 To .NumeroLayers(layer))
+                Get #fh, , graphics
+                For i = 1 To .NumeroLayers(layer)
+                    x = graphics(i).x
+                    y = graphics(i).y
+                    MapData(x, y, Map).Graphic(layer) = graphics(i).GrhIndex
+                    Select Case layer
+                        Case 1
+                            TotalTiles = TotalTiles + 1
+                            If HayAgua(Map, x, y) Then
+                                MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
+                                SailingTiles = SailingTiles + 1
+                            End If
+                        Case 2, 3
+                            MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked And Not FLAG_AGUA
+                        Case 4
+                            If EsArbol(graphics(i).GrhIndex) Then
+                                MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_ARBOL
+                            End If
+                    End Select
+                Next i
+            End If
+        Next layer
         If .NumeroTriggers > 0 Then
             ReDim Triggers(1 To .NumeroTriggers)
             Get #fh, , Triggers
             For i = 1 To .NumeroTriggers
                 x = Triggers(i).x
                 y = Triggers(i).y
-                MapData(Map, x, y).trigger = Triggers(i).trigger
+                MapData(x, y, Map).trigger = Triggers(i).trigger
                 ' Trigger detalles en agua
                 If Triggers(i).trigger = e_Trigger.DETALLEAGUA Then
                     ' Vuelvo a poner flag agua
-                    MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_AGUA
+                    MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
                 End If
                 If Triggers(i).trigger = e_Trigger.VALIDONADO Or Triggers(i).trigger = e_Trigger.NADOCOMBINADO Or Triggers(i).trigger = e_Trigger.NADOBAJOTECHO Then
                     ' Vuelvo a poner flag agua
-                    MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_AGUA
+                    MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
                 End If
             Next i
         End If
@@ -1643,32 +1698,32 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
             ReDim Particulas(1 To .NumeroParticulas)
             Get #fh, , Particulas
             For i = 1 To .NumeroParticulas
-                MapData(Map, Particulas(i).x, Particulas(i).y).ParticulaIndex = Particulas(i).Particula
-                MapData(Map, Particulas(i).x, Particulas(i).y).ParticulaIndex = 0
+                MapData(Particulas(i).x, Particulas(i).y, Map).ParticulaIndex = Particulas(i).Particula
+                MapData(Particulas(i).x, Particulas(i).y, Map).ParticulaIndex = 0
             Next i
         End If
         If .NumeroLuces > 0 Then
             ReDim Luces(1 To .NumeroLuces)
             Get #fh, , Luces
             For i = 1 To .NumeroLuces
-                MapData(Map, Luces(i).x, Luces(i).y).Luz.Color = Luces(i).Color
-                MapData(Map, Luces(i).x, Luces(i).y).Luz.Rango = Luces(i).Rango
-                MapData(Map, Luces(i).x, Luces(i).y).Luz.Color = 0
-                MapData(Map, Luces(i).x, Luces(i).y).Luz.Rango = 0
+                MapData(Luces(i).x, Luces(i).y, Map).Luz.Color = Luces(i).Color
+                MapData(Luces(i).x, Luces(i).y, Map).Luz.Rango = Luces(i).Rango
+                MapData(Luces(i).x, Luces(i).y, Map).Luz.Color = 0
+                MapData(Luces(i).x, Luces(i).y, Map).Luz.Rango = 0
             Next i
         End If
         If .NumeroOBJs > 0 Then
             ReDim Objetos(1 To .NumeroOBJs)
             Get #fh, , Objetos
             For i = 1 To .NumeroOBJs
-                MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
+                MapData(Objetos(i).x, Objetos(i).y, Map).ObjInfo.ObjIndex = Objetos(i).ObjIndex
                 With ObjData(Objetos(i).ObjIndex)
                     Select Case .OBJType
                         Case e_OBJType.otOreDeposit, e_OBJType.otTrees
-                            MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-                            MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+                            MapData(Objetos(i).x, Objetos(i).y, Map).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
+                            MapData(Objetos(i).x, Objetos(i).y, Map).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
                         Case Else
-                            MapData(Map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = Objetos(i).ObjAmmount
+                            MapData(Objetos(i).x, Objetos(i).y, Map).ObjInfo.amount = Objetos(i).ObjAmmount
                     End Select
                     If .OBJType = otTeleport And .Subtipo = e_TeleportSubType.eTransportNetwork Then
                         RandomTeleports(randomTeleportCount) = i
@@ -1687,14 +1742,14 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                     npcfile = DatPath & "NPCs.dat"
                     NpcIndex = OpenNPC(NumNpc)
                     If NpcIndex > 0 Then
-                        MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex = NpcIndex
+                        MapData(NPCs(i).x, NPCs(i).y, Map).NpcIndex = NpcIndex
                         NpcList(NpcIndex).pos.Map = Map
                         NpcList(NpcIndex).pos.x = NPCs(i).x
                         NpcList(NpcIndex).pos.y = NPCs(i).y
                         '  guardo siempre la pos original... puede sernos útil ;)
                         NpcList(NpcIndex).Orig = NpcList(NpcIndex).pos
                         If LenB(NpcList(NpcIndex).name) = 0 Then
-                            MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex = 0
+                            MapData(NPCs(i).x, NPCs(i).y, Map).NpcIndex = 0
                         Else
                             Call MakeNPCChar(True, 0, NpcIndex, Map, NPCs(i).x, NPCs(i).y)
                         End If
@@ -1709,9 +1764,9 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
             ReDim TEs(1 To .NumeroTE)
             Get #fh, , TEs
             For i = 1 To .NumeroTE
-                MapData(Map, TEs(i).x, TEs(i).y).TileExit.Map = TEs(i).DestM
-                MapData(Map, TEs(i).x, TEs(i).y).TileExit.x = TEs(i).DestX
-                MapData(Map, TEs(i).x, TEs(i).y).TileExit.y = TEs(i).DestY
+                MapData(TEs(i).x, TEs(i).y, Map).TileExit.Map = TEs(i).DestM
+                MapData(TEs(i).x, TEs(i).y, Map).TileExit.x = TEs(i).DestX
+                MapData(TEs(i).x, TEs(i).y, Map).TileExit.y = TEs(i).DestY
             Next i
         End If
     End With
@@ -1725,8 +1780,10 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
             MapDat.restrict_mode = "0"
         End If
     End If
-    If SailingTiles * 100 / TotalTiles > SvrConfig.GetValue("FISHING_REQUIRED_PERCENT") And Not MapDat.Seguro Then
-        Call AddFishingPoolsToMap(Map)
+    If MapDat.Seguro = 0 And TotalTiles > 0 Then
+        If (CDbl(SailingTiles) / CDbl(TotalTiles)) * 100# > CDbl(SvrConfig.GetValue("FISHING_REQUIRED_PERCENT")) Then
+            Call AddFishingPoolsToMap(Map)
+        End If
     End If
     MapInfo(Map).map_name = MapDat.map_name
     MapInfo(Map).MapResource = Map
@@ -1781,6 +1838,142 @@ ErrorHandler:
     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
 End Sub
 
+#If UNIT_TEST = 1 Then
+' Exercise the real loader using both serialized headers and a populated new layer.
+Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery As Boolean, Optional ByVal walkableLayer As Long = 0) As Boolean
+    On Error GoTo TestCsmLayerLoading_Err
+    Dim savedTile As t_MapBlock
+    Dim savedInfo As t_MapInfo
+    Dim emptyTile As t_MapBlock
+    Dim fixturePath As String
+    Dim saved As Boolean
+    Dim fh As Integer
+    Dim header As t_MapHeader
+    Dim bounds As t_MapSize
+    Dim metadata As t_MapDat
+    Dim blocked(1 To 1) As t_DatosBloqueados
+    Dim graphic(1 To 1) As t_DatosGrh
+    Dim trigger(1 To 1) As t_DatosTrigger
+    Dim tileExit(1 To 1) As t_DatosTE
+    Dim layer As Long
+    Const treeGraphic As Long = 11905
+    Dim zero As Long
+
+    savedTile = MapData(50, 50, 1)
+    savedInfo = MapInfo(1)
+    saved = True
+    MapData(50, 50, 1) = emptyTile
+    fixturePath = App.Path & "\build\five-layer-test.csm"
+    If FileExist(fixturePath, vbNormal) Then Kill fixturePath
+    fh = FreeFile
+    Open fixturePath For Binary As #fh
+    header.NumeroBloqueados = 1
+    For layer = 1 To MAP_LAYER_COUNT
+        header.NumeroLayers(layer) = 1
+    Next layer
+    If walkableLayer > 0 Then
+        For layer = 2 To MAP_LAYER_COUNT
+            header.NumeroLayers(layer) = 0
+        Next layer
+        header.NumeroLayers(walkableLayer) = 1
+    End If
+    header.NumeroTriggers = 1
+    header.NumeroTE = 1
+    If legacy Then
+        Put #fh, , header.NumeroBloqueados
+        For layer = 1 To MAP_LAYER_COUNT
+            If layer <> 3 Then Put #fh, , header.NumeroLayers(layer)
+        Next layer
+        Put #fh, , header.NumeroTriggers
+        Put #fh, , zero ' lights
+        Put #fh, , zero ' particles
+        Put #fh, , zero ' NPCs
+        Put #fh, , zero ' objects
+        Put #fh, , header.NumeroTE
+    Else
+        Put #fh, , CSM_FIVE_LAYER_SIGNATURE
+        Put #fh, , header
+    End If
+    bounds.XMin = 1
+    bounds.XMax = 100
+    bounds.YMin = 1
+    bounds.YMax = 100
+    metadata.map_name = "Five layer regression"
+    metadata.restrict_mode = "0"
+    metadata.Seguro = 1
+    Put #fh, , bounds
+    Put #fh, , metadata
+    blocked(1).x = 50
+    blocked(1).y = 50
+    blocked(1).Lados = 1
+    If walkableLayer > 0 Then blocked(1).Lados = 0
+    Put #fh, , blocked
+    graphic(1).x = 50
+    graphic(1).y = 50
+    For layer = 1 To MAP_LAYER_COUNT
+        graphic(1).GrhIndex = layer
+        If layer = 3 Or (layer = 4 And treeOnScenery) Then graphic(1).GrhIndex = treeGraphic
+        If walkableLayer > 0 And layer = 1 Then graphic(1).GrhIndex = 1505
+        If header.NumeroLayers(layer) > 0 Then
+            If Not legacy Or layer <> 3 Then Put #fh, , graphic
+        End If
+    Next layer
+    trigger(1).x = 50
+    trigger(1).y = 50
+    trigger(1).trigger = 60
+    Put #fh, , trigger
+    tileExit(1).x = 50
+    tileExit(1).y = 50
+    tileExit(1).DestM = 2
+    tileExit(1).DestX = 3
+    tileExit(1).DestY = 4
+    Put #fh, , tileExit
+    Close #fh
+    fh = 0
+    Call CargarMapaFormatoCSM(1, fixturePath)
+    If walkableLayer > 0 Then
+        If MapData(50, 50, 1).Graphic(1) <> 1505 Then GoTo Cleanup
+        If GetWalkableOverlayGraphic(1, 50, 50) = 0 Then GoTo Cleanup
+        If (MapData(50, 50, 1).Blocked And FLAG_AGUA) <> 0 Then GoTo Cleanup
+        If Not LegalPos(1, 50, 50, False, True) Then GoTo Cleanup
+        MapData(50, 50, 1).Blocked = e_Block.ALL_SIDES
+        If LegalPos(1, 50, 50, False, True) Then GoTo Cleanup
+        TestCsmLayerLoading = True
+        GoTo Cleanup
+    End If
+    With MapData(50, 50, 1)
+        If .Graphic(1) <> 1 Or .Graphic(2) <> 2 Or .Graphic(5) <> 5 Then GoTo Cleanup
+        If legacy Then
+            If .Graphic(3) <> 0 Then GoTo Cleanup
+        Else
+            If .Graphic(3) <> treeGraphic Then GoTo Cleanup
+        End If
+        If treeOnScenery Then
+            If .Graphic(4) <> treeGraphic Or (.Blocked And FLAG_ARBOL) = 0 Then GoTo Cleanup
+        Else
+            If .Graphic(4) <> 4 Or (.Blocked And FLAG_ARBOL) <> 0 Then GoTo Cleanup
+        End If
+        If .trigger <> 60 Then GoTo Cleanup
+        If .TileExit.Map <> 2 Or .TileExit.x <> 3 Or .TileExit.y <> 4 Then GoTo Cleanup
+    End With
+    If MapInfo(1).map_name <> metadata.map_name Then GoTo Cleanup
+    TestCsmLayerLoading = True
+Cleanup:
+    If fh <> 0 Then Close #fh
+    If saved Then
+        MapData(50, 50, 1) = savedTile
+        MapInfo(1) = savedInfo
+    End If
+    If LenB(fixturePath) <> 0 Then
+        If FileExist(fixturePath, vbNormal) Then Kill fixturePath
+    End If
+    Exit Function
+TestCsmLayerLoading_Err:
+    TestCsmLayerLoading = False
+    Resume Cleanup
+End Function
+#End If
+
 Sub AddFishingPoolsToMap(ByVal Map As Integer)
     Dim i As Integer
     For i = 1 To SvrConfig.GetValue("FISHING_TILES_ON_MAP")
@@ -1793,10 +1986,10 @@ Public Sub CreateFishingPool(ByVal Map As Integer)
     Do
         x = RandomNumber(12, 88)
         y = RandomNumber(12, 88)
-    Loop While MapData(Map, x, y).ObjInfo.ObjIndex <> 0 Or Not HayAgua(Map, x, y)
-    MapData(Map, x, y).ObjInfo.ObjIndex = SvrConfig.GetValue("FISHING_POOL_ID")
-    MapData(Map, x, y).ObjInfo.amount = ObjData(SvrConfig.GetValue("FISHING_POOL_ID")).VidaUtil
-    MapData(Map, x, y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+    Loop While MapData(x, y, Map).ObjInfo.ObjIndex <> 0 Or Not HayAgua(Map, x, y)
+    MapData(x, y, Map).ObjInfo.ObjIndex = SvrConfig.GetValue("FISHING_POOL_ID")
+    MapData(x, y, Map).ObjInfo.amount = ObjData(SvrConfig.GetValue("FISHING_POOL_ID")).VidaUtil
+    MapData(x, y, Map).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
 End Sub
 
 Sub LoadPrivateKey()
@@ -1804,13 +1997,6 @@ Sub LoadPrivateKey()
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
     Line Input #1, PrivateKey
     Close #1
-End Sub
-
-Sub LoadMD5()
-    Open IniPath & "ClienteMD5.txt" For Input As #1
-    Line Input #1, Md5Cliente
-    Close #1
-    Md5Cliente = Replace(Md5Cliente, " ", "")
 End Sub
 
 Sub LoadSini()
@@ -2245,7 +2431,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     If Logout Then
         Call UserDisconnected(UserIndex)
     End If
-    Call SaveCharacterDB(UserIndex)
+    Call SaveCharacterDB(UserIndex, Logout)
     If Logout Then
         Call RemoveTokenDatabase(UserIndex)
     End If
@@ -2743,6 +2929,13 @@ Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
         FeatureToggles.Remove name
     End If
     Call FeatureToggles.Add(name, State)
+    If name = NPC_CROSS_MAP_PURSUIT_FEATURE Then
+        If State Then
+            Call LoadAdjacentTopology
+        Else
+            Call ResetAdjacentTopology
+        End If
+    End If
 End Sub
 
 Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()

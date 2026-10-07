@@ -37,7 +37,7 @@ Private WT_Inited   As Boolean
 Public Sub WorldTime_Init(ByVal dayLenMs As Long, Optional ByVal startElapsedMs As Long = 0)
     If dayLenMs <= 0 Then dayLenMs = 1
     WT_DayLenMs = dayLenMs
-    WT_BaseTick = WorldTime_NowRaw() - (startElapsedMs And &H7FFFFFFF) ' store raw base; differences via TicksElapsed()
+    WT_BaseTick = AddMod32(WorldTime_NowRaw(), -(startElapsedMs And &H7FFFFFFF)) ' store raw base; differences via TicksElapsed()
     WT_Inited = True
 End Sub
 
@@ -49,7 +49,7 @@ Public Sub WorldTime_HandleHora(ByVal elapsedFromServerMs As Long, ByVal dayLenM
     WT_DayLenMs = dayLenMs
     Dim elapsedNorm As Long
     elapsedNorm = PosMod(CDbl(elapsedFromServerMs), WT_DayLenMs)
-    WT_BaseTick = WorldTime_NowRaw() - elapsedNorm   ' base is raw; only compare via TicksElapsed()
+    WT_BaseTick = AddMod32(WorldTime_NowRaw(), -elapsedNorm)   ' base is raw; only compare via TicksElapsed()
     WT_Inited = True
 End Sub
 
@@ -80,7 +80,7 @@ Public Sub WorldTime_Resync(ByVal serverElapsedMs As Long)
     If WT_DayLenMs <= 0 Then WT_DayLenMs = 1
     Dim elapsedNorm As Long
     elapsedNorm = PosMod(CDbl(serverElapsedMs), WT_DayLenMs)
-    WT_BaseTick = WorldTime_NowRaw() - elapsedNorm
+    WT_BaseTick = AddMod32(WorldTime_NowRaw(), -elapsedNorm)
     WT_Inited = True
 End Sub
 

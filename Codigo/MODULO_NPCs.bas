@@ -172,11 +172,11 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     If NpcList(NpcIndex).ShowKillerConsole > 0 Then
         'Msg1986=¬1 ha muerto en manos de ¬2
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_KILLED_BY_USER, NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_GLOBAL))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_KILLED_BY_USER, NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
     'Quitamos el npc
     If MiNPC.flags.GlobalQuestBossIndex Then
-        GlobalQuestInfo(MiNPC.flags.GlobalQuestBossIndex).IsBossAlive = False
+        Call MarkGlobalQuestBossAsDead(MiNPC.flags.GlobalQuestBossIndex, MiNPC.Numero)
     End If
     Call QuitarNPC(NpcIndex, eDie)
     If UserIndex > 0 Then ' Lo mato un usuario?
@@ -203,7 +203,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Next
         End If
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_YOU_KILLED_CREATURE, e_FontTypeNames.FONTTYPE_DIOS)
+            Call WriteLocaleMsg(UserIndex, MSG_YOU_KILLED_CREATURE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
         End If
         Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
@@ -234,7 +234,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
     If NpcIndex = npc_index_evento Then
         BusquedaNpcActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_EVENT_KILLED, vbNullString, e_FontTypeNames.FONTTYPE_CITIZEN)) ' Msg1549=Evento> El NPC ha sido asesinado.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_EVENT_KILLED, vbNullString, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) ' Msg1549=Evento> El NPC ha sido asesinado.
         npc_index_evento = 0
     End If
     'ReSpawn o no
@@ -252,7 +252,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             .RespawnFlag = MiNPC.flags.Respawn
             .NpcNumber = MiNPC.Numero
             .SndRespawn = MiNPC.flags.SndRespawn
-            .SpawnMap = MiNPC.pos.Map
+            .SpawnMap = NpcRespawnMap(MiNPC)
             .Orig = MiNPC.Orig
             .IntervaloRespawn = MiNPC.Contadores.IntervaloRespawn
         End With
@@ -372,6 +372,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         .pathFindingInfo.OrbitDirection = 0
         .pathFindingInfo.OrbitReevaluateAt = 0
         .pathFindingInfo.NextPathRecomputeAt = 0
+        Call ResetNpcCrossMapRoute(NpcIndex)
         .Comercia = 0
         .GiveEXP = 0
         .GiveEXPClan = 0
@@ -471,7 +472,7 @@ End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TestSpawnTrigger_Err
-    TestSpawnTrigger = MapData(Map, x, y).trigger < 1 Or (MapData(Map, x, y).trigger > 3 And MapData(Map, x, y).trigger < 12)
+    TestSpawnTrigger = MapData(x, y, Map).trigger < 1 Or (MapData(x, y, Map).trigger > 3 And MapData(x, y, Map).trigger < 12)
     Exit Function
 TestSpawnTrigger_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
@@ -563,17 +564,36 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             .Char.charindex = charindex
             CharList(charindex) = NpcIndex
         End If
-        MapData(Map, x, y).NpcIndex = NpcIndex
+        MapData(x, y, Map).NpcIndex = NpcIndex
         Dim Simbolo As Byte
         Dim GG      As String
         Dim tmpByte As Byte
         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
         If Not toMap Then
+            Dim HayFinalizada As Boolean
+            Dim HayDisponible As Boolean
+            Dim HayPendiente  As Boolean
+
+            'Quests que este NPC recibe vía TalkTo (independiente de NumQuest,
+            'que solo controla las quests que el NPC OFRECE / lista en su panel).
+            Dim qi As Long
+            For qi = 1 To UBound(QuestList)
+                If QuestList(qi).TalkTo > 0 And QuestList(qi).TalkTo = .Numero Then
+                    tmpByte = TieneQuest(sndIndex, qi)
+                    If tmpByte Then
+                        If FinishQuestCheck(sndIndex, qi, tmpByte) Then
+                            Simbolo = 3
+                            HayFinalizada = True
+                        Else
+                            HayPendiente = True
+                            Simbolo = 4
+                        End If
+                    End If
+                End If
+            Next qi
+
             If .NumQuest > 0 Then
-                Dim q             As Byte
-                Dim HayFinalizada As Boolean
-                Dim HayDisponible As Boolean
-                Dim HayPendiente  As Boolean
+                Dim q As Byte
                 For q = 1 To .NumQuest
                     tmpByte = TieneQuest(sndIndex, .QuestNumber(q))
                     If tmpByte Then
@@ -588,7 +608,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         Dim validClass As Boolean
                         Dim i As Integer
                         validClass = False
-                        
+
                         If QuestList(.QuestNumber(q)).RequiredClassesCount > 0 Then
                             For i = 1 To QuestList(.QuestNumber(q)).RequiredClassesCount
                                 If UserList(sndIndex).clase = QuestList(.QuestNumber(q)).RequiredClass(i) Then
@@ -597,7 +617,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                                 End If
                             Next i
                         End If
-                        
+
                         If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < _
                                 QuestList(.QuestNumber(q)).RequiredLevel Or (QuestList(.QuestNumber(q)).RequiredClassesCount > 0 And Not validClass) Then
                             Simbolo = 2
@@ -607,18 +627,20 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         End If
                     End If
                 Next q
-                'Para darle prioridad a ciertos simbolos
-                If HayDisponible Then
-                    Simbolo = 1
-                End If
-                If HayPendiente Then
-                    Simbolo = 4
-                End If
-                If HayFinalizada Then
-                    Simbolo = 3
-                End If
-                'Para darle prioridad a ciertos simbolos
             End If
+
+            'Para darle prioridad a ciertos simbolos
+            If HayDisponible Then
+                Simbolo = 1
+            End If
+            If HayPendiente Then
+                Simbolo = 4
+            End If
+            If HayFinalizada Then
+                Simbolo = 3
+            End If
+            'Para darle prioridad a ciertos simbolos
+
             Dim body As Integer
             'Si está muerto el usuario y en zona insegura
             If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
@@ -699,7 +721,7 @@ Sub EraseNPCChar(ByVal NpcIndex As Integer)
     End If
     Call RemoveNpc(NpcIndex)
     'Quitamos del mapa
-    MapData(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y).NpcIndex = 0
+    MapData(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y, NpcList(NpcIndex).pos.Map).NpcIndex = 0
     'Actualizamos los clientes
     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterRemove(5, NpcList(NpcIndex).Char.charindex, True))
     'Update la lista npc
@@ -714,15 +736,15 @@ End Sub
 Public Sub TranslateNpcChar(ByVal NpcIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
     On Error GoTo TranslateNpcChar_Err
     With NpcList(NpcIndex)
-        If MapData(.pos.Map, NewPos.x, NewPos.y).UserIndex Then
-            Call SwapTargetUserPos(MapData(.pos.Map, NewPos.x, NewPos.y).UserIndex, .pos)
+        If MapData(NewPos.x, NewPos.y, .pos.Map).UserIndex Then
+            Call SwapTargetUserPos(MapData(NewPos.x, NewPos.y, .pos.Map).UserIndex, .pos)
         End If
         'Update map and user pos
-        MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+        MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
         Dim PrevPos As t_WorldPos
         PrevPos = .pos
         .pos = NewPos
-        MapData(.pos.Map, NewPos.x, NewPos.y).NpcIndex = NpcIndex
+        MapData(NewPos.x, NewPos.y, .pos.Map).NpcIndex = NpcIndex
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         Call CheckUpdateNeededNpc(NpcIndex, GetHeadingFromWorldPos(PrevPos, NewPos))
     End With
@@ -744,15 +766,15 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         If .flags.LavaValida = 1 And Not HayLava(nPos.Map, nPos.x, nPos.y) Then Exit Function
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
-            UserIndex = MapData(.pos.Map, nPos.x, nPos.y).UserIndex
+            UserIndex = MapData(nPos.x, nPos.y, .pos.Map).UserIndex
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
             If UserIndex > 0 Then
                 With UserList(UserIndex)
                     ' Actualizamos posicion y mapa
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = 0
+                    MapData(.pos.x, .pos.y, .pos.Map).UserIndex = 0
                     .pos.x = NpcList(NpcIndex).pos.x
                     .pos.y = NpcList(NpcIndex).pos.y
-                    MapData(.pos.Map, .pos.x, .pos.y).UserIndex = UserIndex
+                    MapData(.pos.x, .pos.y, .pos.Map).UserIndex = UserIndex
                     ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.charindex, .pos.x, .pos.y))
                     Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
@@ -774,12 +796,12 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             Call AnimacionIdle(NpcIndex, False)
             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
             'Update map and user pos
-            MapData(.pos.Map, .pos.x, .pos.y).NpcIndex = 0
+            MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
             .pos = nPos
             .Char.Heading = nHeading
-            MapData(.pos.Map, nPos.x, nPos.y).NpcIndex = NpcIndex
+            MapData(nPos.x, nPos.y, .pos.Map).NpcIndex = NpcIndex
             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
-            If Not MapData(.pos.Map, nPos.x, nPos.y).Trap Is Nothing Then
+            If Not MapData(nPos.x, nPos.y, .pos.Map).Trap Is Nothing Then
                 Call ModMap.ActivateTrap(NpcIndex, eNpc, .pos.Map, nPos.x, nPos.y)
             End If
             ' Npc has moved
@@ -799,7 +821,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         UserList(UserIndex).flags.Envenenado = VenenoNivel
         'Msg182=¡¡La criatura te ha envenenado!!
         If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ENVENENADO, e_FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ENVENENADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         End If
     End If
     Exit Sub
@@ -863,7 +885,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, _
         Call SendData(SendTarget.ToNPCAliveArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.charindex, e_GraphicEffects.ModernGmWarp, 0))
     End If
     If Avisar Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & GetMapName(Map), e_FontTypeNames.FONTTYPE_CITIZEN)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_SPAWN_EVENT, NpcList(nIndex).Name & "¬" & GetMapName(Map), e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)) '  Msg1548=¬1 ha aparecido en ¬2, todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.
     End If
     SpawnNpc = nIndex
     Exit Function
@@ -871,9 +893,13 @@ SpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
 End Function
 
+Public Function NpcRespawnMap(ByRef npc As t_Npc) As Integer
+    NpcRespawnMap = npc.Orig.Map
+End Function
+
 Sub ReSpawnNpc(MiNPC As t_Npc)
     On Error GoTo ReSpawnNpc_Err
-    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, MiNPC.pos.Map, MiNPC.Orig)
+    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
     Exit Sub
 ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
@@ -1829,7 +1855,7 @@ Public Sub ProcessRespawnQueue()
                 If RespawnQueuedNpc(QueueEntry) Then
                     Call ReleaseRespawnQueueSlot(QueueIndex)
                     If QueueEntry.InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, QueueEntry.NpcNumber, e_FontTypeNames.FONTTYPE_EXP))
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, QueueEntry.NpcNumber, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
                         If QueueEntry.SndRespawn > 0 Then
                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(QueueEntry.SndRespawn, NO_3D_SOUND, NO_3D_SOUND))
                         End If
@@ -1879,7 +1905,7 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
 End Sub
 
-Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
+Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
     Dim NuevaPos  As t_WorldPos
     Dim FuturePos As t_WorldPos
     Call EraseNPCChar(NpcIndex)
@@ -2016,7 +2042,7 @@ Public Function DoDamageOrHeal(ByVal NpcIndex As Integer, _
         If SourceType = eUser Then
             DamageStr = PonerPuntos(Math.Abs(amount))
             If UserList(SourceIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(SourceIndex, MSG_DEALT_DAMAGE_TO_CREATURE, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+                Call WriteLocaleMsg(SourceIndex, MSG_DEALT_DAMAGE_TO_CREATURE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
@@ -2248,8 +2274,11 @@ Public Function Paralice(ByVal SourceIndex As Integer, ByVal TargetIndex As Inte
     End With
 End Function
 
-Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc) As Single
-    GetPhysicalDamageModifier = max(1 + Npc.Modifiers.PhysicalDamageBonus, 0)
+Public Function GetPhysicalDamageModifier(ByRef Npc As t_Npc, ByVal TargetType As e_ReferenceType) As Single
+    Dim bonus As Single
+    bonus = Npc.Modifiers.PhysicalDamageBonus
+    If TargetType = eNpc Then bonus = bonus + Npc.Modifiers.PhysicalDamageBonusPve
+    GetPhysicalDamageModifier = max(1 + bonus, 0)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef Npc As t_Npc) As Single
@@ -2266,6 +2295,10 @@ End Function
 
 Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_AttackInteractionResult
     With NpcList(NpcIndex)
+        If AI.IsGuardNpcType(.npcType) And EsGM(UserIndex) Then
+            CanAttackUser = eNotEnougthPrivileges
+            Exit Function
+        End If
         If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
             CanAttackUser = eNotEnougthPrivileges
             Exit Function
@@ -2416,12 +2449,13 @@ End Function
 
 Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackInterval As Long)
     With NpcList(NpcIndex)
-        CanPerformAttackAction = GlobalFrameTime - .Contadores.IntervaloLanzarHechizo > AttackInterval And GlobalFrameTime - .Contadores.IntervaloAtaque > AttackInterval
+        CanPerformAttackAction = TicksElapsed(.Contadores.IntervaloLanzarHechizo, GlobalFrameTime) > AttackInterval And TicksElapsed(.Contadores.IntervaloAtaque, GlobalFrameTime) > AttackInterval
     End With
 End Function
 
-Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
+Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer, ByVal TargetType As e_ReferenceType) As Integer
     GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
+    If TargetType = eNpc Then GetLinearDamageBonus = GetLinearDamageBonus + NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonusPve
 End Function
 
 Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)
@@ -2447,7 +2481,7 @@ Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
     GetOwnedBy = 0
     With NpcList(NpcIndex).flags
         If .AttackedBy = vbNullString Then Exit Function
-        If GlobalFrameTime - .AttackedTime > IntervaloNpcOwner Then Exit Function
+        If TicksElapsed(.AttackedTime, GlobalFrameTime) > IntervaloNpcOwner Then Exit Function
         Dim Attacker As t_UserReference: Attacker = NameIndex(.AttackedBy)
         If Not IsValidUserRef(Attacker) Then Exit Function
         GetOwnedBy = Attacker.ArrayIndex
@@ -2489,7 +2523,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                                     UserList(UserIndex).Char.charindex, chatColor)
                             If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
                                 'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
-                                Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_FontTypeNames.FONTTYPE_INFOIAO, QuestList(.QuestIndex).nombre)
+                                Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(.QuestIndex).nombre)
                             End If
                         End If
                     Next j

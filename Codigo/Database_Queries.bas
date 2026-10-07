@@ -39,6 +39,7 @@ Public QUERY_SAVE_SKILLS      As String
 Public QUERY_SAVE_QUESTS      As String
 Public QUERY_SAVE_PETS        As String
 Public QUERY_UPDATE_MAINPJ    As String
+Public QUERY_UPDATE_MAINPJ_LOGOUT As String
 Public QUERY_UPSERT_SPELLS    As String
 Public QUERY_UPSERT_INVENTORY As String
 Public QUERY_UPSERT_SKILLS    As String
@@ -128,7 +129,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "is_reset,"
     QueryBuilder.Append "is_locked_in_mao,"
     QueryBuilder.Append "jinete_level,"
-    QueryBuilder.Append "backpack_id"
+    QueryBuilder.Append "backpack_id,"
+    QueryBuilder.Append "remort_count"
     QueryBuilder.Append " FROM user WHERE id= ?"
     ' Guardo la query ensamblada
     QUERY_LOAD_MAINPJ = QueryBuilder.ToString
@@ -302,10 +304,13 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "return_x = ?, "
     QueryBuilder.Append "return_y = ?, "
     QueryBuilder.Append "jinete_level = ?, "
-    QueryBuilder.Append "backpack_id = ? "
+    QueryBuilder.Append "backpack_id = ?, "
+    QueryBuilder.Append "remort_count = ? "
     QueryBuilder.Append "WHERE id = ?"
     ' Guardo la query ensamblada
     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString
+    ' Variante de guardado de logout que registra last_logout
+    QUERY_UPDATE_MAINPJ_LOGOUT = Replace(QUERY_UPDATE_MAINPJ, "remort_count = ? WHERE id = ?", "remort_count = ?, last_logout = strftime('%s','now') WHERE id = ?")
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     ' ************************** User bank inventory **************************************

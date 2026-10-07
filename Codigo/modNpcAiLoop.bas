@@ -64,7 +64,7 @@ Private Sub RunNpcAiUpdate()
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
                 If .pos.Map > 0 Then
-                    If MapInfo(.pos.Map).NumUsers > 0 Or MapInfo(.pos.Map).ForceUpdate Then
+                    If NpcRequiresAiUpdate(NpcIndex) Then
                         If .flags.NPCActive Then
                             If .npcType = DummyTarget Then
                                 Call NpcDummyUpdate(NpcIndex)
@@ -87,3 +87,12 @@ ErrorHandler:
             & "-" & NpcList(NpcIndex).pos.y, "modNpcAiLoop.MaybeUpdateNpcAI", Erl)
     Call MuereNpc(NpcIndex, 0)
 End Sub
+
+Public Function NpcRequiresAiUpdate(ByVal NpcIndex As Integer) As Boolean
+    With NpcList(NpcIndex)
+        If .pos.Map <= 0 Or .pos.Map > NumMaps Then Exit Function
+        NpcRequiresAiUpdate = MapInfo(.pos.Map).NumUsers > 0 Or _
+                              MapInfo(.pos.Map).ForceUpdate Or _
+                              .CrossMapRoute.Mode <> eNpcCrossMapRouteNone
+    End With
+End Function

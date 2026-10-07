@@ -557,6 +557,7 @@ Public Function RStoJSON(RS As ADODB.Recordset) As String
     End If
     Exit Function
 ErrHandler:
+    Call Logging.TraceError(Err.Number, Err.Description, "JSON.RStoJSON", Erl)
 End Function
 
 Public Function toUnicode(str As String) As String

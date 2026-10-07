@@ -100,9 +100,6 @@ Private Sub fTestWriteLoginExcistingChar()
 End Sub
 
 Private Sub fTestWriteLoginNewChar()
-    Dim good_md5, md5 As String
-    good_md5 = "a944087c826163c4ed658b1ea00594be"
-    md5 = good_md5
     Dim app_major, app_minor, app_revision, race, gender, Class, body, head, home As Byte
         
     app_major = 2
@@ -117,7 +114,7 @@ Private Sub fTestWriteLoginNewChar()
         
     'Call Unit_Protocol_Writes.WriteLoginNewChar( _
     '    UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
-    '    md5, race, gender, Class, body, head, home)
+    '    race, gender, Class, body, head, home)
 
 End Sub
 

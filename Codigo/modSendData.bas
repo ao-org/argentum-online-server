@@ -354,7 +354,9 @@ End Sub
                         If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList( _
                                 UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Or IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
                             enviaDatos = True
-                            If Not EsGM(tempIndex) Then
+                            If UserList(UserIndex).flags.AdminInvisible = 1 Then
+                                enviaDatos = CanUserSeeAdminInvisible(tempIndex, UserIndex)
+                            ElseIf Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi And Not (UserList(tempIndex).GuildIndex > 0 And _
                                         UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= RequiredGuildLevelSeeInvisible) And _
                                         UserList(UserIndex).flags.Navegando = 0 Then
@@ -400,7 +402,9 @@ SendToUserArea_Err:
                 If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         enviaDatos = True
-                        If Not EsGM(tempIndex) Then
+                        If UserList(UserIndex).flags.AdminInvisible = 1 Then
+                            enviaDatos = CanUserSeeAdminInvisible(tempIndex, UserIndex)
+                        ElseIf Not EsGM(tempIndex) Then
                             If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi Then
                                 If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
                                         UserIndex).Counters.timeChat = 0 Then
@@ -443,7 +447,8 @@ SendToUserArea_Err:
                 If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
-                        If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
+                        If CanUserSeeAdminInvisible(tempIndex, UserIndex) And (UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Or IsSet(UserList(tempIndex).flags.StatusMask, _
+                                e_StatusMask.eTalkToDead)) Then
                             Call modNetwork.Send(tempIndex, Buffer)
                         End If
                     End If
@@ -478,7 +483,8 @@ SendToUserArea_Err:
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
                         If tempIndex <> UserIndex Then
-                            If UserList(tempIndex).flags.Muerto = 1 Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
+                            If CanUserSeeAdminInvisible(tempIndex, UserIndex) And (UserList(tempIndex).flags.Muerto = 1 Or IsSet(UserList(tempIndex).flags.StatusMask, _
+                                    e_StatusMask.eTalkToDead)) Then
                                 Call modNetwork.Send(tempIndex, Buffer)
                             End If
                         End If
@@ -554,7 +560,9 @@ SendToSuperioresArea_Err:
                     If tempIndex <> UserIndex Then
                         If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                             enviaDatos = True
-                            If Not EsGM(tempIndex) Then
+                            If UserList(UserIndex).flags.AdminInvisible = 1 Then
+                                enviaDatos = CanUserSeeAdminInvisible(tempIndex, UserIndex)
+                            ElseIf Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And ValidateInvi Then
                                     If Distancia(UserList(UserIndex).pos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList( _
                                             UserIndex).Counters.timeChat = 0 Then
@@ -588,6 +596,9 @@ SendToUserAreaButindex_Err:
         If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
         If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
         If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
+        If SourceUser.flags.AdminInvisible = 1 Then
+            If Not CanPrivilegesSeeAdminInvisible(TargetUser.flags.Privilegios, SourceUser.flags.Privilegios, True) Then Exit Function
+        End If
         If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet( _
                 TargetUser.flags.StatusMask, e_StatusMask.eTalkToDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalkToDead)) Then Exit Function
         If Not EsGM(TargetIndex) Then
@@ -663,7 +674,7 @@ SendToUserAliveAreaButindex_Err:
                 If TempInt Then
                     If tempIndex <> UserIndex And EsGM(tempIndex) Then
                         If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                            If CompararPrivilegios(UserList(tempIndex).flags.Privilegios, UserList(UserIndex).flags.Privilegios) >= 0 Then
+                            If CanUserSeeAdminInvisible(tempIndex, UserIndex) Then
                                 Call modNetwork.Send(tempIndex, Buffer)
                             End If
                         End If
@@ -699,11 +710,9 @@ SendToUserAreaButindex_Err:
             If TempInt Then  'Esta en el area?
                 TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
                 If TempInt Then
-                    If Not EsGM(tempIndex) Then
+                    If Not CanUserSeeAdminInvisible(tempIndex, UserIndex) Then
                         If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                            If CompararPrivilegios(UserList(UserIndex).flags.Privilegios, UserList(tempIndex).flags.Privilegios) >= 0 Then
-                                Call modNetwork.Send(tempIndex, Buffer)
-                            End If
+                            Call modNetwork.Send(tempIndex, Buffer)
                         End If
                     End If
                 End If
@@ -711,7 +720,7 @@ SendToUserAreaButindex_Err:
         Next LoopC
         Exit Sub
 SendToUserAreaButindex_Err:
-        Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
+        Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButGMs", Erl)
     End Sub
 
 #If DIRECT_PLAY = 0 Then

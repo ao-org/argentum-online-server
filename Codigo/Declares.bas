@@ -217,7 +217,6 @@ Public Enum e_SoundIndex
 End Enum
 
 Public SvrConfig            As ServerConfig
-Public Md5Cliente           As String
 Public PrivateKey           As String
 Public HoraActual           As Integer
 Public UltimoChar           As String
@@ -263,6 +262,7 @@ Public Const iGalera = 85
 Public Const iGaleraCiuda = 1267
 Public Const iGaleraCrimi = 1268
 Public Const iGaleon = 86
+Public Const iGaleonFantasmal = 4596
 Public Const iGaleonCiuda = 1269
 Public Const iGaleonCrimi = 1270
 Public Const iBarcaArmada = 1273
@@ -1496,6 +1496,8 @@ Public Const SND_IMPACTO         As Byte = 10
 Public Const SND_IMPACTO_APU     As Integer = 2187
 Public Const SND_IMPACTO_CRITICO As Integer = 2186
 Public Const SND_IMPACTO2        As Byte = 12
+Public Const SND_FLECHA_IMPACTO  As Byte = 229
+Public Const SND_FLECHA_FALLO    As Byte = 228
 Public Const SND_RESURRECCION    As Byte = 117
 
 
@@ -1828,9 +1830,7 @@ Public Type t_Hechizo
     StaPercentRequired As Single
     Target As e_TargetType
     RequireTransform As Integer
-    NeedStaff As Integer
-    RequiereInstrumento As Integer
-    StaffAffected As Boolean
+    MagicPowerNeeded As Integer
     EotId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
@@ -1850,6 +1850,8 @@ Public Type t_ActiveModifiers
     MagicDamageBonus As Single
     MagicHealingBonus As Single
     PhysicalDamageLinearBonus As Integer 'apply direct bonus like +10
+    PhysicalDamageBonusPve As Single
+    PhysicalDamageLinearBonusPve As Integer
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -1895,6 +1897,7 @@ Public Type t_EffectOverTime
     SelfHealingBonus As Single
     MagicHealingBonus As Single
     PhysicalLinearBonus As Integer
+    PhysicalBonusPveOnly As Boolean
     DefenseBonus As Integer
     ClientEffectTypeId As Integer
     Area As Integer
@@ -1914,7 +1917,7 @@ Public Enum e_DamageResult
     eDead
 End Enum
 
-Public Const MAX_PACKET_COUNTERS As Long = 16
+Public Const MAX_PACKET_COUNTERS As Long = 17
 
 Public Enum PacketNames
     CastSpell = 1
@@ -1933,6 +1936,7 @@ Public Enum PacketNames
     QuestionGM
     ChangeHeading
     Hide
+    TargetedSpellCast
 End Enum
 
 Public Type t_UserOBJ
@@ -2217,6 +2221,7 @@ Public Enum e_ObjFlags
     e_Bindable = 1
     e_UseOnSafeAreaOnly = 2
     e_JailObject = 4
+    e_NoTradeableToNPC = 8
 End Enum
 
 
@@ -2273,7 +2278,6 @@ Public Type t_ObjData
     MaxLEV As Byte
     SkillIndex As Byte     ' El indice de Skill para equipar el item
     SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
-    InstrumentoRequerido As Integer
     CreaGRH As String
     SndAura As Integer
     Intirable As Byte
@@ -2556,6 +2560,7 @@ Public Type t_UserStats
     NumObj_PezEspecial As Integer
     Creditos As Long
     JineteLevel As Byte
+    RemortCount As Long
 End Type
 
 'Sistema de Barras
@@ -2978,6 +2983,61 @@ End Type
 
 Public Const HotKeyCount As Integer = 10
 
+Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
+Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
+Public Const HOO_CAP_REMORT_V1 As Long = &H2&
+Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
+Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
+Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
+Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
+Public Const HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1 As String = "hoo-house-door-actions-v1"
+
+Public Enum e_HooHouseDoorAction
+    eHooHouseDoorAction_Open = 0
+    eHooHouseDoorAction_Close = 1
+    eHooHouseDoorAction_Lock = 2
+    eHooHouseDoorAction_Unlock = 3
+    eHooHouseDoorAction_UnlockAndOpen = 4
+End Enum
+
+Public Enum e_HooHouseDoorActionResult
+    eHooHouseDoorActionResult_Success = 0
+    eHooHouseDoorActionResult_InvalidAction = 1
+    eHooHouseDoorActionResult_InvalidTarget = 2
+    eHooHouseDoorActionResult_TooFarAway = 3
+    eHooHouseDoorActionResult_NotDoor = 4
+    eHooHouseDoorActionResult_InvalidTransition = 5
+    eHooHouseDoorActionResult_NoAccess = 6
+    eHooHouseDoorActionResult_Cooldown = 7
+    eHooHouseDoorActionResult_Unavailable = 8
+End Enum
+
+Public Enum e_HooTargetedSpellCastResult
+    eHooTargetedSpellCastResult_Success = 0
+    eHooTargetedSpellCastResult_RateLimited = 1
+    eHooTargetedSpellCastResult_OutOfRange = 2
+    eHooTargetedSpellCastResult_InvalidTarget = 3
+    eHooTargetedSpellCastResult_InvalidSpell = 4
+    eHooTargetedSpellCastResult_Rejected = 5
+End Enum
+
+Public Enum e_RemortEligibilityReason
+    eRemortEligibility_Eligible = 0
+    eRemortEligibility_BelowRequiredLevel = 1
+    eRemortEligibility_Dead = 2
+    eRemortEligibility_ActiveQuest = 3
+    eRemortEligibility_InParty = 4
+    eRemortEligibility_InvalidEquipment = 5
+    eRemortEligibility_RemortLimitReached = 6
+End Enum
+
+Public Type t_HooClientCapabilities
+    Negotiated As Boolean
+    ProtocolVersion As Byte
+    CapabilityMask As Long
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
     name As String
@@ -3013,6 +3073,7 @@ Public Type t_User
     Invent_Skins                As tSkinInventario
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
+    HooCapabilities As t_HooClientCapabilities
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters
@@ -3199,6 +3260,24 @@ Public Type t_NpcPathFindingInfo
     '  if a NPC or a User moves over the npc's path, blocking
     '  its way, the function NpcLegalPos set PathLenght to 0
     '  forcing the seek of a new path.
+End Type
+
+Public Enum e_NpcCrossMapRouteMode
+    eNpcCrossMapRouteNone = 0
+    eNpcCrossMapRouteChase = 1
+    eNpcCrossMapRouteReturnHome = 2
+End Enum
+
+Public Type t_NpcCrossMapRoute
+    Mode As e_NpcCrossMapRouteMode
+    TargetMap As Integer
+    NextMap As Integer
+    ExitX As Byte
+    ExitY As Byte
+    DestinationX As Byte
+    DestinationY As Byte
+    HopsCrossed As Byte
+    PathFailures As Byte
 End Type
 
 Public Type t_Caminata
@@ -3447,6 +3526,7 @@ Public Type t_Npc
     Mascotas As Integer
     ' New!! Needed for pathfindig
     pathFindingInfo As t_NpcPathFindingInfo
+    CrossMapRoute As t_NpcCrossMapRoute
     ' Esto es del Areas.bas
     AreasInfo As t_AreaInfo
     
@@ -3493,9 +3573,11 @@ Public Type t_TransportNetworkExit
     TileY As Byte
 End Type
 
+Public Const MAP_LAYER_COUNT As Long = 5
+
 Public Type t_MapBlock
     Blocked As Byte
-    Graphic(1 To 4) As Long
+    Graphic(1 To MAP_LAYER_COUNT) As Long
     UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
@@ -3620,6 +3702,7 @@ Public UserList()                             As t_User 'USUARIOS
 Public NpcList(1 To MaxNPCs)                  As t_Npc 'NPCS
 Public NpcInfoCache()                          As t_NpcInfoCache
 Public NpcInfoCacheInitialized                As Boolean
+' X is the fastest dimension; each map owns a contiguous tile slab.
 Public MapData()                              As t_MapBlock
 Public MapInfo()                              As t_MapInfo
 Public Hechizos()                             As t_Hechizo
@@ -3646,6 +3729,12 @@ Public RangosFaccion()                        As t_RangoFaccion
 Public RecompensasFaccion()                   As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)               As t_ModClase
 Public ModRaza(1 To NUMRAZAS)                 As t_ModRaza
+Public Const HOME_COST_TIER_COUNT              As Byte = 6
+Public HomeCostTierMinLevel(1 To HOME_COST_TIER_COUNT) As Byte
+Public HomeCostTierMaxLevel(1 To HOME_COST_TIER_COUNT) As Byte
+Public HomeCostTierFloorGLD(1 To HOME_COST_TIER_COUNT) As Long
+Public HomeCostTierCapGLD(1 To HOME_COST_TIER_COUNT) As Long
+Public HomeCostTiersValid                   As Boolean
 Public Crafteos                               As New Dictionary
 Public PoderCanas()                           As Integer
 Public UniqueMapFishIDs()                     As Long
@@ -3881,6 +3970,8 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.MagicDamageBonus = 0
     Modifiers.MagicDamageReduction = 0
     Modifiers.PhysicalDamageBonus = 0
+    Modifiers.PhysicalDamageBonusPve = 0
+    Modifiers.PhysicalDamageLinearBonusPve = 0
     Modifiers.PhysicalDamageReduction = 0
     Modifiers.MovementSpeed = 0
     Modifiers.EvasionBonus = 0

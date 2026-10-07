@@ -44,29 +44,29 @@ Private Function test_free_center_returns_immediately() As Boolean
     Dim origTrigger As e_Trigger
     Dim origTileExit As t_WorldPos
     
-    origUserIndex = MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex
-    origNpcIndex = MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex
-    origBlocked = MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked
-    origTrigger = MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger
-    origTileExit = MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit
+    origUserIndex = MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex
+    origNpcIndex = MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex
+    origBlocked = MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked
+    origTrigger = MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger
+    origTileExit = MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit
     
     ' Set up: ensure tile is free (no user, no NPC, not blocked, no exit)
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit.Map = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit.Map = 0
     
     Dim outX As Long, outY As Long
     Dim result As Boolean
     result = FindNearestFreeTile(TEST_MAP, SAFE_X, SAFE_Y, False, SPAWN_SEARCH_MAX_RADIUS, outX, outY)
     
     ' Restore original state
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = origUserIndex
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = origNpcIndex
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = origBlocked
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = origTrigger
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit = origTileExit
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = origUserIndex
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = origNpcIndex
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = origBlocked
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = origTrigger
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit = origTileExit
     
     ' Verify: should return True with outX=SAFE_X, outY=SAFE_Y
     If Not result Then
@@ -78,11 +78,11 @@ Private Function test_free_center_returns_immediately() As Boolean
 Err_Handler:
     ' Attempt restore on error
     On Error Resume Next
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = origUserIndex
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = origNpcIndex
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = origBlocked
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = origTrigger
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit = origTileExit
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = origUserIndex
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = origNpcIndex
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = origBlocked
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = origTrigger
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit = origTileExit
     On Error GoTo 0
     test_free_center_returns_immediately = False
 End Function
@@ -99,48 +99,48 @@ Private Function test_occupied_center_searches_outward() As Boolean
     Dim adjY As Long: adjY = SAFE_Y
     
     ' Save original state for both tiles
-    Dim origCenterUser As Integer: origCenterUser = MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex
-    Dim origCenterNpc As Integer: origCenterNpc = MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex
-    Dim origCenterBlocked As Byte: origCenterBlocked = MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked
-    Dim origCenterTrigger As e_Trigger: origCenterTrigger = MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger
-    Dim origCenterExit As t_WorldPos: origCenterExit = MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit
+    Dim origCenterUser As Integer: origCenterUser = MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex
+    Dim origCenterNpc As Integer: origCenterNpc = MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex
+    Dim origCenterBlocked As Byte: origCenterBlocked = MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked
+    Dim origCenterTrigger As e_Trigger: origCenterTrigger = MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger
+    Dim origCenterExit As t_WorldPos: origCenterExit = MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit
     
-    Dim origAdjUser As Integer: origAdjUser = MapData(TEST_MAP, adjX, adjY).UserIndex
-    Dim origAdjNpc As Integer: origAdjNpc = MapData(TEST_MAP, adjX, adjY).NpcIndex
-    Dim origAdjBlocked As Byte: origAdjBlocked = MapData(TEST_MAP, adjX, adjY).Blocked
-    Dim origAdjTrigger As e_Trigger: origAdjTrigger = MapData(TEST_MAP, adjX, adjY).trigger
-    Dim origAdjExit As t_WorldPos: origAdjExit = MapData(TEST_MAP, adjX, adjY).TileExit
+    Dim origAdjUser As Integer: origAdjUser = MapData(adjX, adjY, TEST_MAP).UserIndex
+    Dim origAdjNpc As Integer: origAdjNpc = MapData(adjX, adjY, TEST_MAP).NpcIndex
+    Dim origAdjBlocked As Byte: origAdjBlocked = MapData(adjX, adjY, TEST_MAP).Blocked
+    Dim origAdjTrigger As e_Trigger: origAdjTrigger = MapData(adjX, adjY, TEST_MAP).trigger
+    Dim origAdjExit As t_WorldPos: origAdjExit = MapData(adjX, adjY, TEST_MAP).TileExit
     
     ' Occupy center tile with a fake user
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = 1
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = 0
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit.Map = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = 1
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = 0
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit.Map = 0
     
     ' Ensure adjacent tile is free
-    MapData(TEST_MAP, adjX, adjY).UserIndex = 0
-    MapData(TEST_MAP, adjX, adjY).NpcIndex = 0
-    MapData(TEST_MAP, adjX, adjY).Blocked = 0
-    MapData(TEST_MAP, adjX, adjY).trigger = 0
-    MapData(TEST_MAP, adjX, adjY).TileExit.Map = 0
+    MapData(adjX, adjY, TEST_MAP).UserIndex = 0
+    MapData(adjX, adjY, TEST_MAP).NpcIndex = 0
+    MapData(adjX, adjY, TEST_MAP).Blocked = 0
+    MapData(adjX, adjY, TEST_MAP).trigger = 0
+    MapData(adjX, adjY, TEST_MAP).TileExit.Map = 0
     
     Dim outX As Long, outY As Long
     Dim result As Boolean
     result = FindNearestFreeTile(TEST_MAP, SAFE_X, SAFE_Y, False, SPAWN_SEARCH_MAX_RADIUS, outX, outY)
     
     ' Restore original state
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = origCenterUser
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = origCenterNpc
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = origCenterBlocked
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = origCenterTrigger
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit = origCenterExit
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = origCenterUser
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = origCenterNpc
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = origCenterBlocked
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = origCenterTrigger
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit = origCenterExit
     
-    MapData(TEST_MAP, adjX, adjY).UserIndex = origAdjUser
-    MapData(TEST_MAP, adjX, adjY).NpcIndex = origAdjNpc
-    MapData(TEST_MAP, adjX, adjY).Blocked = origAdjBlocked
-    MapData(TEST_MAP, adjX, adjY).trigger = origAdjTrigger
-    MapData(TEST_MAP, adjX, adjY).TileExit = origAdjExit
+    MapData(adjX, adjY, TEST_MAP).UserIndex = origAdjUser
+    MapData(adjX, adjY, TEST_MAP).NpcIndex = origAdjNpc
+    MapData(adjX, adjY, TEST_MAP).Blocked = origAdjBlocked
+    MapData(adjX, adjY, TEST_MAP).trigger = origAdjTrigger
+    MapData(adjX, adjY, TEST_MAP).TileExit = origAdjExit
     
     ' Verify: should return True and the output should NOT be the center
     If Not result Then
@@ -153,16 +153,16 @@ Private Function test_occupied_center_searches_outward() As Boolean
 Err_Handler:
     ' Attempt restore on error
     On Error Resume Next
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).UserIndex = origCenterUser
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).NpcIndex = origCenterNpc
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).Blocked = origCenterBlocked
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).trigger = origCenterTrigger
-    MapData(TEST_MAP, SAFE_X, SAFE_Y).TileExit = origCenterExit
-    MapData(TEST_MAP, adjX, adjY).UserIndex = origAdjUser
-    MapData(TEST_MAP, adjX, adjY).NpcIndex = origAdjNpc
-    MapData(TEST_MAP, adjX, adjY).Blocked = origAdjBlocked
-    MapData(TEST_MAP, adjX, adjY).trigger = origAdjTrigger
-    MapData(TEST_MAP, adjX, adjY).TileExit = origAdjExit
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).UserIndex = origCenterUser
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).NpcIndex = origCenterNpc
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).Blocked = origCenterBlocked
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).trigger = origCenterTrigger
+    MapData(SAFE_X, SAFE_Y, TEST_MAP).TileExit = origCenterExit
+    MapData(adjX, adjY, TEST_MAP).UserIndex = origAdjUser
+    MapData(adjX, adjY, TEST_MAP).NpcIndex = origAdjNpc
+    MapData(adjX, adjY, TEST_MAP).Blocked = origAdjBlocked
+    MapData(adjX, adjY, TEST_MAP).trigger = origAdjTrigger
+    MapData(adjX, adjY, TEST_MAP).TileExit = origAdjExit
     On Error GoTo 0
     test_occupied_center_searches_outward = False
 End Function
@@ -256,29 +256,29 @@ Private Function test_prop_spawn_output_within_bounds() As Boolean
     For testX = CLng(MinXBorder) To CLng(MaxXBorder) Step 5
         For testY = CLng(MinYBorder) To CLng(MaxYBorder) Step 5
             ' Save original state
-            origUser = MapData(TEST_MAP, testX, testY).UserIndex
-            origNpc = MapData(TEST_MAP, testX, testY).NpcIndex
-            origBlocked = MapData(TEST_MAP, testX, testY).Blocked
-            origTrigger = MapData(TEST_MAP, testX, testY).trigger
-            origExit = MapData(TEST_MAP, testX, testY).TileExit
+            origUser = MapData(testX, testY, TEST_MAP).UserIndex
+            origNpc = MapData(testX, testY, TEST_MAP).NpcIndex
+            origBlocked = MapData(testX, testY, TEST_MAP).Blocked
+            origTrigger = MapData(testX, testY, TEST_MAP).trigger
+            origExit = MapData(testX, testY, TEST_MAP).TileExit
             
             ' Ensure tile is free
-            MapData(TEST_MAP, testX, testY).UserIndex = 0
-            MapData(TEST_MAP, testX, testY).NpcIndex = 0
-            MapData(TEST_MAP, testX, testY).Blocked = 0
-            MapData(TEST_MAP, testX, testY).trigger = 0
-            MapData(TEST_MAP, testX, testY).TileExit.Map = 0
+            MapData(testX, testY, TEST_MAP).UserIndex = 0
+            MapData(testX, testY, TEST_MAP).NpcIndex = 0
+            MapData(testX, testY, TEST_MAP).Blocked = 0
+            MapData(testX, testY, TEST_MAP).trigger = 0
+            MapData(testX, testY, TEST_MAP).TileExit.Map = 0
             
             outX = 0
             outY = 0
             result = FindNearestFreeTile(TEST_MAP, testX, testY, False, SPAWN_SEARCH_MAX_RADIUS, outX, outY)
             
             ' Restore original state
-            MapData(TEST_MAP, testX, testY).UserIndex = origUser
-            MapData(TEST_MAP, testX, testY).NpcIndex = origNpc
-            MapData(TEST_MAP, testX, testY).Blocked = origBlocked
-            MapData(TEST_MAP, testX, testY).trigger = origTrigger
-            MapData(TEST_MAP, testX, testY).TileExit = origExit
+            MapData(testX, testY, TEST_MAP).UserIndex = origUser
+            MapData(testX, testY, TEST_MAP).NpcIndex = origNpc
+            MapData(testX, testY, TEST_MAP).Blocked = origBlocked
+            MapData(testX, testY, TEST_MAP).trigger = origTrigger
+            MapData(testX, testY, TEST_MAP).TileExit = origExit
             
             ' Only verify bounds when the function returns True
             If result Then
@@ -303,11 +303,11 @@ Private Function test_prop_spawn_output_within_bounds() As Boolean
 Err_Handler:
     ' Attempt restore on error
     On Error Resume Next
-    MapData(TEST_MAP, testX, testY).UserIndex = origUser
-    MapData(TEST_MAP, testX, testY).NpcIndex = origNpc
-    MapData(TEST_MAP, testX, testY).Blocked = origBlocked
-    MapData(TEST_MAP, testX, testY).trigger = origTrigger
-    MapData(TEST_MAP, testX, testY).TileExit = origExit
+    MapData(testX, testY, TEST_MAP).UserIndex = origUser
+    MapData(testX, testY, TEST_MAP).NpcIndex = origNpc
+    MapData(testX, testY, TEST_MAP).Blocked = origBlocked
+    MapData(testX, testY, TEST_MAP).trigger = origTrigger
+    MapData(testX, testY, TEST_MAP).TileExit = origExit
     On Error GoTo 0
     test_prop_spawn_output_within_bounds = False
 End Function

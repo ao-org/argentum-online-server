@@ -68,9 +68,9 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
     'Search for a Legal pos for the user who is being teleported.
     '***************************************************
     On Error GoTo FindLegalPos_Err
-    If MapData(Map, x, y).UserIndex <> 0 Or MapData(Map, x, y).NpcIndex <> 0 Then
+    If MapData(x, y, Map).UserIndex <> 0 Or MapData(x, y, Map).NpcIndex <> 0 Then
         ' Se teletransporta a la misma pos a la que estaba
-        If MapData(Map, x, y).UserIndex = UserIndex Then Exit Sub
+        If MapData(x, y, Map).UserIndex = UserIndex Then Exit Sub
         Dim FoundPlace     As Boolean
         Dim tX             As Long
         Dim tY             As Long
@@ -80,7 +80,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
             For tY = y - Rango To y + Rango
                 For tX = x - Rango To x + Rango
                     'Reviso que no haya User ni NPC
-                    If MapData(Map, tX, tY).UserIndex = 0 And MapData(Map, tX, tY).NpcIndex = 0 Then
+                    If MapData(tX, tY, Map).UserIndex = 0 And MapData(tX, tY, Map).NpcIndex = 0 Then
                         If InMapBounds(Map, tX, tY) Then FoundPlace = True
                         Exit For
                     End If
@@ -95,7 +95,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
         Else
             'Muy poco probable, pero..
             'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-            OtherUserIndex = MapData(Map, x, y).UserIndex
+            OtherUserIndex = MapData(x, y, Map).UserIndex
             If OtherUserIndex <> 0 Then
                 'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
                 If IsValidUserRef(UserList(OtherUserIndex).ComUsu.DestUsu) Then
@@ -103,12 +103,12 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
                         'Msg1104= Comercio cancelado. El otro usuario se ha desconectado.
-                        Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "1104", e_FontTypeNames.FONTTYPE_TALK)
+                        Call WriteLocaleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, MSG_COMERCIO_CANCELADO_EL_OTRO_USUARIO_SE_HA_DESCONECTADO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
                     End If
                     'Lo sacamos.
                     If UserList(OtherUserIndex).flags.UserLogged Then
                         Call FinComerciarUsu(OtherUserIndex)
-                        Call WriteShowMessageBox(OtherUserIndex, 1758, vbNullString) 'Msg1758=Alguien se ha conectado donde te encontrabas, por favor reconéctate...
+                        Call WriteShowMessageBox(OtherUserIndex, MSG_ALGUIEN_SE_HA_CONECTADO_DONDE_TE_ENCONTRABAS_POR_FAVOR_RECONECTATE, vbNullString) 'Msg1758=Alguien se ha conectado donde te encontrabas, por favor reconéctate...
                     End If
                 End If
                 Call CloseSocket(OtherUserIndex)
@@ -219,7 +219,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_NEWBIE_ONLY Then
                 ' Msg771=Sólo los newbies pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_NEWBIE_ONLY, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_NEWBIE_ONLY, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 .flags.UltimoMensaje = MSG_MAP_NEWBIE_ONLY
             End If
             Exit Function
@@ -227,7 +227,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
             If .flags.UltimoMensaje <> MSG_MAP_ONLY_CITIZENS Then
                 ' Msg772=Sólo los ciudadanos pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CITIZENS, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CITIZENS, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
                 .flags.UltimoMensaje = MSG_MAP_ONLY_CITIZENS
             End If
             Exit Function
@@ -235,7 +235,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
             If .flags.UltimoMensaje <> MSG_MAP_ONLY_CRIMINALS Then
                 ' Msg773=Sólo los criminales pueden entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CRIMINALS, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CRIMINALS, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
                 .flags.UltimoMensaje = MSG_MAP_ONLY_CRIMINALS
             End If
             Exit Function
@@ -243,7 +243,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).SoloClanes And .GuildIndex <= 0 Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_CLAN Then
                 ' Msg774=Necesitas pertenecer a un clan para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_CLAN, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)
                 .flags.UltimoMensaje = MSG_MAP_REQUIRES_CLAN
             End If
             Exit Function
@@ -251,7 +251,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).MinLevel <> 0 And .Stats.ELV < MapInfo(Map).MinLevel Then
             If .flags.UltimoMensaje <> MSG_MAP_MIN_LEVEL Then
                 'Msg1108= Necesitas ser al menos nivel ¬1
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_MIN_LEVEL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_MIN_LEVEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MinLevel)
                 .flags.UltimoMensaje = MSG_MAP_MIN_LEVEL
             End If
             Exit Function
@@ -259,7 +259,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
             If .flags.UltimoMensaje <> MSG_MAP_MAX_LEVEL Then
                 'Msg1109= Sólo los personajes inferiores a nivel ¬1
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_MAX_LEVEL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_MAX_LEVEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, MapInfo(Map).MaxLevel)
                 .flags.UltimoMensaje = MSG_MAP_MAX_LEVEL
             End If
             Exit Function
@@ -267,7 +267,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).OnlyGroups And Not .Grupo.EnGrupo Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_GROUP Then
                 ' Msg775=Necesitas pertenecer a un grupo para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_GROUP, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
                 .flags.UltimoMensaje = MSG_MAP_REQUIRES_GROUP
             End If
             Exit Function
@@ -275,7 +275,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
         If MapInfo(Map).OnlyPatreon And Not IsPatreon(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_PATREON Then
                 ' Msg776=Necesitas ser Patreon para entrar a este mapa.
-                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 .flags.UltimoMensaje = MSG_MAP_REQUIRES_PATREON
             End If
             Exit Function
@@ -320,34 +320,35 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     Dim TelepRadio As Byte
     Dim aN         As Integer
     Dim destPos    As t_WorldPos
+    Dim preserveNpcPursuit As Boolean
     With UserList(UserIndex)
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
         
-            If MapData(Map, x, y).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
-                If MapData(Map, x, y).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
-                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(map, x, y).trigger) Then
+            If MapData(x, y, Map).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
+                If MapData(x, y, Map).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
+                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(x, y, map).trigger) Then
                         Call WarpUserChar(UserIndex, map, x, y + 1, False)
-                        Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, FONTTYPE_INFOBOLD)
+                        Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
                         Exit Sub
                     End If
                 End If
             End If
             
-            If MapData(Map, x, y).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+            If MapData(x, y, Map).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
                 If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
             End If
-            If MapData(Map, x, y).trigger = AUTORESU Then
+            If MapData(x, y, Map).trigger = AUTORESU Then
                 Call ResucitarOCurar(UserIndex)
             End If
-            If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-                EsTeleport = ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
+            If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
+                EsTeleport = ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
             End If
-            If Not MapData(Map, x, y).Trap Is Nothing Then
+            If Not MapData(x, y, Map).Trap Is Nothing Then
                 Call ModMap.ActivateTrap(UserIndex, eUser, Map, x, y)
             End If
             If EsTeleport Then
-                If ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
+                If ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
                     Dim StartTransportIndex As Integer
                     Dim ExitPortal          As Integer
                     StartTransportIndex = GetTransportNextIndex(Map, x, y)
@@ -356,7 +357,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     Else
                         ExitPortal = GetExitTransport(Map, StartTransportIndex)
                     End If
-                    destPos = MapData(Map, MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY).TileExit
+                    destPos = MapData(MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY, Map).TileExit
                     If destPos.Map > 0 And destPos.Map <= NumMaps Then
                         .LastTransportNetwork.Map = Map
                         .LastTransportNetwork.StartIdex = StartTransportIndex
@@ -368,21 +369,25 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     Exit Sub
                 End If
             End If
-            If (MapData(Map, x, y).TileExit.Map > 0) And (MapData(Map, x, y).TileExit.Map <= NumMaps) Then
+            If (MapData(x, y, Map).TileExit.Map > 0) And (MapData(x, y, Map).TileExit.Map <= NumMaps) Then
                 '  Restricciones de mapas
-                If CheckMapRestrictions(UserIndex, MapData(Map, x, y).TileExit.Map) Then
-                    If EsMapaInterdimensional(MapData(Map, x, y).TileExit.Map) And Not EsMapaInterdimensional(.pos.Map) Then
+                If CheckMapRestrictions(UserIndex, MapData(x, y, Map).TileExit.Map) Then
+                    If EsMapaInterdimensional(MapData(x, y, Map).TileExit.Map) And Not EsMapaInterdimensional(.pos.Map) Then
                         .flags.ReturnPos = .pos
                     End If
-                    destPos.Map = MapData(Map, x, y).TileExit.Map
+                    destPos.Map = MapData(x, y, Map).TileExit.Map
                     If EsTeleport Then
-                        destPos.x = RandomNumber(MapData(Map, x, y).TileExit.x - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, MapData(Map, x, y).TileExit.x + ObjData( _
-                                MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
-                        destPos.y = RandomNumber(MapData(Map, x, y).TileExit.y - ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Radio, MapData(Map, x, y).TileExit.y + ObjData( _
-                                MapData(Map, x, y).ObjInfo.ObjIndex).Radio)
+                        destPos.x = RandomNumber(MapData(x, y, Map).TileExit.x - ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Radio, MapData(x, y, Map).TileExit.x + ObjData( _
+                                MapData(x, y, Map).ObjInfo.ObjIndex).Radio)
+                        destPos.y = RandomNumber(MapData(x, y, Map).TileExit.y - ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Radio, MapData(x, y, Map).TileExit.y + ObjData( _
+                                MapData(x, y, Map).ObjInfo.ObjIndex).Radio)
                     Else
-                        destPos.x = MapData(Map, x, y).TileExit.x
-                        destPos.y = MapData(Map, x, y).TileExit.y
+                        destPos.x = MapData(x, y, Map).TileExit.x
+                        destPos.y = MapData(x, y, Map).TileExit.y
+                    End If
+                    preserveNpcPursuit = IsVerifiedNpcSpatialTransition(Map, x, y, MapData(x, y, Map).TileExit, EsTeleport)
+                    If IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
+                        Call LogInfoServidor("NPC cross-map transition fromMap=" & Map & " exit=(" & x & "," & y & ") toMap=" & destPos.Map & " destination=(" & destPos.x & "," & destPos.y & ") teleport=" & CStr(EsTeleport) & " verified=" & CStr(preserveNpcPursuit))
                     End If
                     If .flags.Navegando Then
                         Call ClosestLegalPos(destPos, nPos, True)
@@ -390,12 +395,16 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         Call ClosestLegalPos(destPos, nPos)
                     End If
                     If nPos.x <> 0 And nPos.y <> 0 Then
+                        If preserveNpcPursuit Then
+                            Call RetainNpcPursuitForSpatialTransition(UserIndex, Map, nPos.Map)
+                        End If
                         Call WarpUserChar(UserIndex, nPos.Map, nPos.x, nPos.y, EsTeleport)
                     End If
                 End If
-                'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-                Call ClearAttackerNpc(UserIndex)
-            ElseIf MapData(Map, x, y).TileExit.Map < 0 Then
+                preserveNpcPursuit = preserveNpcPursuit And UserList(UserIndex).pos.Map = MapData(x, y, Map).TileExit.Map
+                'Non-spatial transitions keep the existing target-clearing behavior.
+                Call ClearAttackerNpc(UserIndex, preserveNpcPursuit)
+            ElseIf MapData(x, y, Map).TileExit.Map < 0 Then
                 If .flags.ReturnPos.Map <> 0 Then
                     If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, .flags.Navegando = 1, , , False) Then
                         Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.x, .flags.ReturnPos.y, False)
@@ -416,16 +425,19 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, ".DotileEvents", Erl)
 End Sub
 
-Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
+Public Sub ClearAttackerNpc(ByVal UserIndex As Integer, Optional ByVal PreserveSpatialPursuer As Boolean = False)
     On Error GoTo ClearAttackerNpc_err
     With UserList(UserIndex)
         Dim aN As Integer
+        Dim preserveTrackedAttacker As Boolean
+        If Not PreserveSpatialPursuer Then Call CancelNpcCrossMapPursuitForUser(UserIndex)
         If Not IsValidNpcRef(.flags.AtacadoPorNpc) Then
             Call ClearNpcRef(.flags.AtacadoPorNpc)
         Else
             aN = .flags.AtacadoPorNpc.ArrayIndex
+            preserveTrackedAttacker = PreserveSpatialPursuer And ShouldPreserveNpcAttackerReference(aN, UserIndex)
             If aN > 0 Then
-                If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
+                If Not preserveTrackedAttacker And IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
                     Call SetMovement(aN, NpcList(aN).flags.OldMovement)
                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
                     NpcList(aN).flags.AttackedBy = vbNullString
@@ -443,7 +455,7 @@ Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
                 End If
             End If
         End If
-        Call ClearNpcRef(.flags.AtacadoPorNpc)
+        If Not preserveTrackedAttacker Then Call ClearNpcRef(.flags.AtacadoPorNpc)
         Call ClearNpcRef(.flags.NPCAtacado)
     End With
     Exit Sub
@@ -494,7 +506,7 @@ End Function
 Public Function TileRequiresPatreon(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TileRequiresPatreon_Err
     If Not InMapBounds(Map, x, y) Then Exit Function
-    TileRequiresPatreon = MapData(Map, x, y).trigger = e_Trigger.ONLY_PATREON_TILE
+    TileRequiresPatreon = MapData(x, y, Map).trigger = e_Trigger.ONLY_PATREON_TILE
     Exit Function
 TileRequiresPatreon_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
@@ -616,7 +628,7 @@ Sub ClosestStablePos(pos As t_WorldPos, ByRef nPos As t_WorldPos)
         End If
         For tY = pos.y - LoopC To pos.y + LoopC
             For tX = pos.x - LoopC To pos.x + LoopC
-                If LegalPos(nPos.Map, tX, tY) And MapData(nPos.Map, tX, tY).TileExit.Map = 0 Then
+                If LegalPos(nPos.Map, tX, tY) And MapData(tX, tY, nPos.Map).TileExit.Map = 0 Then
                     nPos.x = tX
                     nPos.y = tY
                     '¿Hay objeto?
@@ -779,7 +791,7 @@ Function LegalPos(ByVal Map As Integer, _
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then Exit Function
         If .UserIndex <> 0 Then Exit Function
         If Not PuedeTraslado Then
@@ -815,7 +827,7 @@ Function LegalPosDestrabar(ByVal Map As Integer, _
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then Exit Function
         If Not PuedeTraslado Then
             If .TileExit.Map > 0 Then Exit Function
@@ -838,6 +850,74 @@ LegalPosDestrabar_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosDestrabar", Erl)
 End Function
 
+Public Function CanTransferWorldItemAt(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+    On Error GoTo CanTransferWorldItemAt_Err
+    If UserIndex < 1 Or UserIndex > MaxUsers Then Exit Function
+    With UserList(UserIndex).pos
+        If .Map < 1 Or .Map > NumMaps Then Exit Function
+        If .x < MinXBorder Or .x > MaxXBorder Or .y < MinYBorder Or .y > MaxYBorder Then Exit Function
+        If TargetX < MinXBorder Or TargetX > MaxXBorder Or TargetY < MinYBorder Or TargetY > MaxYBorder Then Exit Function
+        If Abs(.x - TargetX) + Abs(.y - TargetY) > 2 Then Exit Function
+
+        Dim QueueX(0 To 12) As Integer
+        Dim QueueY(0 To 12) As Integer
+        Dim QueueDepth(0 To 12) As Byte
+        Dim VisitedX(0 To 12) As Integer
+        Dim VisitedY(0 To 12) As Integer
+        Dim QueueFront As Integer
+        Dim QueueBack As Integer
+        Dim VisitedCount As Integer
+        QueueX(0) = .x
+        QueueY(0) = .y
+        VisitedX(0) = .x
+        VisitedY(0) = .y
+        VisitedCount = 1
+
+        Do While QueueFront <= QueueBack
+            If QueueX(QueueFront) = TargetX And QueueY(QueueFront) = TargetY Then
+                CanTransferWorldItemAt = True
+                Exit Function
+            End If
+            If QueueDepth(QueueFront) < 2 Then
+                Dim Direction As e_Heading
+                For Direction = e_Heading.NORTH To e_Heading.WEST
+                    Dim NextX As Integer
+                    Dim NextY As Integer
+                    NextX = QueueX(QueueFront)
+                    NextY = QueueY(QueueFront)
+                    Select Case Direction
+                        Case e_Heading.NORTH: NextY = NextY - 1
+                        Case e_Heading.EAST: NextX = NextX + 1
+                        Case e_Heading.SOUTH: NextY = NextY + 1
+                        Case e_Heading.WEST: NextX = NextX - 1
+                    End Select
+                    If LegalWalk(.Map, NextX, NextY, Direction, UserList(UserIndex).flags.Navegando = 1, UserList(UserIndex).flags.Navegando = 0, UserList(UserIndex).flags.Montado = 1, False, UserIndex, True) Then
+                        Dim AlreadyVisited As Boolean
+                        AlreadyVisited = False
+                        Dim i As Integer
+                        For i = 0 To VisitedCount - 1
+                            If VisitedX(i) = NextX And VisitedY(i) = NextY Then AlreadyVisited = True
+                        Next i
+                        If Not AlreadyVisited Then
+                            QueueBack = QueueBack + 1
+                            QueueX(QueueBack) = NextX
+                            QueueY(QueueBack) = NextY
+                            QueueDepth(QueueBack) = QueueDepth(QueueFront) + 1
+                            VisitedX(VisitedCount) = NextX
+                            VisitedY(VisitedCount) = NextY
+                            VisitedCount = VisitedCount + 1
+                        End If
+                    End If
+                Next Direction
+            End If
+            QueueFront = QueueFront + 1
+        Loop
+    End With
+    Exit Function
+CanTransferWorldItemAt_Err:
+    Call TraceError(Err.Number, Err.Description, "GameLogic.CanTransferWorldItemAt", Erl)
+End Function
+
 Function LegalWalk(ByVal Map As Integer, _
                    ByVal x As Integer, _
                    ByVal y As Integer, _
@@ -846,12 +926,13 @@ Function LegalWalk(ByVal Map As Integer, _
                    Optional ByVal PuedeTierra As Boolean = True, _
                    Optional ByVal Montado As Boolean = False, _
                    Optional ByVal PuedeTraslado As Boolean = True, _
-                   Optional ByVal WalkerIndex As Integer) As Boolean
+                   Optional ByVal WalkerIndex As Integer, _
+                   Optional ByVal Silent As Boolean = False) As Boolean
     On Error GoTo LegalWalk_Err
     If Map <= 0 Or Map > NumMaps Then Exit Function
     If x < MinXBorder Or x > MaxXBorder Then Exit Function
     If y < MinYBorder Or y > MaxYBorder Then Exit Function
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .NpcIndex <> 0 Then
             If Not IsSet(NpcList(.NpcIndex).flags.StatusMask, e_StatusMask.eDontBlockTile) Then Exit Function
         End If
@@ -875,8 +956,8 @@ Function LegalWalk(ByVal Map As Integer, _
         If WalkerIndex <> 0 Then
             If TileRequiresPatreon(Map, x, y) Then
                 If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then
-                    If UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
-                        Call WriteLocaleMsg(WalkerIndex, MSG_TILE_REQUIRES_PATREON, e_FontTypeNames.FONTTYPE_INFO)
+                    If Not Silent And UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
+                        Call WriteLocaleMsg(WalkerIndex, MSG_TILE_REQUIRES_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                         UserList(WalkerIndex).flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
                     End If
                     Exit Function
@@ -895,15 +976,15 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     On Error GoTo LegalPosNPC_Err
     If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or y < MinYBorder Or y > MaxYBorder) Then
         LegalPosNPC = False
-    ElseIf MapData(Map, x, y).TileExit.Map > 0 Then
+    ElseIf MapData(x, y, Map).TileExit.Map > 0 Then
         LegalPosNPC = False
     Else
         If AguaValida = 0 Then
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(Map, x, y).Blocked And FLAG_AGUA) = 0
+            LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
+                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(x, y, Map).Blocked And FLAG_AGUA) = 0
         Else
-            LegalPosNPC = (MapData(Map, x, y).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) _
-                    And (MapData(Map, x, y).trigger <> e_Trigger.POSINVALIDA Or IsPet)
+            LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
+                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet)
         End If
     End If
     Exit Function
@@ -925,7 +1006,7 @@ Function LegalWalkNPC(ByVal Map As Integer, _
     If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or y < MinYBorder Or y > MaxYBorder) Then
         Exit Function
     End If
-    With MapData(Map, x, y)
+    With MapData(x, y, Map)
         If .TileExit.Map Then Exit Function
         If Not PuedeAgua Then
             If .Blocked And FLAG_AGUA Then
@@ -972,7 +1053,7 @@ Sub SendHelp(ByVal Index As Integer)
     Dim LoopC        As Integer
     NumHelpLines = val(GetVar(DatPath & "Help.dat", "INIT", "NumLines"))
     For LoopC = 1 To NumHelpLines
-        Call WriteConsoleMsg(Index, GetVar(DatPath & "Help.dat", "Help", "Line" & LoopC), e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Index, GetVar(DatPath & "Help.dat", "Help", "Line" & LoopC), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
     Next LoopC
     Exit Sub
 SendHelp_Err:
@@ -1011,30 +1092,30 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         UserList(UserIndex).flags.TargetX = x
         UserList(UserIndex).flags.TargetY = y
         '¿Es un obj?
-        If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
+        If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
             'Informa el nombre
             UserList(UserIndex).flags.TargetObjMap = Map
             UserList(UserIndex).flags.TargetObjX = x
             UserList(UserIndex).flags.TargetObjY = y
             FoundSomething = 1
-        ElseIf MapData(Map, x + 1, y).ObjInfo.ObjIndex > 0 Then
+        ElseIf MapData(x + 1, y, Map).ObjInfo.ObjIndex > 0 Then
             'Informa el nombre
-            If ObjData(MapData(Map, x + 1, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+            If ObjData(MapData(x + 1, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x + 1
                 UserList(UserIndex).flags.TargetObjY = y
                 FoundSomething = 1
             End If
-        ElseIf MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex > 0 Then
-            If ObjData(MapData(Map, x + 1, y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+        ElseIf MapData(x + 1, y + 1, Map).ObjInfo.ObjIndex > 0 Then
+            If ObjData(MapData(x + 1, y + 1, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 'Informa el nombre
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x + 1
                 UserList(UserIndex).flags.TargetObjY = y + 1
                 FoundSomething = 1
             End If
-        ElseIf MapData(Map, x, y + 1).ObjInfo.ObjIndex > 0 Then
-            If ObjData(MapData(Map, x, y + 1).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
+        ElseIf MapData(x, y + 1, Map).ObjInfo.ObjIndex > 0 Then
+            If ObjData(MapData(x, y + 1, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors Then
                 'Informa el nombre
                 UserList(UserIndex).flags.TargetObjMap = Map
                 UserList(UserIndex).flags.TargetObjX = x
@@ -1043,63 +1124,63 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             End If
         End If
         If FoundSomething = 1 Then
-            UserList(UserIndex).flags.TargetObj = MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+            UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.ObjIndex
             If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otCastleSpawner Then
-                Call SendCastleInfo(UserIndex, MapData(UserList(UserIndex).flags.TargetMap, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.CastleSlot)
+                Call SendCastleInfo(UserIndex, MapData(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, UserList(UserIndex).flags.TargetMap).ObjInfo.CastleSlot)
             ElseIf MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
-                Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList( _
-                        UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & " *" & (MapData(Map, x, y).ObjInfo.ElementalTags Or ObjData(MapData( _
-                        Map, x, y).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList( _
+                        UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, UserList(UserIndex).flags.TargetObjMap).ObjInfo.amount & " *" & (MapData(x, y, Map).ObjInfo.ElementalTags Or ObjData(MapData( _
+                        x, y, Map).ObjInfo.ObjIndex).ElementalTags) & "*" & "", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otOreDeposit Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, MSG_MINERALES_DISPONIBLES, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
-                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
+                    Call WriteLocaleMsg(UserIndex, MSG_MINERALES_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(UserList( _
+                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.amount))   'Msg1618=¬1 - (Minerales disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTrees Then
                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-                    Call WriteLocaleMsg(UserIndex, MSG_RECURSOS_DISPONIBLES, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(Map, UserList( _
-                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
+                    Call WriteLocaleMsg(UserIndex, MSG_RECURSOS_DISPONIBLES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, ObjData(UserList(UserIndex).flags.TargetObj).name & "¬" & (MapData(UserList( _
+                            UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY, Map).ObjInfo.amount)) 'Msg1619=¬1 - (Recursos disponibles: ¬2)
                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otTeleport Then
-                    If MapData(Map, x, y).TileExit.Map > 0 Then
-                        If LenB(MapInfo(MapData(Map, x, y).TileExit.Map).map_name) <> 0 Then
-                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(Map, x, y).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
+                    If MapData(x, y, Map).TileExit.Map > 0 Then
+                        If LenB(MapInfo(MapData(x, y, Map).TileExit.Map).map_name) <> 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, MapInfo(MapData(x, y, Map).TileExit.Map).map_name) 'Msg1620=Portal a ¬1
                         Else
                             'Msg492=Portal a un mapa desconocido...
-                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL_MAPA_DESCONOCIDO, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_PORTAL_MAPA_DESCONOCIDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     Else
                         'Msg493=Portal hacia la quinta dimensión
-                        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_HACIA_QUINTA_DIMENSION, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_PORTAL_HACIA_QUINTA_DIMENSION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-                    Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "*", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "*", e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         End If
         Dim yy As Byte
         If y + 1 <= YMaxMapSize Then
             'it's a character?
-            If MapData(Map, x, y + 1).UserIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y + 1).UserIndex
+            If MapData(x, y + 1, Map).UserIndex > 0 Then
+                TempCharIndex = MapData(x, y + 1, Map).UserIndex
                 yy = y + 1
                 FoundChar = 1
             End If
             'it's an npc?
-            If MapData(Map, x, y + 1).NpcIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y + 1).NpcIndex
+            If MapData(x, y + 1, Map).NpcIndex > 0 Then
+                TempCharIndex = MapData(x, y + 1, Map).NpcIndex
                 FoundChar = 2
             End If
         End If
         If FoundChar = 0 Then
             'it's a character?
-            If MapData(Map, x, y).UserIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y).UserIndex
+            If MapData(x, y, Map).UserIndex > 0 Then
+                TempCharIndex = MapData(x, y, Map).UserIndex
                 yy = y
                 FoundChar = 1
             End If
             'it's an npc?
-            If MapData(Map, x, y).NpcIndex > 0 Then
-                TempCharIndex = MapData(Map, x, y).NpcIndex
+            If MapData(x, y, Map).NpcIndex > 0 Then
+                TempCharIndex = MapData(x, y, Map).NpcIndex
                 FoundChar = 2
             End If
         End If
@@ -1107,7 +1188,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             If UserList(TempCharIndex).pos.x <> x Or UserList(TempCharIndex).pos.y <> yy Then
                 'Mapblock bugeado
-                MapData(Map, x, yy).UserIndex = 0
+                MapData(x, yy, Map).UserIndex = 0
                 Call TraceError(999, "Hay un mapblock con un usuario y el usuario tiene otra posicion. Index: " & TempCharIndex & ", user: " & UserList(TempCharIndex).name & _
                         ", mapblock: " & Map & "," & x & "," & y & ", userpos: " & UserList(TempCharIndex).pos.Map & "," & UserList(TempCharIndex).pos.x & "," & UserList( _
                         TempCharIndex).pos.y, "LookatTile")
@@ -1119,7 +1200,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                         'if im not dead or (i have guild and the target is a guildmate) or im clicking myself
                         If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) _
                                 Or UserIndex = TempCharIndex Then
-                            Call WriteLocaleMsg(UserIndex, MSG_YOU_SEE_CHARACTER, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
+                            Call WriteLocaleMsg(UserIndex, MSG_YOU_SEE_CHARACTER, e_TextChannel.TEXTCHANNEL_SYSTEM, ft, extraStrings & "¬" & Statuses & "¬" & FactionStatuses)
                         End If
                     End If
                     FoundSomething = 1
@@ -1157,13 +1238,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC_MASCOTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
                         estatus & "¬" & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name)  'Msg1621=NPC ¬1 ¬2 es mascota de ¬3
                 End If
             Else
                 If UserList(UserIndex).flags.Muerto = 0 Then
                     estatus = PrepareStatusMsgsForNpcs(TempCharIndex, UserIndex, NpcStatusMask)
-                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
+                    Call WriteLocaleMsg(UserIndex, MSG_NPC, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Blanco, NpcList(TempCharIndex).Numero & "¬" & NpcList(TempCharIndex).flags.ElementalTags & "¬" & _
                         estatus)  'Msg1622=NPC ¬1 ¬2
                 End If
             End If
@@ -1187,9 +1268,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
                                         Call FinishQuest(UserIndex, .QuestIndex, i)
                                         Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-                                        Call WriteLocaleChatOverHead(UserIndex, 1353, "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
+                                        Call WriteLocaleChatOverHead(UserIndex, MSG_QUEST_FINALIZADA_1353, "", NpcList(TempCharIndex).Char.charindex, vbYellow) ' Msg1353=¡Quest Finalizada!
                                         ' Msg494=Quest Finalizada!
-                                        Call WriteLocaleMsg(UserIndex, MSG_QUEST_FINALIZADA, e_FontTypeNames.FONTTYPE_INFOIAO)
+                                        Call WriteLocaleMsg(UserIndex, MSG_QUEST_FINALIZADA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP)
                                     End If
                                 End If
                             Next j
@@ -1213,7 +1294,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1114= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE_1114, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE_1114, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
     Else
         If FoundSomething = 0 Then
@@ -1225,7 +1306,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             UserList(UserIndex).flags.TargetObjX = 0
             UserList(UserIndex).flags.TargetObjY = 0
             'Msg1106= No ves nada interesante.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_VES_NADA_INTERESANTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
     End If
     Exit Sub
@@ -1327,9 +1408,9 @@ EsObjetoFijo_Err:
 End Function
 
 Public Function HayPuerta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    If MapData(Map, x, y).ObjInfo.ObjIndex > 0 Then
-        HayPuerta = (ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors) And ObjData(MapData(Map, x, y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData( _
-                Map, x, y).ObjInfo.ObjIndex).Llave = 0)
+    If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
+        HayPuerta = (ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType = e_OBJType.otDoors) And ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData( _
+                x, y, Map).ObjInfo.ObjIndex).Llave = 0)
     End If
 End Function
 
@@ -1490,7 +1571,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 35, 1, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         ' Msg495=¡¡Hás sido resucitado!!
-        Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_RESUCITADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
     ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
         UserList(UserIndex).flags.Envenenado = False
@@ -1499,7 +1580,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 9, 1, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         ' Msg496=¡¡Hás sido curado!!
-        Call WriteLocaleMsg(UserIndex, MSG_SIDO_CURADO, e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, MSG_SIDO_CURADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
     End If
 End Sub
 
@@ -1636,42 +1717,42 @@ Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As
     Select Case itemMask
         Case e_SpellRequirementMask.eArmor
             ' Msg497=Necesitás una armadura
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMADURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eHelm
             ' Msg564=Necesitás un casco
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_CASCO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eKnucle
             ' Msg565=Necesitás unos nudillos
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_NUDILLOS, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_NUDILLOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eMagicItem
             ' Msg566=Necesitás un objeto magico
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_OBJETO_MAGICO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_OBJETO_MAGICO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eProjectile
             ' Msg567=Necesitás municiones
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MUNICIONES, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_MUNICIONES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eShield
             ' Msg568=Necesitás un escudo
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ESCUDO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ESCUDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eShip
             ' Msg569=Necesitás un barco
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BARCO, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_BARCO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eTool
             ' Msg570=Necesitás una herramienta
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
         Case e_SpellRequirementMask.eWeapon
             ' Msg571=Necesitás un arma
-            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMA, Message, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_ARMA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, Message)
     End Select
 End Sub
 
 Public Sub SendHelpInteractionMessage(ByVal UserIndex As Integer, ByVal CanHelpResult As e_InteractionResult)
     Select Case CanHelpResult
         Case eOposingFaction
-            Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Case eCantHelpCriminal
-            Call WriteLocaleMsg(UserIndex, MsgDisableAttackGuardToContinue, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MsgDisableAttackGuardToContinue, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case eCantHelpCriminalClanRules
-            Call WriteLocaleMsg(UserIndex, MsgClanForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MsgClanForbidAction, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)
         Case Else
             Debug.Assert "Invalid message"
     End Select
@@ -1682,58 +1763,58 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
         Case e_AttackInteractionResult.eCanAttack
             'Do nothing
         Case e_AttackInteractionResult.eDeathAttacker
-            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Case e_AttackInteractionResult.eFightActive
             ' Msg498=No podés atacar en este momento.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MOMENTO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MOMENTO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eDeathTarget
             ' Msg499=No podés atacar a un espiritu.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_ESPIRITU, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_ESPIRITU, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eSameGroup
             ' Msg500=No podés atacar a un miembro de tu grupo.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_GRUPO, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_GRUPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eTalkWithMaster
             ' Msg501=No podés atacar usuarios mientras estás en consulta.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eAttackerIsCursed
             ' Msg502=No podés atacar usuarios mientras estás en consulta.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA_502, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USUARIOS_MIENTRAS_CONSULTA_502, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eMounted
             ' Msg503=No podés atacar usando una montura.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USANDO_MONTURA, e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_USANDO_MONTURA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eSameTeam
             ' Msg504=No podes atacar un miembro de tu equipo.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_EQUIPO, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_EQUIPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eNotEnougthPrivileges
             ' Msg505=El ser es demasiado poderoso.
-            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_PODEROSO, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_DEMASIADO_PODEROSO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eSameClan
             ' Msg506=No podes atacar a un miembro de tu clan.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_CLAN, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MIEMBRO_CLAN, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eSameFaction
-            Call WriteLocaleMsg(UserIndex, MsgFacctionForbidAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MsgFacctionForbidAttack, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case e_AttackInteractionResult.eRemoveSafe
-            Call WriteLocaleMsg(UserIndex, MsgRemoveSafeToAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MsgRemoveSafeToAttack, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case e_AttackInteractionResult.eSafeArea
             ' Msg572=Esta es una zona segura, aquí no podés atacar otros usuarios.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_AQUI_PODES_ATACAR_OTROS_USUARIOS, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_AQUI_PODES_ATACAR_OTROS_USUARIOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eCantAttackYourself
-            Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case e_AttackInteractionResult.eAttackSameFaction
             ' Msg507=¡Atacaste un ciudadano! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CIUDADANO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CIUDADANO_CONVERTIDO_CRIMINAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eAttackPetSameFaction
             ' Msg508=¡Atacaste una mascota de un ciudadano! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_MASCOTA_CIUDADANO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_MASCOTA_CIUDADANO_CONVERTIDO_CRIMINAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eRemoveSafeCitizenNpc
             ' Msg509=Debes quitar el seguro para poder atacar la criatura que esta luchando con otro usuario.
-            Call WriteLocaleMsg(UserIndex, MSG_DEBES_QUITAR_SEGURO_PODER_ATACAR_CRIATURA_LUCHANDO_OTRO, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_DEBES_QUITAR_SEGURO_PODER_ATACAR_CRIATURA_LUCHANDO_OTRO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
         Case e_AttackInteractionResult.eAttackCitizenNpc
             ' Msg510=¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.
-            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CRIATURA_OTRO_USUARIO_CONVERTIDO_CRIMINAL, e_FontTypeNames.FONTTYPE_WARNING)
+            Call WriteLocaleMsg(UserIndex, MSG_ATACASTE_CRIATURA_OTRO_USUARIO_CONVERTIDO_CRIMINAL, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         Case Else
             ' Msg511=Target inválido.
-            Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
     End Select
 End Sub
 
@@ -2016,7 +2097,7 @@ Public Function PrepareStatusMsgsForNpcs(ByVal TargetNpcIndex As Integer, ByVal 
         If GetOwnedBy(TargetNpcIndex) <> 0 Then
             Call SetMask(NpcStatusMask, e_NpcInfoMask.Fighting)
             extraStrings = extraStrings & .flags.AttackedBy & "|"
-            extraStrings = extraStrings & CLng((IntervaloNpcOwner - (GlobalFrameTime - .flags.AttackedTime)) / 1000) & "-"
+            extraStrings = extraStrings & CLng((IntervaloNpcOwner - (TicksElapsed(.flags.AttackedTime, GlobalFrameTime))) / 1000) & "-"
         Else
             extraStrings = extraStrings & "-"
         End If

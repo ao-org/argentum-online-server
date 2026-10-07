@@ -609,7 +609,6 @@ End Sub
 Private Sub Command16_Click()
     On Error GoTo Command16_Click_Err
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Exit Sub
 Command16_Click_Err:
@@ -745,7 +744,6 @@ Private Sub Command5_Click()
     Call FreeNPCs
     Call FreeCharIndexes
     Call LoadSini
-    Call LoadMD5
     Call LoadPrivateKey
     Call LoadIntervalos
     Call CargarBackUp

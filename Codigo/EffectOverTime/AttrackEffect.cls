@@ -245,7 +245,7 @@ Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
     End If
     Dim currentPos As t_WorldPos
     currentPos = GetPosition(DotInfo.TargetRef)
-    If Not MapData(currentPos.Map, currentPos.x, currentPos.y).Trap Is Nothing Then
+    If Not MapData(currentPos.x, currentPos.y, currentPos.Map).Trap Is Nothing Then
         Call ModMap.ActivateTrap(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, currentPos.Map, currentPos.x, currentPos.y)
     End If
 End Sub

@@ -23,8 +23,8 @@ Public Type t_GlobalQuestData
     GatheringGlobalCounter As Long
     GatheringGlobalInstallments As Long
     GatheringInitialInstallments As Long
-    IsBossAlive As Boolean
-    BossIndex As Integer
+    IsBossAlive() As Boolean
+    BossIndexes() As Integer
     BossSpawnMap            As Integer
     BossSpawnPositionTopLeft As t_Position
     BossSpawnPositionBottomRight As t_Position
@@ -46,19 +46,49 @@ Private Const SELECT_ALL_GLOBAL_QUEST                 As String = "SELECT * FROM
 Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(amount) AS total_amount FROM global_quest_user_contribution WHERE event_id = ?;"
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
+    Dim i As Integer
+
     With GlobalQuestInfo(GlobalQuestIndex)
         .GatheringGlobalCounter = .GatheringGlobalCounter + Amount
         If .GatheringGlobalCounter >= .GatheringGlobalInstallments Then
             .GatheringGlobalInstallments = .GatheringGlobalInstallments + .GatheringInitialInstallments
-            If Not .IsBossAlive Then
+            If Not IsAnyGlobalQuestBossAlive(GlobalQuestIndex) Then
                 Dim RandomizedSpawnPosition As t_WorldPos
                 RandomizedSpawnPosition.Map = .BossSpawnMap
                 RandomizedSpawnPosition.x = RandomNumber(.BossSpawnPositionTopLeft.x, .BossSpawnPositionBottomRight.x)
                 RandomizedSpawnPosition.y = RandomNumber(.BossSpawnPositionTopLeft.y, .BossSpawnPositionBottomRight.y)
-                Call SpawnNpc(.BossIndex, RandomizedSpawnPosition, False, False, True, 0)
-                .IsBossAlive = True
+                For i = LBound(.BossIndexes) To UBound(.BossIndexes)
+                    Call SpawnNpc(.BossIndexes(i), RandomizedSpawnPosition, False, False, True, 0)
+                    .IsBossAlive(i) = True
+                Next i
             End If
         End If
+    End With
+End Sub
+
+Public Function IsAnyGlobalQuestBossAlive(ByVal GlobalQuestIndex As Integer) As Boolean
+    Dim i As Integer
+
+    With GlobalQuestInfo(GlobalQuestIndex)
+        For i = LBound(.IsBossAlive) To UBound(.IsBossAlive)
+            If .IsBossAlive(i) Then
+                IsAnyGlobalQuestBossAlive = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
+
+Public Sub MarkGlobalQuestBossAsDead(ByVal GlobalQuestIndex As Integer, ByVal BossIndex As Integer)
+    Dim i As Integer
+
+    With GlobalQuestInfo(GlobalQuestIndex)
+        For i = LBound(.BossIndexes) To UBound(.BossIndexes)
+            If .BossIndexes(i) = BossIndex And .IsBossAlive(i) Then
+                .IsBossAlive(i) = False
+                Exit Sub
+            End If
+        Next i
     End With
 End Sub
 
@@ -93,7 +123,10 @@ Public Sub LoadGlobalQuests()
     Call IniFile.Initialize(DatPath & "GlobalQuests.dat")
     MaxGlobalQuests = val(IniFile.GetValue("INIT", "NumGlobalQuest"))
     ReDim Preserve GlobalQuestInfo(1 To MaxGlobalQuests) As t_GlobalQuestData
-    Dim i As Integer
+    Dim i             As Integer
+    Dim j             As Integer
+    Dim BossIndexes() As String
+
     For i = 1 To MaxGlobalQuests
         With GlobalQuestInfo(i)
             .GatheringThreshold = CLng(val(IniFile.GetValue("GlobalQuest" & i, "GatheringThreshold")))
@@ -104,7 +137,12 @@ Public Sub LoadGlobalQuests()
             .BossSpawnPositionBottomRight.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionBottomRightY")))
             .BossSpawnPositionTopLeft.x = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftX")))
             .BossSpawnPositionTopLeft.y = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossSpawnPositionTopLeftY")))
-            .BossIndex = CInt(val(IniFile.GetValue("GlobalQuest" & i, "BossIndex")))
+            BossIndexes = Split(IniFile.GetValue("GlobalQuest" & i, "BossIndex"), "-")
+            ReDim .BossIndexes(0 To UBound(BossIndexes))
+            ReDim .IsBossAlive(0 To UBound(BossIndexes))
+            For j = 0 To UBound(BossIndexes)
+                .BossIndexes(j) = CInt(val(BossIndexes(j)))
+            Next j
             .FinishOnThresholdReach = val(IniFile.GetValue("GlobalQuest" & i, "FinishOnThresholdReach"))
             .Name = IniFile.GetValue("GlobalQuest" & i, "Name")
             .StartDate = CDate(IniFile.GetValue("GlobalQuest" & i, "StartDate"))
@@ -143,19 +181,19 @@ Public Function FinishGlobalQuestCheck(ByVal UserIndex As Integer, ByVal GlobalQ
     'boss alive mechanics shoudln't interfer with unique prizes
     If GlobalQuestThresholdNeeded > 0 Then
         If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter < GlobalQuestThresholdNeeded Then
-            Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, FONTTYPE_WARNING, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
+            Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold & "¬" & GlobalQuestThresholdNeeded)
             Exit Function
         End If
         'global quest unique prizes should be redeemable even if the event is finished
         GoTo SkipEventIsActive
     Else
-        If GlobalQuestInfo(GlobalQuestIndex).IsBossAlive Then
-            Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, FONTTYPE_WARNING)
+        If IsAnyGlobalQuestBossAlive(GlobalQuestIndex) Then
+            Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Function
         End If
     End If
     If Not GlobalQuestInfo(GlobalQuestIndex).IsActive Then
-        Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, FONTTYPE_WARNING)
+        Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
         Exit Function
     End If
 SkipEventIsActive:
@@ -167,7 +205,7 @@ Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmoun
     If GlobalQuestIndex > 0 And GlobalQuestThresholdNeeded = 0 Then
         Call ContributeToGlobalQuestCounter(ContributionAmount, GlobalQuestIndex)
         Call InsertContributionIntoDatabase(UserIndex, ContributionAmount, GlobalQuestIndex)
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_CONTRIBUTION_UPDATE, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_CONTRIBUTION_UPDATE, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         If GlobalQuestInfo(GlobalQuestIndex).FinishOnThresholdReach Then
             If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter >= GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold Then
                 GlobalQuestInfo(GlobalQuestIndex).IsActive = False
@@ -227,7 +265,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
         .IsActive = False
         Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
         'TBD change map indexes and de-spawn corresponding npcs
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_FINISHED, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_FINISHED, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub
@@ -243,7 +281,7 @@ Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
         .IsActive = True
         Call UpdateGlobalQuestActiveStateIntoDatabase(True, GlobalQuestIndex)
         'TBD change map indexes and spawn corresponding npcs
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_STARTED, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_FontTypeNames.FONTTYPE_INFOIAO))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_STARTED, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
 End Sub

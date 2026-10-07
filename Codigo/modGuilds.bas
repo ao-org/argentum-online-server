@@ -150,7 +150,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal ExpellUs
                 Map = UserList(UserReference.ArrayIndex).pos.Map
                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.x, MapInfo(Map).Salida.y, True)
-                    Call WriteConsoleMsg(UserReference.ArrayIndex, PrepareMessageLocaleMsg(MSG_NECESITAS_CLAN_PERTENECER_MAPA, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1941=Necesitas un clan para pertenecer en este mapa.
+                    Call WriteLocaleMsg(UserReference.ArrayIndex, MSG_NECESITAS_CLAN_PERTENECER_MAPA, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1941=Necesitas un clan para pertenecer en este mapa.
                 Else
                     Call RefreshCharStatus(UserReference.ArrayIndex)
                 End If
@@ -679,7 +679,7 @@ Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As Str
     'listen to no guild at all
     If LenB(GuildName) = 0 And UserList(UserIndex).EscucheClan <> 0 Then
         'Quit listening to previous guild!!
-        Call WriteLocaleMsg(UserIndex, MSG_DEJAS_ESCUCHAR_1603, guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD) 'Msg1603= Dejas de escuchar a : ¬1
+        Call WriteLocaleMsg(UserIndex, MSG_DEJAS_ESCUCHAR_1603, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, guilds(UserList(UserIndex).EscucheClan).GuildName) 'Msg1603= Dejas de escuchar a : ¬1
         guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
         Exit Function
     End If
@@ -689,21 +689,21 @@ Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As Str
         If UserList(UserIndex).EscucheClan <> 0 Then
             If UserList(UserIndex).EscucheClan = GI Then
                 'Already listening to them...
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CONECTADO, GuildName, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1942=Conectado a : ¬1
+                Call WriteLocaleMsg(UserIndex, MSG_CONECTADO, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, GuildName) ' Msg1942=Conectado a : ¬1
                 GMEscuchaClan = GI
                 Exit Function
             Else
                 'Quit listening to previous guild!!
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_DEJAS_ESCUCHAR, guilds(UserList(UserIndex).EscucheClan).GuildName, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1943=Dejas de escuchar a : ¬1
+                Call WriteLocaleMsg(UserIndex, MSG_DEJAS_ESCUCHAR, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, guilds(UserList(UserIndex).EscucheClan).GuildName) ' Msg1943=Dejas de escuchar a : ¬1
                 guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
             End If
         End If
         Call guilds(GI).ConectarGM(UserIndex)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_CONECTADO, GuildName, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1942=Conectado a : ¬1
+        Call WriteLocaleMsg(UserIndex, MSG_CONECTADO, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, GuildName) ' Msg1942=Conectado a : ¬1
         GMEscuchaClan = GI
         UserList(UserIndex).EscucheClan = GI
     Else
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ERROR_CLAN_NO_EXISTE, vbNullString, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1944=Error, el clan no existe.
+        Call WriteLocaleMsg(UserIndex, MSG_ERROR_CLAN_NO_EXISTE, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1944=Error, el clan no existe.
         GMEscuchaClan = 0
     End If
     Exit Function
@@ -791,15 +791,15 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     Personaje = UCase$(Personaje)
     If Not PersonajeExiste(Personaje) Then
         Call guilds(GI).ExpulsarMiembro(Personaje)
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_PERSONAJE_NO_EXISTE_ELIMINADO_LISTA_MIEMBROS, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1945=El personaje no existe y fue eliminado de la lista de miembros.
+        Call WriteLocaleMsg(UserIndex, MSG_PERSONAJE_NO_EXISTE_ELIMINADO_LISTA_MIEMBROS, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1945=El personaje no existe y fue eliminado de la lista de miembros.
         Exit Sub
     End If
     If GI <= 0 Or GI > CANTIDADDECLANES Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_PERTENECES_NINGUN_CLAN, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1946=No perteneces a ningún clan.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_PERTENECES_NINGUN_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1946=No perteneces a ningún clan.
         Exit Sub
     End If
     If Not m_EsGuildLeader(UserList(UserIndex).Id, GI) Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_NO_ERES_LIDER_CLAN, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1947=No eres el líder de tu clan.
+        Call WriteLocaleMsg(UserIndex, MSG_NO_ERES_LIDER_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1947=No eres el líder de tu clan.
         Exit Sub
     End If
     If InStrB(Personaje, "\") <> 0 Then
@@ -817,7 +817,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
     
     CharId = GetCharacterIdWithName(Personaje)
     If CharId <= 0 Then
-        Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_ASPIRANTE_OFFLINE_SIN_CHARID, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG))
+        Call WriteLocaleMsg(UserIndex, MSG_ASPIRANTE_OFFLINE_SIN_CHARID, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString)
         Exit Sub
     End If
     HasRequest = guilds(GI).HasGuildRequest(CharId)
@@ -828,7 +828,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
             If CharId = list(i) Then Exit For
         Next i
         If i > UBound(list()) Then
-            Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_PERSONAJE_NO_NI_ASPIRANTE_NI_MIEMBRO_CLAN, vbNullString, e_FontTypeNames.FONTTYPE_GUILDMSG)) ' Msg1948=El personaje no es ni aspirante ni miembro del clan.
+            Call WriteLocaleMsg(UserIndex, MSG_PERSONAJE_NO_NI_ASPIRANTE_NI_MIEMBRO_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD, vbNullString) ' Msg1948=El personaje no es ni aspirante ni miembro del clan.
             Exit Sub
         End If
     End If
@@ -888,7 +888,7 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
             Call guilds(ViejoGuildINdex).RetirarAspirante(UserList(UserIndex).name)
         End If
     End If
-    Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Msg2039¬" & UserList(UserIndex).name, 7))  'Msg2039=Clan: [¬1] ha enviado solicitud para unirse al clan.
+    Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Msg" & MSG_CLAN_HA_ENVIADO_SOLICITUD_PARA_UNIRSE_AL_CLAN & "¬" & UserList(UserIndex).name, 7))  'Msg2039=Clan: [¬1] ha enviado solicitud para unirse al clan.
     Call guilds(NuevoGuildIndex).NuevoAspirante(UserList(UserIndex).name, Solicitud)
     a_NuevoAspirante = True
     Exit Function
@@ -917,7 +917,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
     
     If UserList(UserIndex).Stats.GLD < priceAcceptMember Then
         'Msg2163=Para aceptar un nuevo miembro necesitas ¬1 monedas de oro.
-        Call WriteLocaleMsg(UserIndex, MSG_ACEPTAR_NUEVO_MIEMBRO_NECESITAS_MONEDAS_ORO, e_FontTypeNames.FONTTYPE_INFO, priceAcceptMember)
+        Call WriteLocaleMsg(UserIndex, MSG_ACEPTAR_NUEVO_MIEMBRO_NECESITAS_MONEDAS_ORO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja, priceAcceptMember)
         Exit Function
     End If
     
@@ -1052,7 +1052,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Long)
         While MemberIndex > 0
             If UserList(MemberIndex).ConnectionDetails.ConnIDValida Then
                 If UserList(MemberIndex).ChatCombate = 1 Then
-                    Call SendData(SendTarget.ToIndex, MemberIndex, PrepareMessageLocaleMsg(MSG_CLAN_GANADO_PUNTOS_EXPERIENCIA, ExpDar, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1789=Clan> El clan ha ganado ¬1 puntos de experiencia.
+                    Call SendData(SendTarget.ToIndex, MemberIndex, PrepareMessageLocaleMsg(MSG_CLAN_GANADO_PUNTOS_EXPERIENCIA, ExpDar, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP)) ' Msg1789=Clan> El clan ha ganado ¬1 puntos de experiencia.
                 End If
             End If
             MemberIndex = modGuilds.m_Iterador_ProximoUserIndex(.GuildIndex)
@@ -1069,7 +1069,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Long)
             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
             ExpActual = ExpActual - ExpNecesaria
             nivel = nivel + 1
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SUBIDO_NIVEL_NUEVOS_BENEFICIOS_DISPONIBLES, nivel, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1790=Clan> El clan ha subido a nivel ¬1. Nuevos beneficios disponibles.
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageLocaleMsg(MSG_CLAN_SUBIDO_NIVEL_NUEVOS_BENEFICIOS_DISPONIBLES, nivel, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)) ' Msg1790=Clan> El clan ha subido a nivel ¬1. Nuevos beneficios disponibles.
             If nivel >= MAX_LEVEL_GUILD Then
                 ExpActual = 0
             End If

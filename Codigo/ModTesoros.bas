@@ -148,8 +148,8 @@ Public Sub PerderTesoro()
     Iterations = 0
     Do While Not EncontreLugar
         Iterations = Iterations + 1
-        If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
-            If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
+        If (MapData(TesoroX, TesoroY, TesoroNumMapa).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
+            If (MapData(TesoroX, TesoroY, TesoroNumMapa).Blocked And FLAG_AGUA) = 0 Then
                 EncontreLugar = True
             Else
                 EncontreLugar = False
@@ -168,7 +168,7 @@ Public Sub PerderTesoro()
     Loop
     BusquedaTesoroActiva = True
     Call MakeObj(TesoroRegalo(RandomNumber(1, UBound(TesoroRegalo))), TesoroNumMapa, TesoroX, TesoroY, False)
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_TREASURE_EVENT_MAP_HINT, GetMapName(TesoroNumMapa) & "¬" & TesoroNumMapa, e_FontTypeNames.FONTTYPE_TALK))  'Msg1699=Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: ¬1(¬2) ¿Quien será el afortunado que lo encuentre?
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_TREASURE_EVENT_MAP_HINT, GetMapName(TesoroNumMapa) & "¬" & TesoroNumMapa, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))  'Msg1699=Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: ¬1(¬2) ¿Quien será el afortunado que lo encuentre?
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno 257
     Exit Sub
 PerderTesoro_Err:
@@ -186,8 +186,8 @@ Public Sub PerderRegalo()
     If RegaloNumMapa <= 0 Then Exit Sub
     Do While Not EncontreLugar
         Iterations = Iterations + 1
-        If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
-            If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
+        If (MapData(RegaloX, RegaloY, RegaloNumMapa).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
+            If (MapData(RegaloX, RegaloY, RegaloNumMapa).Blocked And FLAG_AGUA) = 0 Then
                 EncontreLugar = True
             Else
                 EncontreLugar = False
@@ -205,7 +205,7 @@ Public Sub PerderRegalo()
     Loop
     BusquedaRegaloActiva = True
     Call MakeObj(RegaloRegalo(RandomNumber(1, UBound(RegaloRegalo))), RegaloNumMapa, RegaloX, RegaloY, False)
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_MAGIC_ITEM_EVENT_MAP_HINT, GetMapName(RegaloNumMapa) & "¬" & RegaloNumMapa, e_FontTypeNames.FONTTYPE_TALK))  'Msg1700=Eventos> De repente ha surgido un item maravilloso en el mapa: ¬1(¬2) ¿Quien será el valiente que lo encuentre? ¡MUCHO CUIDADO!
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_MAGIC_ITEM_EVENT_MAP_HINT, GetMapName(RegaloNumMapa) & "¬" & RegaloNumMapa, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))  'Msg1700=Eventos> De repente ha surgido un item maravilloso en el mapa: ¬1(¬2) ¿Quien será el valiente que lo encuentre? ¡MUCHO CUIDADO!
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
     Exit Sub
 PerderRegalo_Err:

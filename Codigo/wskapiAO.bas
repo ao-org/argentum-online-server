@@ -233,7 +233,7 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
 
         'Busca si esta banneada la ip
         If IP_Blacklist.Exists(UserList(NewIndex).IP) <> 0 Then
-            Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
+            Call WriteShowMessageBox(NewIndex, MSG_DYNAMIC_MESSAGE_BOX, "Se te ha prohibido la entrada al servidor. Cod: #0003")
                     
             data = UserList(NewIndex).outgoingData.ReadAll
 
