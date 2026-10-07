@@ -1147,7 +1147,7 @@ End Sub
 
 Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
     On Error GoTo RecStamina_Err
-    Dim trigger As Byte
+    Dim trigger As Long
     Dim Suerte  As Integer
     With UserList(UserIndex)
         trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger

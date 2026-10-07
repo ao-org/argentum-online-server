@@ -577,7 +577,7 @@ Dim tStr                        As String
 
 
         'If in the water, and has a boat, equip it!
-        Dim trigger     As Integer
+        Dim trigger     As Long
         Dim slotBarco   As Integer
         Dim itemBuscado As Integer
         trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
