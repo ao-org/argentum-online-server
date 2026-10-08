@@ -1578,6 +1578,11 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         PuedeAtacar = False
         Exit Function
     End If
+    If EitherUserInSafeZone(attackerIndex, VictimIndex) Then
+        Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_PELEAR_EN_ESTA_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
+        PuedeAtacar = False
+        Exit Function
+    End If
     PuedeAtacar = True
     Exit Function
 PuedeAtacar_Err:

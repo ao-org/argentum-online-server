@@ -812,7 +812,7 @@ Sub HandleCampfireTwigAction(ByVal Map As Integer, ByVal x As Integer, ByVal y A
             Call WriteLocaleMsg(UserIndex, MSG_NO_LLOVIENDO_PODES_ENCENDER_FOGATA_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If HasMapZoneFlag(Map, e_ZoneFlags.Safe) Then
+        If HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.SafeZone) Or HasMapZoneFlag(Map, e_ZoneFlags.Safe) Then
             'Msg1077= En zona segura no podés hacer fogatas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_ZONA_SEGURA_PODES_HACER_FOGATAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub

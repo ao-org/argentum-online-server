@@ -3255,6 +3255,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 '17/09/02
                                 'Check the trigger
+                                If EitherUserInSafeZone(UserIndex, tU) Then
+                                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
+                                    Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+                                End If
                                 Call DoRobar(UserIndex, tU)
                             End If
                         End If

@@ -472,7 +472,7 @@ End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TestSpawnTrigger_Err
-    TestSpawnTrigger = Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AntiNpcRespawn)
+    TestSpawnTrigger = Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AntiNpcRespawn Or e_Trigger.InvalidNpcPath)
     Exit Function
 TestSpawnTrigger_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)

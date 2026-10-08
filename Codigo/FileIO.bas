@@ -1922,7 +1922,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                 x = Triggers(i).x
                 y = Triggers(i).y
                 MapData(x, y, Map).trigger = Triggers(i).trigger
-                If Not isCsm3 And HasTileFlag(Triggers(i).trigger, e_Trigger.SwimSuitPath) Then
+                If Not isCsm3 And HasTileFlag(Triggers(i).trigger, e_Trigger.SwimSuitPath Or e_Trigger.RubberSuitPath Or e_Trigger.Coast) Then
                     MapData(x, y, Map).Blocked = MapData(x, y, Map).Blocked Or FLAG_AGUA
                 End If
             Next i

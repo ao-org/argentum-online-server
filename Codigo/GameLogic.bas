@@ -936,7 +936,7 @@ Function LegalWalk(ByVal Map As Integer, _
             If .TileExit.Map > 0 Then Exit Function
         End If
         If Not PuedeAgua Then
-            If IsWaterTile(Map, x, y) Then Exit Function
+            If IsWaterTile(Map, x, y) And Not HasTileFlag(.trigger, e_Trigger.WalkableBridge) Then Exit Function
         End If
         If Not PuedeTierra Then
             If Not IsWaterTile(Map, x, y) Then Exit Function
@@ -958,10 +958,10 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Else
         If AguaValida = 0 Then
             LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
-                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AntiNpcRespawn) Or IsPet) And Not IsWaterTile(Map, x, y)
+                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.InvalidNpcPath) Or IsPet) And Not IsWaterTile(Map, x, y)
         Else
             LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
-                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AntiNpcRespawn) Or IsPet)
+                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.InvalidNpcPath) Or IsPet)
         End If
     End If
     Exit Function
@@ -1005,7 +1005,7 @@ Function LegalWalkNPC(ByVal Map As Integer, _
             End If
         End If
         If Not IgnoraInvalida Then
-            If HasTileFlag(.trigger, e_Trigger.AntiNpcRespawn) Then
+            If HasTileFlag(.trigger, e_Trigger.InvalidNpcPath) Then
                 Exit Function
             End If
         End If

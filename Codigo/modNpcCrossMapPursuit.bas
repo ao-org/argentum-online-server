@@ -320,8 +320,8 @@ Private Function NpcDestinationSurfaceAllowed(ByVal NpcIndex As Integer, ByRef d
     If Not InMapBounds(destination.Map, destination.x, destination.y) Then Exit Function
     With MapData(destination.x, destination.y, destination.Map)
         If (.Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Then Exit Function
-        If HasTileFlag(.trigger, e_Trigger.AntiNpcRespawn) Then Exit Function
-        If (.Blocked And FLAG_AGUA) <> 0 Then
+        If HasTileFlag(.trigger, e_Trigger.InvalidNpcPath) Then Exit Function
+        If IsWaterTile(destination.Map, destination.x, destination.y) Then
             If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function
         ElseIf NpcList(NpcIndex).flags.TierraInvalida <> 0 Then
             Exit Function

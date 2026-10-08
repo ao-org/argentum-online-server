@@ -8,8 +8,15 @@ Public Const XMinMapSize As Long = 1
 Public Const XMaxMapSize As Long = 100
 Public Const YMinMapSize As Long = 1
 Public Const YMaxMapSize As Long = 100
-Public Const KNOWN_TILE_FLAGS As Long = 511
+Public Const KNOWN_TILE_FLAGS As Long = 16383
 Public Const KNOWN_ZONE_FLAGS As Long = 2097151
+Public Const MinXBorder As Integer = 1
+Public Const MaxXBorder As Integer = 100
+Public Const MinYBorder As Integer = 1
+Public Const MaxYBorder As Integer = 100
+Public Const iObjTraje As Integer = 197
+Public Const iObjTrajeAltoNw As Integer = 199
+Public Const iObjTrajeBajoNw As Integer = 200
 Public Const FLAG_AGUA As Long = 32
 Public Const FLAG_ARBOL As Long = 64
 Public Type Position
@@ -39,6 +46,7 @@ Public Type t_MapBlock
     Luz As LightInfo
     ObjInfo As ObjectInfo
     NpcIndex As Integer
+    UserIndex As Integer
     TileExit As Position
 End Type
 Public Type MapProperties
@@ -52,6 +60,8 @@ Public Type MapProperties
 End Type
 Public Type UserFlags
     UserLogged As Boolean
+    AdminInvisible As Byte
+    Muerto As Byte
 End Type
 Public Type UserInfo
     pos As Position
@@ -66,7 +76,14 @@ Public Type ObjectDefinition
     Subtipo As Long
     VidaUtil As Long
 End Type
+Public Type NpcFlags
+    StatusMask As Long
+    AguaValida As Byte
+    TierraInvalida As Byte
+    LavaValida As Byte
+End Type
 Public Type NpcDefinition
+    flags As NpcFlags
     pos As Position
     Orig As Position
     name As String
@@ -155,7 +172,7 @@ Public Sub CapturePacket(ByVal recipient As Integer)
     Call reader.SetData(bytes)
     Call Check(reader.ReadInt16() = 206, "tile update packet206")
     Call Check(reader.ReadInt16() = 1 And reader.ReadInt16() = 1 And reader.ReadInt16() = 1, "tile update position")
-    Call Check(reader.ReadInt32() = 511, "tile update Int32 flagmask")
+    Call Check(reader.ReadInt32() = KNOWN_TILE_FLAGS, "tile update Int32 flagmask")
     Call Writer.Clear()
     sent = sent + 1
 End Sub
@@ -208,18 +225,18 @@ Private Sub TestRuntimeProperties()
     Call Check(Not BothInPvPArena(1, 2) And Not CrossesPvPArenaBoundary(1, 2), "no arena uses normal rules")
     MapInfo(1).ZoneFlags = 1
     Call Check(IsPrisonMap(1), "prison independent of tile flags")
-    Call Check(Not SetTileTriggerFlags(1, 511), "non-GM cannot edit")
+    Call Check(Not SetTileTriggerFlags(1, KNOWN_TILE_FLAGS), "non-GM cannot edit")
     UserList(1).isGm = True
-    Call Check(Not SetTileTriggerFlags(1, -1) And Not SetTileTriggerFlags(1, 512), "unknown flags reject")
+    Call Check(Not SetTileTriggerFlags(1, -1) And Not SetTileTriggerFlags(1, 16384), "unknown flags reject")
     UserList(1).capable = True: UserList(3).capable = True
-    Call Check(SetTileTriggerFlags(1, 511), "GM can replace full mask")
+    Call Check(SetTileTriggerFlags(1, KNOWN_TILE_FLAGS), "GM can replace full mask")
     Call Check(sent = 1, "broadcast only negotiated same-map user")
     UserList(2).pos.x = 1: UserList(2).capable = True
     Call ReplayTileProperties(2, 1)
     Call Check(sent = 2, "late join gets accepted edits")
     Set copy = CopyPropertyDictionary(MapInfo(1).TileOverrides)
     copy.Item(TilePropertyKey(1, 1)) = 0
-    Call Check(MapInfo(1).TileOverrides.Item(TilePropertyKey(1, 1)) = 511, "instance overrides copied without alias")
+    Call Check(MapInfo(1).TileOverrides.Item(TilePropertyKey(1, 1)) = KNOWN_TILE_FLAGS, "instance overrides copied without alias")
     Set MapInfo(1).CastleEntrances = Nothing: Set MapInfo(1).StaticCastleEntrances = Nothing
     MapData(47, 69, 1).trigger = 9
     Call RegisterCastleEntrance(1, 47, 69, 70001)
@@ -300,7 +317,7 @@ Public Sub Main()
     Open App.path & "\results.txt" For Output As #1
     Call Check(LoadFixture(root & "\all_sections.csm"), "shared all-sections fixture")
     Call Check(MapInfo(1).ZoneFlags = KNOWN_ZONE_FLAGS, "all map-wide flags")
-    Call Check(MapData(2, 2, 1).trigger = 511, "combined flag width")
+    Call Check(MapData(2, 2, 1).trigger = KNOWN_TILE_FLAGS, "combined flag width")
     Call Check((MapData(1, 1, 1).Blocked And 32) <> 0, "authored water survives graphics")
     Call Check(MapInfo(1).CastleEntrances.Item(TilePropertyKey(4, 4)) = 70001, "castle ID width")
     Call Check(MapInfo(1).RoofSeams.Count = 2, "roof seams")
@@ -318,8 +335,8 @@ Public Sub Main()
         entry = Dir$()
     Loop
     Call Check(ConvertLegacyTrigger(16, zone) = 0, "old16 clears")
-    Call Check(ConvertLegacyTrigger(2, zone) = 2 And ConvertLegacyTrigger(3, zone) = 2, "NPC restrictions merge")
-    Call Check(ConvertLegacyTrigger(8, zone) = 32 And ConvertLegacyTrigger(11, zone) = 32 And ConvertLegacyTrigger(18, zone) = 32, "swimming paths merge")
+    Call Check(ConvertLegacyTrigger(2, zone) = 2 And ConvertLegacyTrigger(3, zone) = 1024, "NPC restrictions remain independent")
+    Call Check(ConvertLegacyTrigger(8, zone) = 512 And ConvertLegacyTrigger(11, zone) = 32 And ConvertLegacyTrigger(18, zone) = 4096, "ordinary rubber and coast paths remain independent")
     Call Check(ConvertLegacyTrigger(19, zone) = 0 And zone = 1, "old19 promotes entire map")
     For value = 60 To 73
         Call Check(ConvertLegacyTrigger(value, zone) = 1, "roof60-73")
@@ -339,6 +356,7 @@ Public Sub Main()
     Call Check(count = 773, "complete production map inventory")
     Call TestSqlSplitter()
     Call TestMigrationRollback()
+    Call TestRestoredPolicies()
     Call TestZoneFlags()
     Call TestRuntimeProperties()
     Call TestCastleIdentity()
@@ -439,3 +457,73 @@ ExportFailed:
     Close #fh
     fh = 0
 End Sub
+
+Public Function IsSet(ByVal flags As Long, ByVal flag As Long) As Boolean
+    IsSet = (flags And flag) <> 0
+End Function
+
+Public Function HayPuerta(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    HayPuerta = False
+End Function
+
+Private Sub TestRestoredPolicies()
+    Dim emptyTile As t_MapBlock, x As Integer, y As Integer, zone As Long, destination As t_WorldPos
+    For x = 9 To 12
+        For y = 9 To 12
+            MapData(x, y, 1) = emptyTile
+        Next y
+    Next x
+    Call Check(ConvertLegacyTrigger(4, zone) = e_Trigger.SafeZone And ConvertLegacyTrigger(17, zone) = e_Trigger.WalkableBridge, "safe and bridge legacy conversion")
+    MapData(10, 10, 1).trigger = e_Trigger.AntiNpcRespawn Or e_Trigger.UnderRoof
+    Call Check(Not TestSpawnTrigger(1, 10, 10), "AntiNpcRespawn prevents spawning")
+    Call Check(LegalPosNPC(1, 10, 10, 0) And LegalWalkNPC(1, 10, 10, e_Heading.EAST), "AntiNpcRespawn allows NPC placement and walking policy")
+    MapData(10, 10, 1).trigger = e_Trigger.InvalidNpcPath Or e_Trigger.UnderRoof
+    Call Check(Not TestSpawnTrigger(1, 10, 10), "InvalidNpcPath also prevents spawning as before")
+    Call Check(Not LegalPosNPC(1, 10, 10, 0) And Not LegalWalkNPC(1, 10, 10, e_Heading.EAST), "InvalidNpcPath rejects ordinary NPC position and walk")
+    Call Check(LegalPosNPC(1, 10, 10, 0, True), "InvalidNpcPath retains pet position exception")
+    Call Check(LegalWalkNPC(1, 10, 10, e_Heading.EAST, False, True, True), "InvalidNpcPath retains explicit movement-ignore exception")
+    MapData(10, 10, 1).Blocked = FLAG_AGUA
+    MapData(10, 10, 1).trigger = e_Trigger.WalkableBridge Or e_Trigger.UnderRoof
+    Call Check(LegalWalk(1, 10, 10, e_Heading.EAST), "bridge permits pedestrian movement over physical water")
+    Call Check(LegalWalk(1, 10, 10, e_Heading.EAST, True, False), "bridge preserves water movement")
+    Call Check(Not LegalPosNPC(1, 10, 10, 0) And Not LegalWalkNPC(1, 10, 10, e_Heading.EAST), "bridge does not bypass NPC water policy")
+    MapData(10, 10, 1).trigger = 0
+    Call Check(Not LegalWalk(1, 10, 10, e_Heading.EAST), "water blocks pedestrians without bridge")
+    MapData(10, 10, 1).Blocked = 0
+    MapData(10, 10, 1).trigger = e_Trigger.Coast
+    Call Check(IsWaterTile(1, 10, 10) And Not LegalWalk(1, 10, 10, e_Heading.EAST), "coast remains water without a bridge exception")
+    MapData(10, 10, 1).trigger = e_Trigger.RubberSuitPath
+    Call Check(IsWaterTile(1, 10, 10), "rubber path remains water")
+    destination.map = 1: destination.x = 10: destination.y = 10
+    NpcList(1).flags.AguaValida = 0
+    Call Check(Not NpcDestinationSurfaceAllowed(1, destination), "cross-map pursuit sees live rubber path water")
+    NpcList(1).flags.AguaValida = 1
+    Call Check(NpcDestinationSurfaceAllowed(1, destination), "water-capable NPC accepts live water path")
+    MapData(10, 10, 1).trigger = e_Trigger.InvalidNpcPath
+    Call Check(Not NpcDestinationSurfaceAllowed(1, destination), "cross-map pursuit rejects InvalidNpcPath")
+    MapData(10, 10, 1).trigger = e_Trigger.AntiNpcRespawn
+    Call Check(NpcDestinationSurfaceAllowed(1, destination), "cross-map pursuit permits AntiNpcRespawn")
+    Call Check(GetLoginSwimmingSuit(e_Trigger.RubberSuitPath, True) = iObjTrajeBajoNw And GetLoginSwimmingSuit(e_Trigger.RubberSuitPath, False) = iObjTrajeAltoNw, "login selects race-specific rubber suit")
+    Call Check(GetLoginSwimmingSuit(e_Trigger.SwimSuitPath, False) = iObjTraje And GetLoginSwimmingSuit(e_Trigger.Coast, True) = iObjTraje, "login selects ordinary suit for swim path and coast")
+    Call Check(GetLoginSwimmingSuit(0, False) = 0, "cleared old16 does not autoequip a suit")
+    Call Check(IsOrdinarySwimmingPath(e_Trigger.RubberSuitPath) And IsOrdinarySwimmingPath(e_Trigger.SwimSuitPath) And IsOrdinarySwimmingPath(e_Trigger.Coast) And Not IsOrdinarySwimmingPath(e_Trigger.UnderRoof), "ordinary movement preserves original three-path allowance")
+    MapData(11, 10, 1).trigger = e_Trigger.RubberSuitPath
+    Call Check(CanEquipSwimmingSuitPath(1, 10, 10, iObjTrajeAltoNw, 0, False) And Not CanEquipSwimmingSuitPath(1, 10, 10, iObjTraje, 0, False), "rubber-only adjacency selects rubber equipment")
+    MapData(11, 10, 1).trigger = e_Trigger.Coast
+    Call Check(CanEquipSwimmingSuitPath(1, 10, 10, iObjTraje, 0, False) And Not CanEquipSwimmingSuitPath(1, 10, 10, iObjTrajeBajoNw, 0, False), "coast adjacency selects ordinary equipment")
+    MapData(11, 10, 1).trigger = 0
+    Call Check(CanEquipSwimmingSuitPath(1, 10, 10, iObjTraje, iObjTraje, True), "ordinary suit can remain equipped while navigating")
+    Call Check(CanEquipSwimmingSuitPath(1, 10, 10, iObjTrajeBajoNw, iObjTrajeAltoNw, True), "rubber family change while navigating preserves original allowance")
+    UserList(1).pos.map = 1: UserList(1).pos.x = 10: UserList(1).pos.y = 10
+    UserList(2).pos.map = 1: UserList(2).pos.x = 11: UserList(2).pos.y = 10
+    MapData(10, 10, 1).trigger = e_Trigger.SafeZone Or e_Trigger.UnderRoof
+    Call Check(EitherUserInSafeZone(1, 2) And EitherUserInSafeZone(2, 1), "combined safe flag on either participant blocks unsafe interaction")
+    MapData(10, 10, 1).trigger = 0: MapData(11, 10, 1).trigger = e_Trigger.SafeZone
+    Call Check(EitherUserInSafeZone(1, 2), "target-only safe zone detected")
+    MapData(11, 10, 1).trigger = 0
+    Call Check(Not EitherUserInSafeZone(1, 2), "neither safe tile leaves normal interaction policy")
+End Sub
+
+Public Function HayLava(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    HayLava = False
+End Function

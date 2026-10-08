@@ -581,15 +581,13 @@ Dim tStr                        As String
         Dim slotBarco   As Integer
         Dim itemBuscado As Integer
         trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
-        If HasTileFlag(trigger, e_Trigger.SwimSuitPath) And Not IsSwimmingSuit(.invent.EquippedShipObjIndex) Then
-            For slotBarco = 1 To UBound(.invent.Object)
-                itemBuscado = .invent.Object(slotBarco).ObjIndex
-                If IsSwimmingSuit(itemBuscado) Then
-                    .invent.EquippedShipObjIndex = itemBuscado
-                    .invent.EquippedShipSlot = slotBarco
-                    Exit For
-                End If
-            Next slotBarco
+        itemBuscado = GetLoginSwimmingSuit(trigger, .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo)
+        If itemBuscado > 0 Then
+            slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
+            If slotBarco > -1 Then
+                .invent.EquippedShipObjIndex = itemBuscado
+                .invent.EquippedShipSlot = slotBarco
+            End If
         End If
         If .invent.EquippedShipObjIndex > 0 And IsWaterTile(.pos.Map, CInt(.pos.x), CInt(.pos.y)) Then
             .flags.Navegando = 1
@@ -1270,7 +1268,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
             Exit Function
         End If
-        If .flags.Navegando And IsSwimmingSuit(.invent.EquippedShipObjIndex) And Not HasTileFlag(MapData(nPos.x, nPos.y, .pos.Map).trigger, e_Trigger.SwimSuitPath) Then
+        If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not IsOrdinarySwimmingPath(MapData(nPos.x, nPos.y, .pos.Map).trigger) Then
             Exit Function
         End If
         If .Accion.AccionPendiente = True Then
@@ -2881,6 +2879,10 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
                 End If
             End If
         End If
+        CanAttackUser = eSafeArea
+        Exit Function
+    End If
+    If EitherUserInSafeZone(attackerIndex, TargetIndex) Then
         CanAttackUser = eSafeArea
         Exit Function
     End If
