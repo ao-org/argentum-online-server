@@ -1240,6 +1240,7 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
     End If
+    SupportedMask = SupportedMask Or HOO_CAP_TILE_PROPERTIES_V1
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -1264,6 +1265,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
+    If UserList(UserIndex).flags.UserLogged Then Call ReplayTileProperties(UserIndex, UserList(UserIndex).pos.Map)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)
@@ -2764,7 +2766,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_OCULTARTE_SI_INVISIBLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
                 End If
-                If MapInfo(.pos.Map).SinInviOcul Then
+                If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility) Then
                     ' Msg708=Una fuerza divina te impide ocultarte en esta zona.
                     Call WriteLocaleMsg(UserIndex, MSG_FUERZA_DIVINA_IMPIDE_OCULTARTE_ZONA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -3070,7 +3072,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         UserList(tU).Counters.timeFx = 3
                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).pos.x, UserList(tU).pos.y))
                     End If
-                    If ProjectileType > 0 And (.flags.Oculto = 0 Or Not MapInfo(.pos.Map).KeepInviOnAttack) Then
+                    If ProjectileType > 0 And (.flags.Oculto = 0 Or Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.KeepInvisibilityOnAttack)) Then
                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y, ProjectileType))
                     End If
                     'Si no es GM invisible, le envio el movimiento del arma.
@@ -3187,7 +3189,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
                     Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
-                        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
+                        If HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
                             Call WriteLocaleMsg(UserIndex, MSG_PROHIBIDO_CORTAR_RAICES_CIUDADES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -3228,7 +3230,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 End If
             Case e_Skill.Robar
                 'Does the map allow us to steal here?
-                If MapInfo(.pos.Map).Seguro = 0 Then
+                If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                     'Check interval
                     If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                     'Target whatever is in that tile
@@ -3253,14 +3255,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 '17/09/02
                                 'Check the trigger
-                                If MapData(UserList(tU).pos.x, UserList(tU).pos.y, UserList(tU).pos.Map).trigger = e_Trigger.ZonaSegura Then
-                                    ' Msg714=No podés robar aquí.
-                                    Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
-                                    Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-                                End If
-                                If MapData(.pos.x, .pos.y, .pos.Map).trigger = e_Trigger.ZonaSegura Then
-                                    ' Msg714=No podés robar aquí.
+                                If EitherUserInSafeZone(UserIndex, tU) Then
                                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ROBAR_AQUI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -4965,7 +4960,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             'Check if map is not safe
-            If MapInfo(.pos.Map).Seguro = 0 Then
+            If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                 Call FinComerciarUsu(.flags.TargetUser.ArrayIndex, True)
                 'Msg1168= No se puede usar el comercio seguro en zona insegura.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDE_USAR_COMERCIO_SEGURO_ZONA_INSEGURA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -7613,7 +7608,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             'Si el gm es Consejero y el usuario esta en zona insegura, no puede ir
-            If e_PlayerType.Consejero And MapInfo(UserList(UserConsulta.ArrayIndex).pos.Map).Seguro = 0 Then
+            If e_PlayerType.Consejero And Not HasMapZoneFlag(UserList(UserConsulta.ArrayIndex).pos.Map, e_ZoneFlags.Safe) Then
                 'Msg2165=El usuario ¬1 se encuentra en zona insegura, no puedes acercarte a él.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_USUARIO_ENCUENTRA_ZONA_INSEGURA_PUEDES_ACERCARTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, Nick)
                 Exit Sub
@@ -7689,17 +7684,17 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
             Dim response As String
             response = "[Info de mapa " & .pos.Map & "]" & vbNewLine
             response = response & "Nombre = " & MapInfo(.pos.Map).map_name & vbNewLine
-            response = response & "Seguro = " & MapInfo(.pos.Map).Seguro & vbNewLine
-            response = response & "Newbie = " & MapInfo(.pos.Map).Newbie & vbNewLine
+            response = response & "Seguro = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) & vbNewLine
+            response = response & "Newbie = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NewbieOnly) & vbNewLine
             response = response & "Nivel = " & MapInfo(.pos.Map).MinLevel & "/" & MapInfo(.pos.Map).MaxLevel & vbNewLine
-            response = response & "SinInviOcul = " & MapInfo(.pos.Map).SinInviOcul & vbNewLine
-            response = response & "SinMagia = " & MapInfo(.pos.Map).SinMagia & vbNewLine
-            response = response & "SoloClanes = " & MapInfo(.pos.Map).SoloClanes & vbNewLine
-            response = response & "NoPKs = " & MapInfo(.pos.Map).NoPKs & vbNewLine
-            response = response & "NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos & vbNewLine
+            response = response & "SinInviOcul = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility) & vbNewLine
+            response = response & "SinMagia = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic) & vbNewLine
+            response = response & "SoloClanes = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.ClansOnly) & vbNewLine
+            response = response & "NoPKs = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals) & vbNewLine
+            response = response & "NoCiudadanos = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens) & vbNewLine
             response = response & "Salida = " & MapInfo(.pos.Map).Salida.Map & "-" & MapInfo(.pos.Map).Salida.x & "-" & MapInfo(.pos.Map).Salida.y & vbNewLine
             response = response & "Terreno = " & MapInfo(.pos.Map).terrain & vbNewLine
-            response = response & "NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos & vbNewLine
+            response = response & "NoCiudadanos = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens) & vbNewLine
             response = response & "Zona = " & MapInfo(.pos.Map).zone & vbNewLine
             Call WriteConsoleMsg(UserIndex, response, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         End If
@@ -7865,7 +7860,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             Exit Sub
         End If
         'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-        If MapInfo(.pos.Map).zone = "NEWBIE" Or MapData(.pos.x, .pos.y, .pos.Map).trigger = CARCEL Then
+        If MapInfo(.pos.Map).zone = "NEWBIE" Or IsPrisonMap(.pos.Map) Then
             'Msg1273= No pueder viajar a tu hogar desde este mapa.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDER_VIAJAR_HOGAR_DESDE_MAPA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
@@ -8351,7 +8346,7 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
 
         If Not isSkin Then
             If Slot > getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
-            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
+            If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Or EsMapaEvento(.pos.Map) Then
                 'Msg1285= Solo puedes eliminar items en zona segura.
                 Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ELIMINAR_ITEMS_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Exit Sub

@@ -92,7 +92,7 @@ Public Function NpcRequiresAiUpdate(ByVal NpcIndex As Integer) As Boolean
     With NpcList(NpcIndex)
         If .pos.Map <= 0 Or .pos.Map > NumMaps Then Exit Function
         NpcRequiresAiUpdate = MapInfo(.pos.Map).NumUsers > 0 Or _
-                              MapInfo(.pos.Map).ForceUpdate Or _
+                              HasMapZoneFlag(.pos.Map, e_ZoneFlags.ForceUpdateAi) Or _
                               .CrossMapRoute.Mode <> eNpcCrossMapRouteNone
     End With
 End Function

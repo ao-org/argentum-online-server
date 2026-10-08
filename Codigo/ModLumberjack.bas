@@ -30,7 +30,7 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
         Dim Suerte      As Integer
         skillPoints = .Stats.UserSkills(e_Skill.Talar)
         Suerte = Int(-0.00125 * skillPoints * skillPoints - 0.3 * skillPoints + 49)
-        res = RandomNumber(1, IIf(MapInfo(UserList(UserIndex).pos.Map).Seguro = 1, Suerte + 4, Suerte))
+        res = RandomNumber(1, IIf(HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe), Suerte + 4, Suerte))
         If res < 6 Then
             Dim nPos  As t_WorldPos
             Dim MiObj As t_Obj

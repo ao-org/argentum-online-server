@@ -162,7 +162,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Call SetUserRef(.Grupo.Miembros(1), 0)
         Call RefreshCharStatus(UserIndexEchar)
         .Grupo.Id = -1
-        If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.GroupsOnly) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             Call WriteLocaleMsg(UserIndexEchar, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WarpUserChar(UserIndexEchar, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         End If
@@ -209,7 +209,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             .Id = -1
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
-            If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+            If HasMapZoneFlag(LiderMap, e_ZoneFlags.GroupsOnly) And MapInfo(LiderMap).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2056, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Call WarpUserChar(UserIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
             End If
@@ -303,7 +303,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
             Call modSendData.SendData(ToIndex, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
-            If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+            If HasMapZoneFlag(LiderMap, e_ZoneFlags.GroupsOnly) And MapInfo(LiderMap).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2059, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
             End If
@@ -312,7 +312,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
         Call SetUserRef(.Grupo.Lider, 0)
         Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
-        If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.GroupsOnly) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2060, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         End If
@@ -361,12 +361,12 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
-            If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+            If HasMapZoneFlag(LiderMap, e_ZoneFlags.GroupsOnly) And MapInfo(LiderMap).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2061, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2061="Debes estar en un grupo para permanecer en este mapa."
                 Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
             End If
         End If
-        If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.GroupsOnly) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2062, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2062="Debes estar en un grupo para permanecer en este mapa."
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
         End If
@@ -407,7 +407,7 @@ Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
                 Call WriteLocaleMsg(MemberIndex, MSG_LIDER_HA_ABANDONADO_GRUPO_GRUPO_DISUELVE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2064="El líder ha abandonado el grupo. El grupo se disuelve."
             End If
             
-            If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+            If HasMapZoneFlag(.pos.Map, e_ZoneFlags.GroupsOnly) And MapInfo(.pos.Map).Salida.Map <> 0 Then
                 Call WriteLocaleMsg(MemberIndex, MSG_DEBES_ESTAR_GRUPO_PERMANECER_MAPA_2065, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO) ' Msg2065="Debes estar en un grupo para permanecer en este mapa."
                 Call WarpUserChar(MemberIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             Else

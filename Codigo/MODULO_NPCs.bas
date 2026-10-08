@@ -472,7 +472,7 @@ End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     On Error GoTo TestSpawnTrigger_Err
-    TestSpawnTrigger = MapData(x, y, Map).trigger < 1 Or (MapData(x, y, Map).trigger > 3 And MapData(x, y, Map).trigger < 12)
+    TestSpawnTrigger = Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AntiNpcRespawn Or e_Trigger.InvalidNpcPath)
     Exit Function
 TestSpawnTrigger_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
@@ -643,7 +643,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
 
             Dim body As Integer
             'Si está muerto el usuario y en zona insegura
-            If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
+            If UserList(sndIndex).flags.Muerto = 1 And Not HasMapZoneFlag(UserList(sndIndex).pos.Map, e_ZoneFlags.Safe) Then
                 'Solamente mando el body si es de tipo revividor.
                 If .npcType = e_NPCType.Revividor Then
                     body = .Char.body
@@ -2170,7 +2170,7 @@ Public Function UserCanAttackNpc(ByVal UserIndex As Integer, ByVal NpcIndex As I
             Exit Function
         End If
     End If
-    If IsPet And MapInfo(UserList(UserIndex).pos.Map).Seguro Then
+    If IsPet And HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) Then
         UserCanAttackNpc.Result = eSafeArea
         Exit Function
     End If

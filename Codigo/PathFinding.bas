@@ -116,14 +116,14 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal
             If Not NpcPathMayUseExit(NpcIndex, x, y) Then Exit Function
         End If
         ' Agua
-        If .Blocked And FLAG_AGUA Then
+        If IsWaterTile(Map, x, y) Then
             If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function
             ' Tierra
         Else
             If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
         End If
         ' Trigger inválido para NPCs
-        If .trigger = e_Trigger.POSINVALIDA Then
+        If HasTileFlag(.trigger, e_Trigger.InvalidNpcPath) Then
             ' Si no es mascota
             If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then Exit Function
         End If

@@ -8,9 +8,8 @@ End Type
 
 Private Type t_CastleInfo
     id As Long
-    trigger As Integer
-    owner_account_id As Integer
-    owner_char_id As Integer
+    owner_account_id As Long
+    owner_char_id As Long
     owner_char_name As String
     spawner_obj_id As Integer
     inside_key_obj_id As Integer
@@ -29,6 +28,7 @@ Public Enum eCastleWhitelistOperation
 End Enum
 
 Public CastleData() As t_CastleInfo
+Private CastleModuleLoaded As Boolean
 
 
 Private Const COUNT_ALL_CASTLES As String = "SELECT COUNT(*) FROM castle;"
@@ -99,46 +99,100 @@ Private Function IsCastleFootprintInMapBounds(ByVal map As Integer, ByVal x As I
     IsCastleFootprintInMapBounds = True
 End Function
 
+Private Sub ValidateCastleSchema()
+    On Error GoTo ValidateCastleSchema_Err
+    Dim RS As ADODB.Recordset, nullableOutsideColumns As Integer
+    Dim failureNumber As Long, failureDescription As String
+    Set RS = Query("SELECT date FROM migrations WHERE date = ?;", "20261007-01")
+    If RS Is Nothing Then Call Err.Raise(5, , "Missing database migration history")
+    If RS.EOF Then Call Err.Raise(5, , "Apply ScriptsDB/20261007-01-migrate castle identities.sql before loading castles")
+    Call CloseCastleRecordset(RS)
+    Set RS = Query("PRAGMA table_info(castle);")
+    If RS Is Nothing Then Call Err.Raise(5, , "Cannot inspect castle schema")
+    If RS.EOF Then Call Err.Raise(5, , "Missing castle table")
+    Do While Not RS.EOF
+        If LCase$(CStr(RS!name)) = "trigger" Then Call Err.Raise(5, , "Legacy castle.trigger remains after migration")
+        Call RS.MoveNext()
+    Loop
+    Call CloseCastleRecordset(RS)
+    Set RS = Query("PRAGMA table_info(castle_coordinates);")
+    If RS Is Nothing Then Call Err.Raise(5, , "Cannot inspect castle coordinate schema")
+    Do While Not RS.EOF
+        Select Case LCase$(CStr(RS!name))
+            Case "outside_map", "outside_x", "outside_y"
+                If CLng(RS.Fields("notnull").value) <> 0 Then Call Err.Raise(5, , "Outside castle coordinates must allow NULL")
+                nullableOutsideColumns = nullableOutsideColumns + 1
+        End Select
+        Call RS.MoveNext()
+    Loop
+    If nullableOutsideColumns <> 3 Then Call Err.Raise(5, , "Missing outside castle coordinate columns")
+    Call CloseCastleRecordset(RS)
+    Exit Sub
+ValidateCastleSchema_Err:
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call CloseCastleRecordset(RS)
+    Call Err.Raise(failureNumber, "ValidateCastleSchema", failureDescription)
+End Sub
+
 Public Sub LoadCastleModule()
     On Error GoTo LoadCastleModule_Err
-
+    Dim failureNumber As Long, failureDescription As String
+    CastleModuleLoaded = False
+    Call ValidateCastleSchema()
     Call LoadCastleData
     Call LoadCastleCoordinates
     Call LoadCastleWhiteLists
+    Call ResolveLegacyCastleEntrances()
     Dim i As Integer
 
     For i = LBound(CastleData) To UBound(CastleData)
         With CastleData(i)
-            If .is_active Then
+            If .is_active And .castle_coordinates.outside.map > 0 Then
+                If Not CanPublishCastle(i, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) Then Call Err.Raise(5, "LoadCastleModule", "Invalid or conflicting castle placement: " & CStr(.id))
                 Call CreateCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
             End If
         End With
     Next i
+    CastleModuleLoaded = True
 
     Exit Sub
 LoadCastleModule_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleModule", Erl)
+    CastleModuleLoaded = False
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call TraceError(failureNumber, failureDescription, "ModCastle.LoadCastleModule", Erl)
+    Call Err.Raise(failureNumber, "ModCastle.LoadCastleModule", failureDescription)
 End Sub
 
 Public Sub LoadCastleWhiteLists()
     On Error GoTo LoadCastleWhitelists_Err
     Dim RS As ADODB.Recordset
+    Dim failureNumber As Long, failureDescription As String
     Set RS = Query(SELECT_ALL_CASTLE_WHITELISTS)
-    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
+    If RS Is Nothing Then Call Err.Raise(5, "LoadCastleWhiteLists", "Castle query failed")
+    If RS.EOF Then
+        Call CloseCastleRecordset(RS)
+        Exit Sub
+    End If
     
     Do While Not RS.EOF
         Dim CastleSlot As Integer
         CastleSlot = GetCastleSlotById(RS!castle_id)
-        Debug.Assert CastleSlot > 0
+        If CastleSlot < 1 Then Call Err.Raise(5, "LoadCastleWhiteLists", "Unknown castle ID")
         Dim CharacterName As String
         CharacterName = LCase$(CStr(RS!character_name))
         Call AddUserNameToWhiteListByCastleSlot(CastleSlot, CharacterName)
-        RS.MoveNext
+        Call RS.MoveNext()
     Loop
-
+    Call RS.Close()
     Exit Sub
 LoadCastleWhitelists_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleWhitelists", Erl)
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call CloseCastleRecordset(RS)
+    Call TraceError(failureNumber, failureDescription, "ModCastle.LoadCastleWhiteLists", Erl)
+    Call Err.Raise(failureNumber, "ModCastle.LoadCastleWhiteLists", failureDescription)
 End Sub
 
 
@@ -152,7 +206,7 @@ Public Function AddUserNameToWhiteListByCastleSlot(ByVal CastleSlot As Integer, 
             Call LogInfoServidor("Duplicated username: " & CharacterName & " in whitelist for castle " & .name)
             Exit Function
         End If
-        Call .castleWhiteList.Add(CharacterName, .trigger)
+        Call .castleWhiteList.Add(CharacterName, True)
         Call LogInfoServidor("Username:" & CharacterName & " was added to the whitelist of castle: " & .name)
         AddUserNameToWhiteListByCastleSlot = True
     End With
@@ -176,7 +230,7 @@ End Function
 
 
 
-Public Function GetCastleSlotById(ByVal id As Integer) As Integer
+Public Function GetCastleSlotById(ByVal id As Long) As Integer
     GetCastleSlotById = -1
     Dim i As Integer
     
@@ -192,27 +246,27 @@ End Function
 Public Sub LoadCastleData()
     On Error GoTo LoadCastleData_Err
     Dim RS As ADODB.Recordset
+    Dim failureNumber As Long, failureDescription As String
     Set RS = Query(COUNT_ALL_CASTLES)
     If RS Is Nothing Then
-        Debug.Assert False
-        Exit Sub
+        Call Err.Raise(5, "LoadCastleData", "Castle rows could not be initialized")
     End If
     ReDim CastleData(1 To RS.Fields(0).value)
+    Call RS.Close()
 
     Dim i As Long
     i = 1
     Set RS = Query(SELECT_ALL_CASTLES)
-    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
+    If RS Is Nothing Then Call Err.Raise(5, "LoadCastleData", "Castle query failed")
+    If RS.EOF Then Call Err.Raise(5, "LoadCastleData", "Castle rows missing after count query")
     If RS.RecordCount <> UBound(CastleData) Then
-        Debug.Assert False
-        Exit Sub
+        Call Err.Raise(5, "LoadCastleData", "Castle rows could not be initialized")
     End If
 
     Do While Not RS.EOF
     
         With CastleData(i)
             .id = (RS!id)
-            .trigger = (RS!trigger)
             
             
             If Not IsNull(RS!name) Then
@@ -242,9 +296,14 @@ Public Sub LoadCastleData()
         End With
         
     Loop
+    Call RS.Close()
     Exit Sub
 LoadCastleData_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleData", Erl)
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call CloseCastleRecordset(RS)
+    Call TraceError(failureNumber, failureDescription, "ModCastle.LoadCastleData", Erl)
+    Call Err.Raise(failureNumber, "ModCastle.LoadCastleData", failureDescription)
 End Sub
 
 
@@ -252,25 +311,34 @@ Public Sub LoadCastleCoordinates()
     On Error GoTo LoadCastleCoordinates_Err
     Dim i As Integer
     Dim RS As ADODB.Recordset
+    Dim failureNumber As Long, failureDescription As String
     Set RS = Query(SELECT_ALL_CASTLE_COORDINATES)
-    If RS Is Nothing Or RS.RecordCount = 0 Then Exit Sub
-    i = 1
+    If RS Is Nothing Then Call Err.Raise(5, "LoadCastleCoordinates", "Castle query failed")
+    If RS.EOF Then
+        Call CloseCastleRecordset(RS)
+        Exit Sub
+    End If
     Do While Not RS.EOF
-        If i <> (RS!castle_id) Then
-            Debug.Assert False
+        i = GetCastleSlotById(CLng(RS!castle_id))
+        If i < 1 Then Call Err.Raise(5, "LoadCastleCoordinates", "Unknown castle ID")
+        If Not IsNull(RS!outside_map) Then
+            CastleData(i).castle_coordinates.outside.map = (RS!outside_map)
+            CastleData(i).castle_coordinates.outside.x = (RS!outside_x)
+            CastleData(i).castle_coordinates.outside.y = (RS!outside_y)
         End If
-        CastleData(i).castle_coordinates.outside.map = (RS!outside_map)
-        CastleData(i).castle_coordinates.outside.x = (RS!outside_x)
-        CastleData(i).castle_coordinates.outside.y = (RS!outside_y)
         CastleData(i).castle_coordinates.inside.map = (RS!inside_map)
         CastleData(i).castle_coordinates.inside.x = (RS!inside_x)
         CastleData(i).castle_coordinates.inside.y = (RS!inside_y)
-        i = i + 1
-        RS.MoveNext
+        Call RS.MoveNext()
     Loop
+    Call RS.Close()
 Exit Sub
 LoadCastleCoordinates_Err:
-Call TraceError(Err.Number, Err.Description, "ModCastle.LoadCastleCoordinates", Erl)
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call CloseCastleRecordset(RS)
+    Call TraceError(failureNumber, failureDescription, "ModCastle.LoadCastleCoordinates", Erl)
+    Call Err.Raise(failureNumber, "ModCastle.LoadCastleCoordinates", failureDescription)
 End Sub
 
 
@@ -321,7 +389,7 @@ Public Function IsValidCastlePosition(ByVal UserIndex As Integer) As Boolean
         Exit Function
     End If
 
-    If MapData(UserTargetX, UserTargetY, UserTargetMap).trigger <> e_Trigger.CASTLE_FOUNDATION_POSITION Then
+    If Not HasTileFlag(MapData(UserTargetX, UserTargetY, UserTargetMap).trigger, e_Trigger.CastleFoundationPosition) Then
         Call WriteLocaleMsg(UserIndex, MSG_INVALID_CASTLE_POSITION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Function
     End If
@@ -363,6 +431,11 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         Exit Sub
     End If
 
+    If Not CanPublishCastle(CastleIndex, map, x, y) Then
+        Call LogInfoServidor("Castle placement invalid or conflicting: " & CStr(CastleIndex))
+        Exit Sub
+    End If
+    Call RemoveCastleEntrances(map, CastleData(CastleIndex).id)
     With CastleData(CastleIndex)
 
         'if not during server start...(player clicking the board)
@@ -396,7 +469,6 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
             For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
             MapData(i, j, map).Blocked = 0
-            MapData(i, j, map).trigger = e_Trigger.nada
 
             If MapData(i, j, map).ObjInfo.ObjIndex > 0 Then
                 Call EraseObj(MapData(i, j, map).ObjInfo.Amount, map, i, j)
@@ -419,11 +491,11 @@ Public Sub CreateCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y A
         MapData(x + 1, y, map).Blocked = e_Block.ALL_SIDES
         MapData(x + 2, y, map).Blocked = e_Block.ALL_SIDES
         MapData(x + 3, y, map).Blocked = e_Block.ALL_SIDES
-        MapData(x, y, map).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
-        MapData(x - 1, y, map).trigger = .trigger
-        MapData(x - 2, y, map).trigger = .trigger
-        MapData(x - 1, y + 1, map).trigger = .trigger
-        MapData(x - 2, y + 1, map).trigger = .trigger
+        MapData(x, y, map).trigger = MapData(x, y, map).trigger Or e_Trigger.CastleFoundationPosition
+        Call RegisterCastleEntrance(map, x - 1, y, .id)
+        Call RegisterCastleEntrance(map, x - 2, y, .id)
+        Call RegisterCastleEntrance(map, x - 1, y + 1, .id)
+        Call RegisterCastleEntrance(map, x - 2, y + 1, .id)
 
 
         'second layer form the bottom
@@ -566,6 +638,7 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
         Exit Sub
     End If
 
+    Call RemoveCastleEntrances(map, CastleData(CastleIndex).id)
     If MapData(x, y, map).ObjInfo.Amount > 0 Then
         Call EraseObj(MapData(x, y, map).ObjInfo.Amount, map, x, y)
     End If
@@ -588,7 +661,6 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
         For j = CastleTopLeftCorner.y To CastleBottomRightCorner.y
 
         MapData(i, j, map).Blocked = 0
-        MapData(i, j, map).trigger = e_Trigger.nada
 
         If MapData(i, j, map).ObjInfo.ObjIndex > 0 Then
             Call EraseObj(MapData(i, j, map).ObjInfo.Amount, map, i, j)
@@ -610,7 +682,7 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     MapData(x - 2, y - 1, map).TileExit.y = 0
 
      'restore castle foundation trigger
-    MapData(x, y, map).trigger = e_Trigger.CASTLE_FOUNDATION_POSITION
+    MapData(x, y, map).trigger = MapData(x, y, map).trigger Or e_Trigger.CastleFoundationPosition
 
      With CastleData(CastleIndex)
         If Not InMapBounds(.castle_coordinates.inside.map, .castle_coordinates.inside.x, .castle_coordinates.inside.y + 1) Then
@@ -645,12 +717,13 @@ Public Sub DestroyCastleInMap(ByVal map As Integer, ByVal x As Integer, ByVal y 
     Call MakeObj(CastleSignObj, map, x, y)
 End Sub
 
-Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVal trigger As Integer = 0, Optional ByRef CastleIndex As Integer = -1) As Boolean
+Public Function IsEmperorCastleCreated(ByVal UserIndex As Integer, Optional ByVal castleId As Long = 0, Optional ByRef CastleIndex As Integer = -1) As Boolean
     IsEmperorCastleCreated = False
     Dim i As Integer
     For i = 1 To UBound(CastleData)
         With CastleData(i)
-            If .owner_account_id = UserList(UserIndex).AccountID Or trigger = .trigger Then
+            If (castleId > 0 And .id = castleId) Or (castleId = 0 And .owner_account_id = UserList(UserIndex).AccountID) Then
+                If Not .is_active Then Exit Function
                 If Not IsCastleFootprintInMapBounds(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y) Then
                     Call LogInfoServidor("IsEmperorCastleCreated outside map bounds. map=" & CStr(.castle_coordinates.outside.map) & _
                         " x=" & CStr(.castle_coordinates.outside.x) & _
@@ -681,20 +754,31 @@ End Function
 Public Sub CreateNewEmperorCastle(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
     On Error GoTo CreateEmperorCastle_Err
     Dim RS As ADODB.Recordset
+    Dim castleSlot As Integer
+    castleSlot = GetCastleSlotById(ObjData(ObjIndex).AssignedCastleIndex)
+    If castleSlot < 1 Then Exit Sub
+    If CastleData(castleSlot).owner_account_id <> 0 And CastleData(castleSlot).owner_account_id <> UserList(UserIndex).AccountID Then
+        Call LogInfoServidor("Castle relocation denied: account does not own castle " & CStr(CastleData(castleSlot).id))
+        Exit Sub
+    End If
     With UserList(UserIndex)
 
-        If IsEmperorCastleCreated(UserIndex) Then
-            If Not HasCastleRelocationCooldownPassed(ObjData(ObjIndex).AssignedCastleIndex) Then
+        If Not CanPublishCastle(castleSlot, .flags.TargetMap, .flags.TargetX, .flags.TargetY) Then
+            Call LogInfoServidor("Castle relocation rejected before removing old placement")
+            Exit Sub
+        End If
+        If IsEmperorCastleCreated(UserIndex, CastleData(castleSlot).id) Then
+            If Not HasCastleRelocationCooldownPassed(castleSlot) Then
                 Call WriteLocaleMsg(UserIndex, MSG_CASTLE_RELOCATION_ON_COOLDOWN, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
                 Exit Sub
             End If
-            With CastleData(ObjData(ObjIndex).AssignedCastleIndex)
-                Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, ObjData(ObjIndex).AssignedCastleIndex)
-                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, ObjData(ObjIndex).AssignedCastleIndex & "¬" & GetUserDisplayName(UserIndex), e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD))
+            With CastleData(castleSlot)
+                Call DestroyCastleInMap(.castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, castleSlot)
+                Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_DESTROYED, castleSlot & "¬" & GetUserDisplayName(UserIndex), e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD))
             End With
         End If
 
-        Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, ObjData(ObjIndex).AssignedCastleIndex, UserIndex)
+        Call CreateCastleInMap(.flags.TargetMap, .flags.TargetX, .flags.TargetY, castleSlot, UserIndex)
         
         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_BROADCAST_CASTLE_LOCATION, .name & "¬" & GetUserDisplayName(UserIndex) & "¬" & .flags.TargetMap & "¬" & .flags.TargetX & "¬" & .flags.TargetY, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD))
         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.OldClanHorn, 50, 50))
@@ -705,11 +789,11 @@ CreateEmperorCastle_Err:
 Call TraceError(Err.Number, Err.Description, "ModCastle.CreateEmperorCastle", Erl)
 End Sub
 
-Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As Integer) As Boolean
+Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal castleId As Long) As Boolean
    CheckCastleEntryWhiteList = False
 
     Dim CastleIndex As Integer
-    If Not IsEmperorCastleCreated(UserIndex, trigger, CastleIndex) Then
+    If Not IsEmperorCastleCreated(UserIndex, castleId, CastleIndex) Then
         Exit Function
     End If
 
@@ -725,9 +809,7 @@ Function CheckCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal trigger As 
             Exit Function
        End If
     
-       If .castleWhiteList.Item(LCase$(UserList(UserIndex).name)) = trigger Then
-            CheckCastleEntryWhiteList = True
-       End If
+       CheckCastleEntryWhiteList = True
    
    End With
    
@@ -778,42 +860,48 @@ Public Sub ModifyCastleEntryWhiteList(ByVal UserIndex As Integer, ByVal Characte
 End Sub
 
 Public Sub SaveCastleWhiteListToDb()
-    Dim i As Integer
-    Dim RS As ADODB.Recordset
-    Dim RS2 As ADODB.Recordset
+    On Error GoTo SaveCastleWhiteListToDb_Err
+    Dim i As Integer, keyName As Variant
+    Dim savedNames As Dictionary
+    Dim RS As ADODB.Recordset, result As ADODB.Recordset
     For i = LBound(CastleData) To UBound(CastleData)
-        With (CastleData(i))
+        With CastleData(i)
             If .dirtyWhiteList Then
-                Set RS = Query(SELECT_SPECIFIC_CASTLE_WHITELIST, i)
+                Set RS = Query(SELECT_SPECIFIC_CASTLE_WHITELIST, .id)
                 If RS Is Nothing Then Exit Sub
-                
-                'table is new or first entry on that whitelist
-                If RS.RecordCount = 0 Then
-                    Dim keyName As Variant 'only way to catch dict keys
-                    For Each keyName In .castleWhiteList
-                        Set RS2 = Query(INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST, keyName, i)
-                    Next keyName
-                End If
-                
+                Set savedNames = New Dictionary
                 Do While Not RS.EOF
-                    'if charname is no longer in the whitelist dictionary
+                    savedNames.Item(LCase$(CStr(RS!character_name))) = True
                     If Not .castleWhiteList.Exists(LCase$(CStr(RS!character_name))) Then
-                        'Delete char from db
-                        Set RS2 = Query(DELETE_CHAR_IN_CASTLE_WHITELIST, RS!id)
-                        If RS2 Is Nothing Then
-                            Debug.Assert False
-                            Call LogInfoServidor("Error while deleting whitelisted character in db charname: " & RS!character_name & " for castle: " & RS!castle_id)
-                        End If
-                    'if he is, check if he is saved in db
-                    Else
-                        'insert if doesn't exist, ignore if he does (logic inside the query)
-                        Set RS2 = Query(INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST, RS!character_name, RS!castle_id)
+                        Set result = Query(DELETE_CHAR_IN_CASTLE_WHITELIST, RS!id)
+                        If result Is Nothing Then Exit Sub
+                        Call CloseCastleRecordset(result)
                     End If
-                    RS.MoveNext
+                    Call RS.MoveNext()
                 Loop
+                Call RS.Close()
+                For Each keyName In .castleWhiteList.Keys
+                    If Not savedNames.Exists(keyName) Then
+                        Set result = Query(INSERT_OR_IGNORE_NEW_CHAR_IN_CASTLE_WHITELIST, keyName, .id)
+                        If result Is Nothing Then Exit Sub
+                        Call CloseCastleRecordset(result)
+                    End If
+                Next keyName
+                .dirtyWhiteList = False
             End If
         End With
     Next i
+    Exit Sub
+SaveCastleWhiteListToDb_Err:
+    Call CloseCastleRecordset(RS)
+    Call CloseCastleRecordset(result)
+    Call TraceError(Err.Number, Err.Description, "SaveCastleWhiteListToDb", Erl)
+End Sub
+
+Private Sub CloseCastleRecordset(ByRef recordset As ADODB.Recordset)
+    If recordset Is Nothing Then Exit Sub
+    If recordset.State = adStateOpen Then Call recordset.Close()
+    Set recordset = Nothing
 End Sub
 
 Public Sub SaveCastleDataToDb()
@@ -824,9 +912,18 @@ Public Sub SaveCastleDataToDb()
             
             If .dirtyCastleData Then
                 'update castle data in db
-                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .owner_char_id, DateToSQLite(.foundation_date), 1, .name, i)
+                Set RS = Query(UPDATE_EMPEROR_CASTLE, .owner_account_id, .owner_char_id, DateToSQLite(.foundation_date), Abs(CInt(.is_active)), .name, .id)
+                If RS Is Nothing Then Exit Sub
+                Call CloseCastleRecordset(RS)
                 'update castle coordinates in db
-                Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, i)
+                If .castle_coordinates.outside.map = 0 Then
+                    Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, Null, Null, Null, .id)
+                Else
+                    Set RS = Query(UPDATE_OUTSIDE_CASTLE_LOCATION, .castle_coordinates.outside.map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, .id)
+                End If
+                If RS Is Nothing Then Exit Sub
+                Call CloseCastleRecordset(RS)
+                .dirtyCastleData = False
                 Call LogInfoServidor("Persisted new data for castle number: " & i & " name: " & .name)
             End If
             
@@ -854,3 +951,95 @@ End Sub
 
 
 
+
+Private Function CanPublishCastle(ByVal castleIndex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+    If castleIndex < LBound(CastleData) Or castleIndex > UBound(CastleData) Then Exit Function
+    If Not IsCastleFootprintInMapBounds(map, x, y) Then Exit Function
+    With CastleData(castleIndex).castle_coordinates.inside
+        If Not InMapBounds(.map, .x, .y + 1) Then Exit Function
+        If Not InMapBounds(.map, .x + 1, .y + 1) Then Exit Function
+    End With
+    Dim dx As Integer, dy As Integer, existing As Long, key As Long
+    For dx = -2 To -1
+        For dy = 0 To 1
+            key = TilePropertyKey(x + dx, y + dy)
+            If Not MapInfo(map).StaticCastleEntrances Is Nothing Then
+                If MapInfo(map).StaticCastleEntrances.Exists(key) Then Exit Function
+            End If
+            existing = CastleAtTile(map, x + dx, y + dy)
+            If existing <> 0 And existing <> CastleData(castleIndex).id Then Exit Function
+        Next dy
+    Next dx
+    CanPublishCastle = True
+End Function
+
+Public Sub ResolveLegacyCastleEntrances()
+    On Error GoTo ResolveLegacyCastleEntrances_Err
+    Dim failureNumber As Long, failureDescription As String
+    Dim map As Integer, key As Variant, legacy As Long, castleId As Long
+    Dim mapping As Dictionary, RS As ADODB.Recordset
+    Set mapping = New Dictionary
+    Set RS = Query("SELECT legacy_trigger, castle_id FROM castle_legacy_trigger_map;")
+    If RS Is Nothing Then Call Err.Raise(5, "ResolveLegacyCastleEntrances", "Apply ScriptsDB/20261007-01-migrate castle identities.sql before starting this server")
+    Do While Not RS.EOF
+        If CLng(RS!legacy_trigger) < 21 Or CLng(RS!legacy_trigger) > 40 Or GetCastleSlotById(CLng(RS!castle_id)) < 1 Then Call Err.Raise(5, "ResolveLegacyCastleEntrances", "Invalid historical castle mapping")
+        Call mapping.Add(CLng(RS!legacy_trigger), CLng(RS!castle_id))
+        Call RS.MoveNext()
+    Loop
+    Call RS.Close()
+    For map = 1 To NumMaps
+        With MapInfo(map)
+            If Not .LegacyCastleEntrances Is Nothing Then
+                For Each key In .LegacyCastleEntrances.Keys
+                    legacy = .LegacyCastleEntrances.Item(key)
+                    If Not mapping.Exists(legacy) Then Call Err.Raise(5, "ResolveLegacyCastleEntrances", "Unknown legacy castle trigger")
+                    castleId = mapping.Item(legacy)
+                    Call RegisterCastleEntrance(map, CInt(CLng(key) And &HFFFF&), CInt(CLng(key) \ 65536), castleId, True)
+                Next key
+                Set .LegacyCastleEntrances = Nothing
+            End If
+            If Not .CastleEntrances Is Nothing Then
+                For Each key In .CastleEntrances.Keys
+                    If GetCastleSlotById(.CastleEntrances.Item(key)) < 1 Then Call Err.Raise(5, "ResolveLegacyCastleEntrances", "Unknown authored castle ID")
+                Next key
+            End If
+        End With
+    Next map
+    Exit Sub
+ResolveLegacyCastleEntrances_Err:
+    failureNumber = Err.Number
+    failureDescription = Err.Description
+    Call CloseCastleRecordset(RS)
+    Call Err.Raise(failureNumber, "ResolveLegacyCastleEntrances", failureDescription)
+End Sub
+
+Public Sub RestoreCastlePlacementsOnMap(ByVal map As Integer)
+    If Not CastleModuleLoaded Then Exit Sub
+    If Not MapInfo(map).LegacyCastleEntrances Is Nothing Then Call ResolveLegacyCastleEntrances()
+    Dim slot As Integer
+    For slot = LBound(CastleData) To UBound(CastleData)
+        With CastleData(slot)
+            If .is_active And .castle_coordinates.outside.map > 0 Then
+                If .castle_coordinates.outside.map = map Then
+                    Call CreateCastleInMap(map, .castle_coordinates.outside.x, .castle_coordinates.outside.y, slot)
+                ElseIf .castle_coordinates.inside.map = map Then
+                    Call RestoreCastleInteriorExits(slot)
+                End If
+            End If
+        End With
+    Next slot
+End Sub
+
+Private Sub RestoreCastleInteriorExits(ByVal slot As Integer)
+    Dim map As Integer, x As Integer, y As Integer
+    With CastleData(slot).castle_coordinates
+        map = .inside.map: x = .inside.x: y = .inside.y + 1
+        If Not InMapBounds(map, x, y) Or Not InMapBounds(map, x + 1, y) Then Call Err.Raise(5, , "Invalid castle interior exits")
+        MapData(x, y, map).TileExit = .outside
+        MapData(x, y, map).TileExit.x = .outside.x - 2
+        MapData(x, y, map).TileExit.y = .outside.y + 1
+        MapData(x + 1, y, map).TileExit = .outside
+        MapData(x + 1, y, map).TileExit.x = .outside.x - 1
+        MapData(x + 1, y, map).TileExit.y = .outside.y + 1
+    End With
+End Sub

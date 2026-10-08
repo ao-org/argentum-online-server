@@ -216,7 +216,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             CheckMapRestrictions = True
             Exit Function
         End If
-        If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.NewbieOnly) And Not EsNewbie(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_NEWBIE_ONLY Then
                 ' Msg771=Sólo los newbies pueden entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_NEWBIE_ONLY, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -224,7 +224,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.NoCriminals) And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
             If .flags.UltimoMensaje <> MSG_MAP_ONLY_CITIZENS Then
                 ' Msg772=Sólo los ciudadanos pueden entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CITIZENS, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_INFOBOLD)
@@ -232,7 +232,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.NoCitizens) And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
             If .flags.UltimoMensaje <> MSG_MAP_ONLY_CRIMINALS Then
                 ' Msg773=Sólo los criminales pueden entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_ONLY_CRIMINALS, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
@@ -240,7 +240,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).SoloClanes And .GuildIndex <= 0 Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.ClansOnly) And .GuildIndex <= 0 Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_CLAN Then
                 ' Msg774=Necesitas pertenecer a un clan para entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_CLAN, e_TextChannel.TEXTCHANNEL_GUILD, e_FontTypeNames.FONTTYPE_GUILD)
@@ -264,7 +264,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).OnlyGroups And Not .Grupo.EnGrupo Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.GroupsOnly) And Not .Grupo.EnGrupo Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_GROUP Then
                 ' Msg775=Necesitas pertenecer a un grupo para entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -272,7 +272,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).OnlyPatreon And Not IsPatreon(UserIndex) Then
+        If HasMapZoneFlag(Map, e_ZoneFlags.PatreonOnly) And Not IsPatreon(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_PATREON Then
                 ' Msg776=Necesitas ser Patreon para entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -325,20 +325,20 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         'Controla las salidas
         If InMapBounds(Map, x, y) Then
         
-            If MapData(x, y, Map).trigger >= EMPEROR_CASTLE_ENTRY_1 Then
-                If MapData(x, y, Map).trigger <= EMPEROR_CASTLE_ENTRY_20 Then
-                    If Not CheckCastleEntryWhiteList(UserIndex, MapData(x, y, map).trigger) Then
-                        Call WarpUserChar(UserIndex, map, x, y + 1, False)
-                        Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
-                        Exit Sub
-                    End If
+            Dim castleId As Long
+            castleId = CastleAtTile(Map, x, y)
+            If castleId > 0 Then
+                If Not CheckCastleEntryWhiteList(UserIndex, castleId) Then
+                    Call WarpUserChar(UserIndex, Map, x, y + 1, False)
+                    Call WriteLocaleMsg(UserIndex, MSG_NOT_IN_THE_CASTLE_WHITELIST, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Exit Sub
                 End If
             End If
-            
-            If MapData(x, y, Map).trigger = e_Trigger.TRANSFER_ONLY_DEAD Then
+
+            If HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.GhostOnlyTranslator) Then
                 If .flags.Muerto <> 1 Then Exit Sub  ' si está vivo, no teletransportar
             End If
-            If MapData(x, y, Map).trigger = AUTORESU Then
+            If HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.AutoResurrection) Then
                 Call ResucitarOCurar(UserIndex)
             End If
             If MapData(x, y, Map).ObjInfo.ObjIndex > 0 Then
@@ -501,15 +501,6 @@ Function InMapBounds(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Exit Function
 InMapBounds_Err:
     Call TraceError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
-End Function
-
-Public Function TileRequiresPatreon(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
-    On Error GoTo TileRequiresPatreon_Err
-    If Not InMapBounds(Map, x, y) Then Exit Function
-    TileRequiresPatreon = MapData(x, y, Map).trigger = e_Trigger.ONLY_PATREON_TILE
-    Exit Function
-TileRequiresPatreon_Err:
-    Call TraceError(Err.Number, Err.Description, "Extra.TileRequiresPatreon", Erl)
 End Function
 
 Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
@@ -798,10 +789,10 @@ Function LegalPos(ByVal Map As Integer, _
             If .TileExit.Map > 0 Then Exit Function
         End If
         If Not PuedeAgua Then
-            If (.Blocked And FLAG_AGUA) <> 0 Then Exit Function
+            If IsWaterTile(Map, x, y) Then Exit Function
         End If
         If Not PuedeTierra Then
-            If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
+            If Not IsWaterTile(Map, x, y) Then Exit Function
         End If
         If PuedeBloqueoParcial Then
             If (.Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Then Exit Function
@@ -833,10 +824,10 @@ Function LegalPosDestrabar(ByVal Map As Integer, _
             If .TileExit.Map > 0 Then Exit Function
         End If
         If Not PuedeAgua Then
-            If (.Blocked And FLAG_AGUA) <> 0 Then Exit Function
+            If IsWaterTile(Map, x, y) Then Exit Function
         End If
         If Not PuedeTierra Then
-            If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
+            If Not IsWaterTile(Map, x, y) Then Exit Function
         End If
         If PuedeBloqueoParcial Then
             If (.Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Then Exit Function
@@ -945,24 +936,10 @@ Function LegalWalk(ByVal Map As Integer, _
             If .TileExit.Map > 0 Then Exit Function
         End If
         If Not PuedeAgua Then
-            If (.Blocked And FLAG_AGUA) <> 0 And Not .trigger = e_Trigger.VALIDOPUENTE Then Exit Function
+            If IsWaterTile(Map, x, y) And Not HasTileFlag(.trigger, e_Trigger.WalkableBridge) Then Exit Function
         End If
         If Not PuedeTierra Then
-            If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
-        End If
-        If .trigger = WORKERONLY Then
-            If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function
-        End If
-        If WalkerIndex <> 0 Then
-            If TileRequiresPatreon(Map, x, y) Then
-                If Not EsGM(WalkerIndex) And Not IsPatreon(WalkerIndex) Then
-                    If Not Silent And UserList(WalkerIndex).flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
-                        Call WriteLocaleMsg(WalkerIndex, MSG_TILE_REQUIRES_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                        UserList(WalkerIndex).flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
-                    End If
-                    Exit Function
-                End If
-            End If
+            If Not IsWaterTile(Map, x, y) Then Exit Function
         End If
         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
     End With
@@ -981,10 +958,10 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
     Else
         If AguaValida = 0 Then
             LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
-                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet) And (MapData(x, y, Map).Blocked And FLAG_AGUA) = 0
+                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.InvalidNpcPath) Or IsPet) And Not IsWaterTile(Map, x, y)
         Else
             LegalPosNPC = (MapData(x, y, Map).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES And (MapData(x, y, Map).UserIndex = 0) And (MapData(x, y, Map).NpcIndex = 0) _
-                    And (MapData(x, y, Map).trigger <> e_Trigger.POSINVALIDA Or IsPet)
+                    And (Not HasTileFlag(MapData(x, y, Map).trigger, e_Trigger.InvalidNpcPath) Or IsPet)
         End If
     End If
     Exit Function
@@ -1009,12 +986,12 @@ Function LegalWalkNPC(ByVal Map As Integer, _
     With MapData(x, y, Map)
         If .TileExit.Map Then Exit Function
         If Not PuedeAgua Then
-            If .Blocked And FLAG_AGUA Then
+            If IsWaterTile(Map, x, y) Then
                 Exit Function
             End If
         End If
         If Not PuedeTierra Then
-            If (.Blocked And FLAG_AGUA) = 0 Then
+            If Not IsWaterTile(Map, x, y) Then
                 Exit Function
             End If
         End If
@@ -1028,7 +1005,7 @@ Function LegalWalkNPC(ByVal Map As Integer, _
             End If
         End If
         If Not IgnoraInvalida Then
-            If .trigger = e_Trigger.POSINVALIDA Then
+            If HasTileFlag(.trigger, e_Trigger.InvalidNpcPath) Then
                 Exit Function
             End If
         End If

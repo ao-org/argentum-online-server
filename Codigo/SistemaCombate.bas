@@ -915,7 +915,7 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
         ElseIf MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex > 0 Then
             Index = MapData(TargetPos.x, TargetPos.y, TargetPos.Map).NpcIndex
             If NpcList(Index).Attackable Then
-                If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.Map).Seguro = 1 Then
+                If IsValidUserRef(NpcList(Index).MaestroUser) And HasMapZoneFlag(NpcList(Index).pos.Map, e_ZoneFlags.Safe) Then
                     'Msg1041= No podés atacar mascotas en zonas seguras
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_ATACAR_MASCOTAS_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
@@ -1411,7 +1411,6 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
     'Returns true if the AttackerIndex is allowed to attack the VictimIndex.
     '24/01/2007 Pablo (ToxicWaste) - Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
     '***************************************************
-    Dim t    As e_Trigger6
     Dim rank As Integer
     'MUY importante el orden de estos "IF"...
     'Estas muerto no podes atacar
@@ -1467,7 +1466,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         PuedeAtacar = False
         Exit Function
     End If
-    If Not MapInfo(UserList(VictimIndex).pos.Map).FriendlyFire And UserList(VictimIndex).flags.CurrentTeam > 0 And UserList(VictimIndex).flags.CurrentTeam = UserList( _
+    If Not HasMapZoneFlag(UserList(VictimIndex).pos.Map, e_ZoneFlags.FriendlyFire) And UserList(VictimIndex).flags.CurrentTeam > 0 And UserList(VictimIndex).flags.CurrentTeam = UserList( _
             attackerIndex).flags.CurrentTeam Then
         'Msg1051= No podes atacar un miembro de tu equipo.
         Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_ATACAR_UN_MIEMBRO_DE_TU_EQUIPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1483,14 +1482,13 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         Exit Function
     End If
     'Estamos en una Arena? o un trigger zona segura?
-    t = TriggerZonaPelea(attackerIndex, VictimIndex)
-    If t = e_Trigger6.TRIGGER6_PERMITE Then
+    If BothInPvPArena(attackerIndex, VictimIndex) Then
         PuedeAtacar = True
         Exit Function
     ElseIf PeleaSegura(attackerIndex, VictimIndex) Then
         PuedeAtacar = True
         Exit Function
-    ElseIf t = e_Trigger6.TRIGGER6_PROHIBE Then
+    ElseIf CrossesPvPArenaBoundary(attackerIndex, VictimIndex) Then
         PuedeAtacar = False
         Exit Function
     End If
@@ -1545,7 +1543,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         ElseIf esCaos(attackerIndex) And esCaos(VictimIndex) Then
             If Not (UserList(attackerIndex).flags.LegionarySecure) Then
                 PuedeAtacar = True
-            ElseIf MapInfo(UserList(VictimIndex).pos.Map).Seguro <> 1 Then
+            ElseIf Not HasMapZoneFlag(UserList(VictimIndex).pos.Map, e_ZoneFlags.Safe) Then
                 'Msg1059= Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.
                 Call WriteLocaleMsg(attackerIndex, MSG_LOS_MIEMBROS_DE_LA_LEGION_OSCURA_NO_SE_PUEDEN_ATACAR_ENTRE_SI, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
                 PuedeAtacar = False
@@ -1554,7 +1552,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
     End If
     'Estas en un Mapa Seguro?
-    If MapInfo(UserList(VictimIndex).pos.Map).Seguro = 1 Then
+    If HasMapZoneFlag(UserList(VictimIndex).pos.Map, e_ZoneFlags.Safe) Then
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
                 If UserList(VictimIndex).pos.Map = 58 Or UserList(VictimIndex).pos.Map = 59 Or UserList(VictimIndex).pos.Map = 60 Then
@@ -1580,10 +1578,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         PuedeAtacar = False
         Exit Function
     End If
-    'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-    If MapData(UserList(VictimIndex).pos.x, UserList(VictimIndex).pos.y, UserList(VictimIndex).pos.Map).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y, UserList( _
-            attackerIndex).pos.Map).trigger = e_Trigger.ZonaSegura Then
-        'Msg1063= No podes pelear aqui.
+    If EitherUserInSafeZone(attackerIndex, VictimIndex) Then
         Call WriteLocaleMsg(attackerIndex, MSG_NO_PODES_PELEAR_EN_ESTA_ZONA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
         PuedeAtacar = False
         Exit Function
@@ -1863,32 +1858,11 @@ CalcularDarOroGrupal_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
 End Sub
 
-Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As e_Trigger6
-    On Error GoTo ErrHandler
-    Dim tOrg As e_Trigger
-    Dim tDst As e_Trigger
-    tOrg = MapData(UserList(Origen).pos.x, UserList(Origen).pos.y, UserList(Origen).pos.Map).trigger
-    tDst = MapData(UserList(Destino).pos.x, UserList(Destino).pos.y, UserList(Destino).pos.Map).trigger
-    If tOrg = e_Trigger.ZONAPELEA Or tDst = e_Trigger.ZONAPELEA Then
-        If tOrg = tDst Then
-            TriggerZonaPelea = TRIGGER6_PERMITE
-        Else
-            TriggerZonaPelea = TRIGGER6_PROHIBE
-        End If
-    Else
-        TriggerZonaPelea = TRIGGER6_AUSENTE
-    End If
-    Exit Function
-ErrHandler:
-    TriggerZonaPelea = TRIGGER6_AUSENTE
-    LogError ("Error en TriggerZonaPelea - " & Err.Description)
-End Function
-
 Public Function PeleaSegura(ByVal Source As Integer, ByVal dest As Integer) As Boolean
-    If MapInfo(UserList(Source).pos.Map).SafeFightMap Then
+    If HasMapZoneFlag(UserList(Source).pos.Map, e_ZoneFlags.SafeFight) Then
         PeleaSegura = True
     Else
-        PeleaSegura = TriggerZonaPelea(Source, dest) = TRIGGER6_PERMITE
+        PeleaSegura = BothInPvPArena(Source, dest)
     End If
 End Function
 

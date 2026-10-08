@@ -381,7 +381,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
                         For x = UserList(tUser.ArrayIndex).pos.x - i To UserList(tUser.ArrayIndex).pos.x + i
                             For y = UserList(tUser.ArrayIndex).pos.y - i To UserList(tUser.ArrayIndex).pos.y + i
                                 If MapData(x, y, UserList(tUser.ArrayIndex).pos.Map).UserIndex = 0 Then
-                                    If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) And MapInfo(UserList(tUser.ArrayIndex).pos.Map).Seguro = 0 Then
+                                    If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) And Not HasMapZoneFlag(UserList(tUser.ArrayIndex).pos.Map, e_ZoneFlags.Safe) Then
                                         ' Msg1319=No puedes ir en este momento al Usuario esta en zona insegura. Intenta mas tarde, puedes responderle con un mensaje.
                                         Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_IR_MOMENTO_USUARIO_ZONA_INSEGURA_INTENTA_MAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                                         Exit Sub
@@ -570,7 +570,7 @@ Public Sub HandleWarpChar(ByVal UserIndex As Integer)
         y = reader.ReadInt8()
         If .flags.Privilegios And e_PlayerType.User Then Exit Sub
         If .flags.Privilegios And e_PlayerType.Consejero Then
-            If MapInfo(Map).Seguro = 0 Then
+            If Not HasMapZoneFlag(Map, e_ZoneFlags.Safe) Then
                 ' Msg741=Solo puedes transportarte a ciudades.
                 Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_TRANSPORTARTE_CIUDADES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Exit Sub
@@ -1550,7 +1550,7 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
                 With UserList(tUser.ArrayIndex)
                     If .flags.Muerto = 1 Then
                         If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
-                            If MapInfo(.pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) = False Then
+                            If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Or EsMapaEvento(.pos.Map) = False Then
                                 'Msg962= Servidor Â» No puedes revivir en una zona insegura.
                                 Call WriteLocaleMsg(UserIndex, MSG_NO_SERVIDOR_PUEDES_REVIVIR_ZONA_INSEGURA, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
                                 Exit Sub
@@ -2450,8 +2450,7 @@ Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
         Dim tLog     As String
         tTrigger = reader.ReadInt8()
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        If tTrigger >= 0 Then
-            MapData(.pos.x, .pos.y, .pos.Map).trigger = tTrigger
+        If SetTileTriggerFlags(UserIndex, CLng(tTrigger)) Then
             tLog = "Trigger " & tTrigger & " on the map " & .pos.Map & " " & .pos.x & "," & .pos.y
             Call LogGM(GetUserRealName(UserIndex), tLog)
             Call WriteConsoleMsg(UserIndex, tLog, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2465,7 +2464,7 @@ End Sub
 Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
     On Error GoTo HandleAskTrigger_Err
     'Author: Nicolas Matias Gonzalez (NIGO)
-    Dim tTrigger As Byte
+    Dim tTrigger As Long
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         tTrigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
@@ -2875,7 +2874,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la informacion sobre si es seguro el mapa.")
-        MapInfo(.pos.Map).Seguro = IIf(isMapPk, 1, 0)
+        Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.Safe, isMapPk)
         Call WriteLocaleMsg(UserIndex, MSG_MAP_SAFE_STATUS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(isMapPk, "No", "SÃ­"))
     End With
     Exit Sub
@@ -2892,14 +2891,8 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         doTheBackUp = reader.ReadBool()
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la informaciÃ³n sobre el BackUp")
-        'Change the boolean to byte in a fast way
-        If doTheBackUp Then
-            MapInfo(.pos.Map).backup_mode = 1
-        Else
-            MapInfo(.pos.Map).backup_mode = 0
-        End If
-        'Change the boolean to string in a fast way
-        Call WriteVar(MapPath & "mapa" & .pos.Map & ".dat", "Mapa" & .pos.Map, "backup", MapInfo(.pos.Map).backup_mode)
+        Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.Backup, doTheBackUp)
+        Call WriteVar(MapPath & "mapa" & .pos.Map & ".dat", "Mapa" & .pos.Map, "backup", IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.Backup), "1", "0"))
         Call WriteLocaleMsg(UserIndex, MSG_MAP_BACKUP_STATUS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(doTheBackUp, "SÃ­", "No"))
     End With
     Exit Sub
@@ -2917,25 +2910,25 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) <> 0 Then
             Select Case UCase$(tStr)
                 Case "NEWBIE"
-                    MapInfo(.pos.Map).Newbie = Not MapInfo(.pos.Map).Newbie
-                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NEWBIE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(MapInfo(.pos.Map).Newbie, "SÃ­", "No"))  ' Msg1508=Mapa Â¬1: Newbie = Â¬2
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": Newbie = " & MapInfo(.pos.Map).Newbie)
+                    Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.NewbieOnly, Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NewbieOnly))
+                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NEWBIE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.NewbieOnly), "SÃ­", "No"))  ' Msg1508=Mapa Â¬1: Newbie = Â¬2
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": Newbie = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NewbieOnly))
                 Case "SINMAGIA"
-                    MapInfo(.pos.Map).SinMagia = Not MapInfo(.pos.Map).SinMagia
-                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_SINMAGIA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(MapInfo(.pos.Map).SinMagia, "SÃ­", "No"))  ' Msg1509=Mapa Â¬1: SinMagia = Â¬2
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": SinMagia = " & MapInfo(.pos.Map).SinMagia)
+                    Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic, Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic))
+                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_SINMAGIA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic), "SÃ­", "No"))  ' Msg1509=Mapa Â¬1: SinMagia = Â¬2
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": SinMagia = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoMagic))
                 Case "NOPKS"
-                    MapInfo(.pos.Map).NoPKs = Not MapInfo(.pos.Map).NoPKs
-                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NOPKS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(MapInfo(.pos.Map).NoPKs, "SÃ­", "No"))  ' Msg1510=Mapa Â¬1: NoPKs = Â¬2
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": NoPKs = " & MapInfo(.pos.Map).NoPKs)
+                    Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals, Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals))
+                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NOPKS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals), "SÃ­", "No"))  ' Msg1510=Mapa Â¬1: NoPKs = Â¬2
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": NoPKs = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals))
                 Case "NOCIUD"
-                    MapInfo(.pos.Map).NoCiudadanos = Not MapInfo(.pos.Map).NoCiudadanos
-                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NOCIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, CStr(.pos.Map) & "Â¬" & IIf(MapInfo(.pos.Map).NoCiudadanos, "SÃ­", "No"))  ' Msg1511=Mapa Â¬1: NoCiudadanos = Â¬2
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos)
+                    Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens, Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens))
+                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_NOCIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, CStr(.pos.Map) & "Â¬" & IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens), "SÃ­", "No"))  ' Msg1511=Mapa Â¬1: NoCiudadanos = Â¬2
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": NoCiudadanos = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens))
                 Case "SININVI"
-                    MapInfo(.pos.Map).SinInviOcul = Not MapInfo(.pos.Map).SinInviOcul
-                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_SININVI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(MapInfo(.pos.Map).SinInviOcul, "SÃ­", "No"))  ' Msg1512=Mapa Â¬1: SinInvi = Â¬2
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": SinInvi = " & MapInfo(.pos.Map).SinInviOcul)
+                    Call SetMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility, Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility))
+                    Call WriteLocaleMsg(UserIndex, MSG_MAPA_SININVI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, CStr(.pos.Map) & "Â¬" & IIf(HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility), "SÃ­", "No"))  ' Msg1512=Mapa Â¬1: SinInvi = Â¬2
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la restricciÃ³n del mapa " & .pos.Map & ": SinInvi = " & HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoInvisibility))
                 Case Else
                     'Msg989= Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'
                     Call WriteLocaleMsg(UserIndex, MSG_OPCIONES_RESTRINGIR_NEWBIE_SINMAGIA_SININVI_NOPKS_NOCIUD, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -3053,21 +3046,21 @@ Public Sub HandleChangeMapSetting(ByVal UserIndex As Integer)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
             Select Case SettingType
                 Case e_MapSetting.e_DropItems
-                    MapInfo(UserList(UserIndex).pos.Map).DropItems = reader.ReadInt8()
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el dropeo de items en el mapa" & UserList(UserIndex).pos.Map & " a " & MapInfo(UserList( _
-                            UserIndex).pos.Map).DropItems)
+                    Call SetMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.DropItems, reader.ReadInt8())
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el dropeo de items en el mapa" & UserList(UserIndex).pos.Map & " a " & HasMapZoneFlag(UserList( _
+                            UserIndex).pos.Map, e_ZoneFlags.DropItems))
                     'Msg994= Mapa actualizado correctamente
                     Call WriteLocaleMsg(UserIndex, MSG_MAPA_ACTUALIZADO_CORRECTAMENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Case e_MapSetting.e_SafeFight
-                    MapInfo(UserList(UserIndex).pos.Map).SafeFightMap = reader.ReadInt8()
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el pelea segura del mapa" & UserList(UserIndex).pos.Map & " a " & MapInfo(UserList( _
-                            UserIndex).pos.Map).DropItems)
+                    Call SetMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.SafeFight, reader.ReadInt8())
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el pelea segura del mapa" & UserList(UserIndex).pos.Map & " a " & HasMapZoneFlag(UserList( _
+                            UserIndex).pos.Map, e_ZoneFlags.SafeFight))
                     'Msg995= Mapa actualizado correctamente
                     Call WriteLocaleMsg(UserIndex, MSG_MAPA_ACTUALIZADO_CORRECTAMENTE_995, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Case e_MapSetting.e_FriendlyFire
-                    MapInfo(UserList(UserIndex).pos.Map).FriendlyFire = reader.ReadInt8()
-                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el friendly fire del mapa" & UserList(UserIndex).pos.Map & " a " & MapInfo(UserList( _
-                            UserIndex).pos.Map).DropItems)
+                    Call SetMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.FriendlyFire, reader.ReadInt8())
+                    Call LogGM(GetUserRealName(UserIndex), .name & " ha cambiado la configuracion el friendly fire del mapa" & UserList(UserIndex).pos.Map & " a " & HasMapZoneFlag(UserList( _
+                            UserIndex).pos.Map, e_ZoneFlags.FriendlyFire))
                     'Msg996= Mapa actualizado correctamente
                     Call WriteLocaleMsg(UserIndex, MSG_MAPA_ACTUALIZADO_CORRECTAMENTE_996, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Case Else

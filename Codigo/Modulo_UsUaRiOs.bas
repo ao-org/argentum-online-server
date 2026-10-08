@@ -537,7 +537,7 @@ Dim tStr                        As String
             Dim nX         As Long
             Dim nY         As Long
         
-            esAgua = (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0
+            esAgua = IsWaterTile(.pos.Map, CInt(.pos.x), CInt(.pos.y))
         
             ' Busca el tile libre más cercano (espiral/radial) respetando agua/tierra
             FoundPlace = FindNearestFreeTile(.pos.Map, .pos.x, .pos.y, esAgua, SPAWN_SEARCH_MAX_RADIUS, nX, nY)
@@ -577,33 +577,22 @@ Dim tStr                        As String
 
 
         'If in the water, and has a boat, equip it!
-        Dim trigger     As Integer
+        Dim trigger     As Long
         Dim slotBarco   As Integer
         Dim itemBuscado As Integer
         trigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
-        If trigger = e_Trigger.DETALLEAGUA Then 'Esta en zona de caucho obj 199, 200
-            If .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo Then
-                itemBuscado = iObjTrajeBajoNw
-            Else
-                itemBuscado = iObjTrajeAltoNw
-            End If
-            slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
-            If slotBarco > -1 Then
-                .invent.EquippedShipObjIndex = itemBuscado
-                .invent.EquippedShipSlot = slotBarco
-            End If
-        ElseIf trigger = e_Trigger.VALIDONADO Or trigger = e_Trigger.NADOCOMBINADO Then  'Esta en zona de nado comun obj 197
-            itemBuscado = iObjTraje
+        itemBuscado = GetLoginSwimmingSuit(trigger, .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo)
+        If itemBuscado > 0 Then
             slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
             If slotBarco > -1 Then
                 .invent.EquippedShipObjIndex = itemBuscado
                 .invent.EquippedShipSlot = slotBarco
             End If
         End If
-        If .invent.EquippedShipObjIndex > 0 And (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0 Then
+        If .invent.EquippedShipObjIndex > 0 And IsWaterTile(.pos.Map, CInt(.pos.x), CInt(.pos.y)) Then
             .flags.Navegando = 1
             Call EquiparBarco(UserIndex)
-        ElseIf .flags.Navegando = 1 And (MapData(.pos.x, .pos.y, .pos.Map).Blocked And FLAG_AGUA) <> 0 Then
+        ElseIf .flags.Navegando = 1 And IsWaterTile(.pos.Map, CInt(.pos.x), CInt(.pos.y)) Then
             Dim iSlot As Integer
             For iSlot = 1 To UBound(.invent.Object)
                 If .invent.Object(iSlot).ObjIndex > 0 Then
@@ -694,7 +683,7 @@ Dim tStr                        As String
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
         Call WriteFYA(UserIndex)
         Call WriteBindKeys(UserIndex)
-        If .NroMascotas > 0 And MapInfo(.pos.Map).NoMascotas = 0 And .flags.MascotasGuardadas = 0 Then
+        If .NroMascotas > 0 And Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoPets) And .flags.MascotasGuardadas = 0 Then
             Dim i As Integer
             For i = 1 To MAXMASCOTAS
                 If .MascotasType(i) > 0 Then
@@ -789,7 +778,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
         End If
     End If
     Call UserMod.UserDie(VictimIndex)
-    If TriggerZonaPelea(attackerIndex, attackerIndex) <> TRIGGER6_PERMITE Then
+    If Not IsInPvPArena(attackerIndex) Then
         If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
             UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
         End If
@@ -1279,9 +1268,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         If Not LegalWalk(.pos.Map, nPos.x, nPos.y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado, , UserIndex) Then
             Exit Function
         End If
-        If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not (MapData(nPos.x, nPos.y, .pos.Map).trigger = e_Trigger.DETALLEAGUA Or MapData(nPos.x, nPos.y, _
-                .pos.Map).trigger = e_Trigger.NADOCOMBINADO Or MapData(nPos.x, nPos.y, .pos.Map).trigger = e_Trigger.VALIDONADO Or MapData(nPos.x, nPos.y, .pos.Map).trigger = _
-                e_Trigger.NADOBAJOTECHO) Then
+        If .flags.Navegando And .invent.EquippedShipObjIndex = iObjTraje And Not IsOrdinarySwimmingPath(MapData(nPos.x, nPos.y, .pos.Map).trigger) Then
             Exit Function
         End If
         If .Accion.AccionPendiente = True Then
@@ -1338,7 +1325,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
                                 If Abs(nPos.x - UserList(tempIndex).pos.x) <= RANGO_VISION_X And Abs(nPos.y - UserList(tempIndex).pos.y) <= RANGO_VISION_Y Then
                                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
+                                        If UserList(tempIndex).flags.Muerto = 0 Or HasMapZoneFlag(UserList(tempIndex).pos.Map, e_ZoneFlags.Safe) Then
                                             If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
                                                 If .Counters.timeFx + .Counters.timeChat = 0 Then
                                                     If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
@@ -1775,7 +1762,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call ClearAttackerNpc(UserIndex)
         '<< Guardar o matar mascotas >>
         Call HandleUserPetsOnDeath(UserIndex)
-        If MapData(.pos.x, .pos.y, .pos.Map).trigger <> e_Trigger.ZONAPELEA And MapInfo(.pos.Map).DropItems Then
+        If Not HasTileFlag(MapData(.pos.x, .pos.y, .pos.Map).trigger, e_Trigger.PvPArena) And HasMapZoneFlag(.pos.Map, e_ZoneFlags.DropItems) Then
             If (.flags.Privilegios And e_PlayerType.User) <> 0 Then
                 If .flags.PendienteDelSacrificio = 0 Then
                     Call TirarTodosLosItems(UserIndex)
@@ -1806,7 +1793,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             .Char.FX = 0
             .Char.loops = 0
         End If
-        If TriggerZonaPelea(UserIndex, UserIndex) <> TRIGGER6_PERMITE Then
+        If Not IsInPvPArena(UserIndex) Then
             .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         End If
         ' << Restauramos los atributos >>
@@ -1833,7 +1820,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call LimpiarEstadosAlterados(UserIndex)
         '<< Actualizamos clientes >>
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart, NoBackPack)
-        If MapInfo(.pos.Map).Seguro = 0 Then
+        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
             ' Msg524=Escribe /HOGAR si deseas regresar rápido a tu hogar.
             Call WriteLocaleMsg(UserIndex, MSG_ESCRIBE_HOGAR_SI_DESEAS_REGRESAR_RAPIDO_HOGAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
         End If
@@ -1861,7 +1848,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
                     If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         'Si no soy el que se murió
-                        If UserIndex <> tempIndex And (Not EsGM(UserIndex)) And MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 And UserList(tempIndex).flags.AdminInvisible = 1 _
+                        If UserIndex <> tempIndex And (Not EsGM(UserIndex)) And Not HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) And UserList(tempIndex).flags.AdminInvisible = 1 _
                                 Then
                             If UserList(UserIndex).GuildIndex = 0 Then
                                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.charindex, True))
@@ -2141,10 +2128,8 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, _
         For tY = y - LoopC To y + LoopC
             For tX = x - LoopC To x + LoopC
                 If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False, False) Then
-                    If MapData(tX, tY, Map).trigger < 50 Then
-                        Call WarpUserChar(UserIndex, Map, tX, tY, FX)
-                        Exit Sub
-                    End If
+                    Call WarpUserChar(UserIndex, Map, tX, tY, FX)
+                    Exit Sub
                 End If
             Next tX
         Next tY
@@ -2163,15 +2148,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Dim OldY   As Integer
     With UserList(UserIndex)
         If Map <= 0 Then Exit Sub
-        If Not EsGM(UserIndex) And Not IsPatreon(UserIndex) Then
-            If TileRequiresPatreon(Map, x, y) Then
-                If .flags.UltimoMensaje <> MSG_TILE_REQUIRES_PATREON Then
-                    Call WriteLocaleMsg(UserIndex, MSG_TILE_REQUIRES_PATREON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                    .flags.UltimoMensaje = MSG_TILE_REQUIRES_PATREON
-                End If
-                Exit Sub
-            End If
-        End If
         If IsValidUserRef(.ComUsu.DestUsu) Then
             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = UserIndex Then
@@ -2190,7 +2166,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         Call EraseUserChar(UserIndex, True, FX)
         If OldMap <> Map Then
             Call WriteChangeMap(UserIndex, Map)
-            If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And .Stats.ELV < 42 Then
+            If HasMapZoneFlag(OldMap, e_ZoneFlags.Safe) And Not HasMapZoneFlag(Map, e_ZoneFlags.Safe) And .Stats.ELV < 42 Then
                 ' Msg573=Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.
                 Call WriteLocaleMsg(UserIndex, MSG_SALIENDO_ZONA_SEGURA_RECUERDA_AQUI_CORRES_RIESGO_ATACADO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
@@ -2223,7 +2199,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         'Seguis invisible al pasar de mapa
         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
             ' Si el mapa lo permite
-            If MapInfo(Map).SinInviOcul Then
+            If HasMapZoneFlag(Map, e_ZoneFlags.NoInvisibility) Then
                 .flags.invisible = 0
                 .flags.Oculto = 0
                 .Counters.TiempoOculto = 0
@@ -2247,9 +2223,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             Call SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
         End If
         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
-        If MapInfo(Map).zone = "DUNGEON" Or _
-           (MapData(x, y, Map).trigger >= e_Trigger.PESCAINVALIDA And _
-            MapData(x, y, Map).trigger <> e_Trigger.ONLY_PATREON_TILE) Then
+        If MapInfo(Map).zone = "DUNGEON" Then
             If .flags.Montado > 0 Then
                 Call DoMontar(UserIndex, ObjData(.invent.EquippedSaddleObjIndex), .invent.EquippedSaddleSlot)
             End If
@@ -2294,7 +2268,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 End If
             End If
             Call WriteLocaleMsg(UserIndex, MSG_GAME_CLOSING_IN_SECONDS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
-            If EsGM(UserIndex) Or MapInfo(.pos.Map).Seguro = 1 Or forceClose Then
+            If EsGM(UserIndex) Or HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Or forceClose Then
                 Call WriteDisconnect(UserIndex)
                 Call CloseSocket(UserIndex)
             End If
@@ -2316,7 +2290,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_SALIR_CANCELADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
         Else
             'Simply reset
-            If UserList(UserIndex).flags.Privilegios = e_PlayerType.User And MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Then
+            If UserList(UserIndex).flags.Privilegios = e_PlayerType.User And Not HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.Safe) Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
             Else
                 ' Msg579=Gracias por jugar Argentum Online.
@@ -2334,7 +2308,7 @@ End Sub
 Sub VolverCriminal(ByVal UserIndex As Integer)
     On Error GoTo VolverCriminal_Err
     With UserList(UserIndex)
-        If MapData(.pos.x, .pos.y, .pos.Map).trigger = 6 Then Exit Sub
+        If IsInPvPArena(UserIndex) Then Exit Sub
         If .flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero) Then
             If .Faccion.Status = e_Facciones.Armada Then
                 '  NUNCA debería pasar, pero dejo un log por si las...
@@ -2347,7 +2321,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
             .Faccion.FactionScore = 0
         End If
         .Faccion.Status = 0
-        If MapInfo(.pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCriminals) And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             ' Msg580=En este mapa no se admiten criminales.
             Call WriteLocaleMsg(UserIndex, MSG_NO_MAPA_ADMITEN_CRIMINALES, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
@@ -2372,12 +2346,12 @@ End Sub
 Sub VolverCiudadano(ByVal UserIndex As Integer)
     On Error GoTo VolverCiudadano_Err
     With UserList(UserIndex)
-        If MapData(.pos.x, .pos.y, .pos.Map).trigger = 6 Then Exit Sub
+        If IsInPvPArena(UserIndex) Then Exit Sub
         If .Faccion.Status = e_Facciones.Criminal Or .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
             .Faccion.FactionScore = 0
         End If
         .Faccion.Status = e_Facciones.Ciudadano
-        If MapInfo(.pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
+        If HasMapZoneFlag(.pos.Map, e_ZoneFlags.NoCitizens) And Not EsGM(UserIndex) And MapInfo(.pos.Map).Salida.Map <> 0 Then
             ' Msg581=En este mapa no se admiten ciudadanos.
             Call WriteLocaleMsg(UserIndex, MSG_NO_MAPA_ADMITEN_CIUDADANOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
             Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
@@ -2423,7 +2397,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
     Dim MascotaQuitada   As Boolean
     Dim ElementalQuitado As Boolean
     Dim SpawnInvalido    As Boolean
-    PermiteMascotas = MapInfo(UserList(UserIndex).pos.Map).NoMascotas = False
+    PermiteMascotas = Not HasMapZoneFlag(UserList(UserIndex).pos.Map, e_ZoneFlags.NoPets)
     For i = 1 To MAXMASCOTAS
         Index = UserList(UserIndex).MascotasIndex(i).ArrayIndex
         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
@@ -2810,7 +2784,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
         CanAttackUser = eMounted
         Exit Function
     End If
-    If Not MapInfo(UserList(TargetIndex).pos.Map).FriendlyFire And UserList(TargetIndex).flags.CurrentTeam > 0 And UserList(TargetIndex).flags.CurrentTeam = UserList( _
+    If Not HasMapZoneFlag(UserList(TargetIndex).pos.Map, e_ZoneFlags.FriendlyFire) And UserList(TargetIndex).flags.CurrentTeam > 0 And UserList(TargetIndex).flags.CurrentTeam = UserList( _
             attackerIndex).flags.CurrentTeam Then
         CanAttackUser = eSameTeam
         Exit Function
@@ -2824,14 +2798,15 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
             Exit Function
         End If
     End If
-    Dim t As e_Trigger6
     'Estamos en una Arena? o un trigger zona segura?
-    t = TriggerZonaPelea(attackerIndex, TargetIndex)
-    If t = e_Trigger6.TRIGGER6_PERMITE Then
+    If BothInPvPArena(attackerIndex, TargetIndex) Then
         CanAttackUser = eCanAttack
         Exit Function
     ElseIf PeleaSegura(attackerIndex, TargetIndex) Then
         CanAttackUser = eCanAttack
+        Exit Function
+    ElseIf CrossesPvPArenaBoundary(attackerIndex, TargetIndex) Then
+        CanAttackUser = eSafeArea
         Exit Function
     End If
     'Solo administradores pueden atacar a usuarios (PARA TESTING)
@@ -2887,7 +2862,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
         End If
     End If
     'Estas en un Mapa Seguro?
-    If MapInfo(UserList(TargetIndex).pos.Map).Seguro = 1 Then
+    If HasMapZoneFlag(UserList(TargetIndex).pos.Map, e_ZoneFlags.Safe) Then
         If esArmada(attackerIndex) Then
             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
                 If UserList(TargetIndex).pos.Map = 58 Or UserList(TargetIndex).pos.Map = 59 Or UserList(TargetIndex).pos.Map = 60 Then
@@ -2907,9 +2882,7 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, _
         CanAttackUser = eSafeArea
         Exit Function
     End If
-    'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-    If MapData(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, UserList(TargetIndex).pos.Map).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y, UserList( _
-            attackerIndex).pos.Map).trigger = e_Trigger.ZonaSegura Then
+    If EitherUserInSafeZone(attackerIndex, TargetIndex) Then
         CanAttackUser = eSafeArea
         Exit Function
     End If
@@ -3170,7 +3143,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, MSG_VUELTO_VISIBLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         End If
-        If IsFeatureEnabled("remove-inv-on-attack") And Not MapInfo(.pos.Map).KeepInviOnAttack Then
+        If IsFeatureEnabled("remove-inv-on-attack") And Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.KeepInvisibilityOnAttack) Then
             RemoveHiddenState = .flags.Oculto > 0 Or .flags.invisible > 0
         End If
         'I see you...

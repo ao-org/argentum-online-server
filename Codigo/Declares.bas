@@ -1114,58 +1114,48 @@ End Enum
 Public Const MAX_ELEMENT_TAGS = 4 'the maximum suported is 32
 Public ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
 
-''
-' TRIGGERS
-'
-' @param NADA nada
-' @param BAJOTECHO bajo techo
-' @param trigger_2 ???
-' @param POSINVALIDA los npcs no pueden pisar tiles con este trigger
-' @param ZONASEGURA no se puede robar o pelear desde este trigger
-' @param ANTIPIQUETE
-' @param ZONAPELEA al pelear en este trigger no se caen las cosas y no cambia el estado de ciuda o crimi
-'
+' Independent tile flags. Legacy scalar IDs are converted only by map readers.
 Public Enum e_Trigger
-    nada = 0
-    BAJOTECHO = 1
-    trigger_2 = 2
-    POSINVALIDA = 3
-    ZonaSegura = 4
-    ANTIPIQUETE = 5
-    ZONAPELEA = 6
-    AUTORESU = 7
-    DETALLEAGUA = 8
-    PESCAINVALIDA = 10
-    VALIDONADO = 11
-    ESCALERA = 12
-    WORKERONLY = 13
-    TRANSFER_ONLY_DEAD = 14
-    NADOBAJOTECHO = 16
-    VALIDOPUENTE = 17
-    NADOCOMBINADO = 18
-    CARCEL = 19
-    ONLY_PATREON_TILE = 20
-    EMPEROR_CASTLE_ENTRY_1 = 21
-    EMPEROR_CASTLE_ENTRY_2 = 22
-    EMPEROR_CASTLE_ENTRY_3 = 23
-    EMPEROR_CASTLE_ENTRY_4 = 24
-    EMPEROR_CASTLE_ENTRY_5 = 25
-    EMPEROR_CASTLE_ENTRY_6 = 26
-    EMPEROR_CASTLE_ENTRY_7 = 27
-    EMPEROR_CASTLE_ENTRY_8 = 28
-    EMPEROR_CASTLE_ENTRY_9 = 29
-    EMPEROR_CASTLE_ENTRY_10 = 30
-    EMPEROR_CASTLE_ENTRY_11 = 31
-    EMPEROR_CASTLE_ENTRY_12 = 32
-    EMPEROR_CASTLE_ENTRY_13 = 33
-    EMPEROR_CASTLE_ENTRY_14 = 34
-    EMPEROR_CASTLE_ENTRY_15 = 35
-    EMPEROR_CASTLE_ENTRY_16 = 36
-    EMPEROR_CASTLE_ENTRY_17 = 37
-    EMPEROR_CASTLE_ENTRY_18 = 38
-    EMPEROR_CASTLE_ENTRY_19 = 39
-    EMPEROR_CASTLE_ENTRY_20 = 40
-    CASTLE_FOUNDATION_POSITION = 41
+    None = 0
+    UnderRoof = 1
+    AntiNpcRespawn = 2
+    PathUnblocker = 4
+    PvPArena = 8
+    AutoResurrection = 16
+    SwimSuitPath = 32
+    NoFishing = 64
+    GhostOnlyTranslator = 128
+    CastleFoundationPosition = 256
+    RubberSuitPath = 512
+    InvalidNpcPath = 1024
+    SafeZone = 2048
+    Coast = 4096
+    WalkableBridge = 8192
+End Enum
+
+Public Enum e_ZoneFlags
+    None = 0
+    Prison = 1
+    Safe = 2
+    NewbieOnly = 4
+    NoMagic = 8
+    NoCriminals = 16
+    NoCitizens = 32
+    NoInvisibility = 64
+    ClansOnly = 128
+    NoPets = 256
+    GroupsOnly = 512
+    PatreonOnly = 1024
+    CityResurrection = 2048
+    DropItems = 4096
+    SafeFight = 8192
+    FriendlyFire = 16384
+    KeepInvisibilityOnAttack = 32768
+    Rain = 65536
+    Snow = 131072
+    Fog = 262144
+    Backup = 524288
+    ForceUpdateAi = 1048576
 End Enum
 
 Public Enum e_NpcInfoMask
@@ -1230,20 +1220,6 @@ Public Enum e_UsersInfoMask2
     ChaosFifthHierarchy = 131072
     ChaosSixthHierarchy = 262144
     ChaosSeventhHierarchy = 524288
-End Enum
-
-''
-' constantes para el trigger 6
-'
-' @see e_Trigger
-' @param TRIGGER6_PERMITE TRIGGER6_PERMITE
-' @param TRIGGER6_PROHIBE TRIGGER6_PROHIBE
-' @param TRIGGER6_AUSENTE El trigger no aparece
-'
-Public Enum e_Trigger6
-    TRIGGER6_PERMITE = 1
-    TRIGGER6_PROHIBE = 2
-    TRIGGER6_AUSENTE = 3
 End Enum
 
 'TODO : Reemplazar por un enum
@@ -2347,7 +2323,7 @@ Public Type t_ObjData
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer
-    AssignedCastleIndex As Integer
+    AssignedCastleIndex As Long
     BackpackAnim As Integer
     Valor As Long     ' Precio
     Cerrada As Integer
@@ -2986,6 +2962,7 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_TILE_PROPERTIES_V1 As Long = &H10&
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"
@@ -3582,8 +3559,8 @@ Public Type t_MapBlock
     TimeParticula As Integer
     ObjInfo As t_Obj
     TileExit As t_WorldPos
-    trigger As e_Trigger
-    ParticulaIndex As Integer
+    trigger As Long
+    ParticulaIndex As Long
     Luz As t_light
     Trap As clsTrap
 End Type
@@ -3596,39 +3573,25 @@ End Enum
 
 'Info del mapa
 Type t_MapInfo
+    ZoneFlags As Long
+    CastleEntrances As Dictionary
+    StaticCastleEntrances As Dictionary
+    RoofSeams As Dictionary
+    LegacyCastleEntrances As Dictionary
+    TileOverrides As Dictionary
     map_name As String
     MapResource As Integer
-    backup_mode As Byte
     music_numberHi As Long
     music_numberLow As Long
-    Seguro As Byte
     zone As String
     terrain As String
-    Newbie As Boolean
-    SinMagia As Boolean
-    SinInviOcul As Boolean
-    NoPKs As Boolean
-    NoCiudadanos As Boolean
-    SoloClanes As Boolean
-    ResuCiudad As Boolean
     ambient As String
     base_light As Long
     letter_grh As Long
-    lluvia As Byte
-    Nieve As Byte
-    niebla As Byte
     NumUsers As Long
-    ForceUpdate As Boolean
     MinLevel As Integer
     MaxLevel As Integer
     Salida As t_WorldPos
-    NoMascotas As Boolean
-    OnlyGroups As Boolean
-    OnlyPatreon As Boolean
-    DropItems As Boolean
-    SafeFightMap As Boolean
-    FriendlyFire As Boolean
-    KeepInviOnAttack As Boolean
     TransportNetwork() As t_TransportNetworkExit
 End Type
 
@@ -3640,7 +3603,6 @@ End Type
 '********** V A R I A B L E S     P U B L I C A S ***********
 Public SERVERONLINE                           As Boolean
 Public ULTIMAVERSION                          As String
-Public backup                                 As Boolean ' TODO: Se usa esta variable ?
 Public ListaRazas(1 To NUMRAZAS)              As String
 Public SkillsNames(1 To NUMSKILLS)            As String
 Public ListaClases(1 To NUMCLASES)            As String

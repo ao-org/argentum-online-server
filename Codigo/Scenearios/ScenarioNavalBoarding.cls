@@ -368,7 +368,7 @@ Private Sub ClearMap()
     CustomScenarios.RemoveCustomScenario (MapNumbers(0))
     CustomScenarios.RemoveCustomScenario (MapNumbers(1))
     CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-    MapInfo(MapNumbers(TopMapNumber)).ForceUpdate = False
+    Call SetMapZoneFlag(MapNumbers(TopMapNumber), e_ZoneFlags.ForceUpdateAi, False)
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.ClearMap", Erl)
@@ -598,8 +598,8 @@ Private Sub MatchCompleted()
     If Not LobbyList(LobbyIndex).Canceled Then
         Call GiveRewards
     End If
-    MapInfo(MapNumbers(0)).Seguro = 1
-    MapInfo(MapNumbers(1)).Seguro = 1
+    Call SetMapZoneFlag(MapNumbers(0), e_ZoneFlags.Safe, 1)
+    Call SetMapZoneFlag(MapNumbers(1), e_ZoneFlags.Safe, 1)
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
     For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
@@ -611,8 +611,8 @@ Private Sub MatchCompleted()
     ElapsedTime = MaxTime
     Call CustomScenarios.ClearMap(MapNumbers(0))
     Call CustomScenarios.ClearMap(MapNumbers(1))
-    MapInfo(MapNumbers(0)).SafeFightMap = False
-    MapInfo(MapNumbers(1)).SafeFightMap = False
+    Call SetMapZoneFlag(MapNumbers(0), e_ZoneFlags.SafeFight, False)
+    Call SetMapZoneFlag(MapNumbers(1), e_ZoneFlags.SafeFight, False)
     Dim NpcIndex As Integer
     Do While ModAreas.ConnGroups(MapNumbers(0)).RegisteredNpc > 0
         NpcIndex = ModAreas.ConnGroups(MapNumbers(0)).NpcForAi(0)
@@ -670,12 +670,12 @@ End Sub
 Private Sub ConfigMapEvent()
     Dim i As Integer
     For i = 0 To UBound(MapNumbers)
-        MapInfo(MapNumbers(i)).Seguro = 0
-        MapInfo(MapNumbers(i)).SinInviOcul = True
-        MapInfo(MapNumbers(i)).SafeFightMap = True
-        MapInfo(MapNumbers(i)).FriendlyFire = False
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.Safe, 0)
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.NoInvisibility, True)
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.SafeFight, True)
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.FriendlyFire, False)
     Next i
-    MapInfo(MapNumbers(TopMapNumber)).ForceUpdate = True
+    Call SetMapZoneFlag(MapNumbers(TopMapNumber), e_ZoneFlags.ForceUpdateAi, True)
     For i = 1 To UBound(NpcSpawnList)
         Call SpawnNpc(NpcSpawnList(i), Team1Waypoints, 1)
         Call SpawnNpc(NpcSpawnList(i), Team2Waypoints, 2)
@@ -714,9 +714,9 @@ Private Sub ConfigMapLobby()
     Dim i As Integer
     Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, LobbyList(LobbyIndex).TeamType)
     For i = 0 To UBound(MapNumbers)
-        MapInfo(MapNumbers(i)).Seguro = 1
-        MapInfo(MapNumbers(i)).SinInviOcul = True
-        MapInfo(MapNumbers(i)).DropItems = False
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.Safe, 1)
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.NoInvisibility, True)
+        Call SetMapZoneFlag(MapNumbers(i), e_ZoneFlags.DropItems, False)
     Next i
 End Sub
 
