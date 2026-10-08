@@ -2446,11 +2446,16 @@ Public Sub HandleSetTrigger(ByVal UserIndex As Integer)
     On Error GoTo HandleSetTrigger_Err
     'Author: Nicolas Matias Gonzalez (NIGO)
     With UserList(UserIndex)
-        Dim tTrigger As Byte
+        Dim tTrigger As Long
         Dim tLog     As String
-        tTrigger = reader.ReadInt8()
+        Const TriggerPayloadSize As Long = 4
+        If reader.GetAvailable() < TriggerPayloadSize Then
+            Call Err.Raise(vbObjectError, "Protocol.HandleSetTrigger", "Expected a four-byte trigger value.")
+        End If
+        tTrigger = reader.ReadInt32()
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        If SetTileTriggerFlags(UserIndex, CLng(tTrigger)) Then
+        If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 Then Exit Sub
+        If SetTileTriggerFlags(UserIndex, tTrigger) Then
             tLog = "Trigger " & tTrigger & " on the map " & .pos.Map & " " & .pos.x & "," & .pos.y
             Call LogGM(GetUserRealName(UserIndex), tLog)
             Call WriteConsoleMsg(UserIndex, tLog, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
@@ -2467,6 +2472,7 @@ Public Sub HandleAskTrigger(ByVal UserIndex As Integer)
     Dim tTrigger As Long
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 Then Exit Sub
         tTrigger = MapData(.pos.x, .pos.y, .pos.Map).trigger
         Call LogGM(GetUserRealName(UserIndex), "Miro el trigger en " & .pos.Map & "," & .pos.x & "," & .pos.y & ". Era " & tTrigger)
         Call WriteLocaleMsg(UserIndex, MSG_TRIGGER, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, "MAP " & .pos.Map & "," & .pos.x & "," & .pos.y & ". = " & tTrigger) ' Msg1498=Trigger Â¬1
