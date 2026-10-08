@@ -105,50 +105,141 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                 Slot = .Accion.ObjSlot
                 Select Case obj.TipoRuna
                     Case e_RuneType.ReturnHome
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.ReturnHome) Then
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        If .Stats.GLD < obj.Valor Then
+                            ' Msg588=No tienes el oro suficiente.
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        .Stats.GLD = .Stats.GLD - obj.Valor
+                        Call WriteUpdateGold(UserIndex)
                         Call HomeArrival(UserIndex)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
                             Call WriteLocaleMsg(UserIndex, MSG_NOT_USABLE_INSIDE_MESON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         .flags.ReturnPos = .pos
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                     Case e_RuneType.FastTravel
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.FastTravel) Then
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
                         If .pos.Map <> obj.DesdeMap Then
                             Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
                         End If
                         If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
                         Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                         Call UpdateUserInv(False, UserIndex, Slot)
+                    Case e_RuneType.FactionChurch
+                        If Not CanUseRuneNow(UserIndex, e_RuneType.FactionChurch) Then
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        If .Stats.GLD < obj.Valor Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call ResetPendingAction(UserIndex)
+                            Exit Sub
+                        End If
+                        .Stats.GLD = .Stats.GLD - obj.Valor
+                        Call WriteUpdateGold(UserIndex)
+                        Dim ChurchDest As t_WorldPos
+                        If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
+                            ChurchDest = IglesiaArmada
+                        Else
+                            ChurchDest = IglesiaLegion
+                        End If
+                        Call FindLegalPos(UserIndex, ChurchDest.Map, CByte(ChurchDest.x), CByte(ChurchDest.y))
+                        Call WarpUserChar(UserIndex, ChurchDest.Map, ChurchDest.x, ChurchDest.y, True)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)
         End Select
+    End With
+    Call ResetPendingAction(UserIndex)
+    Exit Sub
+EndProgrammedAction_Err:
+    Call TraceError(Err.Number, Err.Description, "WorldActions.CompletePendingAction", Erl)
+End Sub
+
+Public Sub ResetPendingAction(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
         .Accion.Particula = 0
         .Accion.TipoAccion = e_AccionBarra.CancelarAccion
         .Accion.HechizoPendiente = 0
         .Accion.RunaObj = 0
         .Accion.ObjSlot = 0
         .Accion.AccionPendiente = False
+        .Accion.Deadline = 0
     End With
-    Exit Sub
-EndProgrammedAction_Err:
-    Call TraceError(Err.Number, Err.Description, "WorldActions.CompletePendingAction", Erl)
 End Sub
+
+' Determina si el usuario cumple los requisitos de vida/zona para usar
+' o completar una runa del tipo indicado. Centraliza el criterio para
+' evitar duplicarlo entre el chequeo temprano (UseInvItem) y el chequeo
+' de defensa al completar (CompletePendingAction).
+Public Function CanUseRuneNow(ByVal UserIndex As Integer, ByVal TipoRuna As e_RuneType) As Boolean
+    With UserList(UserIndex)
+        Select Case TipoRuna
+            Case e_RuneType.ReturnHome
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_RuneType.FastTravel
+                If .flags.Muerto = 1 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case e_RuneType.FactionChurch
+                If .flags.Muerto = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_DEAD_TO_USE_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If Status(UserIndex) <> e_Facciones.Armada And Status(UserIndex) <> e_Facciones.consejo And Status(UserIndex) <> e_Facciones.Caos And Status(UserIndex) <> e_Facciones.concilio Then
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_FACTION_MEMBERS_CAN_USE_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            Case Else
+                ' MesonSafePassage: comportamiento original, sin cambios.
+                If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+        End Select
+    End With
+    CanUseRuneNow = True
+End Function
 
 Public Sub HandleWorldAction(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo HandleWorldAction_Err

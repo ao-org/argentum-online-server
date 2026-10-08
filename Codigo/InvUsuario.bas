@@ -2722,6 +2722,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_USAR_RUNA_ESTANDO_CARCEL, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Exit Sub
                 End If
+                If Not CanUseRuneNow(UserIndex, obj.TipoRuna) Then
+                    Exit Sub
+                End If
+                If (obj.TipoRuna = e_RuneType.ReturnHome Or obj.TipoRuna = e_RuneType.FactionChurch) And .Stats.GLD < obj.Valor Then
+                    ' Msg588=No tienes el oro suficiente.
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                   Exit Sub
+                End If
                 If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
                     ' Msg692=Solo podes usar tu runa en zonas seguras.
                     Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -2735,18 +2743,23 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Else
                     .Counters.TimerBarra = CInt(obj.Cooldown)
                 End If
-                If Not EsGM(UserIndex) Then
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 400, False))
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 350, e_AccionBarra.Runa))
-                Else
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 50, False))
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 100, e_AccionBarra.Runa))
+                If obj.TipoRuna = e_RuneType.FastTravel And .Counters.TimerBarra < MinFastTravelRuneTime Then
+                    .Counters.TimerBarra = CInt(MinFastTravelRuneTime)
                 End If
+                If Not EsGM(UserIndex) Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, .Counters.TimerBarra * 100, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Runa))
+                Else
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 500, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 5, e_AccionBarra.Runa))
+                End If
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra & "¬" & CalculateHomeCostGLD(.Stats.ELV), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris)
                 .Accion.Particula = e_GraphicEffects.Runa
                 .Accion.AccionPendiente = True
                 .Accion.TipoAccion = e_AccionBarra.Runa
                 .Accion.RunaObj = ObjIndex
                 .Accion.ObjSlot = Slot
+                .Accion.Deadline = AddMod32(GetTickCountRaw(), CLng(.Counters.TimerBarra) * 1000)
             Case e_OBJType.otMap
                 Call WriteShowFrmMapa(UserIndex)
             Case e_OBJType.OtQuest

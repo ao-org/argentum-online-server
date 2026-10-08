@@ -876,6 +876,7 @@ Sub LoadBalance()
     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
     MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
+    MinFastTravelRuneTime = val(BalanceIni.GetValue("EXTRA", "MinFastTravelRuneTime"))
     HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
     HomeTimerAdventurer = val(BalanceIni.GetValue("EXTRA", "HomeTimerAdventurer"))
     HomeTimerHero = val(BalanceIni.GetValue("EXTRA", "HomeTimerHero"))
@@ -2220,6 +2221,16 @@ Sub CargarCiudades()
         .Map = val(Lector.GetValue("Renacimiento", "Mapa"))
         .x = val(Lector.GetValue("Renacimiento", "X"))
         .y = val(Lector.GetValue("Renacimiento", "Y"))
+    End With
+    With IglesiaArmada
+        .Map = val(Lector.GetValue("IglesiaArmada", "Mapa"))
+        .x = val(Lector.GetValue("IglesiaArmada", "X"))
+        .y = val(Lector.GetValue("IglesiaArmada", "Y"))
+    End With
+    With IglesiaLegion
+        .Map = val(Lector.GetValue("IglesiaLegion", "Mapa"))
+        .x = val(Lector.GetValue("IglesiaLegion", "X"))
+        .y = val(Lector.GetValue("IglesiaLegion", "Y"))
     End With
     With BarcoNavegandoForgatNix
         .Map = val(Lector.GetValue("BarcoNavegandoForgatNix", "Mapa"))

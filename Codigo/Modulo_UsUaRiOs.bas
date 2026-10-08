@@ -2207,6 +2207,10 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 ' Msg574=El viaje ha terminado.
                 Call WriteLocaleMsg(UserIndex, MSG_VIAJE_HA_TERMINADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
             End If
+            If .Accion.AccionPendiente = True Then
+                Call ResetPendingAction(UserIndex)
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 0, e_AccionBarra.CancelarAccion))
+            End If
         End If
         .pos.x = x
         .pos.y = y
