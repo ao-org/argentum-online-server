@@ -2136,7 +2136,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 0, e_AccionBarra.CancelarAccion))
                     If CanceledActionType = e_AccionBarra.Runa Then
                         ' Msg____=Has cancelado el uso de la runa.
-                        Call WriteLocaleMsg(UserIndex, MSG_RUNE_USE_CANCELLED, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(UserIndex, MSG_RUNE_USE_CANCELLED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
                 ' Si no pudo moverse
@@ -7019,7 +7019,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
                 If DeadlinePassed(GetTickCountRaw(), .Accion.Deadline) Then
                     Call CompletePendingAction(UserIndex)
                 Else
-                    Call WriteLocaleMsg(UserIndex, MSG_ACTION_NOT_COMPLETED_YET, e_FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteLocaleMsg(UserIndex, MSG_ACTION_NOT_COMPLETED_YET, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_SERVER)
                 End If
             Else
                 ' Msg749=Servidor » La acción que solicitas no se corresponde.

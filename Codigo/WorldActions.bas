@@ -111,7 +111,7 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         End If
                         If .Stats.GLD < obj.Valor Then
                             ' Msg588=No tienes el oro suficiente.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
@@ -120,17 +120,17 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         Call HomeArrival(UserIndex)
                     Case e_RuneType.MesonSafePassage
                         If .pos.Map = MAP_MESON_HOSTIGADO Or .pos.Map = MAP_MESON_HOSTIGADO_TRADING_ZONE Then
-                            Call WriteLocaleMsg(UserIndex, MSG_NOT_USABLE_INSIDE_MESON, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NOT_USABLE_INSIDE_MESON, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         If obj.HastaMap <> MAP_MESON_HOSTIGADO Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
@@ -143,12 +143,12 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                             Exit Sub
                         End If
                         If .pos.Map <> obj.DesdeMap Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_FontTypeNames.FONTTYPE_WARNING)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_FAST_TRAVEL_MAP_ORIGIN, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
                         If Not IsValidMapPosition(obj.HastaMap, obj.HastaX, obj.HastaY) Then
-                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_INVALID_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
@@ -162,7 +162,7 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                             Exit Sub
                         End If
                         If .Stats.GLD < obj.Valor Then
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Call ResetPendingAction(UserIndex)
                             Exit Sub
                         End If
@@ -176,7 +176,7 @@ Public Sub CompletePendingAction(ByVal UserIndex As Integer)
                         End If
                         Call FindLegalPos(UserIndex, ChurchDest.Map, CByte(ChurchDest.x), CByte(ChurchDest.y))
                         Call WarpUserChar(UserIndex, ChurchDest.Map, ChurchDest.x, ChurchDest.y, True)
-                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteLocaleMsg(UserIndex, MSG_SUCCESFULLY_TELEPORTED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
                 End Select
             Case e_AccionBarra.Hogar
                 Call HomeArrival(UserIndex)
@@ -209,31 +209,31 @@ Public Function CanUseRuneNow(ByVal UserIndex As Integer, ByVal TipoRuna As e_Ru
         Select Case TipoRuna
             Case e_RuneType.ReturnHome
                 If MapInfo(.pos.Map).Seguro = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_RuneType.FastTravel
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUERTO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If MapInfo(.pos.Map).Seguro = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case e_RuneType.FactionChurch
                 If .flags.Muerto = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_DEAD_TO_USE_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_DEAD_TO_USE_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
                 If Status(UserIndex) <> e_Facciones.Armada And Status(UserIndex) <> e_Facciones.consejo And Status(UserIndex) <> e_Facciones.Caos And Status(UserIndex) <> e_Facciones.concilio Then
-                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_FACTION_MEMBERS_CAN_USE_RUNE, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_ONLY_FACTION_MEMBERS_CAN_USE_RUNE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             Case Else
                 ' MesonSafePassage: comportamiento original, sin cambios.
                 If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
-                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_SOLO_PODES_USAR_RUNA_ZONAS_SEGURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
         End Select

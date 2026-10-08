@@ -2727,7 +2727,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
                 If (obj.TipoRuna = e_RuneType.ReturnHome Or obj.TipoRuna = e_RuneType.FactionChurch) And .Stats.GLD < obj.Valor Then
                     ' Msg588=No tienes el oro suficiente.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                    Exit Sub
                 End If
                 If MapInfo(.pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
@@ -2753,7 +2753,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_GraphicEffects.Runa, 500, False))
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageBarFx(.Char.charindex, 5, e_AccionBarra.Runa))
                 End If
-                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra, e_FontTypeNames.FONTTYPE_New_Gris))
+                Call WriteConsoleMsg(UserIndex, PrepareMessageLocaleMsg(MSG_VOLVERAS_HOGAR_SEGUNDOS, .Counters.TimerBarra & "¬" & CalculateHomeCostGLD(.Stats.ELV), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Gris)
                 .Accion.Particula = e_GraphicEffects.Runa
                 .Accion.AccionPendiente = True
                 .Accion.TipoAccion = e_AccionBarra.Runa
