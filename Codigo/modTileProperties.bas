@@ -3,7 +3,7 @@ Attribute VB_Name = "modTileProperties"
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
 
-Public Const KNOWN_TILE_FLAGS As Long = 511
+Public Const KNOWN_TILE_FLAGS As Long = 16383
 Public Const KNOWN_ZONE_FLAGS As Long = 2097151
 
 Public Function HasTileFlag(ByVal flags As Long, ByVal flag As e_Trigger) As Boolean
@@ -46,15 +46,28 @@ End Function
 
 Public Function IsWaterTile(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
     With MapData(x, y, map)
-        IsWaterTile = (.Blocked And FLAG_AGUA) <> 0 Or HasTileFlag(.trigger, e_Trigger.SwimSuitPath)
+        IsWaterTile = (.Blocked And FLAG_AGUA) <> 0 Or HasTileFlag(.trigger, e_Trigger.SwimSuitPath Or e_Trigger.RubberSuitPath Or e_Trigger.Coast)
     End With
 End Function
 
-Public Function IsSwimmingSuit(ByVal objIndex As Integer) As Boolean
-    IsSwimmingSuit = objIndex = iObjTraje Or objIndex = iObjTrajeAltoNw Or objIndex = iObjTrajeBajoNw
+Public Function IsRubberSuit(ByVal objIndex As Integer) As Boolean
+    IsRubberSuit = objIndex = iObjTrajeAltoNw Or objIndex = iObjTrajeBajoNw
 End Function
 
-Public Function HasAdjacentSwimSuitPath(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
+Public Function IsOrdinarySwimmingPath(ByVal flags As Long) As Boolean
+    ' Original ordinary-suit movement also allowed rubber-suit water.
+    IsOrdinarySwimmingPath = HasTileFlag(flags, e_Trigger.SwimSuitPath Or e_Trigger.RubberSuitPath Or e_Trigger.Coast)
+End Function
+
+Public Function GetLoginSwimmingSuit(ByVal flags As Long, ByVal smallRace As Boolean) As Integer
+    If HasTileFlag(flags, e_Trigger.RubberSuitPath) Then
+        If smallRace Then GetLoginSwimmingSuit = iObjTrajeBajoNw Else GetLoginSwimmingSuit = iObjTrajeAltoNw
+    ElseIf HasTileFlag(flags, e_Trigger.SwimSuitPath Or e_Trigger.Coast) Then
+        GetLoginSwimmingSuit = iObjTraje
+    End If
+End Function
+
+Public Function HasAdjacentTileFlag(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal flag As e_Trigger) As Boolean
     Dim dx As Integer, dy As Integer, direction As Integer
     For direction = 0 To 3
         dx = 0: dy = 0
@@ -64,32 +77,59 @@ Public Function HasAdjacentSwimSuitPath(ByVal map As Integer, ByVal x As Integer
             Case 2: dy = -1
             Case 3: dy = 1
         End Select
-        If InMapBounds(map, x + dx, y + dy) Then
-            If HasTileFlag(MapData(x + dx, y + dy, map).trigger, e_Trigger.SwimSuitPath) Then
-                HasAdjacentSwimSuitPath = True
+        If IsMapDataCoordinate(map, x + dx, y + dy) Then
+            If HasTileFlag(MapData(x + dx, y + dy, map).trigger, flag) Then
+                HasAdjacentTileFlag = True
                 Exit Function
             End If
         End If
     Next direction
 End Function
 
+Public Function CanEquipSwimmingSuitPath(ByVal map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal suit As Integer, ByVal equippedSuit As Integer, ByVal navigating As Boolean) As Boolean
+    If IsRubberSuit(suit) Then
+        CanEquipSwimmingSuitPath = (navigating And IsRubberSuit(equippedSuit)) Or HasAdjacentTileFlag(map, x, y, e_Trigger.RubberSuitPath)
+    ElseIf suit = iObjTraje Then
+        CanEquipSwimmingSuitPath = (navigating And equippedSuit = iObjTraje) Or HasAdjacentTileFlag(map, x, y, e_Trigger.SwimSuitPath Or e_Trigger.Coast)
+    End If
+End Function
+
+Public Function EitherUserInSafeZone(ByVal source As Integer, ByVal target As Integer) As Boolean
+    With UserList(source).pos
+        EitherUserInSafeZone = HasTileFlag(MapData(.x, .y, .map).trigger, e_Trigger.SafeZone)
+    End With
+    With UserList(target).pos
+        EitherUserInSafeZone = EitherUserInSafeZone Or HasTileFlag(MapData(.x, .y, .map).trigger, e_Trigger.SafeZone)
+    End With
+End Function
+
 ' Historical values are interpreted only at the legacy file boundary.
 Public Function ConvertLegacyTrigger(ByVal legacy As Integer, ByRef zoneFlags As Long) As Long
     Select Case legacy
-        Case 0, 4, 12, 13, 16, 17, 20, 200, 201
+        Case 0, 12, 13, 16, 20, 200, 201
             ConvertLegacyTrigger = e_Trigger.None
         Case 1, 60 To 73, 90 To 99
             ConvertLegacyTrigger = e_Trigger.UnderRoof
-        Case 2, 3
+        Case 2
             ConvertLegacyTrigger = e_Trigger.AntiNpcRespawn
+        Case 3
+            ConvertLegacyTrigger = e_Trigger.InvalidNpcPath
+        Case 4
+            ConvertLegacyTrigger = e_Trigger.SafeZone
         Case 5
             ConvertLegacyTrigger = e_Trigger.PathUnblocker
         Case 6
             ConvertLegacyTrigger = e_Trigger.PvPArena
         Case 7
             ConvertLegacyTrigger = e_Trigger.AutoResurrection
-        Case 8, 11, 18
+        Case 8
+            ConvertLegacyTrigger = e_Trigger.RubberSuitPath
+        Case 11
             ConvertLegacyTrigger = e_Trigger.SwimSuitPath
+        Case 17
+            ConvertLegacyTrigger = e_Trigger.WalkableBridge
+        Case 18
+            ConvertLegacyTrigger = e_Trigger.Coast
         Case 10
             ConvertLegacyTrigger = e_Trigger.NoFishing
         Case 14

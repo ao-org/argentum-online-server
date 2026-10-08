@@ -1428,7 +1428,7 @@ Dim Ropaje                      As Integer
                 'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
-                        If Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
+                        If Not HasTileFlag(MapData(.pos.x, .pos.y, .pos.Map).trigger, e_Trigger.SafeZone) And Not HasMapZoneFlag(.pos.Map, e_ZoneFlags.Safe) Then
                             If .Stats.MinAGU < .Stats.MaxAGU Or _
                                 .Stats.MinHam < .Stats.MaxHam Or _
                                 .Stats.MinHp < .Stats.MaxHp Or _
@@ -2591,8 +2591,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call WriteLocaleMsg(UserIndex, MSG_RECORRER_MARES_DEBES_NIVEL_SUPERIOR_912, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                         Exit Sub
                     End If
-                ElseIf IsSwimmingSuit(.invent.Object(Slot).ObjIndex) Then
-                    If (.flags.Navegando = 0 Or Not IsSwimmingSuit(.invent.EquippedShipObjIndex)) And Not HasAdjacentSwimSuitPath(.pos.Map, .pos.x, .pos.y) Then
+                ElseIf IsRubberSuit(.invent.Object(Slot).ObjIndex) Then
+                    If Not CanEquipSwimmingSuitPath(.pos.Map, .pos.x, .pos.y, .invent.Object(Slot).ObjIndex, .invent.EquippedShipObjIndex, .flags.Navegando <> 0) Then
+                        Call WriteLocaleMsg(UserIndex, MSG_TRAJE_AGUAS_CONTAMINADAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                ElseIf .invent.Object(Slot).ObjIndex = iObjTraje Then
+                    If Not CanEquipSwimmingSuitPath(.pos.Map, .pos.x, .pos.y, .invent.Object(Slot).ObjIndex, .invent.EquippedShipObjIndex, .flags.Navegando <> 0) Then
                         Call WriteLocaleMsg(UserIndex, MSG_TRAJE_ZONAS_POCO_PROFUNDAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If

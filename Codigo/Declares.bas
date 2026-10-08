@@ -1126,6 +1126,11 @@ Public Enum e_Trigger
     NoFishing = 64
     GhostOnlyTranslator = 128
     CastleFoundationPosition = 256
+    RubberSuitPath = 512
+    InvalidNpcPath = 1024
+    SafeZone = 2048
+    Coast = 4096
+    WalkableBridge = 8192
 End Enum
 
 Public Enum e_ZoneFlags

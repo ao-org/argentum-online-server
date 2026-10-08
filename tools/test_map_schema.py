@@ -22,18 +22,24 @@ def generate(output):
     output.mkdir(parents=True, exist_ok=True)
     source = (ROOT/'Codigo/FileIO.bas').read_text(encoding='cp1252')
     types = source[source.index('Private Type t_Position'):source.index('Private FeatureToggles')]
+    # Gameplay procedures share the public position type; remove the identical private loader alias.
+    types = re.sub(r'Private Type t_WorldPos\n.*?End Type\n', '', types, flags=re.S)
     loader = procedure(source, 'CargarMapaFormatoCSM')
     # Metadata-to-game-policy processing after Close does not parse any bytes.
     loader = loader[:loader.index('    Close #fh')] + '    Close #fh\n    Exit Sub\n' + loader[loader.index('\nErrorHandler:'):]
     helpers = '\n\n'.join(procedure(source, name) for name in ['RequireCsmBytes','CsmSectionSize','ValidateCsmCoordinate','ReadCsmString','ReadCsmMetadata','LegacyMapZoneFlags','BuildLegacyRoofSeams','SaveMapCsm3','WriteCsmInt16','WriteCsmInt32','WriteCsmByte','WriteCsmPosition','WriteCsmString','WriteCsmMetadata','IsActiveRoofSeam'])
     tile_source = (ROOT/'Codigo/modTileProperties.bas').read_text(encoding='cp1252')
-    helpers += '\n\n' + '\n\n'.join(procedure(tile_source, name) for name in ['HasTileFlag','HasZoneFlag','HasMapZoneFlag','SetMapZoneFlag','IsWaterTile','ConvertLegacyTrigger','TilePropertyKey','IsMapDataCoordinate','CopyPropertyDictionary','IsInPvPArena','BothInPvPArena','CrossesPvPArenaBoundary','IsPrisonMap','CastleAtTile','RegisterCastleEntrance','RemoveCastleEntrances','SetTileTriggerFlags','ReplayTileProperties'])
+    helpers += '\n\n' + '\n\n'.join(procedure(tile_source, name) for name in ['HasTileFlag','HasZoneFlag','HasMapZoneFlag','SetMapZoneFlag','IsWaterTile','IsRubberSuit','IsOrdinarySwimmingPath','GetLoginSwimmingSuit','HasAdjacentTileFlag','CanEquipSwimmingSuitPath','EitherUserInSafeZone','ConvertLegacyTrigger','TilePropertyKey','IsMapDataCoordinate','CopyPropertyDictionary','IsInPvPArena','BothInPvPArena','CrossesPvPArenaBoundary','IsPrisonMap','CastleAtTile','RegisterCastleEntrance','RemoveCastleEntrances','SetTileTriggerFlags','ReplayTileProperties'])
     helpers += '\n\n' + procedure((ROOT/'Codigo/Protocol_Writes.bas').read_text(encoding='cp1252'), 'WriteHooTileProperties')
     helpers += '\n\n' + procedure((ROOT/'Codigo/General.bas').read_text(encoding='cp1252'), 'RunScriptInFile')
+    gameplay_source = (ROOT/'Codigo/GameLogic.bas').read_text(encoding='cp1252')
+    helpers += '\n\n' + '\n\n'.join(procedure(gameplay_source, name) for name in ['LegalWalk','LegalPosNPC','LegalWalkNPC'])
+    helpers += '\n\n' + procedure((ROOT/'Codigo/MODULO_NPCs.bas').read_text(encoding='cp1252'), 'TestSpawnTrigger')
+    helpers += '\n\n' + procedure((ROOT/'Codigo/modNpcCrossMapPursuit.bas').read_text(encoding='cp1252'), 'NpcDestinationSurfaceAllowed').replace('Private Function', 'Public Function', 1)
     sql_source = (ROOT/'Codigo/modSqlScripts.bas').read_text(encoding='cp1252')
     helpers += '\n\n' + '\n\n'.join(procedure(sql_source, name) for name in ['SplitMigrationSql','AddSqlMigrationStatement'])
     declares = (ROOT/'Codigo/Declares.bas').read_text(encoding='cp1252')
-    enums = '\n\n'.join(re.search('Public Enum '+name+r'\n.*?End Enum', declares, re.S)[0] for name in ['e_Trigger','e_ZoneFlags'])
+    enums = '\n\n'.join(re.search('Public Enum '+name+r'\n.*?End Enum', declares, re.S)[0] for name in ['e_Trigger','e_ZoneFlags','e_Heading','e_Block','e_StatusMask'])
     code = 'Attribute VB_Name = "MapReaderUnderTest"\nOption Explicit\nPrivate Const CSM_FIVE_LAYER_SIGNATURE As Long = &H324C3557\nPrivate Const CSM3_SIGNATURE As Long = &H334D5343\nPrivate Const MAX_RANDOM_TELEPORT_IN_MAP As Long = 20\n' + enums + '\n' + types + '\n' + loader + '\n' + helpers
     code += """
 Public Function TestLegacyFlags(ByVal restrictions As String, ByVal oldBytes As Byte) As Long

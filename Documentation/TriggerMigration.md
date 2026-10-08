@@ -30,8 +30,13 @@ Use PascalCase for every new trigger member. Historical IDs identify conversion 
 | `NoFishing` | 6 | 64 | `0x00000040` |
 | `GhostOnlyTranslator` | 7 | 128 | `0x00000080` |
 | `CastleFoundationPosition` | 8 | 256 | `0x00000100` |
+| `RubberSuitPath` | 9 | 512 | `0x00000200` |
+| `InvalidNpcPath` | 10 | 1024 | `0x00000400` |
+| `SafeZone` | 11 | 2048 | `0x00000800` |
+| `Coast` | 12 | 4096 | `0x00001000` |
+| `WalkableBridge` | 13 | 8192 | `0x00002000` |
 
-The initial known mask is `511` (`0x000001FF`). Bits 9 through 30 are reserved. For example, `UnderRoof | PvPArena` is `9`; historical trigger 9 does not mean those two flags. The map format version determines which interpretation applies.
+The known tile mask is `16383` (`0x00003FFF`). Bits 14 through 30 are reserved. For example, `UnderRoof | PvPArena` is `9`; historical trigger 9 does not mean those two flags. The map format version determines which interpretation applies.
 
 Test a single flag with `(flags And flag) <> 0`. When testing a collection, distinguish any matching bit from all required bits. The existing `IsSet` helper means any matching bit. Setting one flag must preserve other bits; removing a flag uses `And Not`. A GM set command replaces the complete value, with zero clearing it.
 
@@ -42,20 +47,20 @@ Test a single flag with `(flags And flag) <> 0`. When testing a collection, dist
 | 0 | `nada` | `None` |
 | 1 | `BAJOTECHO` | `UnderRoof` |
 | 2 | `trigger_2` | `AntiNpcRespawn` |
-| 3 | `POSINVALIDA` | `AntiNpcRespawn`; merge both NPC behaviors |
-| 4 | `ZonaSegura` | Clear completely |
+| 3 | `POSINVALIDA` | `InvalidNpcPath` |
+| 4 | `ZonaSegura` | `SafeZone` |
 | 5 | `ANTIPIQUETE` | `PathUnblocker` |
 | 6 | `ZONAPELEA` | `PvPArena` |
 | 7 | `AUTORESU` | `AutoResurrection` |
-| 8 | `DETALLEAGUA` | `SwimSuitPath` |
+| 8 | `DETALLEAGUA` | `RubberSuitPath` |
 | 10 | `PESCAINVALIDA` | `NoFishing` |
 | 11 | `VALIDONADO` | `SwimSuitPath` |
 | 12 | `ESCALERA` | Clear completely |
 | 13 | `WORKERONLY` | Clear completely |
 | 14 | `TRANSFER_ONLY_DEAD` | `GhostOnlyTranslator` |
 | 16 | `NADOBAJOTECHO` | Clear completely, as explicitly decided; do not infer roof or swimming flags |
-| 17 | `VALIDOPUENTE` | Clear completely |
-| 18 | `NADOCOMBINADO` | `SwimSuitPath`; no separate combined-swimming flag |
+| 17 | `VALIDOPUENTE` | `WalkableBridge` |
+| 18 | `NADOCOMBINADO` | `Coast`; retain its original ordinary-swimming behavior |
 | 19 | `CARCEL` | Clear tile trigger; set `Prison` in the entire map's zone flags |
 | 20 | `ONLY_PATREON_TILE` | Clear completely |
 | 21 through 40 | Emperor castle entries 1 through 20 | Remove trigger identity; resolve through the old `castle.trigger` to `castle.id` mapping and create castle entrance bindings |
@@ -67,15 +72,21 @@ IDs 9 and 15 are not defined by the server. Any unknown value, including an unli
 
 The local baseline has 773 `.csm` maps. Relevant audit counts include 33,227 tiles with ID 2, 6,128 with ID 3, 990 with ID 19 in map 66, 150 with ID 16, five with ID 200 and eleven with ID 201 in map 320. ID 41 occurs on 21 tiles across 21 maps. No stored ID 20 or 21 through 40 was found in that baseline; castles create their entry triggers at runtime. Recompute counts and checksums against the actual release asset revision before converting.
 
-Clearing a trigger removes its dedicated behavior. It does not delete graphics, objects, tile exits, or physical collision flags. In particular, removing the bridge exception may expose underlying water restrictions; removing a safe tile leaves existing map-wide safety rules in effect. Report these maps for gameplay review instead of silently inventing replacement flags.
+Clearing a trigger removes its dedicated behavior. It does not delete graphics, objects, tile exits, or physical collision flags. `SafeZone` and `WalkableBridge` retain their dedicated behavior. Cleared ID 16 restores neither roof nor swimming behavior; review its authored graphics and physical water without inventing replacement flags.
 
 ## Behavior after conversion
 
-`AntiNpcRespawn` prevents NPC spawning and ordinary NPC movement/pathfinding onto the tile. This intentionally adds the old ID 3 movement restriction to tiles that previously had ID 2. Preserve explicit pet and movement-ignore exceptions where the owning NPC functions already provide them. It has no rendering behavior.
+`AntiNpcRespawn` prevents NPC spawning without blocking NPC movement. `InvalidNpcPath` prevents ordinary NPC movement/pathfinding and also prevents spawning, as historical ID 3 did. Preserve explicit pet and movement-ignore exceptions in their original functions. These flags have no rendering behavior.
 
 `PathUnblocker` retains the current obstruction timer, warnings, reset behavior, and eventual disconnect. `AutoResurrection` retains resurrection and healing. `NoFishing` only controls fishing. `GhostOnlyTranslator` retains the dead-only tile-transfer rule and is evaluated before executing that transfer.
 
-`SwimSuitPath` replaces the separate path categories for rubber suits, ordinary swimming suits, and combined swimming. Use one path predicate for movement, login equipment selection, and equip/unequip checks. Both existing suit families should qualify for this path during the transition; retain an already equipped valid suit and use a deterministic existing inventory order when selecting one at login. Removing item definitions or changing suit bonuses is a separate item-system change. Preserve water on converted ID 8, 11, and 18 tiles explicitly, because the old loaders restore `FLAG_AGUA` from these IDs. Do not restore water implicitly from cleared ID 16. Live `SwimSuitPath` edits also affect the authoritative server water predicate: it checks the swimming flag or independently authored physical water. Clearing the flag never removes authored water bits.
+`SwimSuitPath` (old 11), `RubberSuitPath` (old 8), and `Coast` (old 18) remain distinct. Preserve the original suit rules: login selects ordinary item 197 on SwimSuitPath or Coast, and race-specific rubber item 199/200 on RubberSuitPath. Rubber takes priority when both flags are explicitly painted together. Ordinary suit equip requires adjacent SwimSuitPath or Coast, while rubber equip requires adjacent RubberSuitPath; retain the existing allowance for a user already navigating in the same suit family. Do not infer swimming from cleared ID 16.
+
+Preserve the original movement asymmetry: ordinary item 197 may move through SwimSuitPath, RubberSuitPath or Coast, while rubber suits follow the general water checks without an additional trigger restriction. Coast remains water and does not grant a pedestrian exception. `WalkableBridge` grants the original pedestrian exception in `LegalWalk` over water, preserving independently authored water; it does not change NPC water or spawn placement policy. Physical blocks remain effective.
+
+Preserve explicit water on converted IDs 8, 11 and 18 because the original loaders materialized `FLAG_AGUA` from them. Live water predicates also recognize all three swimming flags. Clearing a flag never removes authored water bits. Keep item definitions, suit bonuses and racial restrictions unchanged.
+
+`SafeZone` restores the original explicit tile-safe checks in both player combat paths, stealing when either participant is on a safe tile, faction-armor equip and campfire placement. Keep existing map-wide Safe checks and combat early-return ordering: an earlier arena or map/faction override retains precedence, including on an intentionally mixed SafeZone/PvPArena tile. Do not apply SafeZone to unrelated map-only rules. SafeZone creates no roof coverage or seams.
 
 Remove numeric-range rules such as `trigger < 12`, `trigger > 10`, and `trigger < 50`. They currently mix NPC spawning, mounting, weather exposure, and warp placement with unrelated trigger IDs. Implement each rule from the relevant named property, physical terrain, tile exit, or existing map setting. Do not carry incidental restrictions into the new flags solely because a historical number happened to satisfy a range. Under-roof weather shelter comes from `UnderRoof` plus existing map environment settings. Any additional mounting policy needs an explicit design decision, not another ordering dependency.
 
@@ -268,7 +279,7 @@ Store each seam once using east or south orientation. Both adjacent cells must b
 
 The castle section holds authored static references, when present. The current asset baseline is expected to have zero such records. The server overlays dynamic production placements from the database; a static/dynamic conflict must be reported instead of silently choosing one. HOO does not need ownership or whitelist data to load a map.
 
-The assets converter must support a dry run and separate output directory. Convert every map from its detected source version, preserve all unrelated content, and emit per-map source/output checksums, source version, old-value counts, new-flag counts, zone changes, seams, entrance bindings, and rejected values. Never overwrite the source batch before both new readers accept the complete result. An already converted file must not pass through the legacy numeric mapping again.
+The assets converter must support a dry run and separate output directory. Rebuild this restored trigger release from verified original W5L2 maps, because the earlier merged output lost distinctions between old 2/3 and 8/11/18 and cleared old 4/17. Its output checksums pin the new meanings; unchanged CSM3 version 2 layout alone does not identify an earlier development conversion. Convert every map from its detected source version, preserve all unrelated content, and emit per-map source/output checksums, source version, old-value counts, new-flag counts, zone changes, seams, entrance bindings, and rejected values. Never overwrite the source batch before both new readers accept the complete result. An already converted file must not pass through the legacy numeric mapping again.
 
 Update map editors, exporters, asset packers, fixtures, and caches that assume a six-byte trigger entry or the old header. HOO's `CsmTriggerEntry`, `WorldMap`, adjacent-map/environment handling, tutorial/path queries, and roof caches must all consume the same new representation. Server-generated or saved maps must use the same writer contract. Map graphics and independent collision flags remain separate structures.
 
@@ -291,7 +302,7 @@ Changing the set payload from one byte to four is a protocol compatibility chang
 
 1. Review the implementation specification in three documentation-only PRs. Deliver the preparatory GM-only command in two separate HOO/server PRs, with tests for parsing, permission checks, packet bytes, large values, query behavior, and disconnected handling.
 2. Freeze the bit values and new binary header. Add shared binary fixtures and both new readers, retaining explicit legacy conversion support. Update all runtime mask widths and replace equality/range consumers before activating flag data.
-3. Implement arena predicates, combined NPC restrictions, swimming paths, and map-wide prison checks. Test every removal and intentional behavior change, including ID 16 clearing.
+3. Implement arena predicates, separate NPC spawn/path restrictions, ordinary/rubber/coast paths, SafeZone, WalkableBridge and map-wide prison checks. Test every removal and intentional behavior change, including ID 16 clearing.
 4. Implement castle ID resolution, dictionary lifecycle, and the database migration. Rehearse with the supplied 20/15-row production shape and a full whitelist export, including shuffled and non-contiguous IDs.
 5. Implement HOO roof coverage, seam-aware flood fill, caching, and authoritative live tile updates. Test separate roofs sharing an old ID, touching roofs separated by seams, diagonal contact, head movement under a roof overhang, multi-tile graphics, component changes, and map unload/reload.
 6. Convert the complete assets batch, update authoring tools, and compare both readers' normalized results. Rebuild packs and publish a manifest pinning server, HOO, assets, map format, and database schema versions.
@@ -323,4 +334,4 @@ python -m unittest discover -s tools -p test_castle_migration.py
 
 The target records `20261007-01` in the existing `migrations` history and retains `castle_legacy_trigger_map` only for loading historical maps. There is no separate castle migration history table. Server startup validates this history entry, removal of the legacy trigger column, nullable outside-coordinate columns and valid castle mapping identities. The existing ODBC driver accepts one SQL statement per execution. The migration runner splits statements outside single/double/backtick/bracket quotes and line/block comments, parses the whole script before execution, and rolls back failures while preserving the original database error. Compound CREATE TRIGGER bodies are rejected explicitly; none of the existing dated scripts define one. The castle SQL requires SQLite 3.35 or newer for DROP COLUMN. Ownership and entry access use stable castle IDs. Active unplaced castles and slots with no interior remain preserved; those slots cannot be placed until configured.
 
-`tools/test_map_schema.py` generates an isolated VB6 harness directly from the production parser, writer, flag helpers, and packet writer. It stubs gameplay services and never starts the server or opens a database. Run `tools/test_map_schema.ps1 -Fixtures <assets>/tools/fixtures/csm3 -Maps <assets>/Mapas` to compile and execute the generated `build/map-schema-tests/tests.vbp` with the native compiler. Pass the candidate converted directory to `-Maps` to validate the release batch. `tools/map_schema_harness.bas` checks invalid input rejection, the shared all-section fixture, writer round trips, the complete 773-map inventory, merged flags, prison, castle references, arena combinations, GM authorization, capability gating, exact packet bytes, late-user replay, and dictionary isolation. Use a process-local `__COMPAT_LAYER=RunAsInvoker` for VB6 compilation to avoid requesting Windows administrator elevation.
+`tools/test_map_schema.py` generates an isolated VB6 harness directly from the production parser, writer, flag helpers, and packet writer. It stubs gameplay services and never starts the server or opens a database. Run `tools/test_map_schema.ps1 -Fixtures <assets>/tools/fixtures/csm3 -Maps <assets>/Mapas` to compile and execute the generated `build/map-schema-tests/tests.vbp` with the native compiler. Pass the candidate converted directory to `-Maps` to validate the release batch. `tools/map_schema_harness.bas` checks invalid input rejection, the shared all-section fixture, writer round trips, the complete 773-map inventory, independent trigger flags, actual NPC/bridge movement and suit selection/equip predicates, both-participant safe checks, prison, castle references, arena combinations, GM authorization, capability gating, exact packet bytes, late-user replay, and dictionary isolation. Use a process-local `__COMPAT_LAYER=RunAsInvoker` for VB6 compilation to avoid requesting Windows administrator elevation.
