@@ -56,7 +56,7 @@ Public Sub Main()
     UserList(1).pos.Map = 1
     UserList(1).pos.x = 1
     UserList(1).pos.y = 1
-    values = Array(0&, 255&, 256&, 511&)
+    values = Array(0&, 255&, 256&, 511&, 512&, 1024&, 2048&, 4096&, 8192&, 16383&)
     LastUser = 1
     UserList(1).flags.UserLogged = True
     roles = Array(e_PlayerType.Dios, e_PlayerType.Admin)
@@ -83,7 +83,7 @@ Public Sub Main()
         UserList(1).flags.Privilegios = role
         MapData(1, 1, 1).trigger = 256
         Call ResetObservations()
-        Call LoadSetPacket(511)
+        Call LoadSetPacket(16383)
         Call HandleSetTrigger(1)
         Call HandleAskTrigger(1)
         Call Check(MapData(1, 1, 1).trigger = 256, "unauthorized role cannot set: " & role)
@@ -92,7 +92,7 @@ Public Sub Main()
     Next role
 
     UserList(1).flags.Privilegios = e_PlayerType.Admin
-    values = Array(-1&, 512&, 32768&, 65536&, 16909060&, 2147483647)
+    values = Array(-1&, 16384&, 32768&, 65536&, 16909060&, 2147483647)
     For Each value In values
         MapData(1, 1, 1).trigger = 256
         Call ResetObservations()
