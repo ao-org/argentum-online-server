@@ -1113,6 +1113,7 @@ End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSlot_Err
+    Call RemoveMagicLightOrb(UserIndex)
     Call SaveDCUserCache(UserIndex)
     Call AntiCheat.OnPlayerDisconnect(UserIndex)
     With UserList(UserIndex)

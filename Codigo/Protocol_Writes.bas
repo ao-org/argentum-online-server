@@ -134,6 +134,23 @@ WriteRemortResult_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemortResult", Erl)
 End Sub
 
+Public Sub WriteHooMagicLightOrb(ByVal UserIndex As Integer, ByVal InstanceId As Long, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal ProfileObject As Integer, ByVal RemainingMs As Long)
+    On Error GoTo WriteHooMagicLightOrb_Err
+    If Not UserSupportsMagicLightOrbs(UserIndex) Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooMagicLightOrb)
+    Call Writer.WriteInt32(InstanceId)
+    Call Writer.WriteInt16(Map)
+    Call Writer.WriteInt8(x)
+    Call Writer.WriteInt8(y)
+    Call Writer.WriteInt16(ProfileObject)
+    Call Writer.WriteInt32(RemainingMs)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooMagicLightOrb_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteHooMagicLightOrb", Erl)
+End Sub
+
 Public Sub WriteHooTargetedSpellCastResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal Result As e_HooTargetedSpellCastResult, ByVal RetryAfterMs As Long)
     On Error GoTo WriteHooTargetedSpellCastResult_Err
     Call Writer.WriteInt16(ServerPacketID.eHooTargetedSpellCastResult)

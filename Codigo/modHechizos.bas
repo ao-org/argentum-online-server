@@ -490,6 +490,16 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
     PuedeLanzar = False
     If HechizoIndex = 0 Then Exit Function
     With UserList(UserIndex)
+        If Hechizos(HechizoIndex).Tipo = uLightOrb Then
+            If Not UserSupportsMagicLightOrbs(UserIndex) Then
+                Call WriteLocaleMsg(UserIndex, MSG_LIGHT_ORB_UNAVAILABLE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Function
+            End If
+            If Not CanClassCastLightOrb(.clase) Then
+                Call WriteLocaleMsg(UserIndex, MSG_LIGHT_ORB_CLASS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
+                Exit Function
+            End If
+        End If
         'Si lanza a un npc y este es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
         If IsValidNpcRef(.flags.TargetNPC) Then
             If NpcList(.flags.TargetNPC.ArrayIndex).OnlyForGuilds = 1 And .GuildIndex <= 0 Then
@@ -1016,7 +1026,7 @@ HechizoMaterializacion_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
 End Sub
 
-Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
+Function HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
     On Error GoTo HandleHechizoTerreno_Err
     Dim b As Boolean
     With UserList(UserIndex)
@@ -1025,6 +1035,9 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
                 Call HechizoInvocacion(UserIndex, b)
             Case e_TipoHechizo.uEstado 'Tipo 2
                 Call HechizoTerrenoEstado(UserIndex, b)
+            Case e_TipoHechizo.uLightOrb
+                b = CastMagicLightOrb(UserIndex, uh)
+                If b And .flags.NoPalabrasMagicas = 0 Then Call DecirPalabrasMagicas(uh, UserIndex)
             Case e_TipoHechizo.uMaterializa 'Tipo 3
                 Call HechizoMaterializacion(UserIndex, b)
             Case e_TipoHechizo.uArea 'Tipo 5
@@ -1048,10 +1061,11 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             Call WriteUpdateSta(UserIndex)
         End If
     End With
-    Exit Sub
+    HandleHechizoTerreno = b
+    Exit Function
 HandleHechizoTerreno_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
-End Sub
+End Function
 
 Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
     With UserList(UserIndex)
@@ -1377,8 +1391,12 @@ Function LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer) As Bo
                     Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO_792, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
                 End If
             Case e_TargetType.uTerreno
-                SpellCastSuccess = True
-                Call HandleHechizoTerreno(UserIndex, uh)
+                If Hechizos(uh).Tipo = uLightOrb Then
+                    SpellCastSuccess = HandleHechizoTerreno(UserIndex, uh)
+                Else
+                    SpellCastSuccess = True
+                    Call HandleHechizoTerreno(UserIndex, uh)
+                End If
             Case e_TargetType.uPets
                 SpellCastSuccess = HandlePetSpell(UserIndex, uh)
         End Select

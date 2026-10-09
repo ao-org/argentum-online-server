@@ -31,6 +31,7 @@ Form=Codigo\frmMain.frm
 Form=Codigo\frmServidor.frm
 Form=Codigo\FrmInterv.frm
 Module=modHechizos; Codigo\modHechizos.bas
+Module=modMagicLightOrbs; Codigo\modMagicLightOrbs.bas
 Form=Codigo\FrmStat.frm
 Module=Matematicas; Codigo\Matematicas.bas
 Module=InvUsuario; Codigo\InvUsuario.bas
