@@ -1279,6 +1279,7 @@ Public Enum e_TipoHechizo
     uCombinados = 8
     uMultiShoot = 9
     uPhysicalSkill = 10
+    uLightOrb = 13
 End Enum
 
 Public Const MAX_MENSAJES_FORO   As Byte = 35
@@ -1771,6 +1772,8 @@ Public Type t_Hechizo
     TeleportXX As Integer
     TeleportXY As Integer
     'Hechizo de Materialización
+    LightOrbObject As Integer
+    LightOrbCastRange As Byte
     MaterializaObj As Integer
     MaterializaCant As Integer
     NecesitaObj As Integer
@@ -2986,6 +2989,8 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_MAGIC_LIGHT_ORBS_V1 As Long = &H10&
+Public Const HOO_FEATURE_MAGIC_LIGHT_ORBS_V1 As String = "hoo-magic-light-orbs-v1"
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"

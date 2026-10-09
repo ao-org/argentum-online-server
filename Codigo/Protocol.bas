@@ -1002,6 +1002,11 @@ Public Function UserSupportsHooTargetedSpellCast(ByVal UserIndex As Integer) As 
         UserSupportsHooCapability(UserIndex, HOO_CAP_TARGETED_SPELL_CAST_V1)
 End Function
 
+Public Function UserSupportsMagicLightOrbs(ByVal UserIndex As Integer) As Boolean
+    UserSupportsMagicLightOrbs = IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) And _
+        UserSupportsHooCapability(UserIndex, HOO_CAP_MAGIC_LIGHT_ORBS_V1)
+End Function
+
 Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As Boolean
     UserSupportsHooHouseDoorActions = IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) And _
         UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
@@ -1240,6 +1245,9 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
     End If
+    If IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then
+        SupportedMask = SupportedMask Or HOO_CAP_MAGIC_LIGHT_ORBS_V1
+    End If
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -1264,6 +1272,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
         " requested=" & CStr(RequestedMask) & _
         " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
+    Call SendMagicLightOrbSnapshot(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
     Call ResetHooClientCapabilities(UserIndex)

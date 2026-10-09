@@ -703,6 +703,7 @@ UnitTest_Err:
             Call modNetwork.Tick(GetElapsed())
         #End If
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
+        Call UpdateMagicLightOrbs(GlobalFrameTime)
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
         Call MaybeRunGameEvents
