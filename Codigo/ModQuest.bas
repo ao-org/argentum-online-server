@@ -455,6 +455,7 @@ Public Sub LoadQuests()
     Set reader = Nothing
     Exit Sub
 ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.LoadQuests", Erl)
     MsgBox "Error cargando el archivo QUESTS.DAT.", vbOKOnly + vbCritical
 End Sub
  
