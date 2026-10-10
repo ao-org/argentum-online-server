@@ -2204,7 +2204,7 @@ Sub CargarCiudades()
         & Lector.GetValue("Eldoria", "Mapas") & "," _
         & Lector.GetValue("Arkhein", "Mapas") & ","
     MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
-    MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
+    MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas") & ","
     MapasCiudades = MapasCiudades & Lector.GetValue("Morgrim", "Mapas")
     With Prision
         .Map = val(Lector.GetValue("Prision", "Mapa"))
