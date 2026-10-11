@@ -41,3 +41,6 @@ Below is a list of modules for which documentation has been generated:
 -   **GameLogic (Extra)**: A collection of various utility functions and core game logic routines, including positional logic, character status checks, tile event processing, and player information display.
     -   [Detailed Documentation](./GameLogic.md)
     -   [Component Diagram](./GameLogic.mmd)
+
+- **Druid taming**: Rejection audit, preserved balance and regression procedure.
+    - [Detailed Documentation](./DruidTaming.md)
