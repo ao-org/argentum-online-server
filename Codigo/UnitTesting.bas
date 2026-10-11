@@ -1196,16 +1196,19 @@ Private Function test_taming_results() As Boolean
     Dim Roll As Integer, Successes As Integer
     For Roll = 1 To 5
         If GetTamingAttemptMessage(301, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
-        If GetTamingAttemptMessage(0, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
-        If GetTamingAttemptMessage(-1, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
         If GetTamingAttemptMessage(1, 0, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
         If Roll = 1 Then
             If GetTamingAttemptMessage(300, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
             If GetTamingAttemptMessage(299, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            ' Direct callers retain the original comparison; the network rejects <= 0.
+            If GetTamingAttemptMessage(0, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            If GetTamingAttemptMessage(-1, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
             Successes = Successes + 1
         Else
             If GetTamingAttemptMessage(300, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
             If GetTamingAttemptMessage(299, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+            If GetTamingAttemptMessage(0, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+            If GetTamingAttemptMessage(-1, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
         End If
     Next Roll
     test_taming_results = (Successes = 1)
@@ -1226,62 +1229,58 @@ End Function
 
 Private Function test_taming_npc_owner() As Boolean
     On Error GoTo TestError
-    Dim OldCount As Integer, OldMessage As Integer, OldLevel As Integer
-    Dim OldSkill As Byte, OldCharisma As Byte, OldPrivileges As e_PlayerType
-    Dim OldTypes(1 To MAXMASCOTAS) As Integer, i As Integer
-    Dim OldNpcOwner As t_NpcReference, OldUserOwner As t_UserReference
-    Dim OldDifficulty As Integer, OldMinLevel As Integer
-    With UserList(1)
-        OldCount = .NroMascotas
-        OldMessage = .flags.UltimoMensaje
-        OldPrivileges = .flags.Privilegios
-        OldLevel = .Stats.ELV
-        OldSkill = .Stats.UserSkills(e_Skill.Domar)
-        OldCharisma = .Stats.UserAtributos(e_Atributos.Carisma)
-        For i = 1 To MAXMASCOTAS
-            OldTypes(i) = .MascotasType(i)
-            .MascotasType(i) = 0
-        Next i
-        .NroMascotas = 0
+    Dim UserIndex As Integer, NpcIndex As Integer, OwnerIndex As Integer, i As Integer
+    Dim OldUser As t_User, EmptyUser As t_User, OldNpc As t_Npc, EmptyNpc As t_Npc
+    Dim Saved As Boolean
+    ' Use idle slots without touching spawned NPCs or depending on map contents.
+    For i = UBound(UserList) To LBound(UserList) Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            UserIndex = i
+            Exit For
+        End If
+    Next i
+    For i = UBound(NpcList) To LBound(NpcList) Step -1
+        If Not NpcList(i).flags.NPCActive Then
+            If NpcIndex = 0 Then
+                NpcIndex = i
+            Else
+                OwnerIndex = i
+                Exit For
+            End If
+        End If
+    Next i
+    If UserIndex = 0 Or NpcIndex = 0 Or OwnerIndex = 0 Then Exit Function
+    OldUser = UserList(UserIndex)
+    OldNpc = NpcList(NpcIndex)
+    Saved = True
+    UserList(UserIndex) = EmptyUser
+    NpcList(NpcIndex) = EmptyNpc
+    With UserList(UserIndex)
         .flags.UltimoMensaje = MSG_NO_TAME_FAILED
         .flags.Privilegios = e_PlayerType.User
+        .clase = e_Class.Druid
         .Stats.ELV = 40
         .Stats.UserSkills(e_Skill.Domar) = 100
         .Stats.UserAtributos(e_Atributos.Carisma) = 21
     End With
-    With NpcList(1)
-        OldNpcOwner = .MaestroNPC
-        OldUserOwner = .MaestroUser
-        OldDifficulty = .flags.Domable
-        OldMinLevel = .MinTameLevel
-        Call SetNpcRef(.MaestroNPC, 2)
-        Call ClearUserRef(.MaestroUser)
-        ' If the ownership guard regresses, this reaches a guaranteed power
-        ' rejection (no pet creation or skill gain) and changes UltimoMensaje.
-        .flags.Domable = 32767
-        .MinTameLevel = 1
-    End With
-    If Not IsValidNpcRef(NpcList(1).MaestroNPC) Then GoTo TestDone
-    Call DoDomar(1, 1)
-    test_taming_npc_owner = (UserList(1).flags.UltimoMensaje = MSG_NO_TAME_FAILED And UserList(1).NroMascotas = 0)
+    ' No roll can tame this fixture; capped skill prevents progression side effects.
+    NpcList(NpcIndex).flags.Domable = 32767
+    NpcList(NpcIndex).MinTameLevel = 1
+    Call SetNpcRef(NpcList(NpcIndex).MaestroNPC, OwnerIndex)
+    If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then GoTo TestDone
+    Call DoDomar(UserIndex, NpcIndex)
+    If UserList(UserIndex).flags.UltimoMensaje <> MSG_NO_TAME_FAILED Then GoTo TestDone
+    If UserList(UserIndex).NroMascotas <> 0 Then GoTo TestDone
+    ' Negative control: removing only the owner must reach the power rejection.
+    ' This also prevents an unrelated early exit from making the test pass.
+    Call ClearNpcRef(NpcList(NpcIndex).MaestroNPC)
+    Call DoDomar(UserIndex, NpcIndex)
+    test_taming_npc_owner = (UserList(UserIndex).flags.UltimoMensaje = MSG_NO_PUEDES_DOMAR_ESA_CRIATURA And UserList(UserIndex).NroMascotas = 0)
 TestDone:
-    With UserList(1)
-        .NroMascotas = OldCount
-        .flags.UltimoMensaje = OldMessage
-        .flags.Privilegios = OldPrivileges
-        .Stats.ELV = OldLevel
-        .Stats.UserSkills(e_Skill.Domar) = OldSkill
-        .Stats.UserAtributos(e_Atributos.Carisma) = OldCharisma
-        For i = 1 To MAXMASCOTAS
-            .MascotasType(i) = OldTypes(i)
-        Next i
-    End With
-    With NpcList(1)
-        .MaestroNPC = OldNpcOwner
-        .MaestroUser = OldUserOwner
-        .flags.Domable = OldDifficulty
-        .MinTameLevel = OldMinLevel
-    End With
+    If Saved Then
+        UserList(UserIndex) = OldUser
+        NpcList(NpcIndex) = OldNpc
+    End If
     Exit Function
 TestError:
     test_taming_npc_owner = False

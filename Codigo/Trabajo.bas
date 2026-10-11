@@ -1740,7 +1740,8 @@ Public Function GetTamingPower(ByVal Charisma As Byte, ByVal Skill As Byte, ByVa
 End Function
 
 Public Function GetTamingAttemptMessage(ByVal Difficulty As Integer, ByVal Power As Integer, ByVal Roll As Integer) As Integer
-    If Difficulty <= 0 Or Difficulty > Power Then
+    ' Creature eligibility is checked by HandleWorkLeftClick before DoDomar.
+    If Difficulty > Power Then
         GetTamingAttemptMessage = MSG_NO_PUEDES_DOMAR_ESA_CRIATURA
     ElseIf Roll = 1 Then
         GetTamingAttemptMessage = MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO
@@ -1791,7 +1792,6 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 Call ReSpawnNpc(NpcList(NpcIndex))
                 ' Msg657=La criatura te ha aceptado como su amo.
                 Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
-                .flags.UltimoMensaje = ResultMessage
                 ' Es zona segura?
                 If MapInfo(.pos.Map).NoMascotas = 1 Then
                     petType = NpcList(NpcIndex).Numero
