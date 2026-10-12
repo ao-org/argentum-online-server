@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 40
+    Private Const SUITE_COUNT As Integer = 41
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -282,6 +282,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 38: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
         Case 39: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
         Case 40: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
+        Case 41: RunSuite = test_suite_taming()
         Case Else
             RunSuite = False
     End Select
@@ -1138,6 +1139,151 @@ TestDone:
     Exit Function
 TestError:
     test_remort_live_reset_and_preservation = False
+    Resume TestDone
+End Function
+
+Private Function test_suite_taming() As Boolean
+    Call test_suite_taming_pure
+    Call RunTest("taming rejects an NPC-owned creature", test_taming_npc_owner())
+    test_suite_taming = True
+End Function
+
+Private Function test_suite_taming_pure() As Boolean
+    Call RunTest("taming power preserves class formulas and rounding", test_taming_power())
+    Call RunTest("taming power preserves classic supported range", test_taming_power_range())
+    Call RunTest("taming impossible attempts differ from failed rolls", test_taming_results())
+    Call RunTest("taming invalid skill overflow is not silently rebalanced", test_taming_overflow())
+    test_suite_taming_pure = True
+End Function
+
+Private Function test_taming_power() As Boolean
+    On Error GoTo TestError
+    If GetTamingPower(21, 100, e_Class.Druid) <> 350 Then Exit Function
+    If GetTamingPower(18, 100, e_Class.Druid) <> 300 Then Exit Function
+    ' Integer assignment uses round-to-even, not truncation or always-round-up.
+    If GetTamingPower(21, 1, e_Class.Druid) <> 4 Then Exit Function
+    If GetTamingPower(15, 1, e_Class.Druid) <> 2 Then Exit Function
+    If GetTamingPower(59, 1, e_Class.Hunter) <> 0 Then Exit Function
+    If GetTamingPower(59, 3, e_Class.Cleric) <> 2 Then Exit Function
+    If GetTamingPower(21, 100, e_Class.Hunter) <> 18 Then Exit Function
+    If GetTamingPower(21, 100, e_Class.Cleric) <> 18 Then Exit Function
+    If GetTamingPower(21, 100, e_Class.Warrior) <> 18 Then Exit Function
+    test_taming_power = True
+    Exit Function
+TestError:
+    test_taming_power = False
+End Function
+
+Private Function test_taming_power_range() As Boolean
+    On Error GoTo TestError
+    Dim Charisma As Integer, Skill As Integer, Product As Integer
+    ' All Byte attributes and legitimate skills fit the existing Integer product.
+    For Charisma = 0 To 255
+        For Skill = 0 To 100
+            Product = CInt(Charisma) * CInt(Skill)
+            If GetTamingPower(CByte(Charisma), CByte(Skill), e_Class.Druid) <> CInt(Product / 6) Then Exit Function
+            If GetTamingPower(CByte(Charisma), CByte(Skill), e_Class.Hunter) <> CInt(Product / 118) Then Exit Function
+        Next Skill
+    Next Charisma
+    test_taming_power_range = True
+    Exit Function
+TestError:
+    test_taming_power_range = False
+End Function
+
+Private Function test_taming_results() As Boolean
+    On Error GoTo TestError
+    Dim Roll As Integer, Successes As Integer
+    For Roll = 1 To 5
+        If GetTamingAttemptMessage(301, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
+        If GetTamingAttemptMessage(1, 0, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
+        If Roll = 1 Then
+            If GetTamingAttemptMessage(300, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            If GetTamingAttemptMessage(299, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            ' Direct callers retain the original comparison; the network rejects <= 0.
+            If GetTamingAttemptMessage(0, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            If GetTamingAttemptMessage(-1, 300, Roll) <> MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then Exit Function
+            Successes = Successes + 1
+        Else
+            If GetTamingAttemptMessage(300, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+            If GetTamingAttemptMessage(299, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+            If GetTamingAttemptMessage(0, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+            If GetTamingAttemptMessage(-1, 300, Roll) <> MSG_NO_TAME_FAILED Then Exit Function
+        End If
+    Next Roll
+    test_taming_results = (Successes = 1)
+    Exit Function
+TestError:
+    test_taming_results = False
+End Function
+
+Private Function test_taming_overflow() As Boolean
+    On Error GoTo ExpectedOverflow
+    Dim Power As Integer
+    ' Invalid/corrupt skills above the 100 cap keep the legacy overflow behavior.
+    Power = GetTamingPower(255, 255, e_Class.Druid)
+    Exit Function
+ExpectedOverflow:
+    test_taming_overflow = (Err.Number = 6)
+End Function
+
+Private Function test_taming_npc_owner() As Boolean
+    On Error GoTo TestError
+    Dim UserIndex As Integer, NpcIndex As Integer, OwnerIndex As Integer, i As Integer
+    Dim OldUser As t_User, EmptyUser As t_User, OldNpc As t_Npc, EmptyNpc As t_Npc
+    Dim Saved As Boolean
+    ' Use idle slots without touching spawned NPCs or depending on map contents.
+    For i = UBound(UserList) To LBound(UserList) Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            UserIndex = i
+            Exit For
+        End If
+    Next i
+    For i = UBound(NpcList) To LBound(NpcList) Step -1
+        If Not NpcList(i).flags.NPCActive Then
+            If NpcIndex = 0 Then
+                NpcIndex = i
+            Else
+                OwnerIndex = i
+                Exit For
+            End If
+        End If
+    Next i
+    If UserIndex = 0 Or NpcIndex = 0 Or OwnerIndex = 0 Then Exit Function
+    OldUser = UserList(UserIndex)
+    OldNpc = NpcList(NpcIndex)
+    Saved = True
+    UserList(UserIndex) = EmptyUser
+    NpcList(NpcIndex) = EmptyNpc
+    With UserList(UserIndex)
+        .flags.UltimoMensaje = MSG_NO_TAME_FAILED
+        .flags.Privilegios = e_PlayerType.User
+        .clase = e_Class.Druid
+        .Stats.ELV = 40
+        .Stats.UserSkills(e_Skill.Domar) = 100
+        .Stats.UserAtributos(e_Atributos.Carisma) = 21
+    End With
+    ' No roll can tame this fixture; capped skill prevents progression side effects.
+    NpcList(NpcIndex).flags.Domable = 32767
+    NpcList(NpcIndex).MinTameLevel = 1
+    Call SetNpcRef(NpcList(NpcIndex).MaestroNPC, OwnerIndex)
+    If Not IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Then GoTo TestDone
+    Call DoDomar(UserIndex, NpcIndex)
+    If UserList(UserIndex).flags.UltimoMensaje <> MSG_NO_TAME_FAILED Then GoTo TestDone
+    If UserList(UserIndex).NroMascotas <> 0 Then GoTo TestDone
+    ' Negative control: removing only the owner must reach the power rejection.
+    ' This also prevents an unrelated early exit from making the test pass.
+    Call ClearNpcRef(NpcList(NpcIndex).MaestroNPC)
+    Call DoDomar(UserIndex, NpcIndex)
+    test_taming_npc_owner = (UserList(UserIndex).flags.UltimoMensaje = MSG_NO_PUEDES_DOMAR_ESA_CRIATURA And UserList(UserIndex).NroMascotas = 0)
+TestDone:
+    If Saved Then
+        UserList(UserIndex) = OldUser
+        NpcList(NpcIndex) = OldNpc
+    End If
+    Exit Function
+TestError:
+    test_taming_npc_owner = False
     Resume TestDone
 End Function
 

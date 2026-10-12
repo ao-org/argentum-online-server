@@ -1727,6 +1727,29 @@ Private Function HayEspacioMascotas(ByVal UserIndex As Integer) As Boolean
     HayEspacioMascotas = (FreeMascotaIndex(UserIndex) > 0)
 End Function
 
+Public Function GetTamingPower(ByVal Charisma As Byte, ByVal Skill As Byte, ByVal Clase As e_Class) As Integer
+    Dim Points As Integer
+    ' Preserve the existing Integer intermediate and VB6 rounding on assignment.
+    Points = CInt(Charisma) * CInt(Skill)
+    If Clase = e_Class.Druid Then
+        Points = Points / 6
+    Else
+        Points = Points / 118
+    End If
+    GetTamingPower = Points
+End Function
+
+Public Function GetTamingAttemptMessage(ByVal Difficulty As Integer, ByVal Power As Integer, ByVal Roll As Integer) As Integer
+    ' Creature eligibility is checked by HandleWorkLeftClick before DoDomar.
+    If Difficulty > Power Then
+        GetTamingAttemptMessage = MSG_NO_PUEDES_DOMAR_ESA_CRIATURA
+    ElseIf Roll = 1 Then
+        GetTamingAttemptMessage = MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO
+    Else
+        GetTamingAttemptMessage = MSG_NO_TAME_FAILED
+    End If
+End Function
+
 Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo ErrHandler
     Dim puntosDomar As Integer
@@ -1741,24 +1764,23 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     With UserList(UserIndex)
         If .flags.Privilegios And e_PlayerType.Consejero Then Exit Sub
         If .NroMascotas < MAXMASCOTAS And HayEspacioMascotas(UserIndex) Then
-            If IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) > 0 Or IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
+            If IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) Or IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
                 ' Msg656=La criatura ya tiene amo.
                 Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_TIENE_AMO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            puntosDomar = CInt(.Stats.UserAtributos(e_Atributos.Carisma)) * CInt(.Stats.UserSkills(e_Skill.Domar))
-            If .clase = e_Class.Druid Then
-                puntosDomar = puntosDomar / 6 'original es 6
-            Else
-                puntosDomar = puntosDomar / 118 'para que solo el druida dome
-            End If
+            puntosDomar = GetTamingPower(.Stats.UserAtributos(e_Atributos.Carisma), .Stats.UserSkills(e_Skill.Domar), .clase)
             'No tiene nivel suficiente?
             If NpcList(NpcIndex).MinTameLevel > .Stats.ELV Then
                 ' Msg1321=Debes ser nivel ¬1 o superior para domar esta criatura.
                 Call WriteLocaleMsg(UserIndex, MSG_DEBES_NIVEL_SUPERIOR_DOMAR_CRIATURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, NpcList(NpcIndex).MinTameLevel)
                 Exit Sub
             End If
-            If NpcList(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
+            Dim ResultMessage As Integer
+            ' VB6 And evaluated the roll even below the power threshold. Keep that
+            ' draw and the SubirSkill call below for the same progression behavior.
+            ResultMessage = GetTamingAttemptMessage(NpcList(NpcIndex).flags.Domable, puntosDomar, RandomNumber(1, 5))
+            If ResultMessage = MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO Then
                 Dim Index As Integer
                 .NroMascotas = .NroMascotas + 1
                 Index = FreeMascotaIndex(UserIndex)
@@ -1781,10 +1803,10 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PERMITEN_MASCOTAS_ZONA_SEGURA_ESPERARAN_AFUERA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 End If
             Else
-                If Not .flags.UltimoMensaje = MSG_NO_TAME_FAILED Then
-                    ' Msg659=No has logrado domar la criatura.
-                    Call WriteLocaleMsg(UserIndex, MSG_NO_TAME_FAILED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                    .flags.UltimoMensaje = MSG_NO_TAME_FAILED
+                If Not .flags.UltimoMensaje = ResultMessage Then
+                    ' Msg718: impossible at current power; Msg659: eligible failed roll.
+                    Call WriteLocaleMsg(UserIndex, ResultMessage, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                    .flags.UltimoMensaje = ResultMessage
                 End If
             End If
             Call SubirSkill(UserIndex, e_Skill.Domar)
