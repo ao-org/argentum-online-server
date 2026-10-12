@@ -78,22 +78,20 @@ End Type
 
 Public Invasiones() As t_Invasion
 
-Sub CargarInfoEventos()
+Public Sub ReadInvasions(ByRef staged() As t_Invasion)
     Dim File As clsIniManager
-    Set File = New clsIniManager
-    Call File.Initialize(DatPath & "Eventos.dat")
+    Set File = ReadManagedConfig(mcEvents)
     Dim CantInvasiones As Integer
     CantInvasiones = val(File.GetValue("Invasiones", "Cantidad"))
     If CantInvasiones <= 0 Then
-        ReDim Invasiones(0)
-        frmMain.Invasion.Enabled = False
+        ReDim staged(0)
         Exit Sub
     End If
-    ReDim Invasiones(1 To CantInvasiones)
+    ReDim staged(1 To CantInvasiones)
     Dim i As Integer, j As Integer, nombre As String, tmpStr As String, Fields() As String
     For i = 1 To CantInvasiones
         nombre = File.GetValue("Invasiones", "Invasion" & i)
-        With Invasiones(i)
+        With staged(i)
             .MaxVidaMuralla = val(File.GetValue(nombre, "MaxVidaMuralla"))
             .MaxNPCs = val(File.GetValue(nombre, "MaxNPCs"))
             .aviso = File.GetValue(nombre, "Aviso")
@@ -107,7 +105,7 @@ Sub CargarInfoEventos()
             .TimerInvasion = val(File.GetValue(nombre, "Offset"))
             .MensajeGanaron = File.GetValue(nombre, "MensajeGanaron")
             .MensajePerdieron = File.GetValue(nombre, "MensajePerdieron")
-            If .MaxNPCs <= 0 Then Exit Sub
+            If .MaxNPCs <= 0 Then Err.Raise 5, "ReadInvasions", "Invalid MaxNPCs in " & ManagedConfigPath(mcEvents)
             ReDim .NPCsVivos(1 To .MaxNPCs)
             tmpStr = File.GetValue(nombre, "NPCs")
             If LenB(tmpStr) > 0 Then
@@ -121,7 +119,7 @@ Sub CargarInfoEventos()
             End If
             Dim SpawnBoxes As Integer
             SpawnBoxes = val(File.GetValue(nombre, "SpawnBoxes"))
-            If SpawnBoxes <= 0 Then Exit Sub
+            If SpawnBoxes <= 0 Then Err.Raise 5, "ReadInvasions", "Invalid SpawnBoxes in " & ManagedConfigPath(mcEvents)
             ReDim .SpawnBoxes(1 To SpawnBoxes)
             For j = 1 To SpawnBoxes
                 tmpStr = File.GetValue(nombre, "SpawnBox" & j)
@@ -158,8 +156,22 @@ Sub CargarInfoEventos()
             Next
         End With
     Next
-    frmMain.Invasion.Enabled = True
     Set File = Nothing
+End Sub
+
+Public Sub PublishInvasions(ByRef staged() As t_Invasion)
+    Invasiones = staged
+    frmMain.Invasion.Enabled = UBound(Invasiones) > 0
+End Sub
+
+Sub CargarInfoEventos()
+    On Error GoTo CargarInfoEventos_Err
+    Dim staged() As t_Invasion
+    Call ReadInvasions(staged)
+    Call PublishInvasions(staged)
+    Exit Sub
+CargarInfoEventos_Err:
+    Call ReportManagedConfigFailure("ModInvasion.CargarInfoEventos", Err.Number, Err.Description)
 End Sub
 
 Sub IniciarInvasion(ByVal Index As Integer)

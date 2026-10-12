@@ -499,18 +499,26 @@ End Sub
 Sub Main()
     On Error GoTo Handler
 
+    #If UNIT_TEST = 1 Then
+        If LCase$(Trim$(Command$)) = "--test-managed-config" Then
+            Call RunManagedConfigTests()
+            End
+        End If
+    #End If
+
     If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
         Call RunStringBuilderBenchmark
         End
     End If
         
+    Call InitializeCircularLogBuffer()
+    Call InitializeManagedConfig(Command$)
     Call TryInitShard
     
     Call Uptime_Init
     #If DIRECT_PLAY = 1 Then
         InitDPlay
     #End If
-    Call InitializeCircularLogBuffer
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
     
@@ -539,6 +547,7 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
     Call LoadSini
+    Call LogManagedConfigPaths()
     Call LoadPacketRatePolicy
     #If PYMMO = 1 Then
         Call LoadPrivateKey
@@ -663,6 +672,7 @@ Sub Main()
     #End If
     'castle module needs writer initialized
     Call LoadCastleModule
+    Call CompleteConfigStartup()
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
@@ -731,6 +741,9 @@ UnitTest_Err:
     Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
     Exit Sub
 Handler:
+    If Not ConfigStartupComplete() Then
+        Call FatalConfigStartup(Err.Number, Err.Description)
+    End If
     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
 End Sub
 

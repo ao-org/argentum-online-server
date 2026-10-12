@@ -173,15 +173,8 @@ End Sub
 
 ' Returns "S1" from "/shard=S1" ("" if absent)
 Public Function GetShardIdFromCmdline() As String
-    Dim cmd As String, pref As String, p As Long, rest As String, sp As Long, v As String
-    pref = "/shard="
-    cmd = Command$
-    p = InStr(1, cmd, pref, vbTextCompare)
-    If p = 0 Then GetShardIdFromCmdline = "": Exit Function
-    rest = mid$(cmd, p + Len(pref))
-    sp = InStr(rest, " ")
-    If sp > 0 Then v = Left$(rest, sp - 1) Else v = rest
-    GetShardIdFromCmdline = Trim$(v)
+    Dim present As Boolean
+    GetShardIdFromCmdline = StartupOption(Command$, "/shard", present)
 End Function
 
 Private Function SafeCLng(ByVal s As String) As Long
