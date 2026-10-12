@@ -59,11 +59,15 @@ Private Sub DumpSettings()
     Next key
 End Sub
 
-Public Function LoadSettings(ByVal Filename As String) As Long
+Public Function LoadSettings(ByVal Filename As String, Optional ByVal source As clsIniManager = Nothing) As Long
     LoadSettings = -1
     Dim reader As clsIniManager
-    Set reader = New clsIniManager
-    Call reader.Initialize(Filename)
+    If source Is Nothing Then
+        Set reader = New clsIniManager
+        Call reader.Initialize(Filename)
+    Else
+        Set reader = source
+    End If
     'The number of outstanding receive buffers allocated for each DirectPlay thread. If you increase the number of receive buffers, DirectPlay can pull more data out of the operating system buffers. However, you may also increase latency if data is arriving faster than your application can process it.
     mSettings.Add "DP_BuffersPerThread", CLng(val(reader.GetValue("DIRECTPLAY", "BuffersPerThread", 5)))
     mSettings.Add "DP_DefaultEnumCount", CLng(val(reader.GetValue("DIRECTPLAY", "DefaultEnumCount", 5)))

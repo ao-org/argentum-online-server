@@ -37,3 +37,8 @@ vb6build.log
 *.pdb
 /dumps
 _assets
+
+# Private managed configuration and local test output
+/Balance.dat
+/Eventos.dat
+managed_config_test_results.txt
