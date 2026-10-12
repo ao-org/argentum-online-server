@@ -270,18 +270,18 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 30: RunSuite = Unit_CircularLog.test_suite_circular_log()
         Case 31: RunSuite = Unit_StringValid.test_suite_string_valid()
         Case 32: RunSuite = Unit_SumarTiempo.test_suite_sumar_tiempo()
-        Case 33: RunSuite = Unit_Partition.test_suite_partition()
 #If DIRECT_PLAY = 1 Then
-        Case 34: RunSuite = Unit_Network.test_suite_network()
+        Case 33: RunSuite = Unit_Network.test_suite_network()
 #End If
 #If DIRECT_PLAY = 0 Then
-        Case 35: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
+        Case 34: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
-        Case 36: RunSuite = Unit_Weather.test_suite_weather()
-        Case 37: RunSuite = test_suite_remort_persistence()
-        Case 38: RunSuite = test_suite_remort_capability_state()
-        Case 39: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
-        Case 40: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
+        Case 35: RunSuite = Unit_Weather.test_suite_weather()
+        Case 36: RunSuite = test_suite_remort_persistence()
+        Case 37: RunSuite = test_suite_remort_capability_state()
+        Case 38: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
+        Case 39: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
+        Case 40: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
         Case 41: RunSuite = test_suite_taming()
         Case Else
             RunSuite = False

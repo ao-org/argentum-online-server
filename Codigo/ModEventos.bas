@@ -172,23 +172,36 @@ DescribirEvento_Err:
     Call TraceError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
 End Function
 
-Public Sub CargarEventos()
-    On Error GoTo CargarEventos_Err
-    Dim i          As Byte
-    Dim EventoStrg As String
+Public Sub ReadScheduledEvents(ByRef events() As t_EventoPropiedades)
+    Dim i As Long, eventText As String
+    ReDim events(0 To 23)
     For i = 0 To 23
-        EventoStrg = GetVar(IniPath & "Configuracion.ini", "EVENTOS", i)
-        Evento(i).Tipo = val(ReadField(1, EventoStrg, Asc("-")))
-        Evento(i).Duracion = val(ReadField(2, EventoStrg, Asc("-")))
-        Evento(i).multiplicacion = val(ReadField(3, EventoStrg, Asc("-")))
+        eventText = ReadManagedProfileValue(mcMain, "EVENTOS", CStr(i))
+        events(i).Tipo = val(ReadField(1, eventText, Asc("-")))
+        events(i).Duracion = val(ReadField(2, eventText, Asc("-")))
+        events(i).multiplicacion = val(ReadField(3, eventText, Asc("-")))
+    Next i
+End Sub
+
+Public Sub PublishScheduledEvents(ByRef events() As t_EventoPropiedades)
+    Dim i As Long
+    For i = 0 To 23
+        Evento(i) = events(i)
     Next i
     ExpMultOld = ExpMult
     OroMultOld = OroMult
     DropMultOld = DropMult
     RecoleccionMultOld = RecoleccionMult
+End Sub
+
+Public Sub CargarEventos()
+    On Error GoTo CargarEventos_Err
+    Dim events() As t_EventoPropiedades
+    Call ReadScheduledEvents(events)
+    Call PublishScheduledEvents(events)
     Exit Sub
 CargarEventos_Err:
-    Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
+    Call ReportManagedConfigFailure("ModEventos.CargarEventos", Err.Number, Err.Description)
 End Sub
 
 Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi As Byte, ByVal Quien As String)

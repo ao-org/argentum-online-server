@@ -6208,13 +6208,13 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         If ServerSoloGMs > 0 Then
+            Call WriteManagedConfigValue(mcServer, "INIT", "ServerSoloGMs", "0")
             ServerSoloGMs = 0
-            Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "0")
             Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_DESACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
             Call LogGM(GetUserRealName(UserIndex), "Desactivo Solo GMs (ServerSoloGMs=0)")
         Else
+            Call WriteManagedConfigValue(mcServer, "INIT", "ServerSoloGMs", "1")
             ServerSoloGMs = 1
-            Call WriteVar(iniPath & "Server.ini", "INIT", "ServerSoloGMs", "1")
             Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageLocaleMsg(MSG_SOLO_GMS_ACTIVADO, .name, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER))
             Call LogGM(GetUserRealName(UserIndex), "Activo Solo GMs (ServerSoloGMs=1)")
         End If
@@ -7831,7 +7831,7 @@ Private Function IsUnassistedSpellAllowed(ByVal spellID As Integer) As Boolean
     Dim rawAllowedSpells As String
 
     If Not isLoaded Then
-        rawAllowedSpells = Trim$(GetVar(IniPath & "Configuracion.ini", CONFIG_SECTION, CONFIG_KEY))
+        rawAllowedSpells = Trim$(ReadManagedProfileValue(mcMain, CONFIG_SECTION, CONFIG_KEY))
         rawAllowedSpells = Replace$(rawAllowedSpells, ";", ",")
         rawAllowedSpells = Replace$(rawAllowedSpells, " ", vbNullString)
 

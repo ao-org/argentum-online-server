@@ -195,6 +195,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         If MaxY > 100 Then MaxY = 100
         If MaxX > 100 Then MaxX = 100
         Map = UserList(UserIndex).pos.Map
+        Call SendMagicLightOrbSnapshot(UserIndex)
         'Esto es para ke el cliente elimine lo "fuera de area..."
         Call WriteAreaChanged(UserIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
         'Actualizamos!!!
