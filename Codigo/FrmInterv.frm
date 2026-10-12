@@ -850,38 +850,13 @@ Command1_Click_Err:
 End Sub
 
 Private Sub Command2_Click()
-    On Error GoTo Err
-    'Intervalos
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", CStr(SanaIntervaloSinDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", CStr(StaminaIntervaloSinDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", CStr(SanaIntervaloDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", CStr(StaminaIntervaloDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerderStamina", CStr(IntervaloPerderStamina))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", CStr(IntervaloSed))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", CStr(IntervaloHambre))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", CStr(IntervaloVeneno))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", CStr(IntervaloParalizado))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", CStr(IntervaloInmovilizado))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", CStr(IntervaloInvisible))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", CStr(IntervaloFrio))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", CStr(IntervaloWavFx))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", CStr(TimeoutPrimerPaquete))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", CStr(TimeoutEsperandoLoggear))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", CStr(IntervaloCaminar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))
-    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", IntervaloNPCAI)
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcOwner", CStr(IntervaloNpcOwner))
-    'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
-    MsgBox "Los intervalos se han guardado sin problemas"
+    On Error GoTo Command2_Click_Err
+    Call SaveIntervalos()
+    Call MsgBox("Los intervalos se han guardado sin problemas")
     Exit Sub
-Err:
-    MsgBox "Error al intentar grabar los intervalos"
+Command2_Click_Err:
+    Call ReportManagedConfigFailure("FrmInterv.SaveIntervalos", Err.Number, Err.Description)
+    Call MsgBox("Error al intentar grabar los intervalos")
 End Sub
 
 Private Sub ok_Click()

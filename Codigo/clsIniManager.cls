@@ -72,6 +72,7 @@ Private fileData() As MainNode
 ''
 'Stores the total number of main sections in the loaded INI file
 Private MainNodes  As Long
+Private mStrict As Boolean
 
 ''
 'Default constructor. Does nothing.
@@ -102,24 +103,33 @@ End Sub
 '
 ' @param    file Complete path of the INI file to be loaded.
 ' @see      GetValue
-Public Sub Initialize(ByVal File As String)
+Public Sub Initialize(ByVal File As String, Optional ByVal strict As Boolean = False)
     
     On Error GoTo Initialize_Err
-    If Not FileExist(File) Then
-        Debug.Print "Missing file : " & File
-        Debug.Assert False ' You must create the .Dat file
-        Exit Sub
+    mStrict = strict
+    If Not strict Then
+        If Not FileExist(File) Then
+            Debug.Print "Missing file : " & File
+            Debug.Assert False ' You must create the .Dat file
+            Exit Sub
+        End If
     End If
     
     'Opens the requested file and loads it's data into memory
     Dim handle As Integer
+    Dim opened As Boolean
     Dim Text   As String
     Dim pos    As Long
     'Prevent memory losses if we are attempting to reload a file....
     Call Class_Terminate
     'Get a free handle and start reading line by line until the end
     handle = FreeFile
-    Open File For Input As handle
+    If strict Then
+        Open File For Input Access Read Lock Write As #handle
+    Else
+        Open File For Input As #handle
+    End If
+    opened = True
     Do Until EOF(handle)
         Line Input #handle, Text
         'Is it null??
@@ -152,7 +162,9 @@ Public Sub Initialize(ByVal File As String)
             End If
         End If
     Loop
-    Close handle
+    Close #handle
+    opened = False
+    If strict And MainNodes = 0 Then Err.Raise 5, "clsIniManager.Initialize", "Empty or invalid configuration: " & File
     If MainNodes Then
         'Sort main nodes to allow binary search
         Call SortMainNodes(0, MainNodes - 1)
@@ -164,8 +176,12 @@ Public Sub Initialize(ByVal File As String)
     End If
     Exit Sub
 Initialize_Err:
-    Close handle
-    Call TraceError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
+    Dim failure As Long, detail As String
+    failure = Err.Number
+    detail = Err.Description
+    If opened Then Close #handle
+    If strict Then Err.Raise failure, "clsIniManager.Initialize", "Cannot load configuration: " & File & " (error " & failure & ")"
+    Call TraceError(failure, detail & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
 End Sub
 
 ''
@@ -206,6 +222,7 @@ Private Sub SortChildNodes(ByRef Node As MainNode, ByVal First As Integer, ByVal
     If Min < Last Then SortChildNodes Node, Min, Last
     Exit Sub
 SortChildNodes_Err:
+    If mStrict Then Err.Raise Err.Number, "clsIniManager.SortChildNodes", "Invalid configuration structure"
     Call TraceError(Err.Number, Err.Description, "clsIniManager.SortChildNodes", Erl)
 End Sub
 
@@ -244,6 +261,7 @@ Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
     If Min < Last Then SortMainNodes Min, Last
     Exit Sub
 SortMainNodes_Err:
+    If mStrict Then Err.Raise Err.Number, "clsIniManager.SortMainNodes", "Invalid configuration structure"
     Call TraceError(Err.Number, Err.Description, "clsIniManager.SortMainNodes", Erl)
 End Sub
 
@@ -273,6 +291,7 @@ Public Function GetValue(ByVal Main As String, ByVal key As String, Optional ByV
     End If
     Exit Function
 GetValue_Err:
+    If mStrict Then Err.Raise Err.Number, "clsIniManager.GetValue", "Invalid configuration structure"
     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetValue", Erl)
 End Function
 
@@ -335,6 +354,7 @@ Private Function FindKey(ByRef Node As MainNode, ByVal key As String) As Long
     FindKey = Not Min
     Exit Function
 FindKey_Err:
+    If mStrict Then Err.Raise Err.Number, "clsIniManager.FindKey", "Invalid configuration structure"
     Call TraceError(Err.Number, Err.Description, "clsIniManager.FindKey", Erl)
 End Function
 
@@ -369,6 +389,7 @@ Private Function FindMain(ByVal name As String) As Long
     FindMain = Not Min
     Exit Function
 FindMain_Err:
+    If mStrict Then Err.Raise Err.Number, "clsIniManager.FindMain", "Invalid configuration structure"
     Call TraceError(Err.Number, Err.Description, "clsIniManager.FindMain", Erl)
 End Function
 

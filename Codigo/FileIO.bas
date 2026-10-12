@@ -26,6 +26,138 @@ Attribute VB_Name = "ES"
 '
 '
 Option Explicit
+
+Private Type t_LoadIntervals
+    SanaIntervaloSinDescansar As Integer
+    StaminaIntervaloSinDescansar As Integer
+    SanaIntervaloDescansar As Integer
+    StaminaIntervaloDescansar As Integer
+    IntervaloPerderStamina As Integer
+    IntervaloSed As Integer
+    IntervaloHambre As Integer
+    IntervaloVeneno As Integer
+    IntervaloParalizado As Integer
+    IntervaloInmovilizado As Integer
+    IntervaloInvisible As Integer
+    IntervaloFrio As Integer
+    IntervaloWavFx As Integer
+    IntervaloInvocacion As Integer
+    TimeoutPrimerPaquete As Long
+    TimeoutEsperandoLoggear As Long
+    IntervaloIncineracion As Integer
+    IntervaloTirar As Long
+    IntervaloMeditar As Long
+    IntervaloCaminar As Long
+    IntervaloEnCombate As Long
+    IntervaloUserPuedeCastear As Long
+    IntervaloTrabajarExtraer As Long
+    IntervaloTrabajarConstruir As Long
+    IntervaloUserPuedeAtacar As Long
+    IntervaloMagiaGolpe As Long
+    IntervaloGolpeMagia As Long
+    IntervaloNpcOwner As Long
+    MinutosWs As Long
+    IntervaloCerrarConexion As Long
+    IntervaloCerrarConexionEnDungeon As Long
+    IntervaloUserPuedeUsarU As Long
+    IntervaloUserPuedeUsarClic As Long
+    IntervaloFlechasCazadores As Long
+    IntervaloGolpeUsar As Long
+    IntervaloOculto As Long
+    IntervaloUserPuedeOcultarse As Long
+    IntervaloPuedeSerAtacado As Long
+    IntervaloGuardarUsuarios As Long
+    IntervaloTimerGuardarUsuarios As Long
+    IntervaloMensajeGlobal As Long
+    IntervalAutomatedAction As Long
+    IntervalChangeGlobalQuestsState As Long
+    IntervalPhoenixSpawn As Long
+    IntervalUnderworldSpawn As Long
+    IntervaloNPCAI As Long
+End Type
+
+Private Type t_LoadBalance
+    AirHitReductParalisisTime As Integer
+    AssasinStabbingChance As Single
+    AssistDamageValidTime As Long
+    AssistHelpValidTime As Long
+    BanditCriticalHitChance As Single
+    BardStabbingChance As Single
+    CapVidaMax As Single
+    CapVidaMin As Single
+    CriticalHitDmgModifier As Single
+    DesbalancePromedioVidas As Single
+    DificultadSubirSkill As Integer
+    DivineBloodHealingMultiplierBonus As Single
+    DivineBloodManaCostMultiplier As Single
+    ElementalMatrixForNpcs(1 To MAX_ELEMENT_TAGS, 1 To MAX_ELEMENT_TAGS) As Single
+    ExpLevelUp(1 To STAT_MAXELV) As Long
+    ExtraBackstabChance As Single
+    FactionReKillTime As Long
+    GenericStabbingChance As Single
+    GuildCallCooldown As Long
+    HideAfterHitTime As Long
+    HomeCostTierCapGLD(1 To HOME_COST_TIER_COUNT) As Long
+    HomeCostTierFloorGLD(1 To HOME_COST_TIER_COUNT) As Long
+    HomeCostTierMaxLevel(1 To HOME_COST_TIER_COUNT) As Byte
+    HomeCostTierMinLevel(1 To HOME_COST_TIER_COUNT) As Byte
+    HomeTimer As Integer
+    HomeTimerAdventurer As Integer
+    HomeTimerHero As Integer
+    HomeTimerLegend As Integer
+    HunterStabbingChance As Single
+    IgnoreArmorChance As Single
+    InfluenciaPromedioVidas As Single
+    MagicSkillBonusDamageModifier As Single
+    ManaCommonLute As Integer
+    ManaElvenLute As Integer
+    ManaMagicLute As Integer
+    MaxInvisibleSpellDisplayTime As Integer
+    ModClase(1 To NUMCLASES) As t_ModClase
+    ModRaza(1 To NUMRAZAS) As t_ModRaza
+    MRSkillNpcProtectionModifier As Single
+    MRSkillProtectionModifier As Single
+    MultiplierManaxSkills As Currency
+    MultiShotReduction As Single
+    NpcStunTime As Long
+    PlayerInmuneTime As Long
+    PlayerStunTime As Long
+    PorcentajePescaSegura As Integer
+    PorcentajeRecuperoMana As Integer
+    RangoVidas As Single
+    RecoveryMana As Integer
+    RequiredSpellDisplayTime As Integer
+    WarriorLifeStealOnHitMultiplier As Single
+End Type
+
+Private Type t_LoadSini
+    BootDelBackUp As Byte
+    CharPath As String
+    CuentasPath As String
+    DatPath As String
+    DeleteCuentasPath As String
+    DeletePath As String
+    DisconnectTimeout As Long
+    EnTesting As Boolean
+    GoldPriceMao As Long
+    HideMe As Byte
+    IdleLimit As Integer
+    InstanceMapCount As Integer
+    ListenIp As String
+    MapPath As String
+    MaxConexionesIP As Integer
+    MaxUsersPorCuenta As Byte
+    MinimumLevelMao As Integer
+    MinimumPriceMao As Long
+    PendingConnectionTimeout As Long
+    Puerto As Long
+    ResMap As Integer
+    ResX As Integer
+    ResY As Integer
+    ServerSoloGMs As Integer
+    ULTIMAVERSION As String
+End Type
+
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 Private Const CSM_FIVE_LAYER_SIGNATURE As Long = &H324C3557
 
@@ -321,6 +453,8 @@ Public Sub loadAdministrativeUsers()
     ' If frmMain.Visible Then frmMain.txtStatus.Text = "Cargando Administradores/Dioses/Gms."
     On Error GoTo loadAdministrativeUsers_Err
     'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
+    Dim AdministratorAccounts As Dictionary
+    Dim Administradores As clsIniManager
     Dim buf  As Integer
     Dim i    As Long
     Dim name As String
@@ -331,9 +465,7 @@ Public Sub loadAdministrativeUsers()
     Set Administradores = New clsIniManager
     ' Server ini info file
     Dim ServerIni As clsIniManager
-    Set ServerIni = New clsIniManager
-    Debug.Assert FileExist(IniPath & "Server.ini")
-    Call ServerIni.Initialize(IniPath & "Server.ini")
+    Set ServerIni = ReadManagedConfig(mcServer)
     ' Admines
     buf = val(ServerIni.GetValue("INIT", "Admines"))
     For i = 1 To buf
@@ -399,11 +531,13 @@ Public Sub loadAdministrativeUsers()
             Call Administradores.ChangeValue("RM", TempName(0), "1")
         End If
     Next i
+    Set Admin.AdministratorAccounts = AdministratorAccounts
+    Set Declaraciones.Administradores = Administradores
     Set ServerIni = Nothing
     'If frmMain.Visible Then frmMain.txtStatus.Text = Date & " " & Time & " - Los Administradores/Dioses/Gms se han cargado correctamente."
     Exit Sub
 loadAdministrativeUsers_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
+    Call ReportManagedConfigFailure("ES.loadAdministrativeUsers", Err.Number, Err.Description)
 End Sub
 
 Public Function TxtDimension(ByVal name As String) As Long
@@ -811,15 +945,22 @@ End Sub
 
 Sub LoadBalance()
     On Error GoTo LoadBalance_Err
+    Dim staged As t_LoadBalance
+    Dim copyIndex As Long, copyColumn As Long
+    For copyIndex = 1 To NUMCLASES
+        staged.ModClase(copyIndex) = Declaraciones.ModClase(copyIndex)
+    Next copyIndex
+    For copyIndex = 1 To NUMRAZAS
+        staged.ModRaza(copyIndex) = Declaraciones.ModRaza(copyIndex)
+    Next copyIndex
     Dim BalanceIni As clsIniManager
-    Set BalanceIni = New clsIniManager
-    BalanceIni.Initialize DatPath & "Balance.dat"
+    Set BalanceIni = ReadManagedConfig(mcBalance)
     Dim i, j As Long
     Dim SearchVar As String
     'Modificadores de Clase
     For i = 1 To NUMCLASES
         SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
-        With ModClase(i)
+        With staged.ModClase(i)
             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
@@ -846,7 +987,7 @@ Sub LoadBalance()
     'Modificadores de Raza
     For i = 1 To NUMRAZAS
         SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
-        With ModRaza(i)
+        With staged.ModRaza(i)
             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
             .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
             .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
@@ -854,61 +995,61 @@ Sub LoadBalance()
             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
         End With
     Next i
-    CriticalHitDmgModifier = val(BalanceIni.GetValue("BACKSTAB", "CriticalHitDmgModifier"))
-    IgnoreArmorChance = val(BalanceIni.GetValue("BACKSTAB", "IgnoreArmorChance"))
-    ExtraBackstabChance = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackstabChance"))
-    AssasinStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinStabbingChance"))
-    HunterStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "HunterStabbingChance"))
-    BardStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "BardStabbingChance"))
-    GenericStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "GenericStabbingChance"))
-    BanditCriticalHitChance = val(BalanceIni.GetValue("BACKSTAB", "BanditCriticalHitChance"))
+    staged.CriticalHitDmgModifier = val(BalanceIni.GetValue("BACKSTAB", "CriticalHitDmgModifier"))
+    staged.IgnoreArmorChance = val(BalanceIni.GetValue("BACKSTAB", "IgnoreArmorChance"))
+    staged.ExtraBackstabChance = val(BalanceIni.GetValue("BACKSTAB", "ExtraBackstabChance"))
+    staged.AssasinStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "AssasinStabbingChance"))
+    staged.HunterStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "HunterStabbingChance"))
+    staged.BardStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "BardStabbingChance"))
+    staged.GenericStabbingChance = val(BalanceIni.GetValue("BACKSTAB", "GenericStabbingChance"))
+    staged.BanditCriticalHitChance = val(BalanceIni.GetValue("BACKSTAB", "BanditCriticalHitChance"))
     'Extra
-    PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
-    RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
-    MultiplierManaxSkills = val(BalanceIni.GetValue("EXTRA", "MultiplierManaxSkills"))
-    ManaCommonLute = val(BalanceIni.GetValue("EXTRA", "ManaCommonLute"))
-    ManaMagicLute = val(BalanceIni.GetValue("EXTRA", "ManaMagicLute"))
-    ManaElvenLute = val(BalanceIni.GetValue("EXTRA", "ManaElvenLute"))
-    DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
-    InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
-    DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
-    RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-    CapVidaMax = val(BalanceIni.GetValue("EXTRA", "CapVidaMax"))
-    CapVidaMin = val(BalanceIni.GetValue("EXTRA", "CapVidaMin"))
-    RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
-    MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
-    MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
-    HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
-    HomeTimerAdventurer = val(BalanceIni.GetValue("EXTRA", "HomeTimerAdventurer"))
-    HomeTimerHero = val(BalanceIni.GetValue("EXTRA", "HomeTimerHero"))
-    HomeTimerLegend = val(BalanceIni.GetValue("EXTRA", "HomeTimerLegend"))
-    MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
-    MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
-    MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
-    AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
-    AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
-    HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
-    FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
-    AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
-    PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
-    DivineBloodHealingMultiplierBonus = val(BalanceIni.GetValue("EXTRA", "DivineBloodHealingMultiplierBonus"))
-    DivineBloodManaCostMultiplier = val(BalanceIni.GetValue("EXTRA", "DivineBloodManaCostMultiplier"))
-    WarriorLifeStealOnHitMultiplier = val(BalanceIni.GetValue("EXTRA", "WarriorLifeStealOnHitMultiplier"))
+    staged.PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+    staged.RecoveryMana = val(BalanceIni.GetValue("EXTRA", "RecoveryMana"))
+    staged.MultiplierManaxSkills = val(BalanceIni.GetValue("EXTRA", "MultiplierManaxSkills"))
+    staged.ManaCommonLute = val(BalanceIni.GetValue("EXTRA", "ManaCommonLute"))
+    staged.ManaMagicLute = val(BalanceIni.GetValue("EXTRA", "ManaMagicLute"))
+    staged.ManaElvenLute = val(BalanceIni.GetValue("EXTRA", "ManaElvenLute"))
+    staged.DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
+    staged.InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
+    staged.DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
+    staged.RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
+    staged.CapVidaMax = val(BalanceIni.GetValue("EXTRA", "CapVidaMax"))
+    staged.CapVidaMin = val(BalanceIni.GetValue("EXTRA", "CapVidaMin"))
+    staged.RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
+    staged.MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
+    staged.MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
+    staged.HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
+    staged.HomeTimerAdventurer = val(BalanceIni.GetValue("EXTRA", "HomeTimerAdventurer"))
+    staged.HomeTimerHero = val(BalanceIni.GetValue("EXTRA", "HomeTimerHero"))
+    staged.HomeTimerLegend = val(BalanceIni.GetValue("EXTRA", "HomeTimerLegend"))
+    staged.MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
+    staged.MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
+    staged.MRSkillNpcProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifierNpc"))
+    staged.AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
+    staged.AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
+    staged.HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
+    staged.FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
+    staged.AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
+    staged.PorcentajePescaSegura = val(BalanceIni.GetValue("EXTRA", "PorcentajePescaSegura"))
+    staged.DivineBloodHealingMultiplierBonus = val(BalanceIni.GetValue("EXTRA", "DivineBloodHealingMultiplierBonus"))
+    staged.DivineBloodManaCostMultiplier = val(BalanceIni.GetValue("EXTRA", "DivineBloodManaCostMultiplier"))
+    staged.WarriorLifeStealOnHitMultiplier = val(BalanceIni.GetValue("EXTRA", "WarriorLifeStealOnHitMultiplier"))
     'stun
-    PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
-    NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
-    PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
-    GuildCallCooldown = val(BalanceIni.GetValue("GUILD", "GuildCallCooldown"))
+    staged.PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
+    staged.NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
+    staged.PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
+    staged.GuildCallCooldown = val(BalanceIni.GetValue("GUILD", "GuildCallCooldown"))
     ' Exp
     For i = 1 To STAT_MAXELV
-        ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
+        staged.ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
     Next
         ' Costo de /hogar por tramos de nivel
     For i = 1 To HOME_COST_TIER_COUNT
-        HomeCostTierMinLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MinLevel", "0")))
-        HomeCostTierMaxLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MaxLevel", "0")))
-        HomeCostTierFloorGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "FloorGLD", "0")))
-        HomeCostTierCapGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "CapGLD", "0")))
+        staged.HomeCostTierMinLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MinLevel", "0")))
+        staged.HomeCostTierMaxLevel(i) = CByte(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "MaxLevel", "0")))
+        staged.HomeCostTierFloorGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "FloorGLD", "0")))
+        staged.HomeCostTierCapGLD(i) = CLng(val(BalanceIni.GetValue("HOME_COST_TIER" & i, "CapGLD", "0")))
     Next i
     'ElementalMatrixForNpcs
     Dim vals() As String
@@ -917,15 +1058,84 @@ Sub LoadBalance()
         row = (CStr(BalanceIni.GetValue("ElementalMatrixForNpcs", "Row" & i + 1, "1")))
         vals = Split(row, " ")
         For j = 0 To MAX_ELEMENT_TAGS - 1
-            ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
+            staged.ElementalMatrixForNpcs(i + 1, j + 1) = val(vals(j))
         Next j
     Next i
+    Admin.AirHitReductParalisisTime = staged.AirHitReductParalisisTime
+    Admin.AssasinStabbingChance = staged.AssasinStabbingChance
+    Admin.AssistDamageValidTime = staged.AssistDamageValidTime
+    Admin.AssistHelpValidTime = staged.AssistHelpValidTime
+    Admin.BanditCriticalHitChance = staged.BanditCriticalHitChance
+    Admin.BardStabbingChance = staged.BardStabbingChance
+    Admin.CapVidaMax = staged.CapVidaMax
+    Admin.CapVidaMin = staged.CapVidaMin
+    Admin.CriticalHitDmgModifier = staged.CriticalHitDmgModifier
+    Admin.DesbalancePromedioVidas = staged.DesbalancePromedioVidas
+    Admin.DificultadSubirSkill = staged.DificultadSubirSkill
+    Admin.DivineBloodHealingMultiplierBonus = staged.DivineBloodHealingMultiplierBonus
+    Admin.DivineBloodManaCostMultiplier = staged.DivineBloodManaCostMultiplier
+    For copyIndex = 1 To MAX_ELEMENT_TAGS
+    For copyColumn = 1 To MAX_ELEMENT_TAGS
+        Declaraciones.ElementalMatrixForNpcs(copyIndex, copyColumn) = staged.ElementalMatrixForNpcs(copyIndex, copyColumn)
+    Next copyColumn
+    Next copyIndex
+    For copyIndex = 1 To STAT_MAXELV
+        Admin.ExpLevelUp(copyIndex) = staged.ExpLevelUp(copyIndex)
+    Next copyIndex
+    Admin.ExtraBackstabChance = staged.ExtraBackstabChance
+    Admin.FactionReKillTime = staged.FactionReKillTime
+    Admin.GenericStabbingChance = staged.GenericStabbingChance
+    Admin.GuildCallCooldown = staged.GuildCallCooldown
+    Admin.HideAfterHitTime = staged.HideAfterHitTime
+    For copyIndex = 1 To HOME_COST_TIER_COUNT
+        Declaraciones.HomeCostTierCapGLD(copyIndex) = staged.HomeCostTierCapGLD(copyIndex)
+    Next copyIndex
+    For copyIndex = 1 To HOME_COST_TIER_COUNT
+        Declaraciones.HomeCostTierFloorGLD(copyIndex) = staged.HomeCostTierFloorGLD(copyIndex)
+    Next copyIndex
+    For copyIndex = 1 To HOME_COST_TIER_COUNT
+        Declaraciones.HomeCostTierMaxLevel(copyIndex) = staged.HomeCostTierMaxLevel(copyIndex)
+    Next copyIndex
+    For copyIndex = 1 To HOME_COST_TIER_COUNT
+        Declaraciones.HomeCostTierMinLevel(copyIndex) = staged.HomeCostTierMinLevel(copyIndex)
+    Next copyIndex
+    Admin.HomeTimer = staged.HomeTimer
+    Admin.HomeTimerAdventurer = staged.HomeTimerAdventurer
+    Admin.HomeTimerHero = staged.HomeTimerHero
+    Admin.HomeTimerLegend = staged.HomeTimerLegend
+    Admin.HunterStabbingChance = staged.HunterStabbingChance
+    Admin.IgnoreArmorChance = staged.IgnoreArmorChance
+    Admin.InfluenciaPromedioVidas = staged.InfluenciaPromedioVidas
+    Admin.MagicSkillBonusDamageModifier = staged.MagicSkillBonusDamageModifier
+    Admin.ManaCommonLute = staged.ManaCommonLute
+    Admin.ManaElvenLute = staged.ManaElvenLute
+    Admin.ManaMagicLute = staged.ManaMagicLute
+    Admin.MaxInvisibleSpellDisplayTime = staged.MaxInvisibleSpellDisplayTime
+    For copyIndex = 1 To NUMCLASES
+        Declaraciones.ModClase(copyIndex) = staged.ModClase(copyIndex)
+    Next copyIndex
+    For copyIndex = 1 To NUMRAZAS
+        Declaraciones.ModRaza(copyIndex) = staged.ModRaza(copyIndex)
+    Next copyIndex
+    Admin.MRSkillNpcProtectionModifier = staged.MRSkillNpcProtectionModifier
+    Admin.MRSkillProtectionModifier = staged.MRSkillProtectionModifier
+    Admin.MultiplierManaxSkills = staged.MultiplierManaxSkills
+    Admin.MultiShotReduction = staged.MultiShotReduction
+    Admin.NpcStunTime = staged.NpcStunTime
+    Admin.PlayerInmuneTime = staged.PlayerInmuneTime
+    Admin.PlayerStunTime = staged.PlayerStunTime
+    Admin.PorcentajePescaSegura = staged.PorcentajePescaSegura
+    Admin.PorcentajeRecuperoMana = staged.PorcentajeRecuperoMana
+    Admin.RangoVidas = staged.RangoVidas
+    Admin.RecoveryMana = staged.RecoveryMana
+    Admin.RequiredSpellDisplayTime = staged.RequiredSpellDisplayTime
+    Admin.WarriorLifeStealOnHitMultiplier = staged.WarriorLifeStealOnHitMultiplier
     Call ValidateHomeCostTiers
     Set BalanceIni = Nothing
     AgregarAConsola "Se cargó el balance (Balance.dat)"
     Exit Sub
 LoadBalance_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+    Call ReportManagedConfigFailure("ES.LoadBalance", Err.Number, Err.Description)
 End Sub
 
 Private Sub ValidateHomeCostTiers()
@@ -2004,94 +2214,125 @@ End Sub
 
 Sub LoadSini()
     On Error GoTo LoadSini_Err
+    Dim staged As t_LoadSini
     Dim Lector   As clsIniManager
     Dim Temporal As Long
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
-    If Not FileExist(IniPath & "Server.ini", vbArchive) Then
-        MsgBox "Se requiere de la configuración en Server.ini", vbCritical + vbOKOnly
-        End
-    End If
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "Server.ini")
+    Set Lector = ReadManagedConfig(mcServer)
+    Dim nextFeatures As Dictionary
+    Set nextFeatures = ReadFeatureToggles()
     'Misc
-    BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
+    staged.BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
     'Directorios
-    DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
-    MapPath = Lector.GetValue("DIRECTORIOS", "MapPath")
-    CharPath = Lector.GetValue("DIRECTORIOS", "CharPath")
-    DeletePath = Lector.GetValue("DIRECTORIOS", "DeletePath")
-    CuentasPath = Lector.GetValue("DIRECTORIOS", "CuentasPath")
-    DeleteCuentasPath = Lector.GetValue("DIRECTORIOS", "DeleteCuentasPath")
+    staged.DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
+    staged.MapPath = Lector.GetValue("DIRECTORIOS", "MapPath")
+    staged.CharPath = Lector.GetValue("DIRECTORIOS", "CharPath")
+    staged.DeletePath = Lector.GetValue("DIRECTORIOS", "DeletePath")
+    staged.CuentasPath = Lector.GetValue("DIRECTORIOS", "CuentasPath")
+    staged.DeleteCuentasPath = Lector.GetValue("DIRECTORIOS", "DeleteCuentasPath")
     'Directorios
-    Puerto = val(Lector.GetValue("INIT", "StartPort"))
-    ListenIp = Lector.GetValue("INIT", "ListenIp")
-    If ListenIp = "" Then ListenIp = "0.0.0.0"
-    HideMe = val(Lector.GetValue("INIT", "Hide"))
-    MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
-    MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
-    IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
+    staged.Puerto = val(Lector.GetValue("INIT", "StartPort"))
+    staged.ListenIp = Lector.GetValue("INIT", "ListenIp")
+    If staged.ListenIp = "" Then staged.ListenIp = "0.0.0.0"
+    staged.HideMe = val(Lector.GetValue("INIT", "Hide"))
+    staged.MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
+    staged.MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
+    staged.IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
-    ULTIMAVERSION = Lector.GetValue("INIT", "Version")
-    MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
-    GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
-    MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
-    ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
-    DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
-    InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
-    EnTesting = val(Lector.GetValue("INIT", "Testing"))
-    PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
-    If PendingConnectionTimeout = 0 Then
-        PendingConnectionTimeout = 1000
+    staged.ULTIMAVERSION = Lector.GetValue("INIT", "Version")
+    staged.MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
+    staged.GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
+    staged.MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
+    staged.ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
+    staged.DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
+    staged.InstanceMapCount = val(Lector.GetValue("INIT", "InstanceMaps"))
+    staged.EnTesting = val(Lector.GetValue("INIT", "Testing"))
+    staged.PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
+    If staged.PendingConnectionTimeout = 0 Then
+        staged.PendingConnectionTimeout = 1000
     End If
     'Ressurect pos
-    ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
+    staged.ResMap = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
+    staged.ResX = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
+    staged.ResY = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
     'Max users
     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
+    Dim nextMaxUsers As Integer
     If MaxUsers = 0 Then
-        MaxUsers = Temporal
+        nextMaxUsers = Temporal
+        MaxUsers = nextMaxUsers
         ReDim UserList(1 To MaxUsers) As t_User
         InitializeUserIndexHeap (MaxUsers)
     End If
+    Admin.BootDelBackUp = staged.BootDelBackUp
+    Declaraciones.CharPath = staged.CharPath
+    Declaraciones.CuentasPath = staged.CuentasPath
+    Declaraciones.DatPath = staged.DatPath
+    Declaraciones.DeleteCuentasPath = staged.DeleteCuentasPath
+    Declaraciones.DeletePath = staged.DeletePath
+    modNetwork.DisconnectTimeout = staged.DisconnectTimeout
+    Declaraciones.EnTesting = staged.EnTesting
+    Declaraciones.GoldPriceMao = staged.GoldPriceMao
+    Declaraciones.HideMe = staged.HideMe
+    Declaraciones.IdleLimit = staged.IdleLimit
+    Declaraciones.InstanceMapCount = staged.InstanceMapCount
+    Admin.ListenIp = staged.ListenIp
+    Declaraciones.MapPath = staged.MapPath
+    Declaraciones.MaxConexionesIP = staged.MaxConexionesIP
+    Declaraciones.MaxUsersPorCuenta = staged.MaxUsersPorCuenta
+    Declaraciones.MinimumLevelMao = staged.MinimumLevelMao
+    Declaraciones.MinimumPriceMao = staged.MinimumPriceMao
+    Declaraciones.PendingConnectionTimeout = staged.PendingConnectionTimeout
+    Admin.Puerto = staged.Puerto
+    ResPos.Map = staged.ResMap
+    ResPos.x = staged.ResX
+    ResPos.y = staged.ResY
+    Declaraciones.ServerSoloGMs = staged.ServerSoloGMs
+    Declaraciones.ULTIMAVERSION = staged.ULTIMAVERSION
     Call CargarCiudades
-    Call LoadFeatureToggles
+    Call PublishFeatureToggles(nextFeatures)
     Set Lector = Nothing
     Exit Sub
 LoadSini_Err:
     Set Lector = Nothing
-    Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
+    Call ReportManagedConfigFailure("ES.LoadSini", Err.Number, Err.Description)
+End Sub
+
+Private Function ReadFeatureToggles() As Dictionary
+    Dim nextFeatures As New Dictionary
+    Dim reader As clsIniManager, i As Long, count As Integer, key As String
+    ' Only an initial legacy load may omit this formerly optional file.
+    If Not ExternalConfigEnabled() And FeatureToggles Is Nothing Then
+        If Not FileExist(ManagedConfigPath(mcFeatures)) Then
+            Set ReadFeatureToggles = nextFeatures
+            Exit Function
+        End If
+    End If
+    Set reader = ReadManagedConfig(mcFeatures)
+    count = val(reader.GetValue("INIT", "TOGGLECOUNT"))
+    For i = 1 To count
+        key = reader.GetValue("TOGGLE" & i, "name")
+        nextFeatures.Item(key) = val(reader.GetValue("TOGGLE" & i, "value")) > 0
+    Next i
+    Set ReadFeatureToggles = nextFeatures
+End Function
+
+Private Sub PublishFeatureToggles(ByVal nextFeatures As Dictionary)
+    Set FeatureToggles = nextFeatures
+    ' Preserve the existing pursuit-toggle side effect, after all values parsed successfully.
+    If FeatureToggles.Exists(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
+        Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, FeatureToggles.Item(NPC_CROSS_MAP_PURSUIT_FEATURE))
+    End If
 End Sub
 
 Sub LoadFeatureToggles()
     On Error GoTo LoadFeatureToggles_Err
-    Dim Lector   As clsIniManager
-    Dim Temporal As Long
-    Set FeatureToggles = New Dictionary
-    If Not FileExist("feature_toggle.ini") Then
-        Exit Sub
-    End If
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de feature toggles."
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "feature_toggle.ini")
-    If Lector.NodesCount = 0 Then
-        Exit Sub
-    End If
-    Dim TOGGLECOUNT As Integer
-    TOGGLECOUNT = val(Lector.GetValue("INIT", "TOGGLECOUNT"))
-    Dim i     As Integer
-    Dim key   As String
-    Dim value As Boolean
-    For i = 1 To TOGGLECOUNT
-        key = Lector.GetValue("TOGGLE" & i, "name")
-        value = val(Lector.GetValue("TOGGLE" & i, "value")) > 0
-        Call SetFeatureToggle(key, value)
-    Next i
-    Set Lector = Nothing
+    Dim nextFeatures As Dictionary
+    Set nextFeatures = ReadFeatureToggles()
+    Call PublishFeatureToggles(nextFeatures)
     Exit Sub
 LoadFeatureToggles_Err:
-    Set Lector = Nothing
-    Call TraceError(Err.Number, Err.Description, "ES.LoadFeatureToggles", Erl)
+    Call ReportManagedConfigFailure("ES.LoadFeatureToggles", Err.Number, Err.Description)
 End Sub
 
 Sub LoadPacketRatePolicy()
@@ -2309,103 +2550,187 @@ End Sub
 Sub LoadIntervalos()
     On Error GoTo LoadIntervalos_Err
     Dim Lector As clsIniManager
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "intervalos.ini")
+    Dim nextIntervals As t_LoadIntervals
+    Set Lector = ReadManagedConfig(mcIntervals)
+    ' Keep the original destination types, conversions and defaults; publish only after all parse.
+    nextIntervals.SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+    nextIntervals.StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+    nextIntervals.SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+    nextIntervals.StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+    nextIntervals.IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
+    nextIntervals.IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
+    nextIntervals.IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
+    nextIntervals.IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+    nextIntervals.IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+    nextIntervals.IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+    nextIntervals.IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+    nextIntervals.IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+    nextIntervals.IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+    nextIntervals.IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+    nextIntervals.TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    nextIntervals.TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    nextIntervals.IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+    nextIntervals.IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+    nextIntervals.IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
+    nextIntervals.IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+    nextIntervals.IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
+    nextIntervals.IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+    nextIntervals.IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
+    nextIntervals.IntervaloTrabajarConstruir = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarConstruir"))
+    nextIntervals.IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+    nextIntervals.IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
+    nextIntervals.IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
+    nextIntervals.IntervaloNpcOwner = val(Lector.GetValue("INTERVALOS", "IntervaloNpcOwner", "10000"))
+    nextIntervals.MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
+    nextIntervals.IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    nextIntervals.IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
+    nextIntervals.IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
+    nextIntervals.IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
+    nextIntervals.IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+    nextIntervals.IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
+    nextIntervals.IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+    nextIntervals.IntervaloUserPuedeOcultarse = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeOcultarse"))
+    nextIntervals.IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
+    nextIntervals.IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
+    nextIntervals.IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
+    nextIntervals.IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
+    nextIntervals.IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
+    nextIntervals.IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
+    nextIntervals.IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
+    nextIntervals.IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
+    nextIntervals.IntervaloNPCAI = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI", CStr(DEFAULT_NPC_AI_INTERVAL_MS)))
+    If nextIntervals.MinutosWs < 1 Then nextIntervals.MinutosWs = 10
+
     'Intervalos
-    SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+    SanaIntervaloSinDescansar = nextIntervals.SanaIntervaloSinDescansar
     FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
-    StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+    StaminaIntervaloSinDescansar = nextIntervals.StaminaIntervaloSinDescansar
     FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
-    SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+    SanaIntervaloDescansar = nextIntervals.SanaIntervaloDescansar
     FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
-    StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+    StaminaIntervaloDescansar = nextIntervals.StaminaIntervaloDescansar
     FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
-    IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
+    IntervaloPerderStamina = nextIntervals.IntervaloPerderStamina
     FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
-    IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
+    IntervaloSed = nextIntervals.IntervaloSed
     FrmInterv.txtIntervaloSed.Text = IntervaloSed
-    IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
+    IntervaloHambre = nextIntervals.IntervaloHambre
     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
-    IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+    IntervaloVeneno = nextIntervals.IntervaloVeneno
     FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
-    IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+    IntervaloParalizado = nextIntervals.IntervaloParalizado
     FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
-    IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+    IntervaloInmovilizado = nextIntervals.IntervaloInmovilizado
     FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
-    IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+    IntervaloInvisible = nextIntervals.IntervaloInvisible
     FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
-    IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+    IntervaloFrio = nextIntervals.IntervaloFrio
     FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
-    IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+    IntervaloWavFx = nextIntervals.IntervaloWavFx
     FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
-    IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+    IntervaloInvocacion = nextIntervals.IntervaloInvocacion
     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
-    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    TimeoutPrimerPaquete = nextIntervals.TimeoutPrimerPaquete
     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
-    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    TimeoutEsperandoLoggear = nextIntervals.TimeoutEsperandoLoggear
     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
-    IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+    IntervaloIncineracion = nextIntervals.IntervaloIncineracion
     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
-    IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+    IntervaloTirar = nextIntervals.IntervaloTirar
     FrmInterv.txtintervalotirar.Text = IntervaloTirar
-    IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
+    IntervaloMeditar = nextIntervals.IntervaloMeditar
     FrmInterv.txtIntervaloMeditar.Text = IntervaloMeditar
-    IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+    IntervaloCaminar = nextIntervals.IntervaloCaminar
     FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
-    IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
+    IntervaloEnCombate = nextIntervals.IntervaloEnCombate
     '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-    IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+    IntervaloUserPuedeCastear = nextIntervals.IntervaloUserPuedeCastear
     FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
-    Call InitializeNpcAiInterval(val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI", CStr(DEFAULT_NPC_AI_INTERVAL_MS))))
+    Call InitializeNpcAiInterval(nextIntervals.IntervaloNPCAI)
     FrmInterv.txtAI.Text = IntervaloNPCAI
-    IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
+    IntervaloTrabajarExtraer = nextIntervals.IntervaloTrabajarExtraer
     FrmInterv.txtTrabajoExtraer.Text = IntervaloTrabajarExtraer
-    IntervaloTrabajarConstruir = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarConstruir"))
+    IntervaloTrabajarConstruir = nextIntervals.IntervaloTrabajarConstruir
     FrmInterv.txtTrabajoConstruir.Text = IntervaloTrabajarConstruir
-    IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+    IntervaloUserPuedeAtacar = nextIntervals.IntervaloUserPuedeAtacar
     FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
     'TODO : Agregar estos intervalos al form!!!
-    IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
-    IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
-    IntervaloNpcOwner = val(Lector.GetValue("INTERVALOS", "IntervaloNpcOwner", "10000"))
+    IntervaloMagiaGolpe = nextIntervals.IntervaloMagiaGolpe
+    IntervaloGolpeMagia = nextIntervals.IntervaloGolpeMagia
+    IntervaloNpcOwner = nextIntervals.IntervaloNpcOwner
     'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
     'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
-    MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
-    If MinutosWs < 1 Then MinutosWs = 10
-    IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
-    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
-    IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
-    IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
-    IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
-    IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
-    IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
-    IntervaloUserPuedeOcultarse = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeOcultarse"))
-    IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
-    IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
-    IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
-    IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
-    IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
-    IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
-    IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
-    IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
+    MinutosWs = nextIntervals.MinutosWs
+    IntervaloCerrarConexion = nextIntervals.IntervaloCerrarConexion
+    IntervaloCerrarConexionEnDungeon = nextIntervals.IntervaloCerrarConexionEnDungeon
+    IntervaloUserPuedeUsarU = nextIntervals.IntervaloUserPuedeUsarU
+    IntervaloUserPuedeUsarClic = nextIntervals.IntervaloUserPuedeUsarClic
+    IntervaloFlechasCazadores = nextIntervals.IntervaloFlechasCazadores
+    IntervaloGolpeUsar = nextIntervals.IntervaloGolpeUsar
+    IntervaloOculto = nextIntervals.IntervaloOculto
+    IntervaloUserPuedeOcultarse = nextIntervals.IntervaloUserPuedeOcultarse
+    IntervaloPuedeSerAtacado = nextIntervals.IntervaloPuedeSerAtacado
+    IntervaloGuardarUsuarios = nextIntervals.IntervaloGuardarUsuarios
+    IntervaloTimerGuardarUsuarios = nextIntervals.IntervaloTimerGuardarUsuarios
+    IntervaloMensajeGlobal = nextIntervals.IntervaloMensajeGlobal
+    IntervalAutomatedAction = nextIntervals.IntervalAutomatedAction
+    IntervalChangeGlobalQuestsState = nextIntervals.IntervalChangeGlobalQuestsState
+    IntervalPhoenixSpawn = nextIntervals.IntervalPhoenixSpawn
+    IntervalUnderworldSpawn = nextIntervals.IntervalUnderworldSpawn
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
 LoadIntervalos_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
+    Call ReportManagedConfigFailure("ES.LoadIntervalos", Err.Number, Err.Description)
+End Sub
+
+Public Sub SaveIntervalos()
+    ' Save the applied values to the same file the loader reads. Errors reach the caller.
+    ' Hunger/thirst globals are ticks; their INI values use the original /25 input units.
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "SanaIntervaloSinDescansar", CStr(SanaIntervaloSinDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "StaminaIntervaloSinDescansar", CStr(StaminaIntervaloSinDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "SanaIntervaloDescansar", CStr(SanaIntervaloDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "StaminaIntervaloDescansar", CStr(StaminaIntervaloDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloPerderStamina", CStr(IntervaloPerderStamina))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloSed", CStr(CLng(IntervaloSed) * 25))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloHambre", CStr(CLng(IntervaloHambre) * 25))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloVeneno", CStr(IntervaloVeneno))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloParalizado", CStr(IntervaloParalizado))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloInmovilizado", CStr(IntervaloInmovilizado))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloInvisible", CStr(IntervaloInvisible))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloFrio", CStr(IntervaloFrio))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloWAVFX", CStr(IntervaloWavFx))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "TimeoutPrimerPaquete", CStr(TimeoutPrimerPaquete))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "TimeoutEsperandoLoggear", CStr(TimeoutEsperandoLoggear))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloCaminar", CStr(IntervaloCaminar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloNpcAI", IntervaloNPCAI)
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloNpcOwner", CStr(IntervaloNpcOwner))
 End Sub
 
 Sub LoadMainConfigFile()
     On Error GoTo LoadMainConfigFile_Err
-    Set SvrConfig = New ServerConfig
-    Call SvrConfig.LoadSettings(IniPath & "Configuracion.ini")
-    Call CargarEventos
-    Call CargarInfoRetos
-    Call CargarInfoEventos
-    Call CargarMapasEspeciales
+    Dim nextConfig As New ServerConfig, reader As clsIniManager
+    Dim nextEvents() As t_EventoPropiedades, nextInvasions() As t_Invasion
+    Set reader = ReadManagedConfig(mcMain)
+    Call nextConfig.LoadSettings(ManagedConfigPath(mcMain), reader)
+    Call ReadScheduledEvents(nextEvents)
+    Call ReadInvasions(nextInvasions)
+    ' These unrelated resource reloads retain their legacy behavior and paths.
+    Call CargarInfoRetos()
+    Call CargarMapasEspeciales()
+    ' Every managed component has parsed successfully before any is published.
+    Set SvrConfig = nextConfig
+    Call PublishScheduledEvents(nextEvents)
+    Call PublishInvasions(nextInvasions)
     Exit Sub
 LoadMainConfigFile_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadMainConfigFile", Erl)
+    Call ReportManagedConfigFailure("ES.LoadMainConfigFile", Err.Number, Err.Description)
 End Sub
 
 Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, ByVal value As String)

@@ -2,6 +2,10 @@
 
 This document provides an overview and links to the detailed documentation for various modules within the Argentum 20 game server project. Each module's documentation includes a general description, a list of its main public functions, and its notable dependencies. Component diagrams are also provided to illustrate their interactions.
 
+## Operations
+
+- [External production configuration](./ExternalConfiguration.md): managed paths, reload boundaries, staging rollout and rollback.
+
 ## Documented Modules
 
 Below is a list of modules for which documentation has been generated:
