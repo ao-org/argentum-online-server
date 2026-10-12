@@ -163,21 +163,29 @@ files stay outside the repository.
 
 ## Reproducible validation
 
-From a development checkout with the registered Windows VB6 dependencies:
+From a Windows Command Prompt in a development checkout with the registered
+VB6 dependencies, build the test executable:
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/test-managed-config.ps1
+```cmd
+start "" /wait "C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.EXE" /make Server.VBP /d UsarQueSocket=1:ConUpTime=1:AntiExternos=0:Lac=1:DEBUGGING=0:PYMMO=1:UNLOCK_CPU=1:DIRECT_PLAY=0:UNIT_TEST=1 /out "%TEMP%\ao-managed-config-build.log"
+type "%TEMP%\ao-managed-config-build.log"
 ```
 
-The script builds the real server with `UNIT_TEST=1`, runs
-`server.exe --test-managed-config`, and checks the generated
-`managed_config_test_results.txt`. The entry point executes before normal
-startup, uses only temporary synthetic files, and does not open listeners,
-connect to a database or read private configuration. The script also exercises
-the real `Main` with a nonexistent external directory and requires exit code 1.
-It leaves a test executable in the development checkout; rebuild with
-`UNIT_TEST=0` before deploying. Do not run this build script in a deployment
-folder.
+Confirm the build succeeded and `server.exe` was updated before running:
+
+```cmd
+if exist managed_config_test_results.txt del managed_config_test_results.txt
+start "" /wait server.exe --test-managed-config
+type managed_config_test_results.txt
+```
+
+Expect `Checks=106 Failed=0` and no `FAIL` or `ERROR` entries. This entry point
+executes before normal startup, uses only temporary synthetic files, and does
+not open listeners, connect to a database or read private configuration.
+Separately, run with `/config-dir` pointing to a nonexistent directory and
+verify a fatal startup error and exit code 1, as described in the staging steps.
+Rebuild with `UNIT_TEST=0` before deploying. Do not build or run these tests in a
+deployed server directory.
 
 Tests cover legacy/external selection, quoted/relative/trailing-slash paths,
 argument coexistence and rejection, all six missing/locked files, no fallback
