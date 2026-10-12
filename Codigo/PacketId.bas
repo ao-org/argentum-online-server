@@ -229,6 +229,7 @@ Public Enum ServerPacketID
     eRemortResult
     eHooTargetedSpellCastResult
     eHooHouseDoorActionResult
+    eHooTamingResult
     eMaxPacket
     [PacketCount]
 End Enum

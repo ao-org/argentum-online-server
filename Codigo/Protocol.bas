@@ -1228,6 +1228,7 @@ End Sub
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
     If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
     Dim SupportedMask As Long
+    SupportedMask = HOO_CAP_TAMING_RESULT_V1
     If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_ADJACENT_CHARACTERS_V1
     End If
@@ -3279,21 +3280,25 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Call WriteWorkRequestTarget(UserIndex, 0)
                 End If
             Case e_Skill.Domar
+                Dim TamingResult As e_HooTamingResult
+                Dim TamingCharacter As Integer
+                TamingResult = eHooTamingResult_Rejected
                 Call LookatTile(UserIndex, .pos.Map, x, y)
                 If IsValidNpcRef(.flags.TargetNPC) Then
                     tN = .flags.TargetNPC.ArrayIndex
+                    TamingCharacter = NpcList(tN).Char.charindex
                     If NpcList(tN).flags.Domable > 0 Then
                         If Abs(.pos.x - x) + Abs(.pos.y - y) > 4 Then
                             ' Msg8=Estas demasiado lejos.
                             Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                            Exit Sub
+                            GoTo TamingCompleted
                         End If
                         If GetOwnedBy(tN) <> 0 Then
                             ' Msg717=No puedes domar una criatura que esta luchando con un jugador.
                             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_CRIATURA_LUCHANDO_JUGADOR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                            Exit Sub
+                            GoTo TamingCompleted
                         End If
-                        Call DoDomar(UserIndex, tN)
+                        Call DoDomar(UserIndex, tN, TamingResult)
                     Else
                         ' Msg718=No puedes domar a esa criatura.
                         Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_DOMAR_ESA_CRIATURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -3302,6 +3307,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     ' Msg719=No hay ninguna criatura alli!
                     Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_NINGUNA_CRIATURA_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 End If
+TamingCompleted:
+                Call WriteHooTamingResult(UserIndex, PacketCounter, .pos.Map, x, y, TamingCharacter, TamingResult)
             Case e_Skill.Grupo
                 Call LookatTile(UserIndex, .pos.Map, x, y)
                 'Target whatever is in that tile

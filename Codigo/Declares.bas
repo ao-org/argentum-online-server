@@ -2990,6 +2990,15 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
+Public Const HOO_CAP_TAMING_RESULT_V1 As Long = &H10&
+Public Const HOO_TAMING_RESULT_V1 As String = "hoo-taming-result-v1"
+
+Public Enum e_HooTamingResult
+    eHooTamingResult_Success = 0
+    eHooTamingResult_FailedRoll = 1
+    eHooTamingResult_Rejected = 2
+    eHooTamingResult_Unresolved = 255
+End Enum
 Public Const HOO_FEATURE_ADJACENT_CHARACTERS_V1 As String = "hoo-adjacent-characters-v1"
 Public Const HOO_FEATURE_REMORT_V1 As String = "hoo-remort-v1"
 Public Const HOO_FEATURE_TARGETED_SPELL_CAST_V1 As String = "hoo-targeted-spell-cast-v1"

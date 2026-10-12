@@ -163,6 +163,24 @@ WriteHooHouseDoorActionResult_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHooHouseDoorActionResult", Erl)
 End Sub
 
+Public Sub WriteHooTamingResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal MapId As Integer, ByVal x As Byte, ByVal y As Byte, ByVal CharacterIndex As Integer, ByVal Result As e_HooTamingResult)
+    On Error GoTo WriteHooTamingResult_Err
+    If Not UserSupportsHooCapability(UserIndex, HOO_CAP_TAMING_RESULT_V1) Then Exit Sub
+    If Result < eHooTamingResult_Success Or Result > eHooTamingResult_Rejected Then Exit Sub
+    Call Writer.WriteInt16(ServerPacketID.eHooTamingResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt16(MapId)
+    Call Writer.WriteInt8(x)
+    Call Writer.WriteInt8(y)
+    Call Writer.WriteInt16(CharacterIndex)
+    Call Writer.WriteInt8(CByte(Result))
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooTamingResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteHooTamingResult", Erl)
+End Sub
+
 Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo WriteHora_Err
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
@@ -4649,7 +4667,9 @@ Public Function PrepareActiveToggles()
     Dim ActiveToggles()   As String
     Dim ActiveToggleCount As Integer
     ActiveToggles = GetActiveToggles(ActiveToggleCount)
-    Call Writer.WriteInt16(ActiveToggleCount)
+    ' A supported wire capability, not a gameplay or player-facing toggle.
+    Call Writer.WriteInt16(ActiveToggleCount + 1)
+    Call Writer.WriteString8(HOO_TAMING_RESULT_V1)
     Dim i As Integer
     For i = 0 To ActiveToggleCount - 1
         Call Writer.WriteString8(ActiveToggles(i))
