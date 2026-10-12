@@ -6,10 +6,15 @@ and placement rules, replacement, overlapping casters, remaining-time
 snapshots, expiry, tick wraparound, disconnect and map cleanup. It does not
 connect to a database or start the game server.
 
+The expiry sweep samples the current clock once, after packet handling, rather
+than accepting the older frame-start timestamp. The fixture covers an orb cast
+after frame start surviving its first sweep with its full lifetime, as well as
+expiry sweeps on both sides of tick wraparound.
+
 From the server repository root, create the ignored `build` directory, then
 compile `Fixtures/magic_light_orb/light_orb_check.vbp` with the installed VB6
 compiler's `/make` option. Run `build/magic_light_orb_check.exe`; its result is
-written to `build/magic-light-orb-results.txt`. Success is `PASS 26 checks`.
+written to `build/magic-light-orb-results.txt`. Success is `PASS 31 checks`.
 If the compiler has a Windows compatibility setting that requests elevation,
 set `__COMPAT_LAYER=RunAsInvoker` for this compiler process.
 

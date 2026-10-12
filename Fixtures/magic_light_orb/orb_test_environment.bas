@@ -72,6 +72,7 @@ Public MapData(1 To 100, 1 To 100, 1 To 2) As t_MapTile
 Public ConnGroups(1 To 2) As t_Group
 Public Supported(1 To 2) As Boolean
 Public TestNow As Long
+Public TickReadCount As Long
 Public Packets(1 To 100) As t_CapturedPacket
 Public PacketCount As Integer
 Public ErrorCount As Integer
@@ -84,6 +85,7 @@ Public Function InMapBounds(ByVal Map As Integer, ByVal x As Byte, ByVal y As By
     InMapBounds = Map >= 1 And Map <= 2 And x >= 1 And x <= 100 And y >= 1 And y <= 100
 End Function
 Public Function GetTickCountRaw() As Long
+    TickReadCount = TickReadCount + 1
     GetTickCountRaw = TestNow
 End Function
 Public Function TicksElapsed(ByVal LastTick As Long, ByVal NowRaw As Long) As Double

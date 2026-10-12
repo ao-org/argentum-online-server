@@ -112,9 +112,13 @@ RemoveMagicLightOrb_Err:
     Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.RemoveMagicLightOrb", Erl)
 End Sub
 
-Public Sub UpdateMagicLightOrbs(ByVal NowRaw As Long)
+Public Sub UpdateMagicLightOrbs()
     On Error GoTo UpdateMagicLightOrbs_Err
     If Not OrbsInitialized Then Exit Sub
+    ' Packet handling may create an orb after GlobalFrameTime was sampled.
+    ' Read once here so wrap-safe elapsed time never sees an older frame tick.
+    Dim NowRaw As Long
+    NowRaw = GetTickCountRaw()
     If TicksElapsed(LastUpdate, NowRaw) < ORB_UPDATE_INTERVAL_MS Then Exit Sub
     LastUpdate = NowRaw
     Dim owner As Integer

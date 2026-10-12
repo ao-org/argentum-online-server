@@ -16,11 +16,14 @@ Public Sub Main()
     Dim oldId As Long
     Dim secondId As Long
     Dim output As Integer
+    Dim frameTime As Long
     Hechizos(1).Duration = 60
     Hechizos(1).LightOrbObject = 1
     Hechizos(1).LightOrbCastRange = 6
     ObjData(1).CreaLuz = "1"
-    TestNow = 1000
+    ' The frame starts before network processing creates the orb.
+    frameTime = 1000
+    TestNow = frameTime + 1
     ConnGroups(1).CountEntrys = 2
     ConnGroups(1).UserEntrys(1) = 1
     ConnGroups(1).UserEntrys(2) = 2
@@ -44,7 +47,14 @@ Public Sub Main()
     oldId = Packets(1).InstanceId
     Call Check(Packets(1).x = 21 And Packets(1).y = 22, "clicked tile")
     PacketCount = 0
-    TestNow = 41000
+    TickReadCount = 0
+    Call UpdateMagicLightOrbs()
+    Call Check(TickReadCount = 1, "expiry samples current time once after packet handling")
+    Call Check(PacketCount = 0, "orb created after frame start survives first update")
+    Call SendMagicLightOrbSnapshot(2)
+    Call Check(PacketCount = 1 And Packets(1).Remaining = 60000, "first update preserves full lifetime")
+    PacketCount = 0
+    TestNow = 41001
     Call SendMagicLightOrbSnapshot(2)
     Call Check(PacketCount = 1 And Packets(1).Remaining = 20000, "late arrival remaining time")
     PacketCount = 0
@@ -74,8 +84,8 @@ Public Sub Main()
     Call Check(Not CastMagicLightOrb(1, 1), "capability required")
     Call SendMagicLightOrbSnapshot(1)
     Call Check(PacketCount = 0, "legacy gets no packet")
-    TestNow = 101000
-    Call UpdateMagicLightOrbs(TestNow)
+    TestNow = 101001
+    Call UpdateMagicLightOrbs()
     Call Check(PacketCount = 1 And Packets(1).Remaining = 0, "expiry removal")
     PacketCount = 0
     Call SendMagicLightOrbSnapshot(2)
@@ -83,19 +93,24 @@ Public Sub Main()
     TestNow = -100
     Call Check(CastMagicLightOrb(2, 1), "cast near tick wrap")
     PacketCount = 0
+    Call UpdateMagicLightOrbs()
+    Call Check(PacketCount = 0, "new orb survives update before tick wrap")
     TestNow = 100
+    Call UpdateMagicLightOrbs()
+    Call Check(PacketCount = 0, "new orb survives update after tick wrap")
     Call SendMagicLightOrbSnapshot(2)
     Call Check(PacketCount = 1 And Packets(1).Remaining = 59800, "wrap safe remaining")
     PacketCount = 0
     UserList(2).ConnectionDetails.ConnIDValida = False
-    Call UpdateMagicLightOrbs(TestNow)
+    TestNow = 200
+    Call UpdateMagicLightOrbs()
     Call Check(PacketCount = 1 And Packets(1).Remaining = 0, "disconnect cleanup")
     UserList(2).ConnectionDetails.ConnIDValida = True
     Call Check(CastMagicLightOrb(2, 1), "cast before changing map")
     PacketCount = 0
     UserList(2).pos.Map = 2
     TestNow = 300
-    Call UpdateMagicLightOrbs(TestNow)
+    Call UpdateMagicLightOrbs()
     Call SendMagicLightOrbSnapshot(2)
     Call Check(PacketCount = 0, "no old map orb on new map")
     Call Check(ErrorCount = 0, "no runtime errors")
