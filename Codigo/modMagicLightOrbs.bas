@@ -36,7 +36,7 @@ End Function
 
 Public Function CastMagicLightOrb(ByVal UserIndex As Integer, ByVal SpellId As Integer) As Boolean
     On Error GoTo CastMagicLightOrb_Err
-    If Not UserSupportsMagicLightOrbs(UserIndex) Then Exit Function
+    If Not IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then Exit Function
     If Not CanClassCastLightOrb(UserList(UserIndex).clase) Then Exit Function
     With Hechizos(SpellId)
         If .Duration <= 0 Or .Duration > MAX_ORB_DURATION_SECONDS Then Exit Function
@@ -90,7 +90,7 @@ End Sub
 
 Private Sub SendMagicLightOrbToUser(ByVal Recipient As Integer, ByVal OwnerIndex As Integer, ByVal RemainingMs As Long)
     On Error GoTo SendMagicLightOrbToUser_Err
-    If Not UserSupportsMagicLightOrbs(Recipient) Then Exit Sub
+    If Not IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then Exit Sub
     With UserOrbs(OwnerIndex)
         If UserList(Recipient).pos.Map <> .Position.Map Then Exit Sub
         Call WriteHooMagicLightOrb(Recipient, .InstanceId, .Position.Map, .Position.x, .Position.y, .ProfileObject, RemainingMs)
@@ -139,7 +139,7 @@ End Sub
 Public Sub SendMagicLightOrbSnapshot(ByVal UserIndex As Integer)
     On Error GoTo SendMagicLightOrbSnapshot_Err
     If Not OrbsInitialized Then Exit Sub
-    If Not UserSupportsMagicLightOrbs(UserIndex) Then Exit Sub
+    If Not IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then Exit Sub
     Dim owner As Integer
     Dim remaining As Long
     Dim nowRaw As Long
