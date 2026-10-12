@@ -7,10 +7,10 @@ ownership/capacity checks, pet following, respawn and skill progression remain
 unchanged.
 
 `PrepareActiveToggles` always advertises supported wire capability
-`hoo-taming-result-v1`. A version-1 client must acknowledge bit `0x10` before
+`hoo-taming-result-v1`. A version-1 client must acknowledge bit `0x20` before
 `WriteHooTamingResult` sends anything. This is not an optional gameplay rule.
 
-Appended server ID **206** contains, in existing little-endian framing:
+Appended server ID **207** contains, in existing little-endian framing:
 Int32 original WorkLeftClick counter, Int16 logical map, UInt8 submitted X,
 UInt8 submitted Y, Int16 NPC character index, UInt8 outcome (0 success,
 1 eligible failed random roll, 2 rejected). Including the Int16 packet ID, the
@@ -35,6 +35,7 @@ verify exact field decoding and stale/cross-map/counter/character rejection.
 VB6 compilation and live success/failure/following/save-relog tests require a
 development server; source-level checks alone do not constitute that validation.
 
-`Codigo/PacketId.bas` appends the ID after house-door results without renumbering
-existing packets. Keep this extension when regenerating the packet catalogue;
+`Codigo/PacketId.bas` reserves retired magic-orb ID 206 (and capability bit
+`0x10`) instead of reinterpreting older clients. It appends taming without
+renumbering existing packets. Keep this extension when regenerating the packet catalogue;
 the separate ProtocolGenerator working tree is not modified by this change.

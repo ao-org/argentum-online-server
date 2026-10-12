@@ -2990,7 +2990,8 @@ Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
-Public Const HOO_CAP_TAMING_RESULT_V1 As Long = &H10&
+' &H10& belonged to the retired magic-orb extension; never reuse its capability.
+Public Const HOO_CAP_TAMING_RESULT_V1 As Long = &H20&
 Public Const HOO_TAMING_RESULT_V1 As String = "hoo-taming-result-v1"
 
 Public Enum e_HooTamingResult

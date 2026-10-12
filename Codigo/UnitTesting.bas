@@ -432,6 +432,7 @@ Private Function test_house_door_packet_ids_and_capability() As Boolean
     If CInt(ServerPacketID.eHooHouseDoorActionResult) <> CInt(ServerPacketID.eHooTargetedSpellCastResult) + 1 Then GoTo TestDone
     If AcceptedHooCapabilityMask(1, HOO_CAP_TAMING_RESULT_V1) <> HOO_CAP_TAMING_RESULT_V1 Then GoTo TestDone
     If AcceptedHooCapabilityMask(2, HOO_CAP_TAMING_RESULT_V1) <> 0 Then GoTo TestDone
+    If AcceptedHooCapabilityMask(1, &H10&) <> 0 Then GoTo TestDone
     test_house_door_packet_ids_and_capability = True
 TestDone:
     Call SetFeatureToggle(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1, OriginalFeatureEnabled)
@@ -1199,7 +1200,7 @@ Private Function test_taming_results() As Boolean
     If TamingPresentationResultForMessage(MSG_NO_TAME_FAILED) <> eHooTamingResult_FailedRoll Then Exit Function
     If TamingPresentationResultForMessage(MSG_NO_PUEDES_DOMAR_ESA_CRIATURA) <> eHooTamingResult_Rejected Then Exit Function
     If TamingPresentationResultForMessage(0) <> eHooTamingResult_Rejected Then Exit Function
-    If CInt(ServerPacketID.eHooTamingResult) <> CInt(ServerPacketID.eHooHouseDoorActionResult) + 1 Then Exit Function
+    If CInt(ServerPacketID.eHooTamingResult) <> CInt(ServerPacketID.eHooHouseDoorActionResult) + 2 Then Exit Function
     Dim Roll As Integer, Successes As Integer
     For Roll = 1 To 5
         If GetTamingAttemptMessage(301, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function

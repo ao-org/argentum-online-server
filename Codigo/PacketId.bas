@@ -229,6 +229,7 @@ Public Enum ServerPacketID
     eRemortResult
     eHooTargetedSpellCastResult
     eHooHouseDoorActionResult
+    eReservedHooMagicLightOrb ' Retired wire ID, never sent or reused.
     eHooTamingResult
     eMaxPacket
     [PacketCount]
