@@ -1279,6 +1279,7 @@ Public Enum e_TipoHechizo
     uCombinados = 8
     uMultiShoot = 9
     uPhysicalSkill = 10
+    uLightOrb = 13
 End Enum
 
 Public Const MAX_MENSAJES_FORO   As Byte = 35
@@ -1771,6 +1772,9 @@ Public Type t_Hechizo
     TeleportXX As Integer
     TeleportXY As Integer
     'Hechizo de Materialización
+    LightOrbColor As Long
+    LightOrbRange As Byte
+    LightOrbCastRange As Byte
     MaterializaObj As Integer
     MaterializaCant As Integer
     NecesitaObj As Integer
