@@ -387,73 +387,126 @@ QuitarObjetos_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
 End Function
 
-Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
-    On Error GoTo HerreroQuitarMateriales_Err
-    If Item.ObjIndex = 0 Then Exit Sub
-    With ObjData(Item.ObjIndex)
-        If .LingH > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeHierro, .LingH, UserIndex)
-        If .LingP > 0 Then Call QuitarObjetos(e_Minerales.LingoteDePlata, .LingP, UserIndex)
-        If .LingO > 0 Then Call QuitarObjetos(e_Minerales.LingoteDeOro, .LingO, UserIndex)
-        If .Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, .Coal, UserIndex)
-        If .Blodium > 0 Then Call QuitarObjetos(e_Minerales.Blodium, .Blodium, UserIndex)
-        If .FireEssence > 0 Then Call QuitarObjetos(e_Minerales.FireEssence, .FireEssence, UserIndex)
-        If .WaterEssence > 0 Then Call QuitarObjetos(e_Minerales.WaterEssence, .WaterEssence, UserIndex)
-        If .EarthEssence > 0 Then Call QuitarObjetos(e_Minerales.EarthEssence, .EarthEssence, UserIndex)
-        If .WindEssence > 0 Then Call QuitarObjetos(e_Minerales.WindEssence, .WindEssence, UserIndex)
-    End With
-    Exit Sub
-HerreroQuitarMateriales_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
-End Sub
+' Work only on the caller's staged inventory. No packets or equipment callbacks.
+Private Function StageCraftingMaterial(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByVal materialId As Integer, ByVal perItem As Integer, ByVal quantity As Long, ByRef hasCost As Boolean) As Boolean
+    On Error GoTo StageCraftingMaterial_Err
+    Const MAX_STACK_AMOUNT As Long = 32767 ' t_UserOBJ.amount is a VB6 Integer.
+    If perItem < 0 Then Exit Function
+    If perItem = 0 Then
+        StageCraftingMaterial = True
+        Exit Function
+    End If
+    ' Reject impossible totals before multiplying; no Integer/Long overflow.
+    If quantity > (CLng(slotCount) * MAX_STACK_AMOUNT) \ perItem Then Exit Function
+    Dim remaining As Long, taken As Long, slot As Integer
+    remaining = CLng(perItem) * quantity
+    For slot = 1 To slotCount
+        With inventory.Object(slot)
+            If .ObjIndex = materialId And .ElementalTags = e_ElementalTags.Normal Then
+                ' Crafting ingredients are not equipment. Corrupt stacks fail closed.
+                If .amount <= 0 Or .Equipped <> 0 Then Exit Function
+                taken = .amount
+                If taken > remaining Then taken = remaining
+                .amount = .amount - taken
+                remaining = remaining - taken
+                If .amount = 0 Then
+                    .ObjIndex = 0
+                    .ElementalTags = 0
+                End If
+                If remaining = 0 Then
+                    hasCost = True
+                    StageCraftingMaterial = True
+                    Exit Function
+                End If
+            End If
+        End With
+    Next slot
+    Exit Function
+StageCraftingMaterial_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.StageCraftingMaterial", Erl)
+End Function
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
-    On Error GoTo CarpinteroQuitarMateriales_Err
-    If Item.ObjIndex = 0 Then Exit Sub
-    With ObjData(Item.ObjIndex)
-        If .Madera > 0 Then Call QuitarObjetos(Wood, .Madera * Item.amount, UserIndex)
-        If .MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, .MaderaElfica * Item.amount, UserIndex)
-        If .MaderaPino > 0 Then Call QuitarObjetos(PinoWood, .MaderaPino * Item.amount, UserIndex)
+' Commit once, after every ingredient succeeds. Failure leaves inventory untouched.
+Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByRef recipe As t_ObjData, ByVal job As e_JobsTypes, ByVal quantity As Long) As Boolean
+    On Error GoTo TryConsumeCraftingMaterials_Err
+    If slotCount < 1 Or slotCount > UBound(inventory.Object) Or quantity <= 0 Then Exit Function
+    If job <> e_JobsTypes.Carpenter And quantity <> 1 Then Exit Function
+    Dim staged As t_Inventario, hasCost As Boolean, slot As Integer
+    staged = inventory
+    With recipe
+        Select Case job
+            Case e_JobsTypes.Blacksmith
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeHierro, .LingH, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDePlata, .LingP, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeOro, .LingO, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Coal, .Coal, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Blodium, .Blodium, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.FireEssence, .FireEssence, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WaterEssence, .WaterEssence, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.EarthEssence, .EarthEssence, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WindEssence, .WindEssence, quantity, hasCost) Then Exit Function
+            Case e_JobsTypes.Carpenter
+                If Not StageCraftingMaterial(staged, slotCount, Wood, .Madera, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
+            Case e_JobsTypes.Alchemist
+                If Not StageCraftingMaterial(staged, slotCount, Mortero, .Mortero, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, FrascoAlq, .FrascoAlq, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, HongoDeLuz, .HongoDeLuz, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, Esporas, .Esporas, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, Tuna, .Tuna, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, Cala, .Cala, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, ColaDeZorro, .ColaDeZorro, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, FlorOceano, .FlorOceano, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, FlorRoja, .FlorRoja, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, SemillasProsperas, .SemillasProsperas, quantity, hasCost) Then Exit Function
+            Case e_JobsTypes.Tailor
+                If Not StageCraftingMaterial(staged, slotCount, PieldeLobo, .PielLobo, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPardo, .PielOsoPardo, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPolar, .PielOsoPolaR, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PielLoboNegro, .PielLoboNegro, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PielTigre, .PielTigre, quantity, hasCost) Then Exit Function
+                If Not StageCraftingMaterial(staged, slotCount, PielTigreBengala, .PielTigreBengala, quantity, hasCost) Then Exit Function
+            Case Else
+                Exit Function
+        End Select
     End With
-    Exit Sub
-CarpinteroQuitarMateriales_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
-End Sub
+    ' No free crafts from missing/empty recipe data.
+    If Not hasCost Then Exit Function
+    staged.NroItems = 0
+    For slot = 1 To UBound(staged.Object)
+        If staged.Object(slot).ObjIndex > 0 Then staged.NroItems = staged.NroItems + 1
+    Next slot
+    inventory = staged
+    TryConsumeCraftingMaterials = True
+    Exit Function
+TryConsumeCraftingMaterials_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.TryConsumeCraftingMaterials", Erl)
+End Function
 
-Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
-    On Error GoTo AlquimistaQuitarMateriales_Err
-    If Item.ObjIndex = 0 Then Exit Sub
-    With ObjData(Item.ObjIndex)
-        If .Mortero > 0 Then Call QuitarObjetos(Mortero, .Mortero, UserIndex)
-        If .FrascoAlq > 0 Then Call QuitarObjetos(FrascoAlq, .FrascoAlq, UserIndex)
-        If .HongoDeLuz > 0 Then Call QuitarObjetos(HongoDeLuz, .HongoDeLuz, UserIndex)
-        If .Esporas > 0 Then Call QuitarObjetos(Esporas, .Esporas, UserIndex)
-        If .Tuna > 0 Then Call QuitarObjetos(Tuna, .Tuna, UserIndex)
-        If .Cala > 0 Then Call QuitarObjetos(Cala, .Cala, UserIndex)
-        If .ColaDeZorro > 0 Then Call QuitarObjetos(ColaDeZorro, .ColaDeZorro, UserIndex)
-        If .FlorOceano > 0 Then Call QuitarObjetos(FlorOceano, .FlorOceano, UserIndex)
-        If .FlorRoja > 0 Then Call QuitarObjetos(FlorRoja, .FlorRoja, UserIndex)
-        If .SemillasProsperas > 0 Then Call QuitarObjetos(SemillasProsperas, .SemillasProsperas, UserIndex)
+Private Function ConsumeCraftingMaterials(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal job As e_JobsTypes) As Boolean
+    On Error GoTo ConsumeCraftingMaterials_Err
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    If Item.ObjIndex < LBound(ObjData) Or Item.ObjIndex > UBound(ObjData) Then Exit Function
+    Dim previous As t_Inventario, slot As Byte
+    With UserList(UserIndex)
+        previous = .invent
+        If Not TryConsumeCraftingMaterials(.invent, .CurrentInventorySlots, ObjData(Item.ObjIndex), job, Item.amount) Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
+        ConsumeCraftingMaterials = True
+        ' Publish only after the atomic inventory commit, once per changed slot.
+        For slot = 1 To .CurrentInventorySlots
+            If previous.Object(slot).ObjIndex <> .invent.Object(slot).ObjIndex Or previous.Object(slot).amount <> .invent.Object(slot).amount Then
+                Call UpdateUserInv(False, UserIndex, slot)
+            End If
+        Next slot
     End With
-    Exit Sub
-AlquimistaQuitarMateriales_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
-End Sub
-
-Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByRef Item As t_Obj)
-    On Error GoTo SastreQuitarMateriales_Err
-    If Item.ObjIndex = 0 Then Exit Sub
-    With ObjData(Item.ObjIndex)
-        If .PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, .PielLobo, UserIndex)
-        If .PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, .PielOsoPardo, UserIndex)
-        If .PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, .PielOsoPolaR, UserIndex)
-        If .PielLoboNegro > 0 Then Call QuitarObjetos(PielLoboNegro, .PielLoboNegro, UserIndex)
-        If .PielTigre > 0 Then Call QuitarObjetos(PielTigre, .PielTigre, UserIndex)
-        If .PielTigreBengala > 0 Then Call QuitarObjetos(PielTigreBengala, .PielTigreBengala, UserIndex)
-    End With
-    Exit Sub
-SastreQuitarMateriales_Err:
-    Call TraceError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
-End Sub
+    Exit Function
+ConsumeCraftingMaterials_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.ConsumeCraftingMaterials", Erl)
+End Function
 
 Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long) As Boolean
     On Error GoTo CarpinteroTieneMateriales_Err
@@ -805,7 +858,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         MiObj.Amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
-        Call HerreroQuitarMateriales(UserIndex, MiObj)
+        If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Blacksmith) Then Exit Sub
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         Call WriteUpdateSta(UserIndex)
         ' AGREGAR FX
@@ -909,9 +962,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
             And PuedeConstruirCarpintero(ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
             UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.CarpentryHacksaw Then
-        If UserList(UserIndex).Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
-        Else
+        If UserList(UserIndex).Stats.MinSta <= 2 Then
             'Msg93=Estás muy cansado para trabajar.
             Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             'Msg2129=¡No tengo energía!
@@ -923,7 +974,8 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         MiObj.amount = cantidad_a_construir
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
-        Call CarpinteroQuitarMateriales(UserIndex, MiObj)
+        If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Carpenter) Then Exit Sub
+        Call QuitarSta(UserIndex, 2)
         UserList(UserIndex).Trabajo.Cantidad = UserList(UserIndex).Trabajo.Cantidad - cantidad_a_construir
         Call WriteTextCharDrop(UserIndex, "+" & cantidad_a_construir, UserList(UserIndex).Char.charindex, vbWhite)
 
@@ -980,15 +1032,15 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     ' === [ Main Logic ] ===
     If AlquimistaTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And PuedeConstruirAlquimista( _
             ItemIndex) And ObjData(ToolIndex).OBJType = e_OBJType.otWorkingTools And ObjData(ToolIndex).Subtipo = 4 And KnowsCraftingRecipe(UserIndex, ItemIndex) Then
-        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
-        Call WriteUpdateSta(UserIndex)
-        ' AGREGAR FX
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
         Dim MiObj As t_Obj
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
-        Call AlquimistaQuitarMateriales(UserIndex, MiObj)
+        If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Alchemist) Then Exit Sub
+        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
+        Call WriteUpdateSta(UserIndex)
+        ' AGREGAR FX
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
@@ -1005,7 +1057,6 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     Exit Sub
 AlquimistaConstruirItem_Err:
     Call TraceError(Err.Number, Err.Description & " | UserIndex: " & UserIndex & " | ItemIndex: " & ItemIndex, "Trabajo.AlquimistaConstruirItem", Erl)
-    Resume Next ' Allow execution to continue after logging the error
 End Sub
 
 Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
@@ -1025,18 +1076,18 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria And PuedeConstruirSastre( _
             ItemIndex) And ObjData(UserList(UserIndex).invent.EquippedWorkingToolObjIndex).OBJType = e_OBJType.otWorkingTools And ObjData(UserList( _
             UserIndex).invent.EquippedWorkingToolObjIndex).Subtipo = e_WorkingToolSubType.TailorSewingbox Then
-        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
-        Call WriteUpdateSta(UserIndex)
         Dim MiObj As t_Obj
         MiObj.amount = 1
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
+        If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Tailor) Then Exit Sub
+        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
+        Call WriteUpdateSta(UserIndex)
         If IsFeatureEnabled("gain_exp_while_working") Then
             Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Tailor)
             Call WriteUpdateExp(UserIndex)
             Call CheckUserLevel(UserIndex)
         End If
-        Call SastreQuitarMateriales(UserIndex, MiObj)
         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.charindex, vbWhite)
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
