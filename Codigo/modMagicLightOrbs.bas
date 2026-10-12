@@ -7,19 +7,19 @@ Option Explicit
 
 Private Const ORB_UPDATE_INTERVAL_MS As Long = 100
 Private Const MAX_ORB_DURATION_SECONDS As Long = 3600
-Private Const MAX_ORB_INSTANCE_ID As Long = &H7FFFFFFF
 
 Private Type t_MagicLightOrb
-    InstanceId As Long
+    Active As Boolean
     Position As t_WorldPos
-    ProfileObject As Integer
+    Color As Long
+    Range As Byte
+    Particle As Integer
     CreatedAt As Long
     DurationMs As Long
 End Type
 
 Private UserOrbs() As t_MagicLightOrb
 Private OrbsInitialized As Boolean
-Private NextInstanceId As Long
 Private LastUpdate As Long
 
 Public Function CanClassCastLightOrb(ByVal ClassId As e_Class) As Boolean
@@ -39,8 +39,7 @@ Public Function CastMagicLightOrb(ByVal UserIndex As Integer, ByVal SpellId As I
     If Not CanClassCastLightOrb(UserList(UserIndex).clase) Then Exit Function
     With Hechizos(SpellId)
         If .Duration <= 0 Or .Duration > MAX_ORB_DURATION_SECONDS Then Exit Function
-        If .LightOrbObject <= 0 Or .LightOrbObject > UBound(ObjData) Then Exit Function
-        If Len(ObjData(.LightOrbObject).CreaLuz) = 0 Then Exit Function
+        If .LightOrbColor = 0 Or .LightOrbRange = 0 Or .Particle <= 0 Then Exit Function
         With UserList(UserIndex)
             If .flags.TargetMap <> .pos.Map Or Not IsMagicLightOrbPositionValid(.pos.Map, .pos.x, .pos.y, .flags.TargetX, .flags.TargetY, Hechizos(SpellId).LightOrbCastRange) Then
                 Call WriteLocaleMsg(UserIndex, MSG_LIGHT_ORB_POSITION, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja, CStr(Hechizos(SpellId).LightOrbCastRange))
@@ -48,63 +47,135 @@ Public Function CastMagicLightOrb(ByVal UserIndex As Integer, ByVal SpellId As I
             End If
         End With
     End With
-    If NextInstanceId = MAX_ORB_INSTANCE_ID Then Exit Function
     If Not OrbsInitialized Then
         ReDim UserOrbs(1 To UBound(UserList))
         OrbsInitialized = True
     End If
     ' Validation precedes replacement, so a rejected cast preserves the old orb.
     Call RemoveMagicLightOrb(UserIndex)
-    NextInstanceId = NextInstanceId + 1
     With UserOrbs(UserIndex)
-        .InstanceId = NextInstanceId
+        .Active = True
         .Position.Map = UserList(UserIndex).pos.Map
         .Position.x = UserList(UserIndex).flags.TargetX
         .Position.y = UserList(UserIndex).flags.TargetY
-        .ProfileObject = Hechizos(SpellId).LightOrbObject
+        .Color = Hechizos(SpellId).LightOrbColor
+        .Range = Hechizos(SpellId).LightOrbRange
+        .Particle = Hechizos(SpellId).Particle
         .CreatedAt = GetTickCountRaw()
         .DurationMs = CLng(Hechizos(SpellId).Duration) * 1000
     End With
-    Call BroadcastMagicLightOrb(UserIndex, UserOrbs(UserIndex).DurationMs)
+    Call BroadcastMagicLightOrbTile(UserOrbs(UserIndex).Position, UserOrbs(UserIndex).Particle)
     CastMagicLightOrb = True
     Exit Function
 CastMagicLightOrb_Err:
     Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.CastMagicLightOrb", Erl)
 End Function
 
-Private Sub BroadcastMagicLightOrb(ByVal OwnerIndex As Integer, ByVal RemainingMs As Long)
-    On Error GoTo BroadcastMagicLightOrb_Err
+Private Function OrbOwnerAt(ByRef Position As t_WorldPos, ByVal NowRaw As Long) As Integer
+    Dim owner As Integer
+    If Not OrbsInitialized Then Exit Function
+    For owner = 1 To UBound(UserOrbs)
+        With UserOrbs(owner)
+            If .Active And .Position.Map = Position.Map And .Position.x = Position.x And .Position.y = Position.y Then
+                If TicksElapsed(.CreatedAt, NowRaw) < .DurationMs Then
+                    OrbOwnerAt = owner
+                    Exit Function
+                End If
+            End If
+        End With
+    Next owner
+End Function
+
+Private Sub BroadcastMagicLightOrbTile(ByRef Position As t_WorldPos, ByVal RemovedParticle As Integer)
+    On Error GoTo BroadcastMagicLightOrbTile_Err
     Dim entry As Integer
     Dim recipient As Integer
-    Dim mapId As Integer
-    mapId = UserOrbs(OwnerIndex).Position.Map
-    For entry = 1 To ConnGroups(mapId).CountEntrys
-        recipient = ConnGroups(mapId).UserEntrys(entry)
-        If recipient > 0 Then Call SendMagicLightOrbToUser(recipient, OwnerIndex, RemainingMs)
+    Dim owner As Integer
+    owner = OrbOwnerAt(Position, GetTickCountRaw())
+    For entry = 1 To ConnGroups(Position.Map).CountEntrys
+        recipient = ConnGroups(Position.Map).UserEntrys(entry)
+        If recipient > 0 Then Call SendMagicLightOrbTile(recipient, Position, owner, RemovedParticle)
     Next entry
     Exit Sub
-BroadcastMagicLightOrb_Err:
-    Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.BroadcastMagicLightOrb", Erl)
+BroadcastMagicLightOrbTile_Err:
+    Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.BroadcastMagicLightOrbTile", Erl)
 End Sub
 
-Private Sub SendMagicLightOrbToUser(ByVal Recipient As Integer, ByVal OwnerIndex As Integer, ByVal RemainingMs As Long)
-    On Error GoTo SendMagicLightOrbToUser_Err
-    With UserOrbs(OwnerIndex)
-        If UserList(Recipient).pos.Map <> .Position.Map Then Exit Sub
-        Call WriteHooMagicLightOrb(Recipient, .InstanceId, .Position.Map, .Position.x, .Position.y, .ProfileObject, RemainingMs)
-    End With
+#If UNIT_TEST = 1 Then
+' Runs in the normal server unit suite, not a standalone fixture project.
+Public Function test_suite_light_orbs() As Boolean
+    On Error GoTo test_suite_light_orbs_Err
+    If OrbsInitialized Then
+        Call UnitTesting.RunTestError("floor orb ownership", "requires empty unit-test orb state")
+        Exit Function
+    End If
+    ReDim UserOrbs(1 To 3)
+    OrbsInitialized = True
+    Dim tile As t_WorldPos
+    tile.Map = 1: tile.x = 20: tile.y = 30
+    Dim owner As Integer
+    For owner = 1 To 2
+        UserOrbs(owner).Active = True
+        UserOrbs(owner).Position = tile
+        UserOrbs(owner).CreatedAt = 100
+        UserOrbs(owner).DurationMs = 60000
+    Next owner
+    Call UnitTesting.RunTest("floor orb overlap has one tile presentation", OrbOwnerAt(tile, 200) = 1)
+    UserOrbs(1).Active = False
+    Call UnitTesting.RunTest("removing first orb preserves second owner", OrbOwnerAt(tile, 200) = 2)
+    UserOrbs(2).Active = False
+    Call UnitTesting.RunTest("last orb removal clears tile ownership", OrbOwnerAt(tile, 200) = 0)
+    UserOrbs(1).Active = True
+    Call UnitTesting.RunTest("expired orb not included in entry snapshot", OrbOwnerAt(tile, 60100) = 0)
+    UserOrbs(1).CreatedAt = &HFFFFFFF0
+    UserOrbs(1).DurationMs = 100
+    Call UnitTesting.RunTest("orb remains valid across clock wrap", OrbOwnerAt(tile, &H10) = 1)
+    Call UnitTesting.RunTest("orb expires across clock wrap", OrbOwnerAt(tile, &H54) = 0)
+    tile.Map = 2
+    Call UnitTesting.RunTest("orb ownership does not cross maps", OrbOwnerAt(tile, &H10) = 0)
+    Call UnitTesting.RunTest("only mage druid bard can cast", CanClassCastLightOrb(Mage) And CanClassCastLightOrb(Druid) And CanClassCastLightOrb(Bard) And Not CanClassCastLightOrb(Warrior))
+    Erase UserOrbs
+    OrbsInitialized = False
+    test_suite_light_orbs = True
+    Exit Function
+test_suite_light_orbs_Err:
+    Erase UserOrbs
+    OrbsInitialized = False
+    Call UnitTesting.RunTestError("floor orb ownership suite", Err.Description)
+End Function
+#End If
+
+Private Sub SendMagicLightOrbTile(ByVal Recipient As Integer, ByRef Position As t_WorldPos, ByVal OwnerIndex As Integer, ByVal RemovedParticle As Integer)
+    On Error GoTo SendMagicLightOrbTile_Err
+    If UserList(Recipient).pos.Map <> Position.Map Then Exit Sub
+    If OwnerIndex > 0 Then
+        With UserOrbs(OwnerIndex)
+            Call SendData(SendTarget.ToIndex, Recipient, PrepareMessageLightFXToFloor(Position.x, Position.y, .Color, .Range))
+            ' -1 is the existing persistent floor-particle lifetime. Only the
+            ' server expires the spell; area snapshots never restart its timer.
+            Call SendData(SendTarget.ToIndex, Recipient, PrepareMessageParticleFXToFloor(Position.x, Position.y, .Particle, -1))
+        End With
+    Else
+        ' Do not mutate MapData or create a ground object. Restore any current
+        ' server floor light when the final overlapping orb disappears.
+        With MapData(Position.x, Position.y, Position.Map).Luz
+            Call SendData(SendTarget.ToIndex, Recipient, PrepareMessageLightFXToFloor(Position.x, Position.y, .Color, .Rango))
+        End With
+        Call SendData(SendTarget.ToIndex, Recipient, PrepareMessageParticleFXToFloor(Position.x, Position.y, RemovedParticle, 0))
+    End If
     Exit Sub
-SendMagicLightOrbToUser_Err:
-    Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.SendMagicLightOrbToUser", Erl)
+SendMagicLightOrbTile_Err:
+    Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.SendMagicLightOrbTile", Erl)
 End Sub
 
 Public Sub RemoveMagicLightOrb(ByVal UserIndex As Integer)
     On Error GoTo RemoveMagicLightOrb_Err
     If Not OrbsInitialized Then Exit Sub
     If UserIndex < 1 Or UserIndex > UBound(UserOrbs) Then Exit Sub
-    If UserOrbs(UserIndex).InstanceId = 0 Then Exit Sub
-    Call BroadcastMagicLightOrb(UserIndex, 0)
-    UserOrbs(UserIndex).InstanceId = 0
+    If Not UserOrbs(UserIndex).Active Then Exit Sub
+    ' Remove ownership first. Another caster on this tile keeps it lit.
+    UserOrbs(UserIndex).Active = False
+    Call BroadcastMagicLightOrbTile(UserOrbs(UserIndex).Position, UserOrbs(UserIndex).Particle)
     Exit Sub
 RemoveMagicLightOrb_Err:
     Call TraceError(Err.Number, Err.Description, "modMagicLightOrbs.RemoveMagicLightOrb", Erl)
@@ -121,7 +192,7 @@ Public Sub UpdateMagicLightOrbs()
     LastUpdate = NowRaw
     Dim owner As Integer
     For owner = 1 To UBound(UserOrbs)
-        If UserOrbs(owner).InstanceId <> 0 Then
+        If UserOrbs(owner).Active Then
             If TicksElapsed(UserOrbs(owner).CreatedAt, NowRaw) >= UserOrbs(owner).DurationMs Or _
                 Not UserList(owner).ConnectionDetails.ConnIDValida Or _
                 UserList(owner).pos.Map <> UserOrbs(owner).Position.Map Then
@@ -138,14 +209,13 @@ Public Sub SendMagicLightOrbSnapshot(ByVal UserIndex As Integer)
     On Error GoTo SendMagicLightOrbSnapshot_Err
     If Not OrbsInitialized Then Exit Sub
     Dim owner As Integer
-    Dim remaining As Long
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
     For owner = 1 To UBound(UserOrbs)
         With UserOrbs(owner)
-            If .InstanceId <> 0 And .Position.Map = UserList(UserIndex).pos.Map Then
-                remaining = IntervalRemainingMs(.CreatedAt, .DurationMs, nowRaw)
-                If remaining > 0 Then Call SendMagicLightOrbToUser(UserIndex, owner, remaining)
+            If .Active And .Position.Map = UserList(UserIndex).pos.Map Then
+                ' Exactly one presentation per tile, even with several owners.
+                If OrbOwnerAt(.Position, nowRaw) = owner Then Call SendMagicLightOrbTile(UserIndex, .Position, owner, 0)
             End If
         End With
     Next owner

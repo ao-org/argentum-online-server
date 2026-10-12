@@ -1772,7 +1772,8 @@ Public Type t_Hechizo
     TeleportXX As Integer
     TeleportXY As Integer
     'Hechizo de Materialización
-    LightOrbObject As Integer
+    LightOrbColor As Long
+    LightOrbRange As Byte
     LightOrbCastRange As Byte
     MaterializaObj As Integer
     MaterializaCant As Integer
