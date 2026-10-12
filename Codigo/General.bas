@@ -513,7 +513,6 @@ Sub Main()
         
     Call InitializeCircularLogBuffer()
     Call InitializeManagedConfig(Command$)
-    Call TryInitShard
     
     Call Uptime_Init
     #If DIRECT_PLAY = 1 Then
@@ -522,17 +521,13 @@ Sub Main()
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
     
-    If Not IsShardingEnabled() Then
-        If GetProcessCount(App.EXEName & ".exe") > 1 Then
-            ' Si lo hay, pregunto si lo queremos cerrar.
-            If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
-                End
-            End If
+    If GetProcessCount(App.EXEName & ".exe") > 1 Then
+        ' Si lo hay, pregunto si lo queremos cerrar.
+        If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
+            End
         End If
-        frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
-    Else
-        frmMain.Caption = ShardID & " -> " & frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     End If
+    frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
     Call ChDir(App.Path)
     Call ChDrive(App.Path)

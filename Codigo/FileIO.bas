@@ -27,6 +27,55 @@ Attribute VB_Name = "ES"
 '
 Option Explicit
 
+Private Type t_LoadIntervals
+    SanaIntervaloSinDescansar As Integer
+    StaminaIntervaloSinDescansar As Integer
+    SanaIntervaloDescansar As Integer
+    StaminaIntervaloDescansar As Integer
+    IntervaloPerderStamina As Integer
+    IntervaloSed As Integer
+    IntervaloHambre As Integer
+    IntervaloVeneno As Integer
+    IntervaloParalizado As Integer
+    IntervaloInmovilizado As Integer
+    IntervaloInvisible As Integer
+    IntervaloFrio As Integer
+    IntervaloWavFx As Integer
+    IntervaloInvocacion As Integer
+    TimeoutPrimerPaquete As Long
+    TimeoutEsperandoLoggear As Long
+    IntervaloIncineracion As Integer
+    IntervaloTirar As Long
+    IntervaloMeditar As Long
+    IntervaloCaminar As Long
+    IntervaloEnCombate As Long
+    IntervaloUserPuedeCastear As Long
+    IntervaloTrabajarExtraer As Long
+    IntervaloTrabajarConstruir As Long
+    IntervaloUserPuedeAtacar As Long
+    IntervaloMagiaGolpe As Long
+    IntervaloGolpeMagia As Long
+    IntervaloNpcOwner As Long
+    MinutosWs As Long
+    IntervaloCerrarConexion As Long
+    IntervaloCerrarConexionEnDungeon As Long
+    IntervaloUserPuedeUsarU As Long
+    IntervaloUserPuedeUsarClic As Long
+    IntervaloFlechasCazadores As Long
+    IntervaloGolpeUsar As Long
+    IntervaloOculto As Long
+    IntervaloUserPuedeOcultarse As Long
+    IntervaloPuedeSerAtacado As Long
+    IntervaloGuardarUsuarios As Long
+    IntervaloTimerGuardarUsuarios As Long
+    IntervaloMensajeGlobal As Long
+    IntervalAutomatedAction As Long
+    IntervalChangeGlobalQuestsState As Long
+    IntervalPhoenixSpawn As Long
+    IntervalUnderworldSpawn As Long
+    IntervaloNPCAI As Long
+End Type
+
 Private Type t_LoadBalance
     AirHitReductParalisisTime As Integer
     AssasinStabbingChance As Single
@@ -2499,90 +2548,167 @@ End Sub
 Sub LoadIntervalos()
     On Error GoTo LoadIntervalos_Err
     Dim Lector As clsIniManager
-    Set Lector = New clsIniManager
-    Call Lector.Initialize(IniPath & "intervalos.ini")
+    Dim nextIntervals As t_LoadIntervals
+    Set Lector = ReadManagedConfig(mcIntervals)
+    ' Keep the original destination types, conversions and defaults; publish only after all parse.
+    nextIntervals.SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+    nextIntervals.StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+    nextIntervals.SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+    nextIntervals.StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+    nextIntervals.IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
+    nextIntervals.IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
+    nextIntervals.IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
+    nextIntervals.IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+    nextIntervals.IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+    nextIntervals.IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+    nextIntervals.IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+    nextIntervals.IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+    nextIntervals.IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+    nextIntervals.IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+    nextIntervals.TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    nextIntervals.TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    nextIntervals.IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+    nextIntervals.IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+    nextIntervals.IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
+    nextIntervals.IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+    nextIntervals.IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
+    nextIntervals.IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+    nextIntervals.IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
+    nextIntervals.IntervaloTrabajarConstruir = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarConstruir"))
+    nextIntervals.IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+    nextIntervals.IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
+    nextIntervals.IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
+    nextIntervals.IntervaloNpcOwner = val(Lector.GetValue("INTERVALOS", "IntervaloNpcOwner", "10000"))
+    nextIntervals.MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
+    nextIntervals.IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    nextIntervals.IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
+    nextIntervals.IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
+    nextIntervals.IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
+    nextIntervals.IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+    nextIntervals.IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
+    nextIntervals.IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+    nextIntervals.IntervaloUserPuedeOcultarse = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeOcultarse"))
+    nextIntervals.IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
+    nextIntervals.IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
+    nextIntervals.IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
+    nextIntervals.IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
+    nextIntervals.IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
+    nextIntervals.IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
+    nextIntervals.IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
+    nextIntervals.IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
+    nextIntervals.IntervaloNPCAI = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI", CStr(DEFAULT_NPC_AI_INTERVAL_MS)))
+    If nextIntervals.MinutosWs < 1 Then nextIntervals.MinutosWs = 10
+
     'Intervalos
-    SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+    SanaIntervaloSinDescansar = nextIntervals.SanaIntervaloSinDescansar
     FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
-    StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+    StaminaIntervaloSinDescansar = nextIntervals.StaminaIntervaloSinDescansar
     FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
-    SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+    SanaIntervaloDescansar = nextIntervals.SanaIntervaloDescansar
     FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
-    StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+    StaminaIntervaloDescansar = nextIntervals.StaminaIntervaloDescansar
     FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
-    IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
+    IntervaloPerderStamina = nextIntervals.IntervaloPerderStamina
     FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
-    IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
+    IntervaloSed = nextIntervals.IntervaloSed
     FrmInterv.txtIntervaloSed.Text = IntervaloSed
-    IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
+    IntervaloHambre = nextIntervals.IntervaloHambre
     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
-    IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+    IntervaloVeneno = nextIntervals.IntervaloVeneno
     FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
-    IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+    IntervaloParalizado = nextIntervals.IntervaloParalizado
     FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
-    IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+    IntervaloInmovilizado = nextIntervals.IntervaloInmovilizado
     FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
-    IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+    IntervaloInvisible = nextIntervals.IntervaloInvisible
     FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
-    IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+    IntervaloFrio = nextIntervals.IntervaloFrio
     FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
-    IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+    IntervaloWavFx = nextIntervals.IntervaloWavFx
     FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
-    IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+    IntervaloInvocacion = nextIntervals.IntervaloInvocacion
     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
-    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    TimeoutPrimerPaquete = nextIntervals.TimeoutPrimerPaquete
     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
-    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    TimeoutEsperandoLoggear = nextIntervals.TimeoutEsperandoLoggear
     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
-    IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+    IntervaloIncineracion = nextIntervals.IntervaloIncineracion
     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
-    IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+    IntervaloTirar = nextIntervals.IntervaloTirar
     FrmInterv.txtintervalotirar.Text = IntervaloTirar
-    IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
+    IntervaloMeditar = nextIntervals.IntervaloMeditar
     FrmInterv.txtIntervaloMeditar.Text = IntervaloMeditar
-    IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+    IntervaloCaminar = nextIntervals.IntervaloCaminar
     FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
-    IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
+    IntervaloEnCombate = nextIntervals.IntervaloEnCombate
     '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-    IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+    IntervaloUserPuedeCastear = nextIntervals.IntervaloUserPuedeCastear
     FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
-    Call InitializeNpcAiInterval(val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI", CStr(DEFAULT_NPC_AI_INTERVAL_MS))))
+    Call InitializeNpcAiInterval(nextIntervals.IntervaloNPCAI)
     FrmInterv.txtAI.Text = IntervaloNPCAI
-    IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
+    IntervaloTrabajarExtraer = nextIntervals.IntervaloTrabajarExtraer
     FrmInterv.txtTrabajoExtraer.Text = IntervaloTrabajarExtraer
-    IntervaloTrabajarConstruir = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarConstruir"))
+    IntervaloTrabajarConstruir = nextIntervals.IntervaloTrabajarConstruir
     FrmInterv.txtTrabajoConstruir.Text = IntervaloTrabajarConstruir
-    IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+    IntervaloUserPuedeAtacar = nextIntervals.IntervaloUserPuedeAtacar
     FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
     'TODO : Agregar estos intervalos al form!!!
-    IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
-    IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
-    IntervaloNpcOwner = val(Lector.GetValue("INTERVALOS", "IntervaloNpcOwner", "10000"))
+    IntervaloMagiaGolpe = nextIntervals.IntervaloMagiaGolpe
+    IntervaloGolpeMagia = nextIntervals.IntervaloGolpeMagia
+    IntervaloNpcOwner = nextIntervals.IntervaloNpcOwner
     'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
     'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
-    MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
-    If MinutosWs < 1 Then MinutosWs = 10
-    IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
-    IntervaloCerrarConexionEnDungeon = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexionEnDungeon"))
-    IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
-    IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
-    IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
-    IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
-    IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
-    IntervaloUserPuedeOcultarse = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeOcultarse"))
-    IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
-    IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
-    IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
-    IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
-    IntervalAutomatedAction = val(Lector.GetValue("INTERVALOS", "IntervalAutomatedAction"))
-    IntervalChangeGlobalQuestsState = val(Lector.GetValue("INTERVALOS", "IntervalChangeGlobalQuestsState"))
-    IntervalPhoenixSpawn = val(Lector.GetValue("INTERVALOS", "IntervalPhoenixSpawn"))
-    IntervalUnderworldSpawn = val(Lector.GetValue("INTERVALOS", "IntervalUnderworldSpawn"))
+    MinutosWs = nextIntervals.MinutosWs
+    IntervaloCerrarConexion = nextIntervals.IntervaloCerrarConexion
+    IntervaloCerrarConexionEnDungeon = nextIntervals.IntervaloCerrarConexionEnDungeon
+    IntervaloUserPuedeUsarU = nextIntervals.IntervaloUserPuedeUsarU
+    IntervaloUserPuedeUsarClic = nextIntervals.IntervaloUserPuedeUsarClic
+    IntervaloFlechasCazadores = nextIntervals.IntervaloFlechasCazadores
+    IntervaloGolpeUsar = nextIntervals.IntervaloGolpeUsar
+    IntervaloOculto = nextIntervals.IntervaloOculto
+    IntervaloUserPuedeOcultarse = nextIntervals.IntervaloUserPuedeOcultarse
+    IntervaloPuedeSerAtacado = nextIntervals.IntervaloPuedeSerAtacado
+    IntervaloGuardarUsuarios = nextIntervals.IntervaloGuardarUsuarios
+    IntervaloTimerGuardarUsuarios = nextIntervals.IntervaloTimerGuardarUsuarios
+    IntervaloMensajeGlobal = nextIntervals.IntervaloMensajeGlobal
+    IntervalAutomatedAction = nextIntervals.IntervalAutomatedAction
+    IntervalChangeGlobalQuestsState = nextIntervals.IntervalChangeGlobalQuestsState
+    IntervalPhoenixSpawn = nextIntervals.IntervalPhoenixSpawn
+    IntervalUnderworldSpawn = nextIntervals.IntervalUnderworldSpawn
     '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     Set Lector = Nothing
     Exit Sub
 LoadIntervalos_Err:
-    Call TraceError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
+    Call ReportManagedConfigFailure("ES.LoadIntervalos", Err.Number, Err.Description)
+End Sub
+
+Public Sub SaveIntervalos()
+    ' Save the applied values to the same file the loader reads. Errors reach the caller.
+    ' Hunger/thirst globals are ticks; their INI values use the original /25 input units.
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "SanaIntervaloSinDescansar", CStr(SanaIntervaloSinDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "StaminaIntervaloSinDescansar", CStr(StaminaIntervaloSinDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "SanaIntervaloDescansar", CStr(SanaIntervaloDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "StaminaIntervaloDescansar", CStr(StaminaIntervaloDescansar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloPerderStamina", CStr(IntervaloPerderStamina))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloSed", CStr(CLng(IntervaloSed) * 25))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloHambre", CStr(CLng(IntervaloHambre) * 25))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloVeneno", CStr(IntervaloVeneno))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloParalizado", CStr(IntervaloParalizado))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloInmovilizado", CStr(IntervaloInmovilizado))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloInvisible", CStr(IntervaloInvisible))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloFrio", CStr(IntervaloFrio))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloWAVFX", CStr(IntervaloWavFx))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "TimeoutPrimerPaquete", CStr(TimeoutPrimerPaquete))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "TimeoutEsperandoLoggear", CStr(TimeoutEsperandoLoggear))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloCaminar", CStr(IntervaloCaminar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloNpcAI", IntervaloNPCAI)
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
+    Call WriteManagedConfigValue(mcIntervals, "INTERVALOS", "IntervaloNpcOwner", CStr(IntervaloNpcOwner))
 End Sub
 
 Sub LoadMainConfigFile()

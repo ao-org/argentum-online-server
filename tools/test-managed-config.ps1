@@ -23,7 +23,7 @@ if ($text -notmatch 'Checks=[1-9][0-9]* Failed=0' -or $text -match '(?m)^(FAIL|E
 
 # Exercise the real Main preflight and fatal exit, before any normal startup operation.
 $missing = Join-Path ([IO.Path]::GetTempPath()) ('AO absent config ' + [Guid]::NewGuid().ToString('N'))
-$run = Start-Process -FilePath $exe -WorkingDirectory $root -ArgumentList "/shard=TEST /config-dir=`"$missing`"" -PassThru
+$run = Start-Process -FilePath $exe -WorkingDirectory $root -ArgumentList "--other=TEST /config-dir=`"$missing`"" -PassThru
 if (-not $run.WaitForExit(10000)) { $run.Kill(); throw 'Invalid configuration startup did not fail promptly' }
 if ($run.ExitCode -ne 1) { throw "Expected fatal startup exit 1, got $($run.ExitCode)" }
 Write-Output 'PASS Main rejects a missing external directory with exit code 1'

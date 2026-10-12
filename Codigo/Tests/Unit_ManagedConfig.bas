@@ -53,6 +53,14 @@ Expected:
     InvalidWrite = True
 End Function
 
+Private Function InvalidIntervalSave() As Boolean
+    On Error GoTo Expected
+    Call SaveIntervalos()
+    Exit Function
+Expected:
+    InvalidIntervalSave = InStr(1, Err.Description, "intervalos.ini", vbTextCompare) > 0
+End Function
+
 ' A dedicated UNIT_TEST entry point: no database, network listener or production resources.
 Public Sub RunManagedConfigTests()
     On Error GoTo Failed
@@ -63,6 +71,7 @@ Public Sub RunManagedConfigTests()
     Dim config As e_ManagedConfig, path As String, saved As String
     Dim handle As Integer, locked As Boolean, reader As clsIniManager
     Dim serverText As String, mainText As String, featureText As String, balanceText As String, eventsText As String
+    Dim intervalsText As String
     Dim i As Long, row As String, beforeError As Long
     root = fs.BuildPath(fs.GetSpecialFolder(2), "AO managed config " & fs.GetTempName())
     Call fs.CreateFolder(root)
@@ -80,28 +89,33 @@ Public Sub RunManagedConfigTests()
     Call InitializeCircularLogBuffer()
     Call CompleteConfigStartup()
 
-    value = StartupOption("/shard=S1 /config-dir=" & Chr$(34) & external & "\" & Chr$(34) & " --other=value", "/config-dir", present)
+    value = StartupOption("/other=S1 /config-dir=" & Chr$(34) & external & "\" & Chr$(34) & " --other=value", "/config-dir", present)
     Call Check("quoted directory and trailing slash", present And value = external & "\")
-    value = StartupOption("/config-dir=" & Chr$(34) & external & Chr$(34) & " /shard=S2", "/shard", present)
-    Call Check("shard follows directory", present And value = "S2")
-    value = StartupOption("/shard=S1 /CONFIG-DIR " & Chr$(34) & external & Chr$(34), "/config-dir", present)
+    value = StartupOption("/config-dir=" & Chr$(34) & external & Chr$(34) & " /other=S2", "/other", present)
+    Call Check("unrelated option follows directory", present And value = "S2")
+    value = StartupOption("/other=S1 /CONFIG-DIR " & Chr$(34) & external & Chr$(34), "/config-dir", present)
     Call Check("case-insensitive separated value", present And value = external)
-    value = StartupOption("--unrelated /shard=S1", "/config-dir", present)
+    value = StartupOption("--unrelated /other=S1", "/config-dir", present)
     Call Check("absent option", Not present And value = vbNullString)
-    value = StartupOption("/config-dir=" & Chr$(34) & external & "\/shard=not-an-option" & Chr$(34), "/shard", present)
+    value = StartupOption("/config-dir=" & Chr$(34) & external & "\/other=not-an-option" & Chr$(34), "/other", present)
     Call Check("no option matching inside path", Not present)
     Call Check("empty value rejected", InvalidOption("/config-dir="))
     Call Check("empty quotes rejected", InvalidOption("/config-dir=" & Chr$(34) & Chr$(34)))
-    Call Check("missing value rejected", InvalidOption("/config-dir /shard=S1"))
+    Call Check("missing value rejected", InvalidOption("/config-dir /other=S1"))
     Call Check("unclosed quote rejected", InvalidOption("/config-dir=" & Chr$(34) & external))
     Call Check("duplicate option rejected", InvalidOption("/config-dir=a /config-dir=b"))
     Call Check("missing directory rejected", InvalidDirectory("/config-dir=" & Chr$(34) & root & "\absent" & Chr$(34)))
 
-    Call InitializeManagedConfig("/shard=S1")
-    For config = mcServer To mcEvents
+    Call InitializeManagedConfig("/other=S1")
+    For config = mcServer To mcIntervals
         If config = mcBalance Or config = mcEvents Then path = resources Else path = IniPath
         Call Check("legacy path " & ManagedConfigName(config), ManagedConfigPath(config) = path & ManagedConfigName(config))
     Next config
+    intervalsText = "[INTERVALOS]" & vbCrLf & "SanaIntervaloSinDescansar=12" & vbCrLf & "IntervaloSed=250" & vbCrLf & "IntervaloHambre=500" & vbCrLf & "TimeoutPrimerPaquete=125" & vbCrLf & "IntervaloNpcAI=175" & vbCrLf & "IntervaloWS=3" & vbCrLf & "IntervalUnderworldSpawn=1000"
+    Call PutFixture(IniPath & "intervalos.ini", intervalsText)
+    Call PutFixture(root & "\intervalos.ini", Replace$(intervalsText, "SanaIntervaloSinDescansar=12", "SanaIntervaloSinDescansar=99"))
+    Call LoadIntervalos()
+    Call Check("legacy intervals use IniPath not current directory", SanaIntervaloSinDescansar = 12)
     Call LoadFeatureToggles()
     Call Check("initial missing legacy toggles remain optional", Not IsFeatureEnabled("unit-config"))
     ' A file in the current directory must not override the configured legacy base.
@@ -126,17 +140,18 @@ Public Sub RunManagedConfigTests()
     Call PutFixture(external & "\feature_toggle.ini", featureText)
     Call PutFixture(external & "\Balance.dat", balanceText)
     Call PutFixture(external & "\Eventos.dat", eventsText)
+    Call PutFixture(external & "\intervalos.ini", Replace$(intervalsText, "SanaIntervaloSinDescansar=12", "SanaIntervaloSinDescansar=24"))
     Call PutFixture(resources & "Ciudades.dat", "[INIT]")
     Call PutFixture(resources & "Retos.dat", "[Salas]" & vbCrLf & "Cantidad=0")
     Call PutFixture(resources & "MapasEspeciales.dat", "[MapasEventos]" & vbCrLf & "Cantidad=0")
-    commandLine = "/shard=S1 /config-dir=" & Chr$(34) & external & Chr$(34)
+    commandLine = "/other=S1 /config-dir=" & Chr$(34) & external & Chr$(34)
     Call InitializeManagedConfig(commandLine)
     Call Check("external selected", ExternalConfigEnabled())
     Call InitializeManagedConfig("/config-dir=" & Chr$(34) & "External Config\" & Chr$(34))
     Call Check("relative directory frozen as absolute", ManagedConfigPath(mcServer) = external & "\Server.ini")
     Call InitializeManagedConfig(commandLine)
     Call Check("global bases untouched", IniPath = legacy & "\" And DatPath = resources)
-    For config = mcServer To mcEvents
+    For config = mcServer To mcIntervals
         path = external & "\" & ManagedConfigName(config)
         Call Check("external path " & ManagedConfigName(config), ManagedConfigPath(config) = path)
         saved = path & ".saved"
@@ -154,6 +169,53 @@ Public Sub RunManagedConfigTests()
         Close #handle
         locked = False
     Next config
+    Call LoadIntervalos()
+    Call Check("external intervals override legacy file", SanaIntervaloSinDescansar = 24)
+    Call Check("interval units unchanged", IntervaloSed = 10 And IntervaloHambre = 20 And TimeoutPrimerPaquete = 125 And FrmInterv.txtTimeoutPrimerPaquete.Text = "5")
+    Call Check("AI and world-save intervals unchanged", IntervaloNPCAI = 175 And MinutosWs = 3 And IntervaloNpcOwner = 10000 And IntervalUnderworldSpawn = 1000)
+    Call PutFixture(external & "\intervalos.ini", Replace$(Replace$(intervalsText, "SanaIntervaloSinDescansar=12", "SanaIntervaloSinDescansar=36"), "IntervalUnderworldSpawn=1000", "IntervalUnderworldSpawn=2147483648"))
+    beforeError = frmMain.List1.ListCount
+    Call LoadIntervalos()
+    Call Check("late interval overflow retains earlier globals and UI and reports", SanaIntervaloSinDescansar = 24 And IntervalUnderworldSpawn = 1000 And FrmInterv.txtSanaIntervaloSinDescansar.Text = "24" And frmMain.List1.ListCount > beforeError)
+    Call PutFixture(external & "\intervalos.ini", Replace$(intervalsText, "SanaIntervaloSinDescansar=12", "SanaIntervaloSinDescansar=32768"))
+    Call LoadIntervalos()
+    Call Check("interval Integer bounds unchanged", SanaIntervaloSinDescansar = 24)
+    Call PutFixture(external & "\intervalos.ini", vbNullString)
+    Call LoadIntervalos()
+    Call Check("empty interval reload retains state", SanaIntervaloSinDescansar = 24 And IntervaloNPCAI = 175)
+    Call fs.MoveFile(external & "\intervalos.ini", external & "\intervals.saved")
+    beforeError = frmMain.List1.ListCount
+    Call LoadIntervalos()
+    Call Check("missing interval reload reports without legacy fallback", SanaIntervaloSinDescansar = 24 And frmMain.List1.ListCount > beforeError)
+    Call Check("missing interval save does not create file", InvalidIntervalSave() And Not fs.FileExists(external & "\intervalos.ini"))
+    Call fs.MoveFile(external & "\intervals.saved", external & "\intervalos.ini")
+    Call PutFixture(external & "\intervalos.ini", intervalsText)
+    handle = FreeFile()
+    Open external & "\intervalos.ini" For Binary Access Read Write Lock Read Write As #handle
+    locked = True
+    beforeError = frmMain.List1.ListCount
+    Call LoadIntervalos()
+    Call Check("locked interval reload retains state and reports", SanaIntervaloSinDescansar = 24 And frmMain.List1.ListCount > beforeError)
+    Close #handle
+    locked = False
+    Call PutFixture(external & "\intervalos.ini", Replace$(Replace$(intervalsText, "SanaIntervaloSinDescansar=12", "SanaIntervaloSinDescansar=36"), "IntervalUnderworldSpawn=1000", "IntervalUnderworldSpawn=2000"))
+    Call LoadIntervalos()
+    Call Check("corrected interval reload publishes", SanaIntervaloSinDescansar = 36 And IntervalUnderworldSpawn = 2000 And FrmInterv.txtSanaIntervaloSinDescansar.Text = "36")
+    Call SaveIntervalos()
+    Set reader = ReadManagedConfig(mcIntervals)
+    Call Check("interval save uses external file and original units", reader.GetValue("INTERVALOS", "SanaIntervaloSinDescansar") = "36" And reader.GetValue("INTERVALOS", "IntervaloSed") = "250" And reader.GetValue("INTERVALOS", "IntervaloHambre") = "500")
+    Call Check("interval save leaves legacy file unchanged", GetVar(IniPath & "intervalos.ini", "INTERVALOS", "SanaIntervaloSinDescansar") = "12" And Not fs.FileExists(IniPath & "intervalo.ini"))
+    Call LoadIntervalos()
+    Call Check("interval save reload roundtrip", IntervaloSed = 10 And IntervaloHambre = 20 And SanaIntervaloSinDescansar = 36 And TimeoutPrimerPaquete = 125 And IntervaloNPCAI = 175)
+    Call SetAttr(external & "\intervalos.ini", vbReadOnly)
+    Call Check("read-only interval save reports failure", InvalidIntervalSave())
+    Call SetAttr(external & "\intervalos.ini", vbNormal)
+    Call PutFixture(external & "\intervalos.ini", "[INTERVALOS]")
+    Call LoadIntervalos()
+    Call Check("missing interval keys retain classic defaults", IntervaloNPCAI = DEFAULT_NPC_AI_INTERVAL_MS And MinutosWs = 10 And IntervaloNpcOwner = 10000 And SanaIntervaloSinDescansar = 0)
+    Call PutFixture(external & "\intervalos.ini", "[INTERVALOS]" & vbCrLf & "IntervaloNpcAI=0" & vbCrLf & "IntervaloWS=0")
+    Call LoadIntervalos()
+    Call Check("nonpositive AI and world-save defaults unchanged", IntervaloNPCAI = DEFAULT_NPC_AI_INTERVAL_MS And MinutosWs = 10)
     ' Real loaders: success, malformed conversion after earlier fields, then corrected reload.
     MaxUsers = 1
     Call LoadSini()

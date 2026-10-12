@@ -35,6 +35,7 @@ Public Enum e_ManagedConfig
     mcFeatures = 2
     mcBalance = 3
     mcEvents = 4
+    mcIntervals = 5
 End Enum
 
 Private mConfigDirectory As String
@@ -92,6 +93,7 @@ Public Function ManagedConfigName(ByVal config As e_ManagedConfig) As String
         Case mcFeatures: ManagedConfigName = "feature_toggle.ini"
         Case mcBalance: ManagedConfigName = "Balance.dat"
         Case mcEvents: ManagedConfigName = "Eventos.dat"
+        Case mcIntervals: ManagedConfigName = "intervalos.ini"
         Case Else: Err.Raise 5, "ManagedConfigName", "Unknown managed configuration"
     End Select
 End Function
@@ -145,7 +147,7 @@ Public Sub InitializeManagedConfig(ByVal commandLine As String)
         If Not fs.FolderExists(directory) Then Err.Raise 76, "ManagedConfig", "Configuration directory does not exist or is inaccessible: " & directory
         If Right$(directory, 1) <> "\" Then directory = directory & "\"
         ' Validate the entire required set before publishing the selection or reading Server.ini.
-        For config = mcServer To mcEvents
+        For config = mcServer To mcIntervals
             Call RequireReadableConfig(directory & ManagedConfigName(config))
         Next config
     End If
@@ -177,7 +179,7 @@ Public Sub LogManagedConfigPaths()
     End If
     Call LogThis(0, mode, vbLogEventTypeInformation)
     Call AgregarAConsola(mode)
-    For config = mcServer To mcEvents
+    For config = mcServer To mcIntervals
         mode = ManagedConfigName(config) & " -> " & fs.GetAbsolutePathName(ManagedConfigPath(config))
         Call LogThis(0, mode, vbLogEventTypeInformation)
         Call AgregarAConsola(mode)
