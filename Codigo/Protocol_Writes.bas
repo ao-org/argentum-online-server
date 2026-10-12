@@ -136,7 +136,6 @@ End Sub
 
 Public Sub WriteHooMagicLightOrb(ByVal UserIndex As Integer, ByVal InstanceId As Long, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, ByVal ProfileObject As Integer, ByVal RemainingMs As Long)
     On Error GoTo WriteHooMagicLightOrb_Err
-    If Not IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then Exit Sub
     Call Writer.WriteInt16(ServerPacketID.eHooMagicLightOrb)
     Call Writer.WriteInt32(InstanceId)
     Call Writer.WriteInt16(Map)

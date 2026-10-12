@@ -491,10 +491,6 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
     If HechizoIndex = 0 Then Exit Function
     With UserList(UserIndex)
         If Hechizos(HechizoIndex).Tipo = uLightOrb Then
-            If Not IsFeatureEnabled(HOO_FEATURE_MAGIC_LIGHT_ORBS_V1) Then
-                Call WriteLocaleMsg(UserIndex, MSG_LIGHT_ORB_UNAVAILABLE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
-                Exit Function
-            End If
             If Not CanClassCastLightOrb(.clase) Then
                 Call WriteLocaleMsg(UserIndex, MSG_LIGHT_ORB_CLASS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Exit Function
