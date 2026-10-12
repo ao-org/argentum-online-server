@@ -1864,6 +1864,8 @@ Public Function TestCsmLayerLoading(ByVal legacy As Boolean, ByVal treeOnScenery
     savedInfo = MapInfo(1)
     saved = True
     MapData(50, 50, 1) = emptyTile
+    ' Deployed test executables may not have a build directory yet.
+    If Not FileExist(App.Path & "\build", vbDirectory) Then Call MkDir(App.Path & "\build")
     fixturePath = App.Path & "\build\five-layer-test.csm"
     If FileExist(fixturePath, vbNormal) Then Kill fixturePath
     fh = FreeFile
