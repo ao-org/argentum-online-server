@@ -1801,8 +1801,9 @@ Public Function GetTamingAttemptMessage(ByVal Difficulty As Integer, ByVal Power
     End If
 End Function
 
-Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, Optional ByRef PresentationResult As e_HooTamingResult = eHooTamingResult_Rejected)
     On Error GoTo ErrHandler
+    PresentationResult = eHooTamingResult_Rejected
     Dim puntosDomar As Integer
     Dim CanStay     As Boolean
     Dim petType     As Integer
@@ -1861,6 +1862,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 End If
             End If
             Call SubirSkill(UserIndex, e_Skill.Domar)
+            PresentationResult = TamingPresentationResultForMessage(ResultMessage)
         Else
             ' Msg660=No puedes controlar mas criaturas.
             Call WriteLocaleMsg(UserIndex, MSG_NO_PUEDES_CONTROLAR_MAS_CRIATURAS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -1868,8 +1870,22 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     End With
     Exit Sub
 ErrHandler:
+    PresentationResult = eHooTamingResult_Unresolved
     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.Description)
 End Sub
+
+' Localized messages may be suppressed. The request-correlated acknowledgement
+' is independent, with success assigned only after the authoritative mutation.
+Public Function TamingPresentationResultForMessage(ByVal Message As Integer) As e_HooTamingResult
+    Select Case Message
+        Case MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO
+            TamingPresentationResultForMessage = eHooTamingResult_Success
+        Case MSG_NO_TAME_FAILED
+            TamingPresentationResultForMessage = eHooTamingResult_FailedRoll
+        Case Else
+            TamingPresentationResultForMessage = eHooTamingResult_Rejected
+    End Select
+End Function
 
 ''
 ' Checks if the user can tames a pet.

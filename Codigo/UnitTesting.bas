@@ -1193,6 +1193,16 @@ End Function
 
 Private Function test_taming_results() As Boolean
     On Error GoTo TestError
+    If TamingPresentationResultForMessage(MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO) <> eHooTamingResult_Success Then Exit Function
+    If TamingPresentationResultForMessage(MSG_NO_TAME_FAILED) <> eHooTamingResult_FailedRoll Then Exit Function
+    If TamingPresentationResultForMessage(MSG_NO_PUEDES_DOMAR_ESA_CRIATURA) <> eHooTamingResult_Rejected Then Exit Function
+    If TamingPresentationResultForMessage(0) <> eHooTamingResult_Rejected Then Exit Function
+    #If PYMMO = 1 Then
+        If CInt(ServerPacketID.eReservedHooMagicLightOrb) <> 206 Then Exit Function
+        If CInt(ServerPacketID.eHooTamingResult) <> 207 Then Exit Function
+    #Else
+        If CInt(ServerPacketID.eHooTamingResult) <> CInt(ServerPacketID.eHooHouseDoorActionResult) + 2 Then Exit Function
+    #End If
     Dim Roll As Integer, Successes As Integer
     For Roll = 1 To 5
         If GetTamingAttemptMessage(301, 300, Roll) <> MSG_NO_PUEDES_DOMAR_ESA_CRIATURA Then Exit Function
