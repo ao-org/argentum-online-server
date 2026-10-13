@@ -28,6 +28,13 @@ Client.VBP
 
 ## For AI Agents
 
+New HOO functionality belongs to the required client/server protocol. Do not
+introduce `HOO_CAP_*` flags, per-feature capability negotiation or feature-support
+advertisements. Retired clients and older servers are unsupported. Coordinate
+HOO, server and ProtocolGenerator deployment; preserve unrelated existing
+capability infrastructure until separately audited. See
+`docs/taming-presentation-results.md` for mandatory packet 207 (`PYMMO=1`).
+
 ---
 
 ## Project Context

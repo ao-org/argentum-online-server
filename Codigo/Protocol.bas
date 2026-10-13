@@ -1228,7 +1228,6 @@ End Sub
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
     If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
     Dim SupportedMask As Long
-    SupportedMask = HOO_CAP_TAMING_RESULT_V1
     If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_ADJACENT_CHARACTERS_V1
     End If

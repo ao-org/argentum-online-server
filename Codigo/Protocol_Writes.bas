@@ -165,7 +165,6 @@ End Sub
 
 Public Sub WriteHooTamingResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal MapId As Integer, ByVal x As Byte, ByVal y As Byte, ByVal CharacterIndex As Integer, ByVal Result As e_HooTamingResult)
     On Error GoTo WriteHooTamingResult_Err
-    If Not UserSupportsHooCapability(UserIndex, HOO_CAP_TAMING_RESULT_V1) Then Exit Sub
     If Result < eHooTamingResult_Success Or Result > eHooTamingResult_Rejected Then Exit Sub
     Call Writer.WriteInt16(ServerPacketID.eHooTamingResult)
     Call Writer.WriteInt32(RequestId)
@@ -4667,9 +4666,7 @@ Public Function PrepareActiveToggles()
     Dim ActiveToggles()   As String
     Dim ActiveToggleCount As Integer
     ActiveToggles = GetActiveToggles(ActiveToggleCount)
-    ' A supported wire capability, not a gameplay or player-facing toggle.
-    Call Writer.WriteInt16(ActiveToggleCount + 1)
-    Call Writer.WriteString8(HOO_TAMING_RESULT_V1)
+    Call Writer.WriteInt16(ActiveToggleCount)
     Dim i As Integer
     For i = 0 To ActiveToggleCount - 1
         Call Writer.WriteString8(ActiveToggles(i))

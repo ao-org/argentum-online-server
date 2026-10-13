@@ -1,14 +1,20 @@
 # Correlated taming presentation results
 
-The HOO presentation companion consumes a capability-negotiated acknowledgement
+The HOO presentation companion consumes a mandatory protocol acknowledgement
 of the **existing** WorkLeftClick request. No request packet or gameplay cooldown
 is added. The 20% `RandomNumber(1, 5) = 1` roll, class/skill formula, minimum level,
 ownership/capacity checks, pet following, respawn and skill progression remain
 unchanged.
 
-`PrepareActiveToggles` always advertises supported wire capability
-`hoo-taming-result-v1`. A version-1 client must acknowledge bit `0x20` before
-`WriteHooTamingResult` sends anything. This is not an optional gameplay rule.
+`WriteHooTamingResult` sends resolved outcomes directly, without capability
+checks or feature advertisements. HOO is the supported client; retired clients
+and older servers are unsupported. Deploy the matching HOO client, VB6 server
+and ProtocolGenerator definitions together. Older clients may reject packet 207.
+
+New functionality MUST NOT introduce `HOO_CAP_*` flags, per-feature negotiation,
+or feature-support advertisements. It belongs to the normal required protocol.
+Existing unrelated capability infrastructure remains until a separate audit;
+do not extend it or introduce alternate compatibility paths.
 
 Appended server ID **207** contains, in existing little-endian framing:
 Int32 original WorkLeftClick counter, Int16 logical map, UInt8 submitted X,
@@ -29,13 +35,25 @@ Missing targets have character index zero and must not produce guessed effects.
 A structured result does not replace authoritative character/ownership updates.
 
 `UnitTesting.test_taming_results` retains its five-roll probability regression and
-adds pure outcome mapping; the existing capability suite checks the new bit and
-protocol-version rejection. The companion HOO tests
+adds pure outcome mapping and fixed packet-ID assertions. The companion HOO tests
 verify exact field decoding and stale/cross-map/counter/character rejection.
-VB6 compilation and live success/failure/following/save-relog tests require a
-development server; source-level checks alone do not constitute that validation.
+`tools/test-taming-protocol.ps1` extracts the production functions/writer verbatim,
+compiles them with VB6 and uses the actual Aurora writer with a capture-only send
+sink. It tests four classic taming regressions plus exact 13-byte serialization,
+all three outcomes, missing NPC and unresolved-result suppression. It does not
+open sockets, start the server, load resources or touch a database.
 
-`Codigo/PacketId.bas` reserves retired magic-orb ID 206 (and capability bit
-`0x10`) instead of reinterpreting older clients. It appends taming without
-renumbering existing packets. Keep this extension when regenerating the packet catalogue;
-the separate ProtocolGenerator working tree is not modified by this change.
+Native Windows validation (2026-10-13): all five harness checks passed. Full
+server builds with `PYMMO=1`, `UNIT_TEST=0` and `UNIT_TEST=1` passed. The full
+server executable was not started; live success/failure/following/save-relog
+remain manual validation, not claims of the isolated harness.
+
+`Codigo/PacketId.bas` reserves ID 206 and assigns taming 207 in the supported
+HOO `PYMMO=1` build, without renumbering earlier packets. `PYMMO=0` retains its
+existing extra account packet and shifted tail; it is not HOO's wire layout.
+ProtocolGenerator's root/build templates and deterministic `--packet-ids` output
+carry the same IDs.
+The client keeps the attempt visual at two seconds and correlation at a bounded
+30 seconds, checks map/revision/generation/counter/tile, and never infers ownership
+from particles or sound. NoMascotas despawn suppresses the visual, not the matching
+acknowledgement; newer attempts on the same creature supersede earlier ones.
