@@ -1696,13 +1696,64 @@ ErrHandler:
     Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
 End Function
 
-Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
+Private Function IsHunterTrapItem(ByVal ObjIndex As Integer) As Boolean
+    If ObjIndex <= 0 Or ObjIndex > UBound(ObjData) Then Exit Function
+    IsHunterTrapItem = ObjData(ObjIndex).OBJType = e_OBJType.otUsableOntarget And _
+                       ObjData(ObjIndex).Subtipo = e_UssableOnTarget.eTrap
+End Function
+
+Public Sub UseInventoryRequest(ByVal UserIndex As Integer, ByVal Slot As Byte, _
+                               ByVal Source As Byte, ByVal RequestCounter As Long)
+    On Error GoTo UseInventoryRequest_Err
+    Dim Owner As t_AnyReference, ObjIndex As Integer, Result As Byte
+    Dim TrapTargetReady As Boolean, Acknowledged As Boolean
+    If Not SetRef(Owner, UserIndex, eUser) Then Exit Sub
+    ' Zero is Rejected. Invalid/empty slots must still resolve a client request.
+    If IsHunterTrapItem(UserList(UserIndex).flags.UsingItemObjIndex) Then
+        Call ClearPendingTargetableItem(UserIndex)
+    End If
+    If Slot > 0 And Slot <= UserList(UserIndex).CurrentInventorySlots Then
+        If Slot <= UBound(UserList(UserIndex).invent.Object) Then
+            ObjIndex = UserList(UserIndex).invent.Object(Slot).ObjIndex
+            If ObjIndex > 0 And ObjIndex <= UBound(ObjData) Then
+                If IsHunterTrapItem(ObjIndex) Then
+                    Call ClearPendingTargetableItem(UserIndex)
+                Else
+                    Result = eTrapUseNotATrap
+                End If
+                Call UseInvItem(UserIndex, Slot, IIf(Source = eTrapUseInventoryClick, 1, 0), TrapTargetReady, True)
+                If TrapTargetReady Then Result = eTrapUseAcceptedForTargeting
+            End If
+        End If
+    End If
+    If Not IsValidRef(Owner) Then Exit Sub
+    If UserList(UserIndex).Id <> Owner.UserId Then Exit Sub
+    Acknowledged = True
+    Call WriteHooTrapUseResult(UserIndex, RequestCounter, Slot, Source, Result)
+    ' TCP ordering binds this uncorrelated legacy target request to the acceptance.
+    If TrapTargetReady Then Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+    Exit Sub
+UseInventoryRequest_Err:
+    If Not Acknowledged Then
+        If IsValidRef(Owner) Then
+            If UserList(UserIndex).Id = Owner.UserId Then
+                Call ClearPendingTargetableItem(UserIndex)
+                Call WriteHooTrapUseResult(UserIndex, RequestCounter, Slot, Source, eTrapUseRejected)
+            End If
+        End If
+    End If
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UseInventoryRequest", Erl)
+End Sub
+
+Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte, _
+               Optional ByRef TrapTargetReady As Boolean = False, Optional ByVal DeferTrapTarget As Boolean = False)
     Dim ObjIndex As Integer
     Dim nowRaw   As Long
     Dim TargObj  As t_ObjData
     Dim obj      As t_ObjData
     Dim MiObj    As t_Obj
     On Error GoTo hErr
+    TrapTargetReady = False
     ' Agrego el Cuerno de la Armada y la Legión.
     'Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
     With UserList(UserIndex)
@@ -2765,9 +2816,16 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Call AddOrResetEffect(UserIndex, ObjData(ObjIndex).ApplyEffectId)
                 End Select
             Case e_OBJType.otUsableOntarget
+                If obj.Subtipo = e_UssableOnTarget.eTrap Then
+                    If .flags.Muerto = 1 Or UserMod.IsStun(.flags, .Counters) Then Exit Sub
+                End If
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 .flags.UsingItemObjIndex = ObjIndex
                 .flags.UsingItemMap = .pos.Map
+                If DeferTrapTarget And obj.Subtipo = e_UssableOnTarget.eTrap Then
+                    TrapTargetReady = True
+                    Exit Sub
+                End If
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otFactionForgiveness
                 If ForgiveUserFactionStats(UserIndex) Then
@@ -2797,6 +2855,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     End With
     Exit Sub
 hErr:
+    TrapTargetReady = False
+    If DeferTrapTarget Then Call ClearPendingTargetableItem(UserIndex)
     LogError "Error en useinvitem Usuario: " & UserList(UserIndex).name & " item:" & obj.name & " index: " & UserList(UserIndex).invent.Object(Slot).ObjIndex
 End Sub
 

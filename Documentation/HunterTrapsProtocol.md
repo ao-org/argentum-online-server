@@ -144,6 +144,57 @@ entry. Invalid-owner retirement only broadcasts the area removal; it never
 notifies or edits the newer occupant of that user slot. Traps remain session
 effects, not persisted ownership records.
 
+## Correlated item-use result: packet 209 (Phase 3.1)
+
+`eHooTrapUseResult` is appended after 208 without renumbering existing packets.
+It is **209 with PYMMO=1**, and 210 with PYMMO=0 because of the existing
+conditional account-character-list entry. HOO uses PYMMO=1 only. This is a
+required message, not a capability, fallback or changed client request layout.
+
+Exactly **9 bytes**, little-endian, including the ID:
+
+| Offset | Bytes | Type | Field |
+| --- | --- | --- | --- |
+| 0 | 2 | Int16 | packet_id = 209 (`D1 00`) |
+| 2 | 4 | Int32 | original positive UseItem/UseItemU request counter |
+| 6 | 1 | UInt8 | original inventory slot, including invalid slots on rejection |
+| 7 | 1 | UInt8 | source: 0 inventory click, 1 keyboard/hotbar |
+| 8 | 1 | UInt8 | result: 0 Rejected, 1 AcceptedForTargeting, 2 NotATrap |
+
+Example: accepted keyboard Use, counter `0x01020304`, slot 7:
+
+```text
+D1 00 04 03 02 01 07 01 01
+```
+
+`HandleUseItem` and `HandleUseItemU` retain their existing counter/security
+validation, then call `UseInventoryRequest`. Every ordinary well-formed request
+reaching that boundary receives exactly one result, including invalid/empty
+slots, rejected restrictions, cooldowns, use intervals and handled errors.
+Recognized ordinary items receive NotATrap (whether or not their use succeeds).
+HOO ignores outcomes not matching an active trap request. Malformed/replayed
+traffic still follows the original security/disconnect policy, not normal Use
+acknowledgement. Results go only to the validated requesting user generation/ID.
+
+The existing `UseInvItem` validates the item once. Only its successful trap
+target-initiation branch reports readiness; it defers skill 25 to the caller.
+The caller sends **AcceptedForTargeting, then WorkRequestTarget(25)** immediately
+on the same single-threaded ordered connection. No other targetable item family
+is deferred. Rejection sends no trap target request and leaves no newly armed
+trap targeting state. Activation still consumes no item and starts no item
+cooldown; the existing successful placement path does both.
+
+HOO retains counter, source, original slot/item, map/session and character
+identity. It must match all of these before authorizing the following skill 25;
+that shared skill alone proves nothing. Rejected/NotATrap resolves only the
+matching pending trap Use and allows retry under normal client rate limits.
+Old or duplicate replies cannot cancel a newer request. Cancellation/ten-second
+timeout must clear authorization, not leave a permanent unanswered-reply guard.
+There is no new cancel packet: the next Use replaces old server trap intent,
+and existing death/map/completion/rejection cleanup remains authoritative.
+The result confirms targeting permission only, never trap placement/ownership.
+Inventory updates and packets 192/208 remain authoritative for those changes.
+
 ## Inventory targeting and preserved mechanics
 
 The pending item target captures slot, object definition and originating map. On the delayed
@@ -173,18 +224,19 @@ applying EOT 8). Runtime configuration remains authoritative and was not edited.
 ## Coordinated deployment
 
 1. Keep this server PR in draft until the separate HOO decoder/consumer is ready.
-2. Implement HOO's exact 16-byte decoders for **192 and 208**, the separate owned
+2. Implement HOO's exact 16-byte decoders for **192 and 208**, required nine-byte
+   **209** Use result/correlation, the separate owned
    set/reset semantics, and idempotent ID-based lifecycle in
    that follow-up. There is no old-layout autodetection or capability fallback.
 3. Validate matching development client/server builds before production rollout.
 4. During a coordinated maintenance window, disconnect old sessions and deploy
    the matching HOO and server versions together. Do not expose the changed
-   server to a client expecting the old layout or lacking packet 192/208 support.
+   server to a client expecting the old layout or lacking packet 192/208/209 support.
 5. Roll back client and server together if necessary; no data migration is needed.
 
-The inspected HOO packet coverage still lists 192 as unimplemented with the old
-layout. This PR alone is **not deployment-ready**. HOO, VB6 client and retired
-ProtocolGenerator are intentionally unchanged.
+HOO PR #666 contains the matching Phase 3.1 consumer, stacked on Phase 2 #663.
+Keep this PR in draft pending coordinated review and matching-build gameplay
+validation. No VB6 client or retired ProtocolGenerator changes are required.
 
 ## Validation
 
@@ -213,6 +265,23 @@ isolate the active list and advance its existing update routine deterministicall
 Idle user/NPC slots, touched map tiles, configuration and effect definitions are
 saved/restored. Capture and helpers are excluded from `UNIT_TEST=0` binaries.
 Live matching-client combat/area delivery remains an integration check.
+
+Phase 3.1 native validation (2026-10-13):
+
+- `PYMMO=0` and `PYMMO=1`, each with `UNIT_TEST=0` and `UNIT_TEST=1`,
+  `DIRECT_PLAY=0`, `DEBUGGING=0`: all four builds passed.
+- `server.exe --test-traps`: **33/33** groups passed in each configuration.
+  Nine added groups cover both source layouts/ordinals, acceptance-before-25,
+  cooldown rejection/retry, use intervals, dead/stunned/class/level/map
+  restrictions, invalid/empty inventory, ordinary/replaced items, handled errors,
+  replay security and exactly-once acknowledgements. Existing 24 groups pass.
+- `server.exe --test-managed-config`: **106/106** checks passed in each.
+- Full suites attempted with each build in a disposable runtime, synthetic key,
+  empty test database and loopback-only port. Both crashed before producing a
+  report: `sqlite3odbc.dll`, `0xc0000005`, fault offset `0x00010d3c` (PYMMO=0
+  also reported `0x0000a247`). This matches the previously documented local
+  driver blocker below; full-suite success is not claimed.
+- No live matching-client/server gameplay validation was performed.
 
 Suite registration has no conditional holes: network suite 33 is selected for
 the transport, then all shared suites; Aurora adds trap suite 41. DirectPlay has

@@ -4,6 +4,7 @@ Option Explicit
 Private mUser As Integer, mNpc As Integer
 Private mPackets As Collection
 Private mOwnedPackets As Collection, mOrder As Collection
+Private mUsePackets As Collection, mUseOrder As Collection
 Private mCapture As Boolean
 Private mSavedUser As t_User, mSavedNpc As t_Npc
 Private mSavedTiles(11 To 14) As t_MapBlock
@@ -39,6 +40,15 @@ Public Function CapturePacket(ByVal Route As Long, ByVal Recipient As Integer) A
     Call Writer.GetData(bytes)
     Call Writer.Clear()
     packet = CInt(bytes(0)) + CInt(bytes(1)) * 256
+    If packet = ServerPacketID.eHooTrapUseResult Then
+        Call Expect(Route = SendTarget.ToIndex And Recipient = mUser, "use result only to requesting user")
+        Call Expect(UBound(bytes) = 8, "use result exactly nine bytes")
+        value = bytes
+        Call mUsePackets.Add(value)
+        Call mUseOrder.Add("result:" & CStr(bytes(8)))
+    ElseIf packet = ServerPacketID.eWorkRequestTarget Then
+        Call mUseOrder.Add("target:" & CStr(bytes(2)))
+    End If
     If packet = ServerPacketID.eUpdateTrap Or packet = ServerPacketID.eHooOwnedTrap Then
         Call mOrder.Add(CStr(packet) & ":" & CStr(bytes(2)))
     End If
@@ -118,6 +128,8 @@ Private Sub ResetFixture()
     Set mPackets = New Collection
     Set mOwnedPackets = New Collection
     Set mOrder = New Collection
+    Set mUsePackets = New Collection
+    Set mUseOrder = New Collection
     SoundCalls = 0: FxCalls = 0: CdClears = 0
 End Sub
 
@@ -594,6 +606,192 @@ Private Sub TestMapTargetCancellation()
     Call SendItemTarget(2)
     Call Expect(mPackets.Count = 1, "fresh use after transition works")
 End Sub
+Private Sub PrepareUseFixture()
+    Call ClearPendingTargetableItem(mUser)
+    With UserList(mUser)
+        .clase = e_Class.Hunter
+        .raza = e_Raza.Humano
+        .Stats.ELV = 30
+        .Counters.StunEndTime = GetTickCountRaw()
+    End With
+End Sub
+
+Private Sub SendUse(ByVal Source As Byte, ByVal Counter As Long, Optional ByVal Slot As Byte = 1)
+    Dim payload() As Byte
+    Call Writer.WriteInt8(Slot)
+    If Source = eTrapUseInventoryClick Then Call Writer.WriteInt8(1)
+    Call Writer.WriteInt32(Counter)
+    Call Writer.GetData(payload)
+    Call Writer.Clear()
+    Call TrapTestUseItem(mUser, payload, Source = eTrapUseKeyboard)
+End Sub
+
+Private Sub ExpectUse(ByVal Index As Integer, ByVal Counter As Long, ByVal Slot As Byte, ByVal Source As Byte, ByVal Result As Byte)
+    Dim bytes As Variant
+    bytes = mUsePackets(Index)
+    Call Expect(bytes(0) + CLng(bytes(1)) * 256 = ServerPacketID.eHooTrapUseResult, "use result packet id")
+    Call Expect(Read32(bytes, 2) = Counter, "original request counter")
+    Call Expect(bytes(6) = Slot And bytes(7) = Source And bytes(8) = Result, "slot/source/result")
+End Sub
+
+Private Sub TestUseWire()
+    Dim source As Byte, result As Byte, bytes As Variant, expected As Variant, i As Integer
+    #If PYMMO = 1 Then
+        Call Expect(ServerPacketID.eHooTrapUseResult = 209, "HOO required result id 209")
+    #Else
+        Call Expect(ServerPacketID.eHooTrapUseResult = 210, "conditional non-HOO ordinal")
+    #End If
+    For source = 0 To 1
+        For result = 0 To 2
+            Call WriteHooTrapUseResult(mUser, &H1020304, 7, source, result)
+            bytes = mUsePackets(mUsePackets.Count)
+            expected = Array(ServerPacketID.eHooTrapUseResult, 0, 4, 3, 2, 1, 7, source, result)
+            For i = 0 To 8
+                Call Expect(bytes(i) = expected(i), "use wire byte " & i)
+            Next i
+        Next result
+    Next source
+    Call Expect(mUsePackets.Count = 6, "one result per write")
+End Sub
+
+Private Sub TestUseAcceptance()
+    Dim source As Byte
+    For source = 0 To 1
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        Call SendUse(source, 100)
+        Call Expect(mUsePackets.Count = 1, "one accepted response")
+        Call ExpectUse(1, 100, 1, source, eTrapUseAcceptedForTargeting)
+        Call Expect(mUseOrder.Count = 2, "acceptance plus target")
+        Call Expect(mUseOrder(1) = "result:1" And mUseOrder(2) = "target:25", "acceptance precedes skill 25")
+        Call Expect(UserList(mUser).flags.UsingItemSlot = 1 And UserList(mUser).flags.UsingItemObjIndex = 1, "target state initialized")
+        Call Expect(UserList(mUser).invent.Object(1).amount = 20 And UserList(mUser).CdTimes(0) = 0, "activation does not consume or start cooldown")
+    Next source
+End Sub
+
+Private Sub TestUseCooldownRetry()
+    Dim source As Byte, before As Long
+    For source = 0 To 1
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        ObjData(1).Cooldown = 60000
+        before = GetTickCountRaw()
+        UserList(mUser).CdTimes(0) = before
+        Call SendUse(source, 1)
+        Call ExpectUse(1, 1, 1, source, eTrapUseRejected)
+        Call Expect(mUseOrder.Count = 1 And UserList(mUser).flags.UsingItemSlot = 0, "cooldown never targets")
+        Call Expect(UserList(mUser).CdTimes(0) = before, "rejection preserves cooldown")
+        UserList(mUser).CdTimes(0) = AddMod32(GetTickCountRaw(), -60001)
+        Call SendUse(source, 2)
+        Call ExpectUse(2, 2, 1, source, eTrapUseAcceptedForTargeting)
+        Call Expect(mUsePackets.Count = 2 And mUseOrder.Count = 3, "retry without reconnect succeeds once")
+        Call Expect(UserList(mUser).invent.Object(1).amount = 20, "retry does not consume before placement")
+    Next source
+End Sub
+
+Private Sub TestUseInterval()
+    Dim source As Byte, savedClick As Long, savedKey As Long
+    savedClick = IntervaloUserPuedeUsarClic: savedKey = IntervaloUserPuedeUsarU
+    On Error GoTo Failed
+    IntervaloUserPuedeUsarClic = 60000: IntervaloUserPuedeUsarU = 60000
+    For source = 0 To 1
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        UserList(mUser).Counters.TimerUsar = GetTickCountRaw()
+        UserList(mUser).Counters.TimerUsarClick = GetTickCountRaw()
+        Call SendUse(source, 1)
+        Call ExpectUse(1, 1, 1, source, eTrapUseRejected)
+        Call Expect(mUseOrder.Count = 1 And UserList(mUser).flags.UsingItemSlot = 0, "interval rejection clears targeting")
+    Next source
+    IntervaloUserPuedeUsarClic = savedClick: IntervaloUserPuedeUsarU = savedKey
+    Exit Sub
+Failed:
+    IntervaloUserPuedeUsarClic = savedClick: IntervaloUserPuedeUsarU = savedKey
+    Err.Raise 5, "Trap use interval", Err.Description
+End Sub
+
+Private Sub TestUseRestrictions()
+    Dim mode As Integer, savedSafe As Byte
+    savedSafe = MapInfo(1).Seguro
+    On Error GoTo Failed
+    For mode = 0 To 4
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        Select Case mode
+            Case 0: UserList(mUser).flags.Muerto = 1
+            Case 1: UserList(mUser).Counters.StunEndTime = AddMod32(GetTickCountRaw(), 60000)
+            Case 2: ObjData(1).MinELV = 40
+            Case 3: ObjData(1).ClaseProhibida(1) = e_Class.Hunter
+            Case 4
+                ObjData(1).ObjFlags = e_ObjFlags.e_UseOnSafeAreaOnly
+                MapInfo(1).Seguro = 0
+        End Select
+        Call SendUse(eTrapUseKeyboard, 1)
+        Call ExpectUse(1, 1, 1, eTrapUseKeyboard, eTrapUseRejected)
+        Call Expect(mUsePackets.Count = 1 And mUseOrder.Count = 1, "one terminal rejection " & mode)
+        Call Expect(UserList(mUser).flags.UsingItemSlot = 0 And UserList(mUser).invent.Object(1).amount = 20, "restriction no target/consumption")
+    Next mode
+    MapInfo(1).Seguro = savedSafe
+    Exit Sub
+Failed:
+    MapInfo(1).Seguro = savedSafe
+    Err.Raise 5, "Trap use restriction", Err.Description
+End Sub
+
+Private Sub TestUseInvalidInventory()
+    Dim mode As Integer, slot As Byte
+    For mode = 0 To 5
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        slot = 1
+        Select Case mode
+            Case 0: slot = 0
+            Case 1: slot = 255
+            Case 2: UserList(mUser).invent.Object(1).ObjIndex = 0
+            Case 3: UserList(mUser).invent.Object(1).amount = 0
+            Case 4: UserList(mUser).invent.Object(1).ObjIndex = -1
+            Case 5: UserList(mUser).invent.Object(1).ObjIndex = 32767
+        End Select
+        Call SendUse(eTrapUseInventoryClick, 1, slot)
+        Call ExpectUse(1, 1, slot, eTrapUseInventoryClick, eTrapUseRejected)
+        Call Expect(mUsePackets.Count = 1 And mUseOrder.Count = 1, "invalid inventory still acknowledged once")
+        Call Expect(UserList(mUser).flags.UsingItemSlot = 0, "no targeting on invalid inventory")
+    Next mode
+End Sub
+
+Private Sub TestUseOrdinaryAndReplacement()
+    Call PrepareUseFixture()
+    Call SendUse(eTrapUseInventoryClick, 1)
+    Call ExpectUse(1, 1, 1, eTrapUseInventoryClick, eTrapUseAcceptedForTargeting)
+    ObjData(1).OBJType = e_OBJType.otKeys
+    UserList(mUser).Counters.TimerUsarClick = 0
+    Call SendUse(eTrapUseInventoryClick, 2)
+    Call ExpectUse(2, 2, 1, eTrapUseInventoryClick, eTrapUseNotATrap)
+    Call Expect(mUsePackets.Count = 2 And mUseOrder.Count = 3, "ordinary use no extra trap target")
+End Sub
+
+Private Sub TestUseHandledError()
+    Call PrepareUseFixture()
+    ObjData(1).cdType = 32767 ' Force existing UseInvItem handled bounds error.
+    Call SendUse(eTrapUseKeyboard, 1)
+    Call ExpectUse(1, 1, 1, eTrapUseKeyboard, eTrapUseRejected)
+    Call Expect(mUsePackets.Count = 1 And mUseOrder.Count = 1, "handled error acknowledges once")
+    Call Expect(UserList(mUser).flags.UsingItemSlot = 0, "handled error clears pending state")
+End Sub
+
+Private Sub TestUseReplay()
+    Dim source As Byte
+    For source = 0 To 1
+        Call ResetFixture()
+        Call PrepareUseFixture()
+        Call SendUse(source, 100)
+        Call ExpectUse(1, 100, 1, source, eTrapUseAcceptedForTargeting)
+        Call SendUse(source, 100)
+        Call Expect(mUsePackets.Count = 1 And mUseOrder.Count = 2, "replay cannot acknowledge or authorize twice")
+        Call Expect(UserList(mUser).Id <> 101, "replay preserves disconnect/reset policy")
+    Next source
+End Sub
+
 Private Sub RunCase(ByVal Number As Integer, ByVal Name As String)
     On Error GoTo FailedCase
     Call ResetFixture()
@@ -622,6 +820,15 @@ Private Sub RunCase(ByVal Number As Integer, ByVal Name As String)
         Case 22: Call TestOtherTargetableTypes()
         Case 23: Call TestWorkItemPackets()
         Case 24: Call TestMapTargetCancellation()
+        Case 25: Call TestUseWire()
+        Case 26: Call TestUseAcceptance()
+        Case 27: Call TestUseCooldownRetry()
+        Case 28: Call TestUseInterval()
+        Case 29: Call TestUseRestrictions()
+        Case 30: Call TestUseInvalidInventory()
+        Case 31: Call TestUseOrdinaryAndReplacement()
+        Case 32: Call TestUseHandledError()
+        Case 33: Call TestUseReplay()
     End Select
     Call UnitTesting.RunTest("traps " & Name, True)
     Exit Sub
@@ -683,7 +890,9 @@ Public Function test_suite_traps() As Boolean
     names = Array("Wire", "Snapshots", "Paralysis", "Explosion", "Poison", "Rejection/immunity", _
                   "Expiry", "Invalid owner", "Death", "Fourth trap", "Inventory", "Placement guards", "Pool reuse/time clamp", "Id wrap", _
                   "Orphan generation reuse", "Orphan identity reuse", "Safe pooling", "Owner wire", "Remote owner snapshot", _
-                  "Owner trigger ordering", "Terminal rejection", "Other targetable types", "WorkLeftClick packets", "Map target cancellation")
+                  "Owner trigger ordering", "Terminal rejection", "Other targetable types", "WorkLeftClick packets", "Map target cancellation", _
+                  "Use result wire", "Use acceptance ordering", "Use cooldown retry", "Use interval rejection", "Use restrictions", _
+                  "Use invalid inventory", "Use ordinary and replacement", "Use handled error", "Use replay security")
     For i = 0 To UBound(names)
         Call RunCase(i + 1, names(i))
     Next i
@@ -712,6 +921,8 @@ Cleanup:
     If Len(configPath) > 0 Then Call fs.DeleteFile(configPath)
     Set mPackets = Nothing
     Set mOwnedPackets = Nothing
+    Set mUsePackets = Nothing
+    Set mUseOrder = Nothing
     Set mOrder = Nothing
     Set Writer = Nothing
     Set mSavedConfig = Nothing

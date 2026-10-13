@@ -712,6 +712,21 @@ WriteChangeMap_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeMap", Erl)
 End Sub
 
+Public Sub WriteHooTrapUseResult(ByVal UserIndex As Integer, ByVal RequestCounter As Long, _
+                                  ByVal Slot As Byte, ByVal Source As Byte, ByVal Result As Byte)
+    On Error GoTo WriteHooTrapUseResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eHooTrapUseResult)
+    Call Writer.WriteInt32(RequestCounter)
+    Call Writer.WriteInt8(Slot)
+    Call Writer.WriteInt8(Source)
+    Call Writer.WriteInt8(Result)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooTrapUseResult_Err:
+    Call Writer.Clear()
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteHooTrapUseResult", Erl)
+End Sub
+
 Public Sub WriteOwnedTrapState(ByRef Owner As t_AnyReference, ByVal EventType As e_OwnedTrapEvent, _
                                ByVal TrapId As Long, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, _
                                ByVal TrapType As Byte, ByVal RemainingMs As Long)

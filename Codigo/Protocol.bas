@@ -2795,9 +2795,10 @@ End Sub
 
 Private Function IsProjectileTargetRequest(ByVal UserIndex As Integer, ByVal Slot As Byte) As Boolean
     If Slot <= 0 Or Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
+    If Slot > UBound(UserList(UserIndex).invent.Object) Then Exit Function
 
     With UserList(UserIndex).invent.Object(Slot)
-        If .ObjIndex <= 0 Then Exit Function
+        If .ObjIndex <= 0 Or .ObjIndex > UBound(ObjData) Then Exit Function
         If .Equipped = 0 Then Exit Function
         If ObjData(.ObjIndex).OBJType <> e_OBJType.otWeapon Then Exit Function
 
@@ -2832,10 +2833,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
                     Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
         End If
         '  Debug.Print "LLEGA PAQUETE"
-        If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-            If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-            Call UseInvItem(UserIndex, Slot, 1)
-        End If
+        Call UseInventoryRequest(UserIndex, Slot, eTrapUseInventoryClick, PacketCounter)
     End With
     Exit Sub
 HandleUseItem_Err:
@@ -2861,10 +2859,7 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
             If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold( _
                     Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
         End If
-        If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-            If .invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-            Call UseInvItem(UserIndex, Slot, 0)
-        End If
+        Call UseInventoryRequest(UserIndex, Slot, eTrapUseKeyboard, PacketCounter)
     End With
     Exit Sub
 HandleUseItemU_Err:
@@ -2940,6 +2935,19 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+Public Sub TrapTestUseItem(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Keyboard As Boolean)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    If Keyboard Then
+        Call HandleUseItemU(UserIndex)
+    Else
+        Call HandleUseItem(UserIndex)
+    End If
+    Set reader = savedReader
+End Sub
+
 Public Sub TrapTestWorkLeftClick(ByVal UserIndex As Integer, ByRef Payload() As Byte)
     Dim savedReader As Network.reader
     Set savedReader = reader
