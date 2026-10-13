@@ -8,8 +8,9 @@ unchanged.
 
 `WriteHooTamingResult` sends resolved outcomes directly, without capability
 checks or feature advertisements. HOO is the supported client; retired clients
-and older servers are unsupported. Deploy the matching HOO client, VB6 server
-and ProtocolGenerator definitions together. Older clients may reject packet 207.
+and older servers are unsupported. Deploy the matching HOO client and VB6 server
+together. ProtocolGenerator is retired and is not part of this workflow.
+Older clients may reject packet 207.
 
 New functionality MUST NOT introduce `HOO_CAP_*` flags, per-feature negotiation,
 or feature-support advertisements. It belongs to the normal required protocol.
@@ -51,8 +52,8 @@ remain manual validation, not claims of the isolated harness.
 `Codigo/PacketId.bas` reserves ID 206 and assigns taming 207 in the supported
 HOO `PYMMO=1` build, without renumbering earlier packets. `PYMMO=0` retains its
 existing extra account packet and shifted tail; it is not HOO's wire layout.
-ProtocolGenerator's root/build templates and deterministic `--packet-ids` output
-carry the same IDs.
+The authoritative server enum and HOO decoder are verified directly, including
+the exact native-writer byte fixture. No generator regeneration is required.
 The client keeps the attempt visual at two seconds and correlation at a bounded
 30 seconds, checks map/revision/generation/counter/tile, and never infers ownership
 from particles or sound. NoMascotas despawn suppresses the visual, not the matching
