@@ -427,12 +427,17 @@ End Sub
 
 Private Sub TestOwnedWire()
     Dim owner As t_AnyReference, bytes As Variant, expected As Variant, eventType As Integer, i As Integer
-    Call Expect(ServerPacketID.eHooTamingResult = 207 And ServerPacketID.eHooOwnedTrap = 208, "PYMMO packet append, no shifts")
+    #If PYMMO = 1 Then
+        Call Expect(ServerPacketID.eHooTamingResult = 207 And ServerPacketID.eHooOwnedTrap = 208, "HOO production packet IDs")
+    #Else
+        Call Expect(ServerPacketID.eHooTamingResult = 208 And ServerPacketID.eHooOwnedTrap = 209, "account-list configuration packet IDs")
+    #End If
     Call SetRef(owner, mUser, eUser)
     For eventType = 1 To 3
         Call WriteOwnedTrapState(owner, eventType, &H1020304, &H1234, 99, 88, 3, &H5060708)
         bytes = mOwnedPackets(eventType)
-        expected = Array(208, 0, eventType, 4, 3, 2, 1, 52, 18, 99, 88, 3, 0, 0, 0, 0)
+        expected = Array(ServerPacketID.eHooOwnedTrap And &HFF&, ServerPacketID.eHooOwnedTrap \ 256, _
+                         eventType, 4, 3, 2, 1, 52, 18, 99, 88, 3, 0, 0, 0, 0)
         If eventType = 1 Then
             expected(12) = 8: expected(13) = 7: expected(14) = 6: expected(15) = 5
         ElseIf eventType = 3 Then
@@ -473,8 +478,8 @@ Private Sub TestOwnedSnapshot()
     Call TickTrapTests(1)
     bytes = mOwnedPackets(6)
     Call Expect(bytes(2) = eOwnedTrapRemoved And Read32(bytes, 3) = 1 And Read32(bytes, 12) = 0, "remote removal")
-    Call Expect(mOrder(1) = "192:1" And mOrder(2) = "208:1", "area upsert before owner upsert")
-    Call Expect(mOrder(mOrder.Count - 1) = "192:3" And mOrder(mOrder.Count) = "208:2", "area removal before owner removal")
+    Call Expect(mOrder(1) = "192:1" And mOrder(2) = CStr(ServerPacketID.eHooOwnedTrap) & ":1", "area upsert before owner upsert")
+    Call Expect(mOrder(mOrder.Count - 1) = "192:3" And mOrder(mOrder.Count) = CStr(ServerPacketID.eHooOwnedTrap) & ":2", "area removal before owner removal")
 End Sub
 
 Private Sub TestOwnedTrigger()
@@ -483,7 +488,7 @@ Private Sub TestOwnedTrigger()
     Call TickTrapTests(1)
     Call TickTrapTests(1)
     Call Expect(mOwnedPackets.Count = 2, "exactly one owner removal for trigger/cleanup")
-    Call Expect(mOrder(3) = "192:2" And mOrder(4) = "208:2" And mOrder(5) = "192:3", "trigger then owner removal then area cleanup")
+    Call Expect(mOrder(3) = "192:2" And mOrder(4) = CStr(ServerPacketID.eHooOwnedTrap) & ":2" And mOrder(5) = "192:3", "trigger then owner removal then area cleanup")
 End Sub
 
 Private Sub TestTerminalRejections()
