@@ -115,21 +115,28 @@ ProtocolGenerator are intentionally unchanged.
 
 ## Validation
 
-Run the deterministic Windows-native harness from the server checkout:
+`Codigo/Tests/Unit_Traps.bas` is registered in `Server.VBP` and the existing
+`UnitTesting.RunAllSuites` runner. Build with `UNIT_TEST=1`, `DIRECT_PLAY=0`
+(Aurora), then use the normal server unit-test startup. Results appear in the
+existing `test_results.txt` report. There is no separate test project or script.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/test-trap-lifecycle.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/test-taming-protocol.ps1
+For a focused run without database startup, listeners or installed resources,
+the same test-enabled server executable also accepts:
+
+```text
+server.exe --test-traps
 ```
 
-The trap harness compiles the actual trap class, packet IDs and verbatim selected
-production routines, using the installed Aurora.Network writer. It tests 14
-groups under each of `PYMMO=0` and `PYMMO=1`: exact wire bytes, snapshots,
-three activations, rejections/immunity, expiry, owner invalidation, death,
-replacement (including pending cleanup and equal ages), inventory validation,
-placement guards, pooled state/time clamping and positive ID wrap. Three source
-guards cover the full-server dispatch/snapshot call sites. Game effects and
-transport are deterministic spies; these tests do not replace live combat tests.
+This calls the same registered suite and `UnitTesting` result reporting. The
+14 groups cover exact wire bytes, late/repeated snapshots, all three real
+activations, rejection/immunity, expiry, owner invalidation, death, replacement,
+stale inventory, placement guards, pooled state/time clamping and positive ID
+wrap. Tests use the real server types, trap class, effects, inventory and writer.
+Only outgoing packets are captured instead of sent. Test-only EOT helpers
+isolate the active list and advance its existing update routine deterministically.
+Idle user/NPC slots, touched map tiles, configuration and effect definitions are
+saved/restored. Capture and helpers are excluded from `UNIT_TEST=0` binaries.
+Live matching-client combat/area delivery remains an integration check.
 
 Full native server build matrix (separate temporary output directories):
 

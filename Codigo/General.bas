@@ -500,6 +500,14 @@ Sub Main()
     On Error GoTo Handler
 
     #If UNIT_TEST = 1 Then
+        #If DIRECT_PLAY = 0 Then
+        If LCase$(Trim$(Command$)) = "--test-traps" Then
+            Call Unit_Traps.InitializeTestWorld()
+            Call Unit_Traps.test_suite_traps()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
+        #End If
         If LCase$(Trim$(Command$)) = "--test-managed-config" Then
             Call RunManagedConfigTests()
             End

@@ -41,7 +41,7 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 41
+    Private Const SUITE_COUNT As Integer = 42
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -283,6 +283,9 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 39: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
         Case 40: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
         Case 41: RunSuite = test_suite_taming()
+        #If DIRECT_PLAY = 0 Then
+        Case 42: RunSuite = Unit_Traps.test_suite_traps()
+        #End If
         Case Else
             RunSuite = False
     End Select

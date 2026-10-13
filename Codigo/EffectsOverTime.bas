@@ -45,6 +45,51 @@ Public Enum e_EffectCallbackMask
     eTargetChangeTerrain = 128
 End Enum
 
+#If UNIT_TEST = 1 Then
+Private SavedTestEffects As t_EffectOverTimeList
+Private SavedTestCounter As Long
+
+' Isolate the registered trap suite from effects created by other server suites.
+Public Sub BeginTrapTests()
+    Dim EmptyList As t_EffectOverTimeList
+    SavedTestEffects = ActiveEffects
+    SavedTestCounter = UniqueIdCounter
+    ActiveEffects = EmptyList
+End Sub
+
+Public Sub TickTrapTests(ByVal Elapsed As Long)
+    Dim i As Integer
+    Do While i < ActiveEffects.EffectCount
+        If UpdateEffect(i, Elapsed) Then i = i + 1
+    Loop
+End Sub
+
+Public Sub ResetTrapTests()
+    Dim i As Integer
+    For i = 0 To ActiveEffects.EffectCount - 1
+        ActiveEffects.EffectList(i).RemoveMe = True
+    Next i
+    Call TickTrapTests(0)
+    UniqueIdCounter = 0
+End Sub
+
+Public Sub EndTrapTests()
+    Dim EmptyList As t_EffectOverTimeList
+    Call ResetTrapTests()
+    ActiveEffects = SavedTestEffects
+    SavedTestEffects = EmptyList
+    UniqueIdCounter = SavedTestCounter
+End Sub
+
+Public Function TrapTestNextId(ByVal Previous As Long) As Long
+    Dim Saved As Long
+    Saved = UniqueIdCounter
+    UniqueIdCounter = Previous
+    TrapTestNextId = GetNextId()
+    UniqueIdCounter = Saved
+End Function
+#End If
+
 Public Sub InitializePools()
     On Error GoTo InitializePools_Err
     Dim i           As Integer
