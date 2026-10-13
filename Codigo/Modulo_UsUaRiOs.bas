@@ -1748,6 +1748,7 @@ End Sub
 '
 Sub UserDie(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call ClearPendingTargetableItem(UserIndex)
     Dim i  As Long
     Dim aN As Integer
     With UserList(UserIndex)

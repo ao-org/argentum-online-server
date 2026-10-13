@@ -500,6 +500,14 @@ Sub Main()
     On Error GoTo Handler
 
     #If UNIT_TEST = 1 Then
+        #If DIRECT_PLAY = 0 Then
+        If LCase$(Trim$(Command$)) = "--test-traps" Then
+            Call Unit_Traps.InitializeTestWorld()
+            Call Unit_Traps.test_suite_traps()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
+        #End If
         If LCase$(Trim$(Command$)) = "--test-managed-config" Then
             Call RunManagedConfigTests()
             End
@@ -1889,7 +1897,26 @@ End Function
 Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
     Dim script As String
     script = FileText(FilePath)
-    script = Replace(Replace(script, Chr(10), ""), Chr(13), "")
+    ' SQL line comments end at a newline; removing it can comment out the migration.
+    ' SQLite ODBC 0.9999 also crashes preparing a statement starting with --.
+    ' Remove only leading whitespace/comments, never SQL body or string contents.
+    Dim commentEnd As Long
+    Do While Len(script) > 0
+        Select Case Left$(script, 1)
+            Case " ", vbTab, vbCr, vbLf
+                script = Mid$(script, 2)
+            Case "-"
+                If Left$(script, 2) <> "--" Then Exit Do
+                commentEnd = InStr(1, script, vbLf, vbBinaryCompare)
+                If commentEnd = 0 Then
+                    script = vbNullString
+                Else
+                    script = Mid$(script, commentEnd + 1)
+                End If
+            Case Else
+                Exit Do
+        End Select
+    Loop
     Dim RS As Recordset
     If script <> vbNullString Then
         Set RS = Query(script)
@@ -1897,6 +1924,7 @@ Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
             RunScriptInFile = False
             Exit Function
         End If
+        If RS.State <> adStateClosed Then Call RS.Close()
     End If
     RunScriptInFile = True
 End Function

@@ -45,6 +45,51 @@ Public Enum e_EffectCallbackMask
     eTargetChangeTerrain = 128
 End Enum
 
+#If UNIT_TEST = 1 Then
+Private SavedTestEffects As t_EffectOverTimeList
+Private SavedTestCounter As Long
+
+' Isolate the registered trap suite from effects created by other server suites.
+Public Sub BeginTrapTests()
+    Dim EmptyList As t_EffectOverTimeList
+    SavedTestEffects = ActiveEffects
+    SavedTestCounter = UniqueIdCounter
+    ActiveEffects = EmptyList
+End Sub
+
+Public Sub TickTrapTests(ByVal Elapsed As Long)
+    Dim i As Integer
+    Do While i < ActiveEffects.EffectCount
+        If UpdateEffect(i, Elapsed) Then i = i + 1
+    Loop
+End Sub
+
+Public Sub ResetTrapTests()
+    Dim i As Integer
+    For i = 0 To ActiveEffects.EffectCount - 1
+        ActiveEffects.EffectList(i).RemoveMe = True
+    Next i
+    Call TickTrapTests(0)
+    UniqueIdCounter = 0
+End Sub
+
+Public Sub EndTrapTests()
+    Dim EmptyList As t_EffectOverTimeList
+    Call ResetTrapTests()
+    ActiveEffects = SavedTestEffects
+    SavedTestEffects = EmptyList
+    UniqueIdCounter = SavedTestCounter
+End Sub
+
+Public Function TrapTestNextId(ByVal Previous As Long) As Long
+    Dim Saved As Long
+    Saved = UniqueIdCounter
+    UniqueIdCounter = Previous
+    TrapTestNextId = GetNextId()
+    UniqueIdCounter = Saved
+End Function
+#End If
+
 Public Sub InitializePools()
     On Error GoTo InitializePools_Err
     Dim i           As Integer
@@ -115,7 +160,8 @@ Private Function UpdateEffect(ByVal Index As Integer, ByVal ElapsedTime As Long)
     Set CurrentEffect = ActiveEffects.EffectList(Index)
     CurrentEffect.Update (ElapsedTime)
     If CurrentEffect.RemoveMe Then
-        If CurrentEffect.TargetIsValid Then
+        ' Traps detach by object identity at the recycling boundary below.
+        If CurrentEffect.TypeId <> e_EffectOverTimeType.eTrap And CurrentEffect.TargetIsValid Then
             If CurrentEffect.TargetRefType = eUser Then
                 Call RemoveEffect(UserList(CurrentEffect.TargetArrayIndex).EffectOverTime, CurrentEffect)
             ElseIf CurrentEffect.TargetRefType = eNpc Then
@@ -136,8 +182,20 @@ UpdateEffect_Err:
 End Function
 
 Private Function GetNextId() As Long
-    UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
+    If UniqueIdCounter >= &H7FFFFFFF Then
+        UniqueIdCounter = 1
+    Else
+        UniqueIdCounter = UniqueIdCounter + 1
+    End If
     GetNextId = UniqueIdCounter
+End Function
+
+Public Function IsTrapEffectDefinition(ByVal EffectId As Integer) As Boolean
+    If EffectId < LBound(EffectOverTime) Or EffectId > UBound(EffectOverTime) Then Exit Function
+    With EffectOverTime(EffectId)
+        IsTrapEffectDefinition = .Type = e_EffectOverTimeType.eTrap And _
+            .SubType >= 1 And .SubType <= 3 And .TickTime > 0
+    End With
 End Function
 
 Public Sub CreateEffect(ByVal SourceIndex As Integer, _
@@ -315,29 +373,36 @@ CreateEffect_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect EffectIndex:" & EffectIndex, Erl)
 End Sub
 
-Public Sub CreateTrap(ByVal SourceIndex As Integer, _
+Public Function CreateTrap(ByVal SourceIndex As Integer, _
                       ByVal SourceType As e_ReferenceType, _
                       ByVal Map As Integer, _
                       ByVal TileX As Integer, _
                       ByVal TileY As Integer, _
-                      ByVal EffectTypeId As Integer)
+                      ByVal EffectTypeId As Integer) As Boolean
     On Error GoTo CreateTrap_Err
+    If Not IsTrapEffectDefinition(EffectTypeId) Then Exit Function
+    If Not IsValidMapPosition(Map, TileX, TileY) Then Exit Function
     Dim EffectType As e_EffectOverTimeType
     EffectType = e_EffectOverTimeType.eTrap
     Dim Trap As clsTrap
     Set Trap = GetEOT(EffectType)
     UniqueIdCounter = GetNextId()
     Call Trap.Setup(SourceIndex, SourceType, EffectTypeId, UniqueIdCounter, Map, TileX, TileY)
+    If Not Trap.IsActive Then
+        Call RecycleEffect(Trap)
+        Exit Function
+    End If
     Call AddEffectToUpdate(Trap)
     If SourceType = eUser Then
         Call AddEffect(UserList(SourceIndex).EffectOverTime, Trap)
     ElseIf SourceType = eNpc Then
         Call AddEffect(NpcList(SourceIndex).EffectOverTime, Trap)
     End If
-    Exit Sub
+    CreateTrap = True
+    Exit Function
 CreateTrap_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
-End Sub
+End Function
 
 Public Sub CreateDelayedBlast(ByVal SourceIndex As Integer, _
                               ByVal SourceType As e_ReferenceType, _
@@ -439,8 +504,36 @@ GetEOT_Err:
 End Function
 
 Private Sub RecycleEffect(ByRef Effect As IBaseEffectOverTime)
+    If Effect.TypeId = e_EffectOverTimeType.eTrap Then
+        ' An obsolete owner list may still retain this instance. Never make it
+        ' reusable when its original owner can no longer be safely identified.
+        If Not Effect.TargetIsValid Then Exit Sub
+        If Effect.TargetRefType = eUser Then
+            If Not DetachTrapInstance(UserList(Effect.TargetArrayIndex).EffectOverTime, Effect) Then Exit Sub
+        ElseIf Effect.TargetRefType = eNpc Then
+            If Not DetachTrapInstance(NpcList(Effect.TargetArrayIndex).EffectOverTime, Effect) Then Exit Sub
+        Else
+            Exit Sub
+        End If
+    End If
     Call AddEffect(EffectPools(Effect.TypeId), Effect)
 End Sub
+
+Private Function DetachTrapInstance(ByRef List As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime) As Boolean
+    Dim i As Integer, previousCount As Integer
+    Do While i < List.EffectCount
+        If List.EffectList(i) Is Effect Then
+            previousCount = List.EffectCount
+            Call RemoveEffectAtPos(List, i)
+            ' Removal handles its own errors. Fail closed instead of pooling or
+            ' retrying forever if it could not detach this reference.
+            If List.EffectCount >= previousCount Then Exit Function
+        Else
+            i = i + 1
+        End If
+    Loop
+    DetachTrapInstance = True
+End Function
 
 Public Sub AddEffectToUpdate(ByRef Effect As IBaseEffectOverTime)
     On Error GoTo AddEffectToUpdate_Err

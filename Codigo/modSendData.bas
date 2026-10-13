@@ -148,6 +148,9 @@ SendToConnection_Err:
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False)
+    #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+        If Unit_Traps.CapturePacket(sndRoute, sndIndex) Then Exit Sub
+    #End If
     Err.Clear
     On Error GoTo SendData_Err
     #If DIRECT_PLAY = 0 Then
@@ -826,6 +829,9 @@ SendToNpcArea_Err:
     End Sub
 
 Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ParamArray Args() As Variant)
+    #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+        If Unit_Traps.CapturePacket(-1, 0) Then Exit Sub
+    #End If
     On Error GoTo SendToAreaByPos_Err
     Dim LoopC     As Long
     Dim TempInt   As Integer

@@ -228,7 +228,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
                     End If
                 End If
                 If Not MapData(x, y, Map).Trap Is Nothing Then
-                    Call WriteUpdateTrapState(UserIndex, 1, x, y)
+                    Call MapData(x, y, Map).Trap.SendSnapshot(UserIndex)
                 End If
                 ' Bloqueo GM
                 If (MapData(x, y, Map).Blocked And e_Block.GM) <> 0 Then

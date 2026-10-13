@@ -17,6 +17,17 @@ Attribute VB_Name = "PacketId"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 
+Public Enum e_TrapUseSource
+    eTrapUseInventoryClick = 0
+    eTrapUseKeyboard = 1
+End Enum
+
+Public Enum e_TrapUseResult
+    eTrapUseRejected = 0
+    eTrapUseAcceptedForTargeting = 1
+    eTrapUseNotATrap = 2
+End Enum
+
 Public Enum ServerPacketID
     eMinPacket
     eConnected
@@ -231,6 +242,8 @@ Public Enum ServerPacketID
     eHooHouseDoorActionResult
     eReservedHooMagicLightOrb ' Retired wire ID, never sent or reused.
     eHooTamingResult
+    eHooOwnedTrap ' 208 with PYMMO=1; mandatory owner-only trap lifecycle.
+    eHooTrapUseResult ' 209 with PYMMO=1; correlated inventory-use outcome.
     eMaxPacket
     [PacketCount]
 End Enum

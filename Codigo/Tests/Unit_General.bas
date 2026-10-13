@@ -22,6 +22,8 @@ Public Function test_suite_general() As Boolean
     Call UnitTesting.RunTest("test_inside_rectangle", test_inside_rectangle())
     Call UnitTesting.RunTest("test_valid_ip", test_valid_ip())
     Call UnitTesting.RunTest("test_invalid_ip", test_invalid_ip())
+    Call UnitTesting.RunTest("test_migration_crlf_comment", TestMigrationLineComment(vbCrLf))
+    Call UnitTesting.RunTest("test_migration_lf_comment", TestMigrationLineComment(vbLf))
     test_suite_general = True
 End Function
 
@@ -224,6 +226,43 @@ Private Function test_invalid_ip() As Boolean
     Exit Function
 Err_Handler:
     test_invalid_ip = False
+End Function
+
+Private Function TestMigrationLineComment(ByVal lineEnding As String) As Boolean
+    On Error GoTo Err_Handler
+    Dim filePath As String
+    Dim handle As Integer
+    Dim opened As Boolean
+    Dim RS As ADODB.Recordset
+    Call Connection.Execute("CREATE TEMP TABLE unit_migration_line_endings (value TEXT);")
+    filePath = App.Path & "\test_migration_line_endings.sql"
+    handle = FreeFile()
+    Open filePath For Output As #handle
+    opened = True
+    Print #handle, lineEnding & vbTab & "-- Migration comment" & lineEnding & _
+        "-- Second comment" & lineEnding & _
+        "INSERT INTO unit_migration_line_endings VALUES ('first" & lineEnding & "-- literal, not a comment');"
+    Close #handle
+    opened = False
+    TestMigrationLineComment = General.RunScriptInFile(filePath)
+    Set RS = Query("SELECT value FROM unit_migration_line_endings;")
+    If RS Is Nothing Then GoTo Err_Handler
+    If RS.EOF Then GoTo Err_Handler
+    TestMigrationLineComment = TestMigrationLineComment And _
+        (RS.Fields(0).value = "first" & lineEnding & "-- literal, not a comment")
+    Call RS.Close()
+    Call Connection.Execute("DROP TABLE temp.unit_migration_line_endings;")
+    Kill filePath
+    Exit Function
+Err_Handler:
+    TestMigrationLineComment = False
+    On Error Resume Next
+    If Not RS Is Nothing Then
+        If RS.State <> adStateClosed Then Call RS.Close()
+    End If
+    Call Connection.Execute("DROP TABLE IF EXISTS temp.unit_migration_line_endings;")
+    If opened Then Close #handle
+    If Len(filePath) > 0 Then Kill filePath
 End Function
 
 #End If
