@@ -160,7 +160,8 @@ Private Function UpdateEffect(ByVal Index As Integer, ByVal ElapsedTime As Long)
     Set CurrentEffect = ActiveEffects.EffectList(Index)
     CurrentEffect.Update (ElapsedTime)
     If CurrentEffect.RemoveMe Then
-        If CurrentEffect.TargetIsValid Then
+        ' Traps detach by object identity at the recycling boundary below.
+        If CurrentEffect.TypeId <> e_EffectOverTimeType.eTrap And CurrentEffect.TargetIsValid Then
             If CurrentEffect.TargetRefType = eUser Then
                 Call RemoveEffect(UserList(CurrentEffect.TargetArrayIndex).EffectOverTime, CurrentEffect)
             ElseIf CurrentEffect.TargetRefType = eNpc Then
@@ -503,8 +504,36 @@ GetEOT_Err:
 End Function
 
 Private Sub RecycleEffect(ByRef Effect As IBaseEffectOverTime)
+    If Effect.TypeId = e_EffectOverTimeType.eTrap Then
+        ' An obsolete owner list may still retain this instance. Never make it
+        ' reusable when its original owner can no longer be safely identified.
+        If Not Effect.TargetIsValid Then Exit Sub
+        If Effect.TargetRefType = eUser Then
+            If Not DetachTrapInstance(UserList(Effect.TargetArrayIndex).EffectOverTime, Effect) Then Exit Sub
+        ElseIf Effect.TargetRefType = eNpc Then
+            If Not DetachTrapInstance(NpcList(Effect.TargetArrayIndex).EffectOverTime, Effect) Then Exit Sub
+        Else
+            Exit Sub
+        End If
+    End If
     Call AddEffect(EffectPools(Effect.TypeId), Effect)
 End Sub
+
+Private Function DetachTrapInstance(ByRef List As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime) As Boolean
+    Dim i As Integer, previousCount As Integer
+    Do While i < List.EffectCount
+        If List.EffectList(i) Is Effect Then
+            previousCount = List.EffectCount
+            Call RemoveEffectAtPos(List, i)
+            ' Removal handles its own errors. Fail closed instead of pooling or
+            ' retrying forever if it could not detach this reference.
+            If List.EffectCount >= previousCount Then Exit Function
+        Else
+            i = i + 1
+        End If
+    Loop
+    DetachTrapInstance = True
+End Function
 
 Public Sub AddEffectToUpdate(ByRef Effect As IBaseEffectOverTime)
     On Error GoTo AddEffectToUpdate_Err

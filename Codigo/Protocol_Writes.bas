@@ -700,14 +700,60 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
     On Error GoTo WriteChangeMap_Err
+    Call ClearPendingTargetableItem(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eChangeMap)
     Call Writer.WriteInt16(Map)
     Call Writer.WriteInt16(MapInfo(Map).MapResource)
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call WriteOwnedTrapSnapshot(UserIndex)
     Exit Sub
 WriteChangeMap_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeMap", Erl)
+End Sub
+
+Public Sub WriteOwnedTrapState(ByRef Owner As t_AnyReference, ByVal EventType As e_OwnedTrapEvent, _
+                               ByVal TrapId As Long, ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, _
+                               ByVal TrapType As Byte, ByVal RemainingMs As Long)
+    On Error GoTo WriteOwnedTrapState_Err
+    If Owner.RefType <> eUser Then Exit Sub
+    If Not IsValidRef(Owner) Then Exit Sub
+    If UserList(Owner.ArrayIndex).Id <> Owner.UserId Then Exit Sub
+    If EventType = eOwnedTrapReset Then
+        TrapId = 0: Map = 0: x = 0: y = 0: TrapType = 0
+    End If
+    If EventType <> eOwnedTrapUpsert Or RemainingMs < 0 Then RemainingMs = 0
+    Call Writer.WriteInt16(ServerPacketID.eHooOwnedTrap)
+    Call Writer.WriteInt8(EventType)
+    Call Writer.WriteInt32(TrapId)
+    Call Writer.WriteInt16(Map)
+    Call Writer.WriteInt8(x)
+    Call Writer.WriteInt8(y)
+    Call Writer.WriteInt8(TrapType)
+    Call Writer.WriteInt32(RemainingMs)
+    Call modSendData.SendData(ToIndex, Owner.ArrayIndex)
+    Exit Sub
+WriteOwnedTrapState_Err:
+    Call Writer.Clear()
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteOwnedTrapState", Erl)
+End Sub
+
+Public Sub WriteOwnedTrapSnapshot(ByVal UserIndex As Integer)
+    On Error GoTo WriteOwnedTrapSnapshot_Err
+    Dim Owner As t_AnyReference, Trap As clsTrap, i As Integer
+    If Not SetRef(Owner, UserIndex, eUser) Then Exit Sub
+    Call WriteOwnedTrapState(Owner, eOwnedTrapReset, 0, 0, 0, 0, 0, 0)
+    With UserList(UserIndex).EffectOverTime
+        For i = 0 To .EffectCount - 1
+            If .EffectList(i).TypeId = e_EffectOverTimeType.eTrap Then
+                Set Trap = .EffectList(i)
+                If Trap.OwnedBy(UserIndex) Then Call Trap.SendOwnerSnapshot()
+            End If
+        Next i
+    End With
+    Exit Sub
+WriteOwnedTrapSnapshot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteOwnedTrapSnapshot", Erl)
 End Sub
 
 ''

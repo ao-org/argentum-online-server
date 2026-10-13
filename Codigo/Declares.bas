@@ -2026,6 +2026,12 @@ Public Enum e_TrapEvent
     eTrapRemoved = 3
 End Enum
 
+Public Enum e_OwnedTrapEvent
+    eOwnedTrapUpsert = 1
+    eOwnedTrapRemoved = 2
+    eOwnedTrapReset = 3
+End Enum
+
 Public Enum e_TripState
     eForgatToNix
     eNixToArghal
@@ -2717,6 +2723,7 @@ Public Type t_UserFlags
     TargetObjInvSlot As Integer
     UsingItemSlot As Integer
     UsingItemObjIndex As Integer ' Definition captured when requesting an item target.
+    UsingItemMap As Integer
     AtacadoPorNpc As t_NpcReference
     AtacadoPorUser As Integer
     NPCAtacado As t_NpcReference

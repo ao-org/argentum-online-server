@@ -41,7 +41,11 @@ Option Explicit
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
 
-    Private Const SUITE_COUNT As Integer = 42
+    #If DIRECT_PLAY = 0 Then
+        Private Const SUITE_COUNT As Integer = 41
+    #Else
+        Private Const SUITE_COUNT As Integer = 40
+    #End If
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -274,24 +278,26 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 33: RunSuite = Unit_Network.test_suite_network()
 #End If
 #If DIRECT_PLAY = 0 Then
-        Case 34: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
+        Case 33: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
 #End If
-        Case 35: RunSuite = Unit_Weather.test_suite_weather()
-        Case 36: RunSuite = test_suite_remort_persistence()
-        Case 37: RunSuite = test_suite_remort_capability_state()
-        Case 38: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
-        Case 39: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
-        Case 40: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
-        Case 41: RunSuite = test_suite_taming()
+        Case 34: RunSuite = Unit_Weather.test_suite_weather()
+        Case 35: RunSuite = test_suite_remort_persistence()
+        Case 36: RunSuite = test_suite_remort_capability_state()
+        Case 37: RunSuite = Unit_NpcCrossMapPursuit.test_suite_npc_cross_map_pursuit()
+        Case 38: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
+        Case 39: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
+        Case 40: RunSuite = test_suite_taming()
         #If DIRECT_PLAY = 0 Then
-        Case 42: RunSuite = Unit_Traps.test_suite_traps()
+        Case 41: RunSuite = Unit_Traps.test_suite_traps()
         #End If
         Case Else
+            Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False
     End Select
     Exit Function
     
 RunSuite_Err:
+    Call RunTestError("suite execution", Err.Description)
     RunSuite = False
 End Function
 
@@ -300,9 +306,12 @@ Public Sub RunAllSuites()
     Set sw = New Instruments
     sw.start
     
-    Dim i As Integer
+    Dim i As Integer, failuresBefore As Integer
     For i = 1 To SUITE_COUNT
-        Call RunSuite(i)
+        failuresBefore = FailedTests
+        If Not RunSuite(i) Then
+            If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
+        End If
     Next i
     
     TotalElapsed = sw.ElapsedMilliseconds

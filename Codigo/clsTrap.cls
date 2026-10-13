@@ -47,6 +47,7 @@ Private mElapsedTime   As Long
 Private mTimeLimit     As Long
 Private mPublished     As Boolean
 Private mTriggered     As Boolean
+Private mOwnerRemoved  As Boolean
 Private mTrapType      As Byte
 
 Private Enum e_TrapTypes
@@ -67,11 +68,12 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
     On Error GoTo Setup_Err
     mPublished = False
     mTriggered = False
+    mOwnerRemoved = False
     mElapsedTime = 0
     Call SetBaseDot(mDotInfo, SourceIndex, SourceType, Id, EffectId)
     If Id <= 0 Then Exit Sub
     If Not IsTrapEffectDefinition(EffectId) Then Exit Sub
-    If Not IsValidRef(mDotInfo.TargetRef) Then Exit Sub
+    If Not ValidOwner() Then Exit Sub
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
         mTrapType = .SubType
@@ -99,7 +101,7 @@ Public Property Get IBaseEffectOverTime_UniqueId() As Long
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterIsValid() As Boolean
-    IBaseEffectOverTime_CasterIsValid = IsValidRef(mDotInfo.TargetRef)
+    IBaseEffectOverTime_CasterIsValid = ValidOwner()
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterArrayIndex() As Integer
@@ -115,7 +117,7 @@ Public Property Get IBaseEffectOverTime_CasterUserId() As Long
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
-    IBaseEffectOverTime_TargetIsValid = IsValidRef(mDotInfo.TargetRef)
+    IBaseEffectOverTime_TargetIsValid = ValidOwner()
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetArrayIndex() As Integer
@@ -142,7 +144,7 @@ Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
             mElapsedTime = mElapsedTime + DeltaTime
         End If
     End If
-    If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
+    If mElapsedTime >= mTimeLimit Or Not ValidOwner() Then
         mDotInfo.RemoveEffect = True
         Exit Sub
     End If
@@ -168,7 +170,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If mDotInfo.Removed Then Exit Sub
     mDotInfo.Removed = True
     mDotInfo.RemoveEffect = True
-    If mDotInfo.TargetRef.RefType = eUser And IsValidRef(mDotInfo.TargetRef) And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+    If mDotInfo.TargetRef.RefType = eUser And ValidOwner() And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, mDotInfo.UniqueId, 0, 0, EffectOverTime( _
                 mDotInfo.EotId).buffType)
     End If
@@ -215,6 +217,35 @@ Private Sub SetPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY 
     Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Me
     mPublished = True
     Call BroadcastState(eTrapUpsert)
+    Call SendOwnerState(eOwnedTrapUpsert)
+End Sub
+
+Private Function ValidOwner() As Boolean
+    If Not IsValidRef(mDotInfo.TargetRef) Then Exit Function
+    If mDotInfo.TargetRef.RefType = eUser Then
+        If UserList(mDotInfo.TargetRef.ArrayIndex).Id <> mDotInfo.TargetRef.UserId Then Exit Function
+    End If
+    ValidOwner = True
+End Function
+
+Public Function OwnedBy(ByVal UserIndex As Integer) As Boolean
+    OwnedBy = mDotInfo.TargetRef.RefType = eUser And mDotInfo.TargetRef.ArrayIndex = UserIndex And ValidOwner()
+End Function
+
+Public Sub SendOwnerSnapshot()
+    If Not IsActive Then Exit Sub
+    Call SendOwnerState(eOwnedTrapUpsert)
+End Sub
+
+Private Sub SendOwnerState(ByVal EventType As e_OwnedTrapEvent)
+    If mDotInfo.TargetRef.RefType <> eUser Then Exit Sub
+    If Not ValidOwner() Then Exit Sub
+    If EventType = eOwnedTrapRemoved Then
+        If mOwnerRemoved Then Exit Sub
+        mOwnerRemoved = True
+    End If
+    Call WriteOwnedTrapState(mDotInfo.TargetRef, EventType, mDotInfo.UniqueId, mWorldPosition.Map, _
+                             mWorldPosition.x, mWorldPosition.y, mTrapType, RemainingMilliseconds)
 End Sub
 
 Public Property Get RemainingMilliseconds() As Long
@@ -225,7 +256,7 @@ End Property
 
 Public Property Get IsActive() As Boolean
     IsActive = mPublished And Not mDotInfo.RemoveEffect And Not mDotInfo.Removed And _
-               IsValidRef(mDotInfo.TargetRef) And RemainingMilliseconds > 0
+               ValidOwner() And RemainingMilliseconds > 0
 End Property
 
 Public Sub SendSnapshot(ByVal UserIndex As Integer)
@@ -244,6 +275,7 @@ Private Sub NotifyTriggered()
     If mTriggered Or mDotInfo.Removed Then Exit Sub
     mTriggered = True
     Call BroadcastState(eTrapTriggered)
+    Call SendOwnerState(eOwnedTrapRemoved)
 End Sub
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
@@ -261,6 +293,7 @@ Private Sub RemoveFromMap()
     End If
     mPublished = False
     Call BroadcastState(eTrapRemoved)
+    Call SendOwnerState(eOwnedTrapRemoved)
 End Sub
 
 Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_ReferenceType) As Boolean

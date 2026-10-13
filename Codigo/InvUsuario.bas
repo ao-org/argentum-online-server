@@ -2767,6 +2767,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otUsableOntarget
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 .flags.UsingItemObjIndex = ObjIndex
+                .flags.UsingItemMap = .pos.Map
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otFactionForgiveness
                 If ForgiveUserFactionStats(UserIndex) Then
@@ -2776,6 +2777,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             Case e_OBJType.otCastleSpawner
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
                 .flags.UsingItemObjIndex = ObjIndex
+                .flags.UsingItemMap = .pos.Map
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otCollectibleCard
                 If IsFeatureEnabled("collectible_cards") Then
@@ -3022,6 +3024,7 @@ End Function
 
 Public Function ValidTargetableItem(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
+        If .flags.Muerto = 1 Or .flags.UsingItemMap <> .pos.Map Then Exit Function
         Dim Slot As Integer
         Dim ObjIndex As Integer
         Slot = .flags.UsingItemSlot
@@ -3036,14 +3039,29 @@ Public Function ValidTargetableItem(ByVal UserIndex As Integer) As Boolean
     End With
 End Function
 
+Public Sub ClearPendingTargetableItem(ByVal UserIndex As Integer)
+    With UserList(UserIndex).flags
+        .UsingItemSlot = 0
+        .UsingItemObjIndex = 0
+        .UsingItemMap = 0
+    End With
+End Sub
+
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo UserTargetableItem_Err
+    Call ExecuteTargetableItem(UserIndex, TileX, TileY)
+    Call ClearPendingTargetableItem(UserIndex)
+    Exit Sub
+UserTargetableItem_Err:
+    Call ClearPendingTargetableItem(UserIndex)
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
+End Sub
+
+Private Sub ExecuteTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     With UserList(UserIndex)
     
     
         If Not ValidTargetableItem(UserIndex) Then
-            .flags.UsingItemSlot = 0
-            .flags.UsingItemObjIndex = 0
             Exit Sub
         End If
 
@@ -3089,12 +3107,7 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                     End Select
             End Select
         End With
-        .flags.UsingItemSlot = 0
-        .flags.UsingItemObjIndex = 0
     End With
-    Exit Sub
-UserTargetableItem_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
 End Sub
 
 Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
@@ -3156,6 +3169,15 @@ End Sub
 
 Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo PlaceTrap_Err
+    Call TryPlaceTrap(UserIndex, TileX, TileY)
+    Call ClearPendingTargetableItem(UserIndex)
+    Exit Sub
+PlaceTrap_Err:
+    Call ClearPendingTargetableItem(UserIndex)
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PlaceTrap", Erl)
+End Sub
+
+Private Sub TryPlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     With UserList(UserIndex)
         If Not ValidTargetableItem(UserIndex) Then Exit Sub
         If .flags.Muerto = 1 Then Exit Sub
@@ -3183,7 +3205,7 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
         For i = 0 To .EffectOverTime.EffectCount - 1
             If .EffectOverTime.EffectList(i).TypeId = e_EffectOverTimeType.eTrap Then
                 Set Trap = .EffectOverTime.EffectList(i)
-                If Trap.IsActive Then
+                If Trap.OwnedBy(UserIndex) And Trap.IsActive Then
                     TrapCount = TrapCount + 1
                     If Trap.ElapsedTime > OlderTrapTime Then
                         OlderTrapIndex = i
@@ -3201,9 +3223,6 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
             Call RemoveItemFromInventory(UserIndex, .flags.UsingItemSlot)
         End If
     End With
-    Exit Sub
-PlaceTrap_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.PlaceTrap", Erl)
 End Sub
 
 Public Sub UseArpon(ByVal UserIndex As Integer)

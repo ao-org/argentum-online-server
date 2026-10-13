@@ -231,6 +231,7 @@ Public Enum ServerPacketID
     eHooHouseDoorActionResult
     eReservedHooMagicLightOrb ' Retired wire ID, never sent or reused.
     eHooTamingResult
+    eHooOwnedTrap ' 208 with PYMMO=1; mandatory owner-only trap lifecycle.
     eMaxPacket
     [PacketCount]
 End Enum

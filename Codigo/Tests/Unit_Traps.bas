@@ -3,6 +3,7 @@ Option Explicit
 #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
 Private mUser As Integer, mNpc As Integer
 Private mPackets As Collection
+Private mOwnedPackets As Collection, mOrder As Collection
 Private mCapture As Boolean
 Private mSavedUser As t_User, mSavedNpc As t_Npc
 Private mSavedTiles(11 To 14) As t_MapBlock
@@ -22,18 +23,25 @@ Public Sub InitializeTestWorld()
     ReDim EffectOverTime(1 To 9)
     ReDim ObjData(1 To 2)
     NumMaps = 1
+    MinXBorder = XMinMapSize + (XWindow \ 2)
+    MinYBorder = YMinMapSize + (YWindow \ 2)
+    MaxXBorder = XMaxMapSize - (XWindow \ 2)
+    MaxYBorder = YMaxMapSize - (YWindow \ 2)
     #If DIRECT_PLAY = 0 Then
         Call InitializeAuxiliaryBuffer()
     #End If
     Call InitializePools()
 End Sub
 
-Public Function CapturePacket() As Boolean
+Public Function CapturePacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
     If Not mCapture Then Exit Function
     Dim bytes() As Byte, value As Variant, packet As Integer
     Call Writer.GetData(bytes)
     Call Writer.Clear()
     packet = CInt(bytes(0)) + CInt(bytes(1)) * 256
+    If packet = ServerPacketID.eUpdateTrap Or packet = ServerPacketID.eHooOwnedTrap Then
+        Call mOrder.Add(CStr(packet) & ":" & CStr(bytes(2)))
+    End If
     If packet = ServerPacketID.eUpdateTrap Then
         Call Expect(UBound(bytes) = 15, "fixed packet length")
         If bytes(2) = eTrapUpsert Then
@@ -42,6 +50,11 @@ Public Function CapturePacket() As Boolean
         End If
         value = bytes
         Call mPackets.Add(value)
+    ElseIf packet = ServerPacketID.eHooOwnedTrap Then
+        Call Expect(Route = SendTarget.ToIndex And Recipient = mUser, "ownership sent only to owner")
+        Call Expect(UBound(bytes) = 15, "owned packet fixed length")
+        value = bytes
+        Call mOwnedPackets.Add(value)
     ElseIf packet = ServerPacketID.ePlayWave Then
         SoundCalls = SoundCalls + 1
     ElseIf packet = ServerPacketID.eCreateFX Then
@@ -64,9 +77,11 @@ Private Sub ResetFixture()
     NpcList(mNpc) = EmptyNpc
     With UserList(mUser)
         .VersionId = 1
+        .Id = 101
         .CurrentInventorySlots = 10
         .flags.UsingItemSlot = 1
         .flags.UsingItemObjIndex = 1
+        .flags.UsingItemMap = 1
         .flags.Privilegios = e_PlayerType.User
         .invent.Object(1).ObjIndex = 1
         .invent.Object(1).amount = 20
@@ -101,6 +116,8 @@ Private Sub ResetFixture()
     EffectOverTime(9).SubType = 3: EffectOverTime(9).TickTime = 120000
     EffectOverTime(9).ApplyEffectId = 8: EffectOverTime(9).OnHitFx = 0
     Set mPackets = New Collection
+    Set mOwnedPackets = New Collection
+    Set mOrder = New Collection
     SoundCalls = 0: FxCalls = 0: CdClears = 0
 End Sub
 
@@ -204,6 +221,7 @@ Private Sub TestRejections()
     Call Expect(Not trap.trigger(mNpc, eNpc), "immune NPC")
     Call Expect(mPackets.Count = 1 And SoundCalls = 0 And NpcList(mNpc).flags.Paralizado = 0, "no fake activation")
     Call Expect(trap.IsActive, "rejections do not consume trap")
+    Call Expect(mOwnedPackets.Count = 1, "rejection does not remove ownership")
 End Sub
 Private Sub TestExpiry()
     Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 6), "place")
@@ -214,6 +232,7 @@ Private Sub TestExpiry()
     Call Expect(mPackets.Count = 2, "expire once")
     Call ExpectPacket(2, eTrapRemoved, 1, 0)
     Call Expect(UserList(mUser).EffectOverTime.EffectCount = 0 And MapData(11, 10, 1).Trap Is Nothing, "EOT cleanup")
+    Call Expect(mOwnedPackets.Count = 2, "expiry removes owner entry once")
 End Sub
 Private Sub TestInvalidOwner()
     Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 6), "place")
@@ -231,12 +250,14 @@ Private Sub TestDeath()
     Call ClearEffectList(UserList(mUser).EffectOverTime, e_EffectType.eAny, True)
     Call TickTrapTests(1)
     Call Expect(mPackets.Count = 2 And CdClears = 1, "death removes once")
+    Call Expect(mOwnedPackets.Count = 2, "death removes owner entry once")
     Call ExpectPacket(2, eTrapRemoved, 1, 0)
 End Sub
 Private Sub TestFourth()
     Dim i As Integer
     ' Equal-age traps must select the first active trap.
     For i = 11 To 14
+        Call ArmItem()
         Call PlaceTrap(mUser, i, 10)
     Next i
     Call Expect(mPackets.Count = 5, "three upserts then removed/upsert")
@@ -246,12 +267,14 @@ Private Sub TestFourth()
     Call Expect(UserList(mUser).invent.Object(1).amount = 16 And UserList(mUser).CdTimes(0) <> 0, "real consumption/cooldown updated")
     Call TickTrapTests(1)
     Call Expect(UserList(mUser).EffectOverTime.EffectCount = 3 And mPackets.Count = 5, "no duplicate late removal")
+    Call Expect(mOwnedPackets.Count = 5, "four owner upserts and one removal")
 
     Call ResetFixture()
     Call PlaceTrap(mUser, 11, 10)
     Call MapData(11, 10, 1).Trap.Disable()
     ' An inactive entry at index zero must not win oldest-trap selection.
     For i = 11 To 14
+        Call ArmItem()
         Call PlaceTrap(mUser, i, 10)
     Next i
     Call ExpectPacket(6, eTrapRemoved, 2, 0)
@@ -262,6 +285,7 @@ Private Sub TestFourth()
     Call ResetFixture()
     Call PlaceTrap(mUser, 11, 10)
     Call MapData(11, 10, 1).Trap.Disable()
+    Call ArmItem()
     Call PlaceTrap(mUser, 11, 10)
     Call TickTrapTests(1)
     Call Expect(Not MapData(11, 10, 1).Trap Is Nothing, "late cleanup preserves replacement on same tile")
@@ -314,6 +338,7 @@ Private Sub TestPlacementGuards()
     Next i
     Call ResetFixture()
     Call PlaceTrap(mUser, 15, 10)
+    Call ArmItem()
     Call PlaceTrap(mUser, 0, 10)
     Call Expect(mPackets.Count = 0 And UserList(mUser).invent.Object(1).amount = 20, "range/bounds unchanged")
 End Sub
@@ -339,6 +364,231 @@ Private Sub TestIdWrap()
     Call Expect(TrapTestNextId(&H7FFFFFFE) = &H7FFFFFFF, "maximum signed id")
     Call Expect(TrapTestNextId(&H7FFFFFFF) = 1, "overflow skips zero")
 End Sub
+
+Private Sub ArmItem()
+    With UserList(mUser)
+        .flags.UsingItemSlot = 1
+        .flags.UsingItemObjIndex = .invent.Object(1).ObjIndex
+        .flags.UsingItemMap = .pos.Map
+    End With
+End Sub
+
+Private Sub ExpectCleared()
+    With UserList(mUser).flags
+        Call Expect(.UsingItemSlot = 0 And .UsingItemObjIndex = 0 And .UsingItemMap = 0, "pending targeting cleared")
+    End With
+End Sub
+
+Private Sub TestOrphanReuse(ByVal ChangeIdentityOnly As Boolean)
+    Dim retired As clsTrap, oldList As t_EffectOverTimeList, i As Integer
+    Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 6), "A placement")
+    Set retired = MapData(11, 10, 1).Trap
+    oldList = UserList(mUser).EffectOverTime
+    If ChangeIdentityOnly Then
+        UserList(mUser).Id = 202
+    Else
+        UserList(mUser).VersionId = 2
+    End If
+    Call TickTrapTests(1)
+    Call Expect(oldList.EffectList(0) Is retired, "obsolete owner still holds retired instance")
+    Call Expect(UserList(mUser).EffectOverTime.EffectCount = 1, "invalid owner slot list not mutated")
+    Call Expect(mOwnedPackets.Count = 1, "no ownership packet to recycled slot")
+    Call ExpectPacket(2, eTrapRemoved, 1, 0)
+    Dim emptyList As t_EffectOverTimeList
+    UserList(mUser).EffectOverTime = emptyList
+    UserList(mUser).Id = 202
+    For i = 11 To 13
+        Call ArmItem()
+        Call PlaceTrap(mUser, i, 10)
+        Call Expect(Not MapData(i, 10, 1).Trap Is retired, "orphan must never return to pool")
+    Next i
+    Call ClearEffectList(oldList, e_EffectType.eAny, True)
+    Call retired.Disable()
+    Call retired.IBaseEffectOverTime_OnRemove()
+    Call TickTrapTests(1)
+    Call Expect(UserList(mUser).EffectOverTime.EffectCount = 3, "B retains three active traps")
+    For i = 11 To 13
+        Call Expect(MapData(i, 10, 1).Trap.IsActive, "old cleanup cannot remove B trap")
+    Next i
+    Call Expect(mPackets.Count = 5 And mOwnedPackets.Count = 4, "no duplicate or cross-owner removals")
+End Sub
+
+Private Sub TestSafePoolReuse()
+    Dim retired As clsTrap
+    Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 6), "place")
+    Set retired = MapData(11, 10, 1).Trap
+    Call retired.Disable()
+    Call TickTrapTests(1)
+    Call Expect(UserList(mUser).EffectOverTime.EffectCount = 0, "detach before pooling")
+    Call Expect(CreateTrap(mUser, eUser, 1, 12, 10, 6), "replace")
+    Call Expect(MapData(12, 10, 1).Trap Is retired, "verified owner retirement preserves pooling")
+    Call Expect(mOwnedPackets.Count = 3, "pooled trap resets owner removal guard")
+End Sub
+
+Private Sub TestOwnedWire()
+    Dim owner As t_AnyReference, bytes As Variant, expected As Variant, eventType As Integer, i As Integer
+    Call Expect(ServerPacketID.eHooTamingResult = 207 And ServerPacketID.eHooOwnedTrap = 208, "PYMMO packet append, no shifts")
+    Call SetRef(owner, mUser, eUser)
+    For eventType = 1 To 3
+        Call WriteOwnedTrapState(owner, eventType, &H1020304, &H1234, 99, 88, 3, &H5060708)
+        bytes = mOwnedPackets(eventType)
+        expected = Array(208, 0, eventType, 4, 3, 2, 1, 52, 18, 99, 88, 3, 0, 0, 0, 0)
+        If eventType = 1 Then
+            expected(12) = 8: expected(13) = 7: expected(14) = 6: expected(15) = 5
+        ElseIf eventType = 3 Then
+            For i = 3 To 15: expected(i) = 0: Next i
+        End If
+        For i = 0 To 15
+            Call Expect(bytes(i) = expected(i), "owner wire byte " & i)
+        Next i
+    Next eventType
+    Call WriteOwnedTrapState(owner, eOwnedTrapUpsert, 1, 1, 11, 10, 1, -1)
+    bytes = mOwnedPackets(4)
+    Call Expect(Read32(bytes, 12) = 0, "owner remaining clamp")
+    UserList(mUser).VersionId = 2
+    Call WriteOwnedTrapState(owner, eOwnedTrapRemoved, 1, 1, 11, 10, 1, 0)
+    Call Expect(mOwnedPackets.Count = 4, "invalid generation blocked")
+    UserList(mUser).VersionId = 1: UserList(mUser).Id = 202
+    Call WriteOwnedTrapState(owner, eOwnedTrapRemoved, 1, 1, 11, 10, 1, 0)
+    Call Expect(mOwnedPackets.Count = 4 And mPackets.Count = 0, "wrong identity blocked, no broadcast")
+End Sub
+
+Private Sub TestOwnedSnapshot()
+    Dim bytes As Variant, i As Integer
+    Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 7), "place")
+    Call TickTrapTests(1250)
+    ' Owner moves outside the trap map; snapshots must not use area visibility.
+    UserList(mUser).pos.Map = 2
+    Call WriteOwnedTrapSnapshot(mUser)
+    Call WriteOwnedTrapSnapshot(mUser)
+    Call Expect(mOwnedPackets.Count = 5, "upsert plus two reset/snapshot pairs")
+    For i = 2 To 4 Step 2
+        bytes = mOwnedPackets(i)
+        Call Expect(bytes(2) = eOwnedTrapReset And Read32(bytes, 3) = 0, "reset first")
+        bytes = mOwnedPackets(i + 1)
+        Call Expect(bytes(2) = eOwnedTrapUpsert And Read32(bytes, 3) = 1, "same identity")
+        Call Expect(bytes(7) = 1 And bytes(11) = 2 And Read32(bytes, 12) = 118750, "remote map and current lifetime")
+    Next i
+    Call MapData(11, 10, 1).Trap.Disable()
+    Call TickTrapTests(1)
+    bytes = mOwnedPackets(6)
+    Call Expect(bytes(2) = eOwnedTrapRemoved And Read32(bytes, 3) = 1 And Read32(bytes, 12) = 0, "remote removal")
+    Call Expect(mOrder(1) = "192:1" And mOrder(2) = "208:1", "area upsert before owner upsert")
+    Call Expect(mOrder(mOrder.Count - 1) = "192:3" And mOrder(mOrder.Count) = "208:2", "area removal before owner removal")
+End Sub
+
+Private Sub TestOwnedTrigger()
+    Call Expect(CreateTrap(mUser, eUser, 1, 11, 10, 6), "place")
+    Call ActivateTrap(mNpc, eNpc, 1, 11, 10)
+    Call TickTrapTests(1)
+    Call TickTrapTests(1)
+    Call Expect(mOwnedPackets.Count = 2, "exactly one owner removal for trigger/cleanup")
+    Call Expect(mOrder(3) = "192:2" And mOrder(4) = "208:2" And mOrder(5) = "192:3", "trigger then owner removal then area cleanup")
+End Sub
+
+Private Sub TestTerminalRejections()
+    Dim i As Integer
+    For i = 1 To 9
+        Call ResetFixture()
+        Select Case i
+            Case 1
+                ObjData(1).Cooldown = 30000
+                UserList(mUser).CdTimes(0) = GetTickCountRaw()
+            Case 2: ObjData(1).MinHp = 101
+            Case 3: ObjData(1).MinSta = 101
+            Case 4: UserList(mUser).flags.Muerto = 1
+            Case 5: UserList(mUser).flags.UsingItemMap = 2
+            Case 6: MapData(11, 10, 1).Blocked = 1
+            Case 7: ObjData(1).EfectoMagico = 0
+            Case 8: UserList(mUser).invent.Object(1).ObjIndex = 2
+            Case 9: ObjData(1).cdType = 30000 ' Exercise the real error handler.
+        End Select
+        Call UserTargetableItem(mUser, 11, 10)
+        Call ExpectCleared()
+        ObjData(1).Cooldown = 0: ObjData(1).MinHp = 0: ObjData(1).MinSta = 0
+        ObjData(1).cdType = 0
+        ObjData(1).EfectoMagico = 6: UserList(mUser).flags.Muerto = 0
+        UserList(mUser).invent.Object(1).ObjIndex = 1: MapData(11, 10, 1).Blocked = 0
+        Call UserTargetableItem(mUser, 11, 10)
+        Call Expect(mPackets.Count = 0 And UserList(mUser).invent.Object(1).amount = 20, "rejected request cannot resume")
+        Call ArmItem()
+        Call UserTargetableItem(mUser, 11, 10)
+        Call Expect(mPackets.Count = 1 And UserList(mUser).invent.Object(1).amount = 19, "fresh use still works")
+    Next i
+End Sub
+
+Private Sub TestOtherTargetableTypes()
+    Dim kinds As Variant, kind As Variant
+    kinds = Array(eRessurectionItem, eArpon, eHandCannon)
+    For Each kind In kinds
+        ObjData(1).Subtipo = kind
+        Call Expect(ValidTargetableItem(mUser), "non-trap targetable item remains valid")
+    Next kind
+    ObjData(1).OBJType = e_OBJType.otCastleSpawner
+    Call Expect(ValidTargetableItem(mUser), "castle spawner remains valid")
+    Call ClearPendingTargetableItem(mUser)
+    Call ExpectCleared()
+End Sub
+
+Private Sub SendItemTarget(ByVal Counter As Long, Optional ByVal x As Byte = 12)
+    Dim payload() As Byte, inputWriter As New Network.Writer
+    Call inputWriter.WriteInt8(x)
+    Call inputWriter.WriteInt8(10)
+    Call inputWriter.WriteInt8(e_Skill.TargetableItem)
+    Call inputWriter.WriteInt32(Counter)
+    Call inputWriter.GetData(payload)
+    Call Protocol.TrapTestWorkLeftClick(mUser, payload)
+End Sub
+
+Private Sub TestWorkItemPackets()
+    Dim i As Integer
+    For i = 1 To 7
+        Call ResetFixture()
+        Select Case i
+            Case 1: UserList(mUser).flags.Muerto = 1
+            Case 2: UserList(mUser).flags.Descansar = True
+            Case 3: ObjData(1).MinSta = 101
+            Case 4: ObjData(1).MinHp = 101
+            Case 5
+                ObjData(1).Cooldown = 30000
+                UserList(mUser).CdTimes(0) = GetTickCountRaw()
+            Case 6: UserList(mUser).invent.Object(1).ObjIndex = 2
+            Case 7: UserList(mUser).Counters.StunEndTime = GetTickCountRaw() + 10000
+        End Select
+        Call SendItemTarget(1)
+        Call ExpectCleared()
+        Call Expect(UserList(mUser).PacketCounters(PacketNames.WorkLeftClick) = 1, "real request sequence consumed")
+        UserList(mUser).flags.Muerto = 0: UserList(mUser).flags.Descansar = False
+        UserList(mUser).Counters.StunEndTime = 0
+        ObjData(1).MinSta = 0: ObjData(1).MinHp = 0: ObjData(1).Cooldown = 0
+        UserList(mUser).invent.Object(1).ObjIndex = 1
+        Call SendItemTarget(2)
+        Call Expect(mPackets.Count = 0, "later valid packet cannot reuse rejected Use")
+        Call ArmItem()
+        Call SendItemTarget(3)
+        Call SendItemTarget(4)
+        Call ExpectCleared()
+        Call Expect(mPackets.Count = 1 And UserList(mUser).invent.Object(1).amount = 19, "one successful placement per fresh Use")
+    Next i
+    Call ResetFixture()
+    Call SendItemTarget(1, 0)
+    Call ExpectCleared()
+    Call ArmItem()
+    Call SendItemTarget(2, 50)
+    Call ExpectCleared()
+    Call Expect(mPackets.Count = 0, "out of bounds and out of vision rejected")
+End Sub
+
+Private Sub TestMapTargetCancellation()
+    Call WriteChangeMap(mUser, 1)
+    Call ExpectCleared()
+    Call SendItemTarget(1)
+    Call Expect(mPackets.Count = 0, "map notification invalidates old target")
+    Call Expect(mOwnedPackets.Count = 1, "map notification resets owner snapshot")
+    Call ArmItem()
+    Call SendItemTarget(2)
+    Call Expect(mPackets.Count = 1, "fresh use after transition works")
+End Sub
 Private Sub RunCase(ByVal Number As Integer, ByVal Name As String)
     On Error GoTo FailedCase
     Call ResetFixture()
@@ -357,6 +607,16 @@ Private Sub RunCase(ByVal Number As Integer, ByVal Name As String)
         Case 12: Call TestPlacementGuards()
         Case 13: Call TestReuseAndClamp()
         Case 14: Call TestIdWrap()
+        Case 15: Call TestOrphanReuse(False)
+        Case 16: Call TestOrphanReuse(True)
+        Case 17: Call TestSafePoolReuse()
+        Case 18: Call TestOwnedWire()
+        Case 19: Call TestOwnedSnapshot()
+        Case 20: Call TestOwnedTrigger()
+        Case 21: Call TestTerminalRejections()
+        Case 22: Call TestOtherTargetableTypes()
+        Case 23: Call TestWorkItemPackets()
+        Case 24: Call TestMapTargetCancellation()
     End Select
     Call UnitTesting.RunTest("traps " & Name, True)
     Exit Sub
@@ -365,7 +625,8 @@ FailedCase:
 End Sub
 Public Function test_suite_traps() As Boolean
     On Error GoTo FailedSuite
-    Dim names As Variant, i As Integer, f As Integer
+    Dim names As Variant, i As Integer, f As Integer, failuresBefore As Integer
+    failuresBefore = UnitTesting.GetFailedTests()
     Dim saved As Boolean, effectsSaved As Boolean, configPath As String
     Dim fs As New FileSystemObject
     For i = UBound(UserList) To LBound(UserList) Step -1
@@ -409,15 +670,19 @@ Public Function test_suite_traps() As Boolean
     Set Writer = Protocol_Writes.GetWriterBuffer()
     Call Writer.Clear()
     Set mPackets = New Collection
+    Set mOwnedPackets = New Collection
+    Set mOrder = New Collection
     mCapture = True
     Call BeginTrapTests()
     effectsSaved = True
     names = Array("Wire", "Snapshots", "Paralysis", "Explosion", "Poison", "Rejection/immunity", _
-                  "Expiry", "Invalid owner", "Death", "Fourth trap", "Inventory", "Placement guards", "Pool reuse/time clamp", "Id wrap")
+                  "Expiry", "Invalid owner", "Death", "Fourth trap", "Inventory", "Placement guards", "Pool reuse/time clamp", "Id wrap", _
+                  "Orphan generation reuse", "Orphan identity reuse", "Safe pooling", "Owner wire", "Remote owner snapshot", _
+                  "Owner trigger ordering", "Terminal rejection", "Other targetable types", "WorkLeftClick packets", "Map target cancellation")
     For i = 0 To UBound(names)
         Call RunCase(i + 1, names(i))
     Next i
-    test_suite_traps = True
+    test_suite_traps = UnitTesting.GetFailedTests() = failuresBefore
 Cleanup:
     On Error Resume Next
     If f <> 0 Then Close #f
@@ -441,6 +706,8 @@ Cleanup:
     End If
     If Len(configPath) > 0 Then Call fs.DeleteFile(configPath)
     Set mPackets = Nothing
+    Set mOwnedPackets = Nothing
+    Set mOrder = Nothing
     Set Writer = Nothing
     Set mSavedConfig = Nothing
     mUser = 0: mNpc = 0

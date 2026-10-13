@@ -2939,6 +2939,17 @@ End Sub
 ' Handles the "WorkLeftClick" message.
 '
 ' @param    UserIndex The index of the user sending the message.
+#If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+Public Sub TrapTestWorkLeftClick(ByVal UserIndex As Integer, ByRef Payload() As Byte)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    Call HandleWorkLeftClick(UserIndex)
+    Set reader = savedReader
+End Sub
+#End If
+
 Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     On Error GoTo HandleWorkLeftClick_Err
     With UserList(UserIndex)
@@ -2956,13 +2967,23 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         Dim Packet_ID As Long
         Packet_ID = PacketNames.WorkLeftClick
         If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "WorkLeftClick", PacketTimerThreshold( _
-                Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+                Packet_ID), MacroIterations(Packet_ID)) Then
+            If Skill = e_Skill.TargetableItem Then Call ClearPendingTargetableItem(UserIndex)
+            Exit Sub
+        End If
         .Trabajo.Target_X = x
         .Trabajo.Target_Y = y
         .Trabajo.TargetSkill = Skill
-        If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then Exit Sub
-        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, x, y) Then
+            If Skill = e_Skill.TargetableItem Then Call ClearPendingTargetableItem(UserIndex)
+            Exit Sub
+        End If
+        If UserMod.IsStun(.flags, .Counters) Then
+            If Skill = e_Skill.TargetableItem Then Call ClearPendingTargetableItem(UserIndex)
+            Exit Sub
+        End If
         If Not InRangoVision(UserIndex, x, y) Then
+            If Skill = e_Skill.TargetableItem Then Call ClearPendingTargetableItem(UserIndex)
             Call WritePosUpdate(UserIndex)
             Exit Sub
         End If
@@ -3380,11 +3401,11 @@ TamingCompleted:
             Case e_Skill.TargetableItem
 
                 If Not ValidTargetableItem(UserIndex) Then
-                    .flags.UsingItemSlot = 0
-                    .flags.UsingItemObjIndex = 0
+                    Call ClearPendingTargetableItem(UserIndex)
                     Exit Sub
                 End If
                 If .Stats.MinSta < ObjData(.invent.Object(.flags.UsingItemSlot).ObjIndex).MinSta Then
+                    Call ClearPendingTargetableItem(UserIndex)
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
@@ -3397,6 +3418,7 @@ TamingCompleted:
     End With
     Exit Sub
 HandleWorkLeftClick_Err:
+    Call ClearPendingTargetableItem(UserIndex)
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
 End Sub
 
