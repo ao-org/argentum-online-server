@@ -289,6 +289,27 @@ the transport, then all shared suites; Aurora adds trap suite 41. DirectPlay has
 Missing suite registrations/exceptions/failure returns are reported as failures.
 Individual trap failures also make `test_suite_traps()` return False.
 
+Follow-up validation (2026-10-13): the local full-suite startup blocker is now
+fixed. `RunScriptInFile` preserves SQL newlines and removes only leading
+whitespace/`--` comment lines before preparation. Previously newline removal
+commented out a migration's SQL; the installed SQLite ODBC 0.9999 driver also
+crashed on a leading line comment even with intact newlines. Two regressions
+in the existing General suite execute CRLF/LF scripts with leading comments
+and verify that embedded newlines and `--` inside a SQL string remain intact.
+
+- Native builds: PYMMO=0/1, UNIT_TEST=0/1, DIRECT_PLAY=0 all passed, from an
+  isolated source copy because the main project was open in the VB6 IDE.
+- Full existing suite: **403 passed, 0 failed** in each PYMMO configuration.
+- Focused trap suite: **33 passed, 0 failed** in each test build.
+- Full runs used disposable empty databases and the complete runtime fixture,
+  including `Recursos/config/legacy_overworld_topology.json`. An initial
+  incomplete fixture caused four topology failures; adding the checked-in
+  resource resolved them without changing NPC code or assertions.
+- `git diff --check` passed. No production/user database, installed driver,
+  gameplay rule or packet layout was changed by this follow-up.
+
+The earlier startup-crash reports below are historical, not remaining blockers.
+
 Native Windows review validation (2026-10-13, separate temporary directories):
 
 - PYMMO=1, DIRECT_PLAY=0, UNIT_TEST=0 and 1, DEBUGGING=0: builds passed.
