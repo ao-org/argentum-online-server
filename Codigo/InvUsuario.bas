@@ -2766,6 +2766,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End Select
             Case e_OBJType.otUsableOntarget
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
+                .flags.UsingItemObjIndex = ObjIndex
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otFactionForgiveness
                 If ForgiveUserFactionStats(UserIndex) Then
@@ -2774,6 +2775,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 End If
             Case e_OBJType.otCastleSpawner
                 .flags.UsingItemSlot = .flags.TargetObjInvSlot
+                .flags.UsingItemObjIndex = ObjIndex
                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
             Case e_OBJType.otCollectibleCard
                 If IsFeatureEnabled("collectible_cards") Then
@@ -3018,12 +3020,32 @@ Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) A
     IsItemInCooldown = ElapsedTime < ObjData(obj.ObjIndex).Cooldown
 End Function
 
+Public Function ValidTargetableItem(ByVal UserIndex As Integer) As Boolean
+    With UserList(UserIndex)
+        Dim Slot As Integer
+        Dim ObjIndex As Integer
+        Slot = .flags.UsingItemSlot
+        If Slot < 1 Or Slot > .CurrentInventorySlots Then Exit Function
+        If Slot < LBound(.invent.Object) Or Slot > UBound(.invent.Object) Then Exit Function
+        If .invent.Object(Slot).amount <= 0 Then Exit Function
+        ObjIndex = .invent.Object(Slot).ObjIndex
+        If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
+        If ObjIndex <> .flags.UsingItemObjIndex Then Exit Function
+        ValidTargetableItem = ObjData(ObjIndex).OBJType = e_OBJType.otUsableOntarget Or _
+                              ObjData(ObjIndex).OBJType = e_OBJType.otCastleSpawner
+    End With
+End Function
+
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     On Error GoTo UserTargetableItem_Err
     With UserList(UserIndex)
     
     
-        If .flags.UsingItemSlot = 0 Then Exit Sub
+        If Not ValidTargetableItem(UserIndex) Then
+            .flags.UsingItemSlot = 0
+            .flags.UsingItemObjIndex = 0
+            Exit Sub
+        End If
 
         Dim ObjIndex As Integer
         ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
@@ -3054,7 +3076,7 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
                         Call WriteLocaleMsg(UserIndex, MSG_AT_LEAST_NOBLE_TO_FOUND_CASTLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFOBOLD)
                         Call LogInfoServidor("User with low patreon status trying to set a whitelist for a castle, name: " & .name)
                     End If
-                Case Else
+                Case e_OBJType.otUsableOntarget
                     Select Case .Subtipo
                         Case e_UssableOnTarget.eRessurectionItem
                             Call ResurrectWithItem(UserIndex)
@@ -3068,6 +3090,7 @@ Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer
             End Select
         End With
         .flags.UsingItemSlot = 0
+        .flags.UsingItemObjIndex = 0
     End With
     Exit Sub
 UserTargetableItem_Err:
@@ -3132,7 +3155,17 @@ Public Sub RemoveItemFromInventory(ByVal UserIndex As Integer, ByVal Slot As Int
 End Sub
 
 Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    On Error GoTo PlaceTrap_Err
     With UserList(UserIndex)
+        If Not ValidTargetableItem(UserIndex) Then Exit Sub
+        If .flags.Muerto = 1 Then Exit Sub
+        Dim ObjIndex As Integer
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
+        If ObjData(ObjIndex).OBJType <> e_OBJType.otUsableOntarget Then Exit Sub
+        If ObjData(ObjIndex).Subtipo <> e_UssableOnTarget.eTrap Then Exit Sub
+        If Not IsTrapEffectDefinition(ObjData(ObjIndex).EfectoMagico) Then Exit Sub
+        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.UsingItemSlot)) Then Exit Sub
+        If Not IsValidMapPosition(.pos.Map, TileX, TileY) Then Exit Sub
         If Distance(TileX, TileY, .pos.x, .pos.y) > SvrConfig.GetValue("TrapPlacementRange") Then
             Call WriteLocaleMsg(UserIndex, MsgToFar, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -3144,29 +3177,33 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
         Dim i              As Integer
         Dim OlderTrapTime  As Long
         Dim OlderTrapIndex As Integer
-        OlderTrapTime = 0
+        OlderTrapTime = -1
         Dim TrapCount As Integer
         Dim Trap      As clsTrap
         For i = 0 To .EffectOverTime.EffectCount - 1
             If .EffectOverTime.EffectList(i).TypeId = e_EffectOverTimeType.eTrap Then
-                TrapCount = TrapCount + 1
                 Set Trap = .EffectOverTime.EffectList(i)
-                If Trap.ElapsedTime > OlderTrapTime Then
-                    OlderTrapIndex = i
-                    OlderTrapTime = Trap.ElapsedTime
+                If Trap.IsActive Then
+                    TrapCount = TrapCount + 1
+                    If Trap.ElapsedTime > OlderTrapTime Then
+                        OlderTrapIndex = i
+                        OlderTrapTime = Trap.ElapsedTime
+                    End If
                 End If
             End If
         Next i
         If TrapCount >= 3 Then
             Set Trap = .EffectOverTime.EffectList(OlderTrapIndex)
-            Call Trap.Disable
+            Call Trap.Disable()
         End If
-        Dim ObjIndex As Integer
-        ObjIndex = UserList(UserIndex).invent.Object(UserList(UserIndex).flags.UsingItemSlot).ObjIndex
-        Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
-        Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.Map, TileX, TileY, ObjData(ObjIndex).EfectoMagico)
-        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
+        If EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.Map, TileX, TileY, ObjData(ObjIndex).EfectoMagico) Then
+            Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
+            Call RemoveItemFromInventory(UserIndex, .flags.UsingItemSlot)
+        End If
     End With
+    Exit Sub
+PlaceTrap_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PlaceTrap", Erl)
 End Sub
 
 Public Sub UseArpon(ByVal UserIndex As Integer)

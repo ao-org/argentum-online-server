@@ -1136,9 +1136,11 @@ WriteObjectCreate_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectCreate", Erl)
 End Sub
 
-Public Sub WriteUpdateTrapState(ByVal UserIndex As Integer, State As Integer, ByVal x As Integer, ByVal y As Integer)
+Public Sub WriteUpdateTrapState(ByVal UserIndex As Integer, ByVal EventType As e_TrapEvent, ByVal TrapId As Long, _
+                                ByVal Map As Integer, ByVal x As Byte, ByVal y As Byte, _
+                                ByVal TrapType As Byte, ByVal RemainingMs As Long)
     On Error GoTo WriteUpdateTrapState_Err
-    Call modSendData.SendData(ToIndex, UserIndex, PrepareTrapUpdate(State, x, y))
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareTrapUpdate(EventType, TrapId, Map, x, y, TrapType, RemainingMs))
     Exit Sub
 WriteUpdateTrapState_Err:
     Call Writer.Clear
@@ -4039,12 +4041,18 @@ PrepareMessage_BlockPosition_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessage_BlockPosition", Erl)
 End Function
 
-Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y As Byte)
+Public Function PrepareTrapUpdate(ByVal EventType As e_TrapEvent, ByVal TrapId As Long, ByVal Map As Integer, _
+                                  ByVal x As Byte, ByVal y As Byte, ByVal TrapType As Byte, ByVal RemainingMs As Long)
     On Error GoTo PrepareTrapUpdate_Err
+    If EventType <> eTrapUpsert Or RemainingMs < 0 Then RemainingMs = 0
     Call Writer.WriteInt16(ServerPacketID.eUpdateTrap)
-    Call Writer.WriteInt8(State)
+    Call Writer.WriteInt8(EventType)
+    Call Writer.WriteInt32(TrapId)
+    Call Writer.WriteInt16(Map)
     Call Writer.WriteInt8(x)
     Call Writer.WriteInt8(y)
+    Call Writer.WriteInt8(TrapType)
+    Call Writer.WriteInt32(RemainingMs)
     Exit Function
 PrepareTrapUpdate_Err:
     Call Writer.Clear

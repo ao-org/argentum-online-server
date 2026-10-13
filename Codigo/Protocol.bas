@@ -3378,8 +3378,13 @@ TamingCompleted:
                     Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Case e_Skill.TargetableItem
-            
-                If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).ObjIndex).MinSta Then
+
+                If Not ValidTargetableItem(UserIndex) Then
+                    .flags.UsingItemSlot = 0
+                    .flags.UsingItemObjIndex = 0
+                    Exit Sub
+                End If
+                If .Stats.MinSta < ObjData(.invent.Object(.flags.UsingItemSlot).ObjIndex).MinSta Then
                     Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     'Msg2129=¡No tengo energía!
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))

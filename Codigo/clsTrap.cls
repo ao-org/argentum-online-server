@@ -45,6 +45,9 @@ Private mid            As Long
 Private mDotInfo       As t_BaseDotInfo
 Private mElapsedTime   As Long
 Private mTimeLimit     As Long
+Private mPublished     As Boolean
+Private mTriggered     As Boolean
+Private mTrapType      As Byte
 
 Private Enum e_TrapTypes
     eParalice = 1
@@ -62,11 +65,18 @@ Public Sub Setup(ByVal SourceIndex As Integer, _
                  ByVal TileX As Integer, _
                  ByVal TileY As Integer)
     On Error GoTo Setup_Err
+    mPublished = False
+    mTriggered = False
     mElapsedTime = 0
     Call SetBaseDot(mDotInfo, SourceIndex, SourceType, Id, EffectId)
-    Call SetPosition(Map, TileX, TileY)
+    If Id <= 0 Then Exit Sub
+    If Not IsTrapEffectDefinition(EffectId) Then Exit Sub
+    If Not IsValidRef(mDotInfo.TargetRef) Then Exit Sub
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
+        mTrapType = .SubType
+        ' Publish only after all pooled state and lifetime have been initialized.
+        Call SetPosition(Map, TileX, TileY)
         If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, Id, .TickTime, .TickTime, .buffType)
         End If
@@ -125,7 +135,13 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal DeltaTime As Long)
-    mElapsedTime = mElapsedTime + DeltaTime
+    If DeltaTime > 0 Then
+        If DeltaTime >= RemainingMilliseconds Then
+            mElapsedTime = mTimeLimit
+        Else
+            mElapsedTime = mElapsedTime + DeltaTime
+        End If
+    End If
     If mElapsedTime >= mTimeLimit Or Not IsValidRef(mDotInfo.TargetRef) Then
         mDotInfo.RemoveEffect = True
         Exit Sub
@@ -152,11 +168,11 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If mDotInfo.Removed Then Exit Sub
     mDotInfo.Removed = True
     mDotInfo.RemoveEffect = True
-    If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+    If mDotInfo.TargetRef.RefType = eUser And IsValidRef(mDotInfo.TargetRef) And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, mDotInfo.UniqueId, 0, 0, EffectOverTime( _
                 mDotInfo.EotId).buffType)
     End If
-    Call RemoveFromMap
+    Call RemoveFromMap()
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
@@ -197,7 +213,37 @@ Private Sub SetPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY 
     mWorldPosition.x = PosX
     mWorldPosition.y = PosY
     Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Me
-    Call modSendData.SendToAreaByPos(Map, PosX, PosY, PrepareTrapUpdate(1, PosX, PosY))
+    mPublished = True
+    Call BroadcastState(eTrapUpsert)
+End Sub
+
+Public Property Get RemainingMilliseconds() As Long
+    If mDotInfo.RemoveEffect Or mDotInfo.Removed Then Exit Property
+    If mElapsedTime >= mTimeLimit Then Exit Property
+    RemainingMilliseconds = mTimeLimit - mElapsedTime
+End Property
+
+Public Property Get IsActive() As Boolean
+    IsActive = mPublished And Not mDotInfo.RemoveEffect And Not mDotInfo.Removed And _
+               IsValidRef(mDotInfo.TargetRef) And RemainingMilliseconds > 0
+End Property
+
+Public Sub SendSnapshot(ByVal UserIndex As Integer)
+    If Not IsActive Then Exit Sub
+    Call WriteUpdateTrapState(UserIndex, eTrapUpsert, mDotInfo.UniqueId, mWorldPosition.Map, _
+                              mWorldPosition.x, mWorldPosition.y, mTrapType, RemainingMilliseconds)
+End Sub
+
+Private Sub BroadcastState(ByVal EventType As e_TrapEvent)
+    Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, _
+         PrepareTrapUpdate(EventType, mDotInfo.UniqueId, mWorldPosition.Map, mWorldPosition.x, _
+                           mWorldPosition.y, mTrapType, RemainingMilliseconds))
+End Sub
+
+Private Sub NotifyTriggered()
+    If mTriggered Or mDotInfo.Removed Then Exit Sub
+    mTriggered = True
+    Call BroadcastState(eTrapTriggered)
 End Sub
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
@@ -208,17 +254,24 @@ Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
 
 Private Sub RemoveFromMap()
-    Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Nothing
-    Call modSendData.SendToAreaByPos(mWorldPosition.Map, mWorldPosition.x, mWorldPosition.y, PrepareTrapUpdate(0, mWorldPosition.x, mWorldPosition.y))
+    If Not mPublished Then Exit Sub
+    ' A delayed EOT cleanup must never clear a newer occupant of this tile.
+    If MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap Is Me Then
+        Set MapData(mWorldPosition.x, mWorldPosition.y, mWorldPosition.Map).Trap = Nothing
+    End If
+    mPublished = False
+    Call BroadcastState(eTrapRemoved)
 End Sub
 
 Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_ReferenceType) As Boolean
+    If Not IsActive Then Exit Function
     If mDotInfo.TargetRef.RefType = eUser Then
         If TargetType = eUser Then
             CanAffectTarget = False
             Exit Function
         End If
         If TargetType = eNpc Then
+            If TargetIndex < LBound(NpcList) Or TargetIndex > UBound(NpcList) Then Exit Function
             CanAffectTarget = UserCanAttackNpc(mDotInfo.TargetRef.ArrayIndex, TargetIndex).CanAttack
             Exit Function
         End If
@@ -229,6 +282,7 @@ End Function
 
 Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     trigger = False
+    If Not CanAffectTarget(TargetIndex, TargetType) Then Exit Function
     If TargetType = eNpc Then
         If EffectOverTime(mDotInfo.EotId).SubType = e_TrapTypes.eParalice Then
             If NpcList(TargetIndex).flags.AfectaParalisis = 1 Then
@@ -255,6 +309,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                         If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList( _
                                 TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                         trigger = True
+                        Call NotifyTriggered()
                         If UserList(TargetIndex).ChatCombate = 1 Then
                             Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
                         End If
@@ -269,6 +324,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
+                    Call NotifyTriggered()
                     Exit Function
                 End If
             End If
@@ -280,6 +336,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
+                    Call NotifyTriggered()
                     If TargetType = eUser Then
                         Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
                     End If
@@ -291,6 +348,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList( _
                             TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
+                    Call NotifyTriggered()
                     Exit Function
                 End If
             End If
@@ -310,6 +368,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                 End If
             End If
             trigger = True
+            Call NotifyTriggered()
             Exit Function
     End Select
 End Function
@@ -319,5 +378,6 @@ Public Property Get ElapsedTime() As Long
 End Property
 
 Public Sub Disable()
-    mDotInfo.RemoveEffect = True
+    ' Replacement removal is visible before the new placement, not a later tick.
+    Call IBaseEffectOverTime_OnRemove()
 End Sub

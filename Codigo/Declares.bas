@@ -2019,6 +2019,13 @@ Public Enum e_TrapEffect
     eInmovilize = 1
 End Enum
 
+' Mandatory packet 192 lifecycle; these values are independent of item subtypes.
+Public Enum e_TrapEvent
+    eTrapUpsert = 1
+    eTrapTriggered = 2
+    eTrapRemoved = 3
+End Enum
+
 Public Enum e_TripState
     eForgatToNix
     eNixToArghal
@@ -2709,6 +2716,7 @@ Public Type t_UserFlags
     TargetObjInvIndex As Integer
     TargetObjInvSlot As Integer
     UsingItemSlot As Integer
+    UsingItemObjIndex As Integer ' Definition captured when requesting an item target.
     AtacadoPorNpc As t_NpcReference
     AtacadoPorUser As Integer
     NPCAtacado As t_NpcReference

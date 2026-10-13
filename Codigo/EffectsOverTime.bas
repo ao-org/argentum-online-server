@@ -136,8 +136,20 @@ UpdateEffect_Err:
 End Function
 
 Private Function GetNextId() As Long
-    UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
+    If UniqueIdCounter >= &H7FFFFFFF Then
+        UniqueIdCounter = 1
+    Else
+        UniqueIdCounter = UniqueIdCounter + 1
+    End If
     GetNextId = UniqueIdCounter
+End Function
+
+Public Function IsTrapEffectDefinition(ByVal EffectId As Integer) As Boolean
+    If EffectId < LBound(EffectOverTime) Or EffectId > UBound(EffectOverTime) Then Exit Function
+    With EffectOverTime(EffectId)
+        IsTrapEffectDefinition = .Type = e_EffectOverTimeType.eTrap And _
+            .SubType >= 1 And .SubType <= 3 And .TickTime > 0
+    End With
 End Function
 
 Public Sub CreateEffect(ByVal SourceIndex As Integer, _
@@ -315,29 +327,36 @@ CreateEffect_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect EffectIndex:" & EffectIndex, Erl)
 End Sub
 
-Public Sub CreateTrap(ByVal SourceIndex As Integer, _
+Public Function CreateTrap(ByVal SourceIndex As Integer, _
                       ByVal SourceType As e_ReferenceType, _
                       ByVal Map As Integer, _
                       ByVal TileX As Integer, _
                       ByVal TileY As Integer, _
-                      ByVal EffectTypeId As Integer)
+                      ByVal EffectTypeId As Integer) As Boolean
     On Error GoTo CreateTrap_Err
+    If Not IsTrapEffectDefinition(EffectTypeId) Then Exit Function
+    If Not IsValidMapPosition(Map, TileX, TileY) Then Exit Function
     Dim EffectType As e_EffectOverTimeType
     EffectType = e_EffectOverTimeType.eTrap
     Dim Trap As clsTrap
     Set Trap = GetEOT(EffectType)
     UniqueIdCounter = GetNextId()
     Call Trap.Setup(SourceIndex, SourceType, EffectTypeId, UniqueIdCounter, Map, TileX, TileY)
+    If Not Trap.IsActive Then
+        Call RecycleEffect(Trap)
+        Exit Function
+    End If
     Call AddEffectToUpdate(Trap)
     If SourceType = eUser Then
         Call AddEffect(UserList(SourceIndex).EffectOverTime, Trap)
     ElseIf SourceType = eNpc Then
         Call AddEffect(NpcList(SourceIndex).EffectOverTime, Trap)
     End If
-    Exit Sub
+    CreateTrap = True
+    Exit Function
 CreateTrap_Err:
     Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
-End Sub
+End Function
 
 Public Sub CreateDelayedBlast(ByVal SourceIndex As Integer, _
                               ByVal SourceType As e_ReferenceType, _
