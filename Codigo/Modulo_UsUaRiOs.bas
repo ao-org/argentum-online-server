@@ -1047,6 +1047,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, _
                         clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
                         .flags.tiene_bandera)
+                Call SendMagicLightOrbSnapshot(sndIndex, UserIndex)
             Else
                 'Hide the name and clan - set privs as normal user
                 Call AgregarUser(UserIndex, .pos.Map, appear)

@@ -598,7 +598,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
         End If
-        If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
+        ' Raw DWORD ticks can be negative in VB6 after 24.9 days of uptime.
+        If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) <> 0 Then
             Dim nowRaw            As Long
             Dim SegundosFaltantes As Long
             nowRaw = GetTickCountRaw()
@@ -1031,9 +1032,6 @@ Function HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer) A
                 Call HechizoInvocacion(UserIndex, b)
             Case e_TipoHechizo.uEstado 'Tipo 2
                 Call HechizoTerrenoEstado(UserIndex, b)
-            Case e_TipoHechizo.uLightOrb
-                b = CastMagicLightOrb(UserIndex, uh)
-                If b And .flags.NoPalabrasMagicas = 0 Then Call DecirPalabrasMagicas(uh, UserIndex)
             Case e_TipoHechizo.uMaterializa 'Tipo 3
                 Call HechizoMaterializacion(UserIndex, b)
             Case e_TipoHechizo.uArea 'Tipo 5
@@ -1184,7 +1182,7 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, _
     End Select
 End Function
 
-Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
+Function HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
     On Error GoTo HandleHechizoUsuario_Err
     Dim IsAlive As Boolean
     IsAlive = True
@@ -1196,11 +1194,14 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             If Not Effect Is Nothing Then
                 If Not EffectOverTime(Hechizos(uh).EotId).Override Then
                     Call WriteLocaleMsg(UserIndex, MsgTargetAlreadyAffected, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                    Exit Sub
+                    Exit Function
                 End If
             End If
         End If
         Select Case Hechizos(uh).Tipo
+            Case e_TipoHechizo.uLightOrb
+                b = CastMagicLightOrb(UserIndex, uh)
+                If b And .flags.NoPalabrasMagicas = 0 Then Call DecirPalabrasMagicas(uh, UserIndex)
             Case e_TipoHechizo.uEstado ' Afectan estados (por ejem : Envenenamiento)
                 Call HechizoEstadoUsuario(UserIndex, b)
             Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
@@ -1216,7 +1217,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                     Call CreateEffect(UserIndex, eUser, .flags.TargetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
                     If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
-                        Exit Sub
+                        Exit Function
                     End If
                 End If
             End If
@@ -1244,10 +1245,11 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             Call WriteUpdateSta(UserIndex)
         End If
     End With
-    Exit Sub
+    HandleHechizoUsuario = b
+    Exit Function
 HandleHechizoUsuario_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
-End Sub
+End Function
 
 Public Function GetSpellManaCostModifierByClass(ByVal UserIndex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
     GetSpellManaCostModifierByClass = Hechizo.ManaRequerido
@@ -1346,8 +1348,12 @@ Function LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer) As Bo
             Case e_TargetType.uUsuarios
                 If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
                     If Abs(UserList(UserList(UserIndex).flags.TargetUser.ArrayIndex).pos.y - UserList(UserIndex).pos.y) <= RANGO_VISION_Y Then
-                        Call HandleHechizoUsuario(UserIndex, uh)
-                        SpellCastSuccess = True
+                        If Hechizos(uh).Tipo = uLightOrb Then
+                            SpellCastSuccess = HandleHechizoUsuario(UserIndex, uh)
+                        Else
+                            Call HandleHechizoUsuario(UserIndex, uh)
+                            SpellCastSuccess = True
+                        End If
                     Else
                         Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
                     End If
@@ -1387,9 +1393,7 @@ Function LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer) As Bo
                     Call WriteLocaleMsg(UserIndex, MSG_TARGET_INVALIDO_792, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_New_Naranja)
                 End If
             Case e_TargetType.uTerreno
-                If Hechizos(uh).Tipo = uLightOrb Then
-                    SpellCastSuccess = HandleHechizoTerreno(UserIndex, uh)
-                Else
+                If Hechizos(uh).Tipo <> uLightOrb Then
                     SpellCastSuccess = True
                     Call HandleHechizoTerreno(UserIndex, uh)
                 End If
@@ -4291,6 +4295,7 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal spellSlot As Integer)
                         'If exiting, cancel
                         Call CancelExit(UserIndex)
                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
+                        If Hechizos(.Stats.UserHechizos(spellSlot)).Tipo = uLightOrb Then Call ClearNpcRef(.flags.TargetNPC)
                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
                     Else
                         If Hechizos(.Stats.UserHechizos(spellSlot)).AreaAfecta > 0 Then

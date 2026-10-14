@@ -501,6 +501,14 @@ Sub Main()
 
     #If UNIT_TEST = 1 Then
         #If DIRECT_PLAY = 0 Then
+        If LCase$(Trim$(Command$)) = "--test-light-orbs" Then
+            Call Unit_Traps.InitializeTestWorld()
+            Call LoadFeatureToggles
+            ReDim Hechizos(1 To 352)
+            Call modMagicLightOrbs.test_suite_light_orbs()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
         If LCase$(Trim$(Command$)) = "--test-traps" Then
             Call Unit_Traps.InitializeTestWorld()
             Call Unit_Traps.test_suite_traps()
