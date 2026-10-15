@@ -308,7 +308,7 @@ Public Sub RunAllSuites()
     
     Dim i As Integer, failuresBefore As Integer
     For i = 1 To SUITE_COUNT
-        Call WriteResultsToFile(App.Path & "\test_results.txt", "suite " & CStr(i))
+        Call WriteProgress("suite " & CStr(i))
         failuresBefore = FailedTests
         If Not RunSuite(i) Then
             If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
@@ -318,11 +318,18 @@ Public Sub RunAllSuites()
     TotalElapsed = sw.ElapsedMilliseconds
 End Sub
 
+Public Sub WriteProgress(ByVal stage As String)
+    ' CI treats test_results.txt existence as completion. Never publish progress there.
+    Call WriteResultsToFile(App.Path & "\test_progress.txt", stage)
+End Sub
+
 Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incompleteStage As String = "")
     On Error GoTo WriteResultsToFile_Err
-    Dim f As Integer
+    Dim f As Integer, opened As Boolean, temporaryPath As String
+    temporaryPath = filePath & ".tmp"
     f = FreeFile
-    Open filePath For Output As #f
+    Open temporaryPath For Output As #f
+    opened = True
     Print #f, "=== AO20 TEST REPORT ==="
     Dim incomplete As Integer
     If LenB(incompleteStage) <> 0 Then incomplete = 1
@@ -345,9 +352,13 @@ Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incomplet
         Print #f, "RESULT: FAIL"
     End If
     Close #f
+    opened = False
+    ' Publish a closed, complete report so file-existence polling cannot read half a result.
+    If LenB(Dir$(filePath)) <> 0 Then Kill filePath
+    Name temporaryPath As filePath
     Exit Sub
 WriteResultsToFile_Err:
-    Close #f
+    If opened Then Close #f
 End Sub
 
 Public Function GetFailedTests() As Integer

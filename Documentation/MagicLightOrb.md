@@ -65,5 +65,10 @@ again. Focused suites passed 25/25, ordinary full suites 420/420, and explicit
 negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
 as intended. The former unconditional assertion reproduced a 420/421 result
 with assets master, even though the fixture-based gameplay tests passed.
-The remote validator supplied only a successful compiler log and no test report
-or run URL, so this local reproduction does not establish its exact failure.
+CI report publication: startup/suite checkpoints are written to
+`test_progress.txt`, never `test_results.txt`. The validator polls for the final
+report's existence, so publishing an incomplete checkpoint at that path caused
+it to reject and terminate a still-running server. Final reports are written to
+a same-directory temporary file, closed, then renamed into place. A terminal
+startup error still publishes an explicit failure. Checkpoints and this report
+handling are compiled only into UNIT_TEST builds; gameplay is unchanged.

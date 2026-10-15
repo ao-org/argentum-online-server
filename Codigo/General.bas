@@ -501,7 +501,7 @@ Sub Main()
 
     #If UNIT_TEST = 1 Then
         ' Leave a failing report if unattended startup exits before the suite.
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: configuration")
+        Call UnitTesting.WriteProgress("startup: configuration")
         #If DIRECT_PLAY = 0 Then
         If LCase$(Trim$(Command$)) = "--test-light-orbs" Then
             Call Unit_Traps.InitializeTestWorld()
@@ -540,7 +540,7 @@ Sub Main()
     Call load_stats
 
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: process check and configuration files")
+        Call UnitTesting.WriteProgress("startup: process check and configuration files")
     #End If
     
     If GetProcessCount(App.EXEName & ".exe") > 1 Then
@@ -554,7 +554,7 @@ Sub Main()
         #End If
     End If
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: initialization and Server.ini")
+        Call UnitTesting.WriteProgress("startup: initialization and Server.ini")
     #End If
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
@@ -572,7 +572,7 @@ Sub Main()
     MaxUsers = 0
     Call LoadSini
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: packet policy and private key")
+        Call UnitTesting.WriteProgress("startup: packet policy and private key")
     #End If
     Call LogManagedConfigPaths()
     Call LoadPacketRatePolicy
@@ -580,44 +580,44 @@ Sub Main()
         Call LoadPrivateKey
     #End If
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: Configuracion.ini")
+        Call UnitTesting.WriteProgress("startup: Configuracion.ini")
     #End If
     Call LoadMainConfigFile
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: intervalos.ini")
+        Call UnitTesting.WriteProgress("startup: intervalos.ini")
     #End If
     Call LoadIntervalos
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: forbidden names")
+        Call UnitTesting.WriteProgress("startup: forbidden names")
     #End If
     Call CargarForbidenWords
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: blocked descriptions")
+        Call UnitTesting.WriteProgress("startup: blocked descriptions")
     #End If
     Call LoadBlockedWordsDescription
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: bets")
+        Call UnitTesting.WriteProgress("startup: bets")
     #End If
     Call CargaApuestas
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: NPC spawn list")
+        Call UnitTesting.WriteProgress("startup: NPC spawn list")
     #End If
     Call CargarSpawnList
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: MOTD and base64")
+        Call UnitTesting.WriteProgress("startup: MOTD and base64")
     #End If
     Call LoadMotd
     Call initBase64Chars
     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: database file copy")
+        Call UnitTesting.WriteProgress("startup: database file copy")
     #End If
     If Not FileExist(App.Path & "/" & DatabaseFileName) Then
         Call FileSystem.FileCopy(App.Path & "/Empty_db.db", App.Path & "/" & DatabaseFileName)
     End If
     ' ************************* Base de Datos ********************
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: database")
+        Call UnitTesting.WriteProgress("startup: database")
     #End If
     'Conecto base de datos
     Call Database_Connect
@@ -629,7 +629,7 @@ Sub Main()
     ' ******************* FIN - Base de Datos ********************
     Call LoadGuildsDB
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: resource definitions")
+        Call UnitTesting.WriteProgress("startup: resource definitions")
     #End If
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
@@ -678,14 +678,14 @@ Sub Main()
     Call InitFontTypeColors
     If BootDelBackUp Then
         #If UNIT_TEST = 1 Then
-            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: world backup")
+            Call UnitTesting.WriteProgress("startup: world backup")
         #End If
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
         Call CargarBackUp
     Else
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         #If UNIT_TEST = 1 Then
-            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: maps and world modules")
+            Call UnitTesting.WriteProgress("startup: maps and world modules")
         #End If
         Call LoadMapData
     End If
@@ -737,7 +737,7 @@ Sub Main()
     Call LoadCastleModule
     Call CompleteConfigStartup()
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: network and anti-cheat")
+        Call UnitTesting.WriteProgress("startup: network and anti-cheat")
     #End If
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
