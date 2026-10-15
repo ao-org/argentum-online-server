@@ -34,12 +34,13 @@ Option Explicit
     Public character_name  As String
 
     ' Test runner result tracking state
-    Private TotalTests     As Integer
-    Private PassedTests    As Integer
-    Private FailedTests    As Integer
+    Private TotalTests     As Long
+    Private PassedTests    As Long
+    Private FailedTests    As Long
     Private FailedTestNames() As String
-    Private FailedTestCount As Integer
+    Private FailedTestCount As Long
     Private TotalElapsed   As Double
+    Private LastCheckpoint As String
 
     #If DIRECT_PLAY = 0 Then
         Private Const SUITE_COUNT As Integer = 41
@@ -47,33 +48,82 @@ Option Explicit
         Private Const SUITE_COUNT As Integer = 40
     #End If
 
+' Independent of Init: startup can fail before the test runner is initialized.
+Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
+    Dim number As Long, description As String, source As String
+    Dim helpFile As String, helpContext As Long
+    number = Err.Number: description = Err.Description: source = Err.Source
+    helpFile = Err.HelpFile: helpContext = Err.HelpContext
+    On Error GoTo Failed
+    Dim f As Integer, opened As Boolean
+    LastCheckpoint = checkpoint
+    f = FreeFile
+    If startRun Then
+        Open App.Path & "\test_progress.txt" For Output As #f
+    Else
+        Open App.Path & "\test_progress.txt" For Append As #f
+    End If
+    opened = True
+    Print #f, Format$(Now, "yyyy-mm-dd hh:nn:ss") & " | " & checkpoint
+Done:
+    On Error Resume Next
+    If opened Then Close #f
+    ' Logging must not erase the error that an existing handler will report.
+    Err.Number = number: Err.Description = description: Err.Source = source
+    Err.HelpFile = helpFile: Err.HelpContext = helpContext
+    Exit Sub
+Failed:
+    Debug.Print "Cannot write test_progress.txt: " & Err.Number & " " & Err.Description
+    Resume Done
+End Sub
+
+Public Sub ProgressError(ByVal operation As String, ByVal number As Long, ByVal description As String, Optional ByVal fatal As Boolean = False)
+    Dim detail As String
+    detail = operation & ": Err.Number=" & CStr(number) & "; Err.Description=" & description & "; last checkpoint=" & LastCheckpoint
+    Call Progress("ERROR " & detail)
+    If fatal Then
+        Call RunTestError("Fatal startup", detail)
+        Call WriteResultsToFile(App.Path & "\test_results.txt")
+    End If
+End Sub
+
 Public Sub Init()
     On Error GoTo Init_Err
-    'We can mock the key value to test errors...
-    private_key = PrivateKey
-    character_name = "seneca"
-    character_name = RandomName(16)
-    'Hardcoded token for unit testing...
-
-    decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
-    encrypted_token = AO20CryptoSysWrapper.ENCRYPT(private_key, decrypted_token)
-    public_key = mid$(decrypted_token, 1, 16)
-    
-    'Add a fake token to be using when exercising the protocol for LoginNewChar
-    Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
-
-Init_Resume:
-    ' Reset test runner state
+    Dim failure As String
     TotalTests = 0
     PassedTests = 0
     FailedTests = 0
     FailedTestCount = 0
     TotalElapsed = 0
     ReDim FailedTestNames(0)
-    Exit Sub
+    ' PYMMO=0 never loads PrivateKey. Use a local fixture, not an empty AES key.
+    #If PYMMO = 0 Then
+    private_key = "000102030405060708090A0B0C0D0E0F"
+    #Else
+    private_key = PrivateKey
+    #End If
+    character_name = "seneca"
+    character_name = RandomName(16)
+    'Hardcoded token for unit testing...
+
+    decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
+    Call Progress("BEFORE test token encryption")
+    encrypted_token = AO20CryptoSysWrapper.ENCRYPT(private_key, decrypted_token)
+    Call Progress("AFTER test token encryption")
+    public_key = mid$(decrypted_token, 1, 16)
     
+    'Add a fake token to be using when exercising the protocol for LoginNewChar
+    Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
+
+    Exit Sub
+Init_Failed:
+    On Error GoTo 0
+    Call RunTestError("UnitTesting.Init", failure)
+    Exit Sub
 Init_Err:
-    Resume Init_Resume
+    failure = "Err.Number=" & CStr(Err.Number) & "; " & Err.Description
+    Call ProgressError("UnitTesting.Init", Err.Number, Err.Description)
+    Resume Init_Failed
 End Sub
 
 Public Sub shutdown()
@@ -297,6 +347,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
     Exit Function
     
 RunSuite_Err:
+    Call ProgressError("suite " & CStr(suiteIndex), Err.Number, Err.Description)
     Call RunTestError("suite execution", Err.Description)
     RunSuite = False
 End Function
@@ -306,12 +357,14 @@ Public Sub RunAllSuites()
     Set sw = New Instruments
     sw.start
     
-    Dim i As Integer, failuresBefore As Integer
+    Dim i As Integer, failuresBefore As Long
     For i = 1 To SUITE_COUNT
+        Call Progress("BEFORE suite " & CStr(i))
         failuresBefore = FailedTests
         If Not RunSuite(i) Then
             If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
         End If
+        Call Progress("AFTER suite " & CStr(i) & "; new failures=" & CStr(FailedTests - failuresBefore))
     Next i
     
     TotalElapsed = sw.ElapsedMilliseconds
@@ -319,15 +372,17 @@ End Sub
 
 Public Sub WriteResultsToFile(ByVal filePath As String)
     On Error GoTo WriteResultsToFile_Err
-    Dim f As Integer
+    Dim f As Integer, opened As Boolean, temporaryPath As String
+    temporaryPath = filePath & ".tmp"
     f = FreeFile
-    Open filePath For Output As #f
+    Open temporaryPath For Output As #f
+    opened = True
     Print #f, "=== AO20 TEST REPORT ==="
     Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
     
     If FailedTestCount > 0 Then
         Print #f, "Failed tests:"
-        Dim i As Integer
+        Dim i As Long
         For i = 1 To FailedTestCount
             Print #f, "  - " & FailedTestNames(i)
         Next i
@@ -341,13 +396,63 @@ Public Sub WriteResultsToFile(ByVal filePath As String)
         Print #f, "RESULT: FAIL"
     End If
     Close #f
+    opened = False
+    ' Publish only the closed final report, never a partial result or checkpoint.
+    If LenB(Dir$(filePath)) <> 0 Then Kill filePath
+    Name temporaryPath As filePath
     Exit Sub
 WriteResultsToFile_Err:
-    Close #f
+    Call ProgressError("WriteResultsToFile", Err.Number, Err.Description)
+    If opened Then Close #f
 End Sub
 
-Public Function GetFailedTests() As Integer
+Public Function GetFailedTests() As Long
     GetFailedTests = FailedTests
+End Function
+
+Public Function TestFailureReport() As Boolean
+    Dim savedTotal As Long, savedPassed As Long, savedFailed As Long, savedCount As Long
+    Dim savedNames() As String, f As Integer, opened As Boolean
+    Dim path As String, contents As String, line As String, caught As String
+    savedTotal = TotalTests: savedPassed = PassedTests
+    savedFailed = FailedTests: savedCount = FailedTestCount
+    savedNames = FailedTestNames
+    On Error GoTo CaughtError
+    TotalTests = 32767: PassedTests = 32767: FailedTests = 32767
+    FailedTestCount = 0: ReDim FailedTestNames(0)
+    Err.Raise 6, , "injected runner failure"
+CaughtError:
+    caught = CStr(Err.Number) & ": " & Err.Description
+    Resume RecordFailure
+RecordFailure:
+    On Error GoTo Failed
+    Call RunTestError("runner regression", caught)
+    If TotalTests <> 32768 Or FailedTests <> 32768 Then GoTo Restore
+    Call RunTest("runner success counter", True)
+    If PassedTests <> 32768 Or TotalTests <> 32769 Then GoTo Restore
+    path = App.Path & "\test_runner_regression.txt"
+    Call WriteResultsToFile(path)
+    f = FreeFile
+    Open path For Input As #f
+    opened = True
+    Do While Not EOF(f)
+        Line Input #f, line
+        contents = contents & line & vbLf
+    Loop
+    TestFailureReport = InStr(contents, "6: injected runner failure") > 0 And InStr(contents, "RESULT: FAIL") > 0
+Restore:
+    On Error Resume Next
+    If opened Then Close #f
+    If LenB(path) <> 0 Then
+        If LenB(Dir$(path)) <> 0 Then Kill path
+    End If
+    TotalTests = savedTotal: PassedTests = savedPassed
+    FailedTests = savedFailed: FailedTestCount = savedCount
+    FailedTestNames = savedNames
+    Exit Function
+Failed:
+    TestFailureReport = False
+    Resume Restore
 End Function
 
 Private Function test_suite_remort_persistence() As Boolean

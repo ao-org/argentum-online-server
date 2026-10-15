@@ -652,9 +652,6 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).NecesitaObj = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj"))
         Hechizos(Hechizo).NecesitaObj2 = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj2"))
         Hechizos(Hechizo).Tipo = val(Leer.GetValue("Hechizo" & Hechizo, "Tipo"))
-        Hechizos(Hechizo).LightOrbColor = val(Leer.GetValue("Hechizo" & Hechizo, "LightOrbColor"))
-        Hechizos(Hechizo).LightOrbRange = val(Leer.GetValue("Hechizo" & Hechizo, "LightOrbRange"))
-        Hechizos(Hechizo).LightOrbCastRange = val(Leer.GetValue("Hechizo" & Hechizo, "LightOrbCastRange"))
         Hechizos(Hechizo).SkillType = val(Leer.GetValue("Hechizo" & Hechizo, "SkillType"))
         Hechizos(Hechizo).wav = val(Leer.GetValue("Hechizo" & Hechizo, "WAV"))
         Hechizos(Hechizo).FXgrh = val(Leer.GetValue("Hechizo" & Hechizo, "Fxgrh"))
@@ -758,6 +755,9 @@ Public Sub CargarHechizos()
     Set Leer = Nothing
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL CargarHechizos", Err.Number, Err.Description)
+    #End If
     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -863,6 +863,9 @@ Public Sub LoadEffectOverTime()
     Call InitializePools
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadEffectOverTime", Err.Number, Err.Description)
+    #End If
     MsgBox "Error cargando EffectsOverTime.dat " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -1710,6 +1713,9 @@ Sub LoadOBJData()
     Call InitRegalo
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadOBJData object " & CStr(Object), Err.Number, Err.Description)
+    #End If
     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
 End Sub
 
@@ -1794,6 +1800,9 @@ Sub LoadMapData()
     Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NormalMapsCount + 1)
     Exit Sub
 man:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadMapData map " & CStr(Map), Err.Number, Err.Description)
+    #End If
     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 End Sub

@@ -498,156 +498,533 @@ End Sub
 
 Sub Main()
     On Error GoTo Handler
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEGIN General.Main", True)
+    #End If
 
     #If UNIT_TEST = 1 Then
         #If DIRECT_PLAY = 0 Then
         If LCase$(Trim$(Command$)) = "--test-traps" Then
+            Call UnitTesting.Progress("BEFORE Unit_Traps.InitializeTestWorld")
             Call Unit_Traps.InitializeTestWorld()
+            Call UnitTesting.Progress("AFTER Unit_Traps.InitializeTestWorld")
+            Call UnitTesting.Progress("BEFORE Unit_Traps.test_suite_traps")
             Call Unit_Traps.test_suite_traps()
+            Call UnitTesting.Progress("AFTER Unit_Traps.test_suite_traps")
+            Call UnitTesting.Progress("BEFORE UnitTesting.WriteResultsToFile")
             Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            Call UnitTesting.Progress("AFTER UnitTesting.WriteResultsToFile")
             End
         End If
         #End If
         If LCase$(Trim$(Command$)) = "--test-managed-config" Then
+            Call UnitTesting.Progress("BEFORE RunManagedConfigTests")
             Call RunManagedConfigTests()
+            Call UnitTesting.Progress("AFTER RunManagedConfigTests")
             End
         End If
     #End If
 
     If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE RunStringBuilderBenchmark")
+        #End If
         Call RunStringBuilderBenchmark
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER RunStringBuilderBenchmark")
+        #End If
         End
     End If
         
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE InitializeCircularLogBuffer")
+    #End If
     Call InitializeCircularLogBuffer()
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeCircularLogBuffer")
+        Call UnitTesting.Progress("BEFORE InitializeManagedConfig")
+    #End If
     Call InitializeManagedConfig(Command$)
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeManagedConfig")
+    #End If
     
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE Uptime_Init")
+    #End If
     Call Uptime_Init
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER Uptime_Init")
+    #End If
     #If DIRECT_PLAY = 1 Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE InitDPlay")
+        #End If
         InitDPlay
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER InitDPlay")
+        #End If
+    #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LogThis")
     #End If
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LogThis")
+        Call UnitTesting.Progress("BEFORE load_stats")
+    #End If
     Call load_stats
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER load_stats")
+    #End If
     
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE GetProcessCount")
+    #End If
     If GetProcessCount(App.EXEName & ".exe") > 1 Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("MODAL duplicate server instance")
+        #End If
         ' Si lo hay, pregunto si lo queremos cerrar.
         If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
             End
         End If
     End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER GetProcessCount")
+        Call UnitTesting.Progress("BEFORE frmMain startup caption")
+    #End If
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER frmMain startup caption")
+    #End If
     
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE ChDir")
+    #End If
     Call ChDir(App.Path)
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER ChDir")
+        Call UnitTesting.Progress("BEFORE ChDrive")
+    #End If
     Call ChDrive(App.Path)
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER ChDrive")
+        Call UnitTesting.Progress("BEFORE InicializarConstantes")
+    #End If
     Call InicializarConstantes
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InicializarConstantes")
+        Call UnitTesting.Progress("BEFORE frmCargando.Show")
+    #End If
     frmCargando.Show
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER frmCargando.Show")
+    #End If
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE InitializeNpcIndexHeap")
+    #End If
     Call InitializeNpcIndexHeap
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeNpcIndexHeap")
+        Call UnitTesting.Progress("BEFORE InitializeLobbyList")
+    #End If
     Call InitializeLobbyList
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeLobbyList")
+        Call UnitTesting.Progress("BEFORE loadAdministrativeUsers")
+    #End If
     Call loadAdministrativeUsers
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER loadAdministrativeUsers")
+    #End If
     '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadSini")
+    #End If
     Call LoadSini
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadSini")
+        Call UnitTesting.Progress("BEFORE LogManagedConfigPaths")
+    #End If
     Call LogManagedConfigPaths()
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LogManagedConfigPaths")
+        Call UnitTesting.Progress("BEFORE LoadPacketRatePolicy")
+    #End If
     Call LoadPacketRatePolicy
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadPacketRatePolicy")
+    #End If
     #If PYMMO = 1 Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE LoadPrivateKey")
+        #End If
         Call LoadPrivateKey
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER LoadPrivateKey")
+        #End If
+    #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadMainConfigFile")
     #End If
     Call LoadMainConfigFile
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadMainConfigFile")
+        Call UnitTesting.Progress("BEFORE LoadIntervalos")
+    #End If
     Call LoadIntervalos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadIntervalos")
+        Call UnitTesting.Progress("BEFORE CargarForbidenWords")
+    #End If
     Call CargarForbidenWords
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarForbidenWords")
+        Call UnitTesting.Progress("BEFORE LoadBlockedWordsDescription")
+    #End If
     Call LoadBlockedWordsDescription
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadBlockedWordsDescription")
+        Call UnitTesting.Progress("BEFORE CargaApuestas")
+    #End If
     Call CargaApuestas
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargaApuestas")
+        Call UnitTesting.Progress("BEFORE CargarSpawnList")
+    #End If
     Call CargarSpawnList
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarSpawnList")
+        Call UnitTesting.Progress("BEFORE LoadMotd")
+    #End If
     Call LoadMotd
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadMotd")
+        Call UnitTesting.Progress("BEFORE initBase64Chars")
+    #End If
     Call initBase64Chars
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER initBase64Chars")
+    #End If
     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     If Not FileExist(App.Path & "/" & DatabaseFileName) Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE FileSystem.FileCopy")
+        #End If
         Call FileSystem.FileCopy(App.Path & "/Empty_db.db", App.Path & "/" & DatabaseFileName)
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER FileSystem.FileCopy")
+        #End If
     End If
     ' ************************* Base de Datos ********************
     'Conecto base de datos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE Database_Connect")
+    #End If
     Call Database_Connect
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER Database_Connect")
+        Call UnitTesting.Progress("BEFORE Database_Connect_Async")
+    #End If
     Call Database_Connect_Async
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER Database_Connect_Async")
+    #End If
     ' Construimos las querys grandes
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE Contruir_Querys")
+    #End If
     Call Contruir_Querys
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER Contruir_Querys")
+        Call UnitTesting.Progress("BEFORE PreparePreparedCommands")
+    #End If
     Call PreparePreparedCommands
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER PreparePreparedCommands")
+        Call UnitTesting.Progress("BEFORE LoadDBMigrations")
+    #End If
     Call LoadDBMigrations
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadDBMigrations")
+    #End If
     ' ******************* FIN - Base de Datos ********************
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadGuildsDB")
+    #End If
     Call LoadGuildsDB
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadGuildsDB")
+    #End If
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargaNpcsDat")
+    #End If
     Call CargaNpcsDat
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargaNpcsDat")
+    #End If
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadOBJData")
+    #End If
     Call LoadOBJData
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadOBJData")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Equipamiento Inicial"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargarEquipamientoInicial")
+    #End If
     Call CargarEquipamientoInicial
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarEquipamientoInicial")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargarHechizos")
+    #End If
     Call CargarHechizos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarHechizos")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando EffectsOverTime.Dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadEffectOverTime")
+    #End If
     Call LoadEffectOverTime
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadEffectOverTime")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadArmasHerreria")
+    #End If
     Call LoadArmasHerreria
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadArmasHerreria")
+        Call UnitTesting.Progress("BEFORE LoadArmadurasHerreria")
+    #End If
     Call LoadArmadurasHerreria
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadArmadurasHerreria")
+        Call UnitTesting.Progress("BEFORE LoadBlackSmithElementalRunes")
+    #End If
     Call LoadBlackSmithElementalRunes
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadBlackSmithElementalRunes")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadObjCarpintero")
+    #End If
     Call LoadObjCarpintero
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadObjCarpintero")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadObjAlquimista")
+    #End If
     Call LoadObjAlquimista
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadObjAlquimista")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadObjSastre")
+    #End If
     Call LoadObjSastre
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadObjSastre")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Pesca"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadPesca")
+    #End If
     Call LoadPesca
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadPesca")
+        Call UnitTesting.Progress("BEFORE InitializeFishingBonuses")
+    #End If
     Call InitializeFishingBonuses
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeFishingBonuses")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadRecursosEspeciales")
+    #End If
     Call LoadRecursosEspeciales
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadRecursosEspeciales")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Eventos Estacionales"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadGlobalQuests")
+    #End If
     Call LoadGlobalQuests
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadGlobalQuests")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando definiciones de árboles"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadTreeGraphics")
+    #End If
     Call LoadTreeGraphics
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadTreeGraphics")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadRangosFaccion")
+    #End If
     Call LoadRangosFaccion
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadRangosFaccion")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadRecompensasFaccion")
+    #End If
     Call LoadRecompensasFaccion
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadRecompensasFaccion")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadBalance")
+    #End If
     Call LoadBalance
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadBalance")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Clanes.dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadGuildsConfig")
+    #End If
     Call LoadGuildsConfig
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadGuildsConfig")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Meditaciones.dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadMeditations")
+    #End If
     Call LoadMeditations
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadMeditations")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargarCiudades")
+    #End If
     Call CargarCiudades
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarCiudades")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Fuentes"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE InitFontTypeColors")
+    #End If
     Call InitFontTypeColors
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitFontTypeColors")
+    #End If
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE CargarBackUp")
+        #End If
         Call CargarBackUp
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER CargarBackUp")
+        #End If
     Else
         frmCargando.Label1(2).Caption = "Cargando Mapas"
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE LoadMapData")
+        #End If
         Call LoadMapData
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER LoadMapData")
+        #End If
     End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadAdjacentTopology")
+    #End If
     Call LoadAdjacentTopology
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadAdjacentTopology")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando donadores"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargarDonadores")
+    #End If
     Call CargarDonadores
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarDonadores")
+        Call UnitTesting.Progress("BEFORE InitPathFinding")
+    #End If
     Call InitPathFinding
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitPathFinding")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando informacion de eventos"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE CargarInfoRetos")
+    #End If
     Call CargarInfoRetos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarInfoRetos")
+        Call UnitTesting.Progress("BEFORE CargarInfoEventos")
+    #End If
     Call CargarInfoEventos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CargarInfoEventos")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadBans")
+    #End If
     Call LoadBans
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadBans")
+    #End If
     frmCargando.Label1(2).Caption = "Cargando Quests"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadQuests")
+    #End If
     Call LoadQuests
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadQuests")
+        Call UnitTesting.Progress("BEFORE LoadPhoenixModule")
+    #End If
     Call LoadPhoenixModule
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadPhoenixModule")
+        Call UnitTesting.Progress("BEFORE LoadUnderworldModule")
+    #End If
     Call LoadUnderworldModule
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadUnderworldModule")
+    #End If
     'Comentado porque hay worldsave en ese mapa!
     Dim LoopC As Integer
     'Resetea las conexiones de los usuarios
     For LoopC = 1 To MaxUsers
         UserList(LoopC).ConnectionDetails.ConnIDValida = False
     Next LoopC
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE startup timers")
+    #End If
     With frmMain
         .Minuto.Enabled = True
         .tPiqueteC.Enabled = True
@@ -659,50 +1036,138 @@ Sub Main()
         .tControlHechizos.Enabled = True
         .tControlHechizos.Interval = 60000
         If IsFeatureEnabled("ShipTravelEnabled") Then
+            #If UNIT_TEST = 1 Then
+                Call UnitTesting.Progress("BEFORE ResetShipTravelTimer")
+            #End If
             Call ResetShipTravelTimer
+            #If UNIT_TEST = 1 Then
+                Call UnitTesting.Progress("AFTER ResetShipTravelTimer")
+            #End If
             MapInfo(BarcoNavegandoForgatNix.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoNixArghal.Map).ForceUpdate = True
             MapInfo(BarcoNavegandoArghalForgat.Map).ForceUpdate = True
         End If
     End With
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE ResetGameEventsTimer")
+    #End If
     Call ResetGameEventsTimer
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER ResetGameEventsTimer")
+        Call UnitTesting.Progress("BEFORE ResetUserAutoSaveTimer")
+    #End If
     Call ResetUserAutoSaveTimer
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER ResetUserAutoSaveTimer")
+        Call UnitTesting.Progress("AFTER startup timers")
+    #End If
     Subasta.SubastaHabilitada = True
     Subasta.HaySubastaActiva = False
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE ResetMeteo")
+    #End If
     Call ResetMeteo
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER ResetMeteo")
+    #End If
     #If DIRECT_PLAY = 0 Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("BEFORE Protocol_Writes.InitializeAuxiliaryBuffer")
+        #End If
         Call Protocol_Writes.InitializeAuxiliaryBuffer
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.Progress("AFTER Protocol_Writes.InitializeAuxiliaryBuffer")
+        #End If
     #End If
     'castle module needs writer initialized
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE LoadCastleModule")
+    #End If
     Call LoadCastleModule
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER LoadCastleModule")
+        Call UnitTesting.Progress("BEFORE CompleteConfigStartup")
+    #End If
     Call CompleteConfigStartup()
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER CompleteConfigStartup")
+        Call UnitTesting.Progress("BEFORE modNetwork.Listen")
+    #End If
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER modNetwork.Listen")
+    #End If
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
     '           Configuracion de los sockets
     ' ----------------------------------------------------
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE GetHoraActual")
+    #End If
     Call GetHoraActual
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER GetHoraActual")
+    #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE WorldTime_Init")
+    #End If
     WorldTime_Init CLng(SvrConfig.GetValue("DayLength")), 0
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER WorldTime_Init")
+    #End If
     frmCargando.Visible = False
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE Unload frmCargando")
+    #End If
     Unload frmCargando
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER Unload frmCargando")
+    #End If
     'Ocultar
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE frmMain.InitMain")
+    #End If
     Call frmMain.InitMain(HideMe)
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER frmMain.InitMain")
+        Call UnitTesting.Progress("BEFORE InitializeAntiCheat")
+    #End If
     Call InitializeAntiCheat
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializeAntiCheat")
+    #End If
     tInicioServer = GetTickCountRaw()
     #If UNIT_TEST = 1 Then
         On Error GoTo UnitTest_Err
+        Call UnitTesting.Progress("BEFORE UnitTesting.Init")
         Call UnitTesting.Init
+        Call UnitTesting.Progress("AFTER UnitTesting.Init")
         Dim suite_passed_ok As Boolean
+        Dim unitTestFailure As String
+        Call UnitTesting.Progress("BEFORE UnitTesting.test_suite")
         suite_passed_ok = UnitTesting.test_suite()
+        Call UnitTesting.Progress("AFTER UnitTesting.test_suite")
 UnitTest_Done:
         On Error GoTo Handler
+        Call UnitTesting.Progress("BEFORE UnitTesting.WriteResultsToFile")
         Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+        Call UnitTesting.Progress("AFTER UnitTesting.WriteResultsToFile")
         frmMain.GuardarYCerrar = True
+        Call UnitTesting.Progress("BEFORE Unload frmMain")
         Unload frmMain
+        Call UnitTesting.Progress("AFTER Unload frmMain")
         Exit Sub
 UnitTest_Err:
-        Call UnitTesting.RunTestError("FATAL", Err.Description)
-        Resume UnitTest_Done
+        unitTestFailure = "Err.Number=" & CStr(Err.Number) & "; " & Err.Description
+        Call UnitTesting.ProgressError("Unit test runner", Err.Number, Err.Description)
+        Resume UnitTest_ReportError
+UnitTest_ReportError:
+        ' Leave the active handler before reporting; never re-enter it on failure.
+        On Error GoTo Handler
+        Call UnitTesting.Progress("BEFORE UnitTesting.RunTestError")
+        Call UnitTesting.RunTestError("FATAL", unitTestFailure)
+        Call UnitTesting.Progress("AFTER UnitTesting.RunTestError")
+        GoTo UnitTest_Done
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
@@ -745,10 +1210,18 @@ UnitTest_Err:
     Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
     Exit Sub
 Handler:
-    If Not ConfigStartupComplete() Then
-        Call FatalConfigStartup(Err.Number, Err.Description)
-    End If
-    Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
+    #If UNIT_TEST = 1 Then
+        Dim startupNumber As Long, startupDescription As String
+        startupNumber = Err.Number: startupDescription = Err.Description
+        Call UnitTesting.ProgressError("General.Main", startupNumber, startupDescription, True)
+        If Not ConfigStartupComplete() Then Call FatalConfigStartup(startupNumber, startupDescription)
+        Call TraceError(startupNumber, startupDescription, "General.Main", Erl)
+    #Else
+        If Not ConfigStartupComplete() Then
+            Call FatalConfigStartup(Err.Number, Err.Description)
+        End If
+        Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
+    #End If
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
@@ -2009,6 +2482,9 @@ Public Sub LoadDBMigrations()
     Exit Sub
 
 LoadDBMigrations_Err:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadDBMigrations", Err.Number, Err.Description)
+    #End If
 
     Debug.Print "ERROR LoadDBMigrations: "; Err.Number; Err.Description
 
