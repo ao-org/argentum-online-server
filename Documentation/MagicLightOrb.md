@@ -44,6 +44,13 @@ The spell no longer emits floor packets 114/121 or changes MapData lights.
 Native test builds can run `server.exe --test-light-orbs` through the existing
 UnitTesting framework. The same suite remains registered in the full server
 suite. Tests intercept outbound packets only under UNIT_TEST=1, DIRECT_PLAY=0.
+The ordinary suite uses a saved/restored spell fixture and does not require an
+unmerged resources branch. Before coordinated deployment, run the full test
+server as `server.exe --validate-light-orb-resources` with the matching Dat path.
+This additionally validates the loaded spell's self-cast target, type, duration,
+costs, cooldown, particle and bindability. Old ground-targeted data must fail
+this explicit integration check; passing unit tests alone does not validate a
+deployment. Do not deploy this server with the old resource definition.
 See HOO's `docs/magic-light-orb-spell.md` for visual design and manual acceptance.
 
 Validation (2026-10-14): native Windows VB6 builds passed with DIRECT_PLAY=0,
@@ -51,3 +58,12 @@ PYMMO=0/1 and UNIT_TEST=0/1. Focused runs passed 25/25 in both test builds;
 the full isolated server suite passed 421/421 in both PYMMO configurations,
 including the loaded spell-data contract. No live client/server gameplay test
 or production deployment was performed.
+
+Review validation (2026-10-15): all four native build configurations passed
+again. Focused suites passed 25/25, ordinary full suites 420/420, and explicit
+`--validate-light-orb-resources` full suites 421/421 in both PYMMO modes. A
+negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
+as intended. The former unconditional assertion reproduced a 420/421 result
+with assets master, even though the fixture-based gameplay tests passed.
+The remote validator supplied only a successful compiler log and no test report
+or run URL, so this local reproduction does not establish its exact failure.

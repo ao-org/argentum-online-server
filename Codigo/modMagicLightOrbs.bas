@@ -159,8 +159,10 @@ Private Sub TestOrbLifecycle()
     owner = UBound(UserList): other = owner - 1
     savedOwner = UserList(owner): savedOther = UserList(other)
     savedSpell = Hechizos(352): savedSinMagia = MapInfo(1).SinMagia
-    If savedSpell.Tipo <> 0 Then
-        Call UnitTesting.RunTest("orb loaded resource self-cast contract", savedSpell.AutoLanzar = 1 And savedSpell.Target = uUsuarios And savedSpell.Duration = 60 And savedSpell.Cooldown = 2 And savedSpell.ManaRequerido = 20 And savedSpell.StaRequerido = 5 And savedSpell.Particle = MAGIC_LIGHT_ORB_PARTICLE)
+    ' Cross-repository deployment validation is explicit; ordinary unit runs use
+    ' the fixture below, independently of which assets branch CI has installed.
+    If LCase$(Trim$(Command$)) = "--validate-light-orb-resources" Then
+        Call UnitTesting.RunTest("orb loaded resource self-cast contract", savedSpell.AutoLanzar = 1 And savedSpell.Target = uUsuarios And savedSpell.Tipo = uLightOrb And savedSpell.Duration = 60 And savedSpell.Cooldown = 2 And savedSpell.ManaRequerido = 20 And savedSpell.StaRequerido = 5 And savedSpell.Particle = MAGIC_LIGHT_ORB_PARTICLE And IsSet(savedSpell.SpellRequirementMask, e_SpellRequirementMask.eIsBindable))
     End If
     If OrbsInitialized Then Err.Raise 5, , "Expected empty startup orb state"
     CaptureOrbPackets = True: OrbWireValid = True
