@@ -63,6 +63,19 @@ Basically the pre-commit hook runs when you make a `git commit` and it will run 
 
 In case you have problems setting locally your pre-commit hook you can run the file `git_ignore_case.sh` by just doing double click.
 
+The Bash scripts use LF endings, including in Windows checkouts. The helper
+applies Git's encoding filters before comparing VB6 files, preserving their
+Windows-1252 encoding and CRLF endings. It normalizes only tracked, unstaged
+changes against the index; it never stages files or changes an existing staged
+selection. Run it before staging IDE casing cleanup, then review the diff.
+Case-insensitive normalization is not a VB6 parser: stage intentional
+case-only changes (such as string literals) before running it.
+
+Run the isolated hook regressions in Git Bash or WSL with
+`bash tools/test-vb6-pre-commit.sh`. They use temporary repositories, not your
+working files, and exercise real commits with the hook enabled. No VB6 compiler
+or `unix2dos` installation is required for these tooling tests.
+
 # 🗺️ Maps Limitation 512 with VB6 Debugger
 
 There is a limitation when running and debugging the game within Visual Basic 6. Due to VB6's constraints, it cannot load more than 512 maps during debugging. As a result, maps such as Dungeon Dinosaurios (Map 577) will not function properly and it will throw overflow error

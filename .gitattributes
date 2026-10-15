@@ -1,6 +1,10 @@
 # Auto-CRLF setting.
 * text eol=crlf
 
+# Bash hooks must also execute from Git Bash and WSL/Linux checkouts.
+*.sh text eol=lf
+.githooks/* text eol=lf
+
 # Declare file types.
 # The - is a negation symbol, so  -text it means"not" text
 *.exe binary
