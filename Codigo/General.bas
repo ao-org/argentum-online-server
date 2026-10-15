@@ -2078,6 +2078,9 @@ Public Sub LoadDBMigrations()
     Exit Sub
 
 LoadDBMigrations_Err:
+    #If UNIT_TEST = 1 Then
+        Err.Raise Err.Number, "LoadDBMigrations", "Database migrations: " & Err.Description
+    #End If
 
     Debug.Print "ERROR LoadDBMigrations: "; Err.Number; Err.Description
 

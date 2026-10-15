@@ -72,3 +72,6 @@ it to reject and terminate a still-running server. Final reports are written to
 a same-directory temporary file, closed, then renamed into place. A terminal
 startup error still publishes an explicit failure. Checkpoints and this report
 handling are compiled only into UNIT_TEST builds; gameplay is unchanged.
+Test-build spell/object/EOT/map loading and migration failures propagate to that
+startup report instead of waiting for an unattended modal dialog. Production
+error dialogs are unchanged.
