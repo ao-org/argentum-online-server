@@ -10,6 +10,8 @@ Option Explicit
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
 Public Function test_suite_general() As Boolean
+    Call UnitTesting.RunTest("runner exception publishes FAIL beyond Integer range", UnitTesting.TestFailureReport())
+    Call UnitTesting.RunTest("runner initialization token roundtrip", LenB(UnitTesting.encrypted_token) > 0 And AO20CryptoSysWrapper.DECRYPT(UnitTesting.private_key, UnitTesting.encrypted_token) = UnitTesting.decrypted_token)
     Call UnitTesting.RunTest("test_ceil_integer", test_ceil_integer())
     Call UnitTesting.RunTest("test_ceil_fraction", test_ceil_fraction())
     Call UnitTesting.RunTest("test_clamp_within", test_clamp_within())

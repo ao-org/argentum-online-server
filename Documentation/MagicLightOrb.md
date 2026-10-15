@@ -68,7 +68,8 @@ with assets master, even though the fixture-based gameplay tests passed.
 ## Unit-test startup diagnostics
 
 Jenkins build 527 compiled successfully but stayed alive without a final report.
-The cause is not yet known. UNIT_TEST=1 now writes `test_progress.txt` beside the
+The suite-39 failure was subsequently reproduced as described below.
+UNIT_TEST=1 writes `test_progress.txt` beside the
 executable, beginning at entry to Main, before configuration or test Init.
 Each timestamped checkpoint opens, appends and closes the file, so its latest
 line can be read while startup is blocked. Each run starts a fresh progress log.
@@ -103,4 +104,64 @@ isolated paths/binding and legacy anti-cheat disabled. All 41 suite boundaries
 were verified. Missing configuration produced a final FAIL with error 76 and
 the previous checkpoint. A deliberately invalid spell value logged error 6
 (Overflow) before its existing modal dialog, with no premature final report.
-The remote hang has not reproduced locally; no CI fix is claimed.
+That initial run did not reproduce the remote hang; the shorter spell table
+reproduction below subsequently reproduced its exact exception sequence.
+
+## Suite 39 overflow investigation
+
+With commit `0ec619b4` and an isolated `Hechizos.dat` declaring
+`NumeroHechizos=351`, the native Jenkins configuration reproduced `ERROR suite
+39: Err.Number=6`, `ERROR Unit test runner: Err.Number=6`, and a final
+`BEFORE UnitTesting.RunTestError` checkpoint with no results file.
+
+The first invalid operation was `savedSpell = Hechizos(352)`, raising error 9.
+The fixture's error handler resumed cleanup, whose unconditional
+`Hechizos(352) = savedSpell` raised error 9 again. Each pass recorded another
+failure and resumed the same cleanup. Eventually `TotalTests = TotalTests + 1`
+overflowed its 16-bit Integer at 32767. Outer handlers retried the same failing
+recorder, so final publication was never reached. This is not an orb timestamp
+or packet-width overflow. The next CI trace records the loaded spell upper bound
+to confirm its actual resource table; Jenkins' asset contents were not available
+for direct inspection.
+
+Ordinary lifecycle tests now extend the saved spell table only for their fixture,
+run the original assertions and restore the original bounds. Cleanup runs once,
+restores only initialized snapshots and reports restoration errors without
+retrying cleanup. The explicit deployment-resource check still fails for missing
+spell 352 or incompatible authored data. No production resource loading changed.
+
+The separate Init error 9 came from encrypting the test token with an empty key:
+PYMMO=0 does not call LoadPrivateKey, cipherEncryptBytes returns an empty array,
+and cnvB64StrFromBytes dereferences abData(0). Only the PYMMO=0 test fixture now
+uses a fixed test key, without changing the production PrivateKey. A regression
+checks the initialized token's encryption/decryption roundtrip. Genuine Init
+failures are recorded after runner initialization rather than erased by a reset.
+
+Runner counters and report indices are Long. A regression injects an exception
+with counters at 32767, exercises failure/success recording and verifies a closed
+FAIL report before restoring the real suite counters. Main unwinds its active
+test exception handler before recording and publishing the failure. Startup and
+suite diagnostics remain enabled in test builds; none of these fixes change
+UNIT_TEST=0 orb gameplay, protocol, costs, cooldowns or bindability.
+
+Native validation of the fix (2026-10-15):
+
+- Exact Jenkins override: `VB6.EXE /make Server.VBP /d
+  DEBUGGING=1:PYMMO=0:UNIT_TEST=1 /out build.log /outdir <isolated-build>`:
+  build succeeded and the complete suite passed 424/424.
+- Explicit `DEBUGGING=1:UNLOCK_CPU=1:UNIT_TEST=0/1:PYMMO=0/1:
+  DIRECT_PLAY=0:BATTLESERVER=0`: all four native builds succeeded; full test
+  runs passed 424/424 in each PYMMO configuration.
+- Short-table reproduction (351 spells): all 424 tests passed, including all
+  original orb assertions and the setup-exception/restoration regressions.
+- Strict resource validation with that short table: 424 passed, 1 expected
+  failure, final `RESULT: FAIL`, remaining suites completed and process exited.
+- Strict resource validation with the installed ground-targeted definition:
+  424 passed, 1 expected contract failure in each PYMMO configuration.
+- With spell data from matching assets PR #669 (`faa2db4cc`), strict resource
+  validation passed 425/425 in each PYMMO configuration.
+
+All runs used private copied resources, configuration, database and loopback test
+port, with legacy anti-cheat disabled to match Jenkins 527. No live multiplayer
+validation or deployment was performed. A fresh Jenkins run is still required;
+retain the progress log, especially the loaded spell upper bound and suite 39.

@@ -151,20 +151,40 @@ Public Function CaptureMagicLightOrbPacket() As Boolean
     CaptureMagicLightOrbPacket = True
 End Function
 
-Private Sub TestOrbLifecycle()
+Private Function TestOrbLifecycle(Optional ByVal failSetup As Boolean = False) As String
     On Error GoTo TestOrbLifecycle_Err
     Dim owner As Integer, other As Integer, savedOwner As t_User, savedOther As t_User
     Dim savedSpell As t_Hechizo, emptyUser As t_User, emptySpell As t_Hechizo
     Dim originalDeadline As Long, sent As Long, savedSinMagia As Boolean
+    Dim spellUpper As Long, spellLower As Long, extended As Boolean
+    Dim usersSaved As Boolean, spellSaved As Boolean, mapSaved As Boolean, ownsOrbs As Boolean
+    Dim failure As String
+    spellLower = LBound(Hechizos): spellUpper = UBound(Hechizos)
+    Call UnitTesting.Progress("orb fixture: loaded spell upper bound=" & CStr(spellUpper))
     owner = UBound(UserList): other = owner - 1
     savedOwner = UserList(owner): savedOther = UserList(other)
-    savedSpell = Hechizos(352): savedSinMagia = MapInfo(1).SinMagia
+    usersSaved = True
+    savedSinMagia = MapInfo(1).SinMagia: mapSaved = True
     ' Cross-repository deployment validation is explicit; ordinary unit runs use
     ' the fixture below, independently of which assets branch CI has installed.
     If LCase$(Trim$(Command$)) = "--validate-light-orb-resources" Then
-        Call UnitTesting.RunTest("orb loaded resource self-cast contract", savedSpell.AutoLanzar = 1 And savedSpell.Target = uUsuarios And savedSpell.Tipo = uLightOrb And savedSpell.Duration = 60 And savedSpell.Cooldown = 2 And savedSpell.ManaRequerido = 20 And savedSpell.StaRequerido = 5 And savedSpell.Particle = MAGIC_LIGHT_ORB_PARTICLE And IsSet(savedSpell.SpellRequirementMask, e_SpellRequirementMask.eIsBindable))
+        If Not failSetup Then
+            If spellUpper < 352 Then
+                Call UnitTesting.RunTestError("orb loaded resource self-cast contract", "Loaded spell 352 is missing")
+            Else
+                savedSpell = Hechizos(352)
+                Call UnitTesting.RunTest("orb loaded resource self-cast contract", savedSpell.AutoLanzar = 1 And savedSpell.Target = uUsuarios And savedSpell.Tipo = uLightOrb And savedSpell.Duration = 60 And savedSpell.Cooldown = 2 And savedSpell.ManaRequerido = 20 And savedSpell.StaRequerido = 5 And savedSpell.Particle = MAGIC_LIGHT_ORB_PARTICLE And IsSet(savedSpell.SpellRequirementMask, e_SpellRequirementMask.eIsBindable))
+            End If
+        End If
     End If
+    If spellUpper < 352 Then
+        ReDim Preserve Hechizos(spellLower To 352)
+        extended = True
+    End If
+    savedSpell = Hechizos(352): spellSaved = True
+    If failSetup Then Err.Raise 5, , "injected orb fixture setup failure"
     If OrbsInitialized Then Err.Raise 5, , "Expected empty startup orb state"
+    ownsOrbs = True
     CaptureOrbPackets = True: OrbWireValid = True
     OrbUpserts = 0: OrbRemovals = 0: OrbTargetRequests = 0
     UserList(owner) = emptyUser
@@ -246,15 +266,36 @@ Private Sub TestOrbLifecycle()
     Call UnitTesting.RunTest("orb recycled slot never removes new owner's effect", Not UserOrbs(owner).Active And OrbRemovals = 2)
     Call UnitTesting.RunTest("orb character packet wire identity", OrbWireValid)
 TestOrbLifecycle_Cleanup:
+    ' Cleanup runs once, after unwinding the original handler. A failed restore
+    ' must never Resume back into this block and endlessly record the same error.
+    On Error Resume Next
     CaptureOrbPackets = False
-    UserList(owner) = savedOwner: UserList(other) = savedOther
-    Hechizos(352) = savedSpell: MapInfo(1).SinMagia = savedSinMagia
-    Erase UserOrbs: OrbsInitialized = False: LastUpdate = 0
-    Exit Sub
+    Err.Clear
+    If usersSaved Then
+        UserList(owner) = savedOwner: UserList(other) = savedOther
+    End If
+    If Err.Number <> 0 Then failure = failure & " | users cleanup: " & CStr(Err.Number) & " " & Err.Description
+    Err.Clear
+    If spellSaved Then Hechizos(352) = savedSpell
+    If Err.Number <> 0 Then failure = failure & " | spell cleanup: " & CStr(Err.Number) & " " & Err.Description
+    Err.Clear
+    If extended Then ReDim Preserve Hechizos(spellLower To spellUpper)
+    If Err.Number <> 0 Then failure = failure & " | spell bounds cleanup: " & CStr(Err.Number) & " " & Err.Description
+    Err.Clear
+    If mapSaved Then MapInfo(1).SinMagia = savedSinMagia
+    If Err.Number <> 0 Then failure = failure & " | map cleanup: " & CStr(Err.Number) & " " & Err.Description
+    Err.Clear
+    If ownsOrbs Then
+        Erase UserOrbs: OrbsInitialized = False: LastUpdate = 0
+    End If
+    If Err.Number <> 0 Then failure = failure & " | orb cleanup: " & CStr(Err.Number) & " " & Err.Description
+    On Error GoTo 0
+    TestOrbLifecycle = failure
+    Exit Function
 TestOrbLifecycle_Err:
-    Call UnitTesting.RunTestError("orb lifecycle", Err.Description & " " & Join(GetLastMessages(), " | "))
+    failure = "Err.Number=" & CStr(Err.Number) & "; " & Err.Description
     Resume TestOrbLifecycle_Cleanup
-End Sub
+End Function
 #End If
 Public Function test_suite_light_orbs() As Boolean
     On Error GoTo test_suite_light_orbs_Err
@@ -274,7 +315,13 @@ Public Function test_suite_light_orbs() As Boolean
     Call UnitTesting.RunTest("orb clock wrap expiry", Not OrbHasTime(orb, &H54))
     Call UnitTesting.RunTest("orb dedicated character particle", MAGIC_LIGHT_ORB_PARTICLE = 354)
     #If DIRECT_PLAY = 0 Then
-        Call TestOrbLifecycle
+        Dim failure As String, originalUpper As Long
+        originalUpper = UBound(Hechizos)
+        failure = TestOrbLifecycle(True)
+        Call UnitTesting.RunTest("orb setup failure restores fixture once", failure = "Err.Number=5; injected orb fixture setup failure" And UBound(Hechizos) = originalUpper And Not OrbsInitialized And Not CaptureOrbPackets)
+        failure = TestOrbLifecycle()
+        If LenB(failure) <> 0 Then Call UnitTesting.RunTestError("orb lifecycle", failure)
+        Call UnitTesting.RunTest("orb lifecycle restores loaded spell bounds", UBound(Hechizos) = originalUpper)
     #End If
     test_suite_light_orbs = True
     Exit Function

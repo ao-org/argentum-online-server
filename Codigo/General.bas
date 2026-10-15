@@ -1143,6 +1143,7 @@ Sub Main()
         Call UnitTesting.Init
         Call UnitTesting.Progress("AFTER UnitTesting.Init")
         Dim suite_passed_ok As Boolean
+        Dim unitTestFailure As String
         Call UnitTesting.Progress("BEFORE UnitTesting.test_suite")
         suite_passed_ok = UnitTesting.test_suite()
         Call UnitTesting.Progress("AFTER UnitTesting.test_suite")
@@ -1157,11 +1158,16 @@ UnitTest_Done:
         Call UnitTesting.Progress("AFTER Unload frmMain")
         Exit Sub
 UnitTest_Err:
+        unitTestFailure = "Err.Number=" & CStr(Err.Number) & "; " & Err.Description
         Call UnitTesting.ProgressError("Unit test runner", Err.Number, Err.Description)
+        Resume UnitTest_ReportError
+UnitTest_ReportError:
+        ' Leave the active handler before reporting; never re-enter it on failure.
+        On Error GoTo Handler
         Call UnitTesting.Progress("BEFORE UnitTesting.RunTestError")
-        Call UnitTesting.RunTestError("FATAL", Err.Description)
+        Call UnitTesting.RunTestError("FATAL", unitTestFailure)
         Call UnitTesting.Progress("AFTER UnitTesting.RunTestError")
-        Resume UnitTest_Done
+        GoTo UnitTest_Done
     #End If
     While (True)
         GlobalFrameTime = GetTickCountRaw()
