@@ -584,16 +584,34 @@ Sub Main()
     #End If
     Call LoadMainConfigFile
     #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: intervalos.ini and initial lists")
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: intervalos.ini")
     #End If
     Call LoadIntervalos
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: forbidden names")
+    #End If
     Call CargarForbidenWords
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: blocked descriptions")
+    #End If
     Call LoadBlockedWordsDescription
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: bets")
+    #End If
     Call CargaApuestas
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: NPC spawn list")
+    #End If
     Call CargarSpawnList
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: MOTD and base64")
+    #End If
     Call LoadMotd
     Call initBase64Chars
     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: database file copy")
+    #End If
     If Not FileExist(App.Path & "/" & DatabaseFileName) Then
         Call FileSystem.FileCopy(App.Path & "/Empty_db.db", App.Path & "/" & DatabaseFileName)
     End If
