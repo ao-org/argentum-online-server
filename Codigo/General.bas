@@ -544,11 +544,18 @@ Sub Main()
     #End If
     
     If GetProcessCount(App.EXEName & ".exe") > 1 Then
+        #If UNIT_TEST = 1 Then
+            Err.Raise vbObjectError + 513, "General.Main", "Another server process is running; native tests cannot wait for the duplicate-instance dialog"
+        #Else
         ' Si lo hay, pregunto si lo queremos cerrar.
         If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
             End
         End If
+        #End If
     End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: initialization and Server.ini")
+    #End If
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
     Call ChDir(App.Path)
@@ -564,12 +571,21 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     MaxUsers = 0
     Call LoadSini
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: packet policy and private key")
+    #End If
     Call LogManagedConfigPaths()
     Call LoadPacketRatePolicy
     #If PYMMO = 1 Then
         Call LoadPrivateKey
     #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: Configuracion.ini")
+    #End If
     Call LoadMainConfigFile
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: intervalos.ini and initial lists")
+    #End If
     Call LoadIntervalos
     Call CargarForbidenWords
     Call LoadBlockedWordsDescription
@@ -774,10 +790,16 @@ UnitTest_Err:
     Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
     Exit Sub
 Handler:
+    Dim startupErrorNumber As Long, startupErrorDescription As String
+    startupErrorNumber = Err.Number
+    startupErrorDescription = Err.Description
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup error " & CStr(startupErrorNumber) & ": " & startupErrorDescription)
+    #End If
     If Not ConfigStartupComplete() Then
-        Call FatalConfigStartup(Err.Number, Err.Description)
+        Call FatalConfigStartup(startupErrorNumber, startupErrorDescription)
     End If
-    Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
+    Call TraceError(startupErrorNumber, startupErrorDescription, "General.Main", Erl)
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
