@@ -65,13 +65,17 @@ again. Focused suites passed 25/25, ordinary full suites 420/420, and explicit
 negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
 as intended. The former unconditional assertion reproduced a 420/421 result
 with assets master, even though the fixture-based gameplay tests passed.
-CI report publication: startup/suite checkpoints are written to
-`test_progress.txt`, never `test_results.txt`. The validator polls for the final
-report's existence, so publishing an incomplete checkpoint at that path caused
-it to reject and terminate a still-running server. Final reports are written to
-a same-directory temporary file, closed, then renamed into place. A terminal
-startup error still publishes an explicit failure. Checkpoints and this report
-handling are compiled only into UNIT_TEST builds; gameplay is unchanged.
-Test-build spell/object/EOT/map loading and migration failures propagate to that
-startup report instead of waiting for an unattended modal dialog. Production
-error dialogs are unchanged.
+
+CI correction: Jenkins copies `Example.feature_toggle.ini`, which enables
+anti-cheat. The local fixture previously disabled it. Native unit-test builds
+must not initialize the external anti-cheat SDK or wait for its modal startup
+failure dialog. `InitializeAntiCheat` now excludes SDK initialization only under
+UNIT_TEST=1; UNIT_TEST=0 retains the production behavior and configured policy.
+Two regressions verify isolation with the feature enabled and disabled, without
+changing the configured value. All four native builds passed; full suites using
+the example configuration passed 422/422 in both PYMMO modes.
+
+Final test reports are closed and renamed into place before becoming visible to
+Jenkins. Terminal startup errors still publish a failure; intermediate progress
+reports and the speculative resource-loader diagnostics have been removed.
+No tests are skipped, and the explicit resource integration check remains.

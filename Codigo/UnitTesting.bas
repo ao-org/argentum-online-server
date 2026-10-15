@@ -308,7 +308,6 @@ Public Sub RunAllSuites()
     
     Dim i As Integer, failuresBefore As Integer
     For i = 1 To SUITE_COUNT
-        Call WriteProgress("suite " & CStr(i))
         failuresBefore = FailedTests
         If Not RunSuite(i) Then
             If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
@@ -316,11 +315,6 @@ Public Sub RunAllSuites()
     Next i
     
     TotalElapsed = sw.ElapsedMilliseconds
-End Sub
-
-Public Sub WriteProgress(ByVal stage As String)
-    ' CI treats test_results.txt existence as completion. Never publish progress there.
-    Call WriteResultsToFile(App.Path & "\test_progress.txt", stage)
 End Sub
 
 Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incompleteStage As String = "")
