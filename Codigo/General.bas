@@ -501,14 +501,6 @@ Sub Main()
 
     #If UNIT_TEST = 1 Then
         #If DIRECT_PLAY = 0 Then
-        If LCase$(Trim$(Command$)) = "--test-light-orbs" Then
-            Call Unit_Traps.InitializeTestWorld()
-            Call LoadFeatureToggles
-            ReDim Hechizos(1 To 352)
-            Call modMagicLightOrbs.test_suite_light_orbs()
-            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
-            End
-        End If
         If LCase$(Trim$(Command$)) = "--test-traps" Then
             Call Unit_Traps.InitializeTestWorld()
             Call Unit_Traps.test_suite_traps()
@@ -536,17 +528,12 @@ Sub Main()
     #End If
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
-
     
     If GetProcessCount(App.EXEName & ".exe") > 1 Then
-        #If UNIT_TEST = 1 Then
-            Err.Raise vbObjectError + 513, "General.Main", "Another server process is running; native tests cannot wait for the duplicate-instance dialog"
-        #Else
         ' Si lo hay, pregunto si lo queremos cerrar.
         If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
             End
         End If
-        #End If
     End If
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
@@ -758,16 +745,10 @@ UnitTest_Err:
     Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
     Exit Sub
 Handler:
-    Dim startupErrorNumber As Long, startupErrorDescription As String
-    startupErrorNumber = Err.Number
-    startupErrorDescription = Err.Description
-    #If UNIT_TEST = 1 Then
-        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup error " & CStr(startupErrorNumber) & ": " & startupErrorDescription)
-    #End If
     If Not ConfigStartupComplete() Then
-        Call FatalConfigStartup(startupErrorNumber, startupErrorDescription)
+        Call FatalConfigStartup(Err.Number, Err.Description)
     End If
-    Call TraceError(startupErrorNumber, startupErrorDescription, "General.Main", Erl)
+    Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean

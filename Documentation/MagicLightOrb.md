@@ -41,9 +41,8 @@ Removal uses the ordinary area route so an observer who died after seeing the
 orb can still remove it. Only particle 354 is removed, never all character FX.
 The spell no longer emits floor packets 114/121 or changes MapData lights.
 
-Native test builds can run `server.exe --test-light-orbs` through the existing
-UnitTesting framework. The same suite remains registered in the full server
-suite. Tests intercept outbound packets only under UNIT_TEST=1, DIRECT_PLAY=0.
+The orb regression suite runs through the existing full server UnitTesting
+framework. Tests intercept outbound packets only under UNIT_TEST=1, DIRECT_PLAY=0.
 The ordinary suite uses a saved/restored spell fixture and does not require an
 unmerged resources branch. Before coordinated deployment, run the full test
 server as `server.exe --validate-light-orb-resources` with the matching Dat path.
@@ -66,16 +65,12 @@ negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
 as intended. The former unconditional assertion reproduced a 420/421 result
 with assets master, even though the fixture-based gameplay tests passed.
 
-CI correction: Jenkins copies `Example.feature_toggle.ini`, which enables
-anti-cheat. The local fixture previously disabled it. Native unit-test builds
-must not initialize the external anti-cheat SDK or wait for its modal startup
-failure dialog. `InitializeAntiCheat` now excludes SDK initialization only under
-UNIT_TEST=1; UNIT_TEST=0 retains the production behavior and configured policy.
-Two regressions verify isolation with the feature enabled and disabled, without
-changing the configured value. All four native builds passed; full suites using
-the example configuration passed 422/422 in both PYMMO modes.
+CI investigation cleanup: speculative startup/reporting changes, the anti-cheat
+test bypass and the separate focused-test startup command have been removed.
+General, AntiCheat, UnitTesting and Unit_GameStatus retain their master behavior.
+The orb regressions and explicit resource integration check remain. The remote
+Jenkins failure is unresolved; local passes are not evidence of remote success.
 
-Final test reports are closed and renamed into place before becoming visible to
-Jenkins. Terminal startup errors still publish a failure; intermediate progress
-reports and the speculative resource-loader diagnostics have been removed.
-No tests are skipped, and the explicit resource integration check remains.
+After cleanup, all four Windows VB6 builds (PYMMO=0/1, UNIT_TEST=0/1,
+DIRECT_PLAY=0) passed. Normal full-suite runs passed 420/420 in both PYMMO modes
+using the isolated local development fixture with anti-cheat configured off.

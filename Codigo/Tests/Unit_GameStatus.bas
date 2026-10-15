@@ -3,8 +3,6 @@ Option Explicit
 #If UNIT_TEST = 1 Then
 
 Public Function test_suite_gamestatus() As Boolean
-    Call UnitTesting.RunTest("test_unit_anticheat_enabled_config_no_sdk", TestAntiCheatUnitIsolation(True))
-    Call UnitTesting.RunTest("test_unit_anticheat_disabled_config_no_sdk", TestAntiCheatUnitIsolation(False))
     Call UnitTesting.RunTest("test_esnewbie_below", test_esnewbie_below())
     Call UnitTesting.RunTest("test_esnewbie_at_limit", test_esnewbie_at_limit())
     Call UnitTesting.RunTest("test_esnewbie_above", test_esnewbie_above())

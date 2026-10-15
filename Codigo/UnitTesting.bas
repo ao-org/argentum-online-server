@@ -317,18 +317,13 @@ Public Sub RunAllSuites()
     TotalElapsed = sw.ElapsedMilliseconds
 End Sub
 
-Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incompleteStage As String = "")
+Public Sub WriteResultsToFile(ByVal filePath As String)
     On Error GoTo WriteResultsToFile_Err
-    Dim f As Integer, opened As Boolean, temporaryPath As String
-    temporaryPath = filePath & ".tmp"
+    Dim f As Integer
     f = FreeFile
-    Open temporaryPath For Output As #f
-    opened = True
+    Open filePath For Output As #f
     Print #f, "=== AO20 TEST REPORT ==="
-    Dim incomplete As Integer
-    If LenB(incompleteStage) <> 0 Then incomplete = 1
-    Print #f, "Total: " & (TotalTests + incomplete) & " | Passed: " & PassedTests & " | Failed: " & (FailedTests + incomplete)
-    If incomplete <> 0 Then Print #f, "Incomplete test run: " & incompleteStage
+    Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
     
     If FailedTestCount > 0 Then
         Print #f, "Failed tests:"
@@ -340,19 +335,15 @@ Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incomplet
     
     Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
     
-    If FailedTests = 0 And incomplete = 0 Then
+    If FailedTests = 0 Then
         Print #f, "RESULT: PASS"
     Else
         Print #f, "RESULT: FAIL"
     End If
     Close #f
-    opened = False
-    ' Publish a closed, complete report so file-existence polling cannot read half a result.
-    If LenB(Dir$(filePath)) <> 0 Then Kill filePath
-    Name temporaryPath As filePath
     Exit Sub
 WriteResultsToFile_Err:
-    If opened Then Close #f
+    Close #f
 End Sub
 
 Public Function GetFailedTests() As Integer

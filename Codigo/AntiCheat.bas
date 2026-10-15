@@ -90,11 +90,6 @@ Private Function FARPROC(pfn As Long) As Long
 End Function
 
 Public Sub InitializeAntiCheat()
-    #If UNIT_TEST = 1 Then
-    ' Native unit tests exit after their report; they must not start an external
-    ' anti-cheat service or wait on its interactive failure dialog in CI.
-    EnableAnticheat = False
-    #Else
     On Error GoTo InitializeAC_Err
     EnableAnticheat = IsFeatureEnabled("anti-cheat")
     If EnableAnticheat Then
@@ -112,26 +107,7 @@ Public Sub InitializeAntiCheat()
     Exit Sub
 InitializeAC_Err:
     Call TraceError(Err.Number, Err.Description, "AOAC.InitializeAC", Erl)
-    #End If
 End Sub
-
-#If UNIT_TEST = 1 Then
-Public Function TestAntiCheatUnitIsolation(ByVal configuredEnabled As Boolean) As Boolean
-    On Error GoTo Failed
-    Dim previous As Boolean
-    previous = IsFeatureEnabled("anti-cheat")
-    Call SetFeatureToggle("anti-cheat", configuredEnabled)
-    Call InitializeAntiCheat
-    Call UnloadAntiCheat
-    TestAntiCheatUnitIsolation = Not EnableAnticheat And (IsFeatureEnabled("anti-cheat") = configuredEnabled)
-Cleanup:
-    Call SetFeatureToggle("anti-cheat", previous)
-    Exit Function
-Failed:
-    TestAntiCheatUnitIsolation = False
-    Resume Cleanup
-End Function
-#End If
 
 Public Sub OnNewPlayerConnect(ByVal UserIndex As Integer)
     On Error GoTo OnNewPlayerConnect_Err
