@@ -755,6 +755,9 @@ Public Sub CargarHechizos()
     Set Leer = Nothing
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL CargarHechizos", Err.Number, Err.Description)
+    #End If
     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -860,6 +863,9 @@ Public Sub LoadEffectOverTime()
     Call InitializePools
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadEffectOverTime", Err.Number, Err.Description)
+    #End If
     MsgBox "Error cargando EffectsOverTime.dat " & Err.Number & ": " & Err.Description
 End Sub
 
@@ -1707,6 +1713,9 @@ Sub LoadOBJData()
     Call InitRegalo
     Exit Sub
 ErrHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadOBJData object " & CStr(Object), Err.Number, Err.Description)
+    #End If
     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
 End Sub
 
@@ -1791,6 +1800,9 @@ Sub LoadMapData()
     Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NormalMapsCount + 1)
     Exit Sub
 man:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadMapData map " & CStr(Map), Err.Number, Err.Description)
+    #End If
     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 End Sub

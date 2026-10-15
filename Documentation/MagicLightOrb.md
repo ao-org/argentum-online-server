@@ -65,12 +65,42 @@ negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
 as intended. The former unconditional assertion reproduced a 420/421 result
 with assets master, even though the fixture-based gameplay tests passed.
 
-CI investigation cleanup: speculative startup/reporting changes, the anti-cheat
-test bypass and the separate focused-test startup command have been removed.
-General, AntiCheat, UnitTesting and Unit_GameStatus retain their master behavior.
-The orb regressions and explicit resource integration check remain. The remote
-Jenkins failure is unresolved; local passes are not evidence of remote success.
+## Unit-test startup diagnostics
 
-After cleanup, all four Windows VB6 builds (PYMMO=0/1, UNIT_TEST=0/1,
-DIRECT_PLAY=0) passed. Normal full-suite runs passed 420/420 in both PYMMO modes
-using the isolated local development fixture with anti-cheat configured off.
+Jenkins build 527 compiled successfully but stayed alive without a final report.
+The cause is not yet known. UNIT_TEST=1 now writes `test_progress.txt` beside the
+executable, beginning at entry to Main, before configuration or test Init.
+Each timestamped checkpoint opens, appends and closes the file, so its latest
+line can be read while startup is blocked. Each run starts a fresh progress log.
+
+BEFORE/AFTER checkpoints cover startup calls, including configuration, database
+connections/migrations, resource loading, maps, networking, test initialization
+and shutdown. Suite indices are logged before and after execution and correspond
+to the existing RunSuite registration. Completion includes the new failure count.
+The last unmatched BEFORE identifies the operation that has not returned.
+
+Existing modal dialogs are not bypassed: spell, object, EOT, map, quest and
+migration errors are logged before their dialogs, including Err.Number,
+Err.Description and the preceding checkpoint. Duplicate-instance and anti-cheat
+SDK dialogs are also identified. A MODAL entry explains an unattended wait;
+it does not claim that the affected operation succeeded.
+
+Unhandled Main errors publish a final FAIL with error details and last checkpoint.
+Progress never writes a result. Final reports are written to a temporary file,
+closed, then renamed to `test_results.txt`; no partial PASS is published.
+Keep `test_progress.txt` when collecting a failed run, before workspace cleanup.
+If even the BEGIN entry is absent, investigate execution/file permissions or a
+failure before Main rather than assuming a test-suite failure.
+
+All tracing is compiled out with UNIT_TEST=0. Initialization, anti-cheat policy,
+test selection and orb gameplay are unchanged. No Jenkins changes are included.
+Retain this instrumentation until the Jenkins startup failure is understood.
+
+Diagnostics validation (2026-10-15): native builds passed with PYMMO=0/1 and
+UNIT_TEST=0/1. The exact Jenkins override `DEBUGGING=1:PYMMO=0:UNIT_TEST=1`
+passed 420/420 using the updated local assets at d7d21868, example configs,
+isolated paths/binding and legacy anti-cheat disabled. All 41 suite boundaries
+were verified. Missing configuration produced a final FAIL with error 76 and
+the previous checkpoint. A deliberately invalid spell value logged error 6
+(Overflow) before its existing modal dialog, with no premature final report.
+The remote hang has not reproduced locally; no CI fix is claimed.

@@ -455,6 +455,9 @@ Public Sub LoadQuests()
     Set reader = Nothing
     Exit Sub
 ErrorHandler:
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.ProgressError("MODAL LoadQuests", Err.Number, Err.Description)
+    #End If
     MsgBox "Error cargando el archivo QUESTS.DAT.", vbOKOnly + vbCritical
 End Sub
  

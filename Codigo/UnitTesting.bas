@@ -40,12 +40,52 @@ Option Explicit
     Private FailedTestNames() As String
     Private FailedTestCount As Integer
     Private TotalElapsed   As Double
+    Private LastCheckpoint As String
 
     #If DIRECT_PLAY = 0 Then
         Private Const SUITE_COUNT As Integer = 41
     #Else
         Private Const SUITE_COUNT As Integer = 40
     #End If
+
+' Independent of Init: startup can fail before the test runner is initialized.
+Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
+    Dim number As Long, description As String, source As String
+    Dim helpFile As String, helpContext As Long
+    number = Err.Number: description = Err.Description: source = Err.Source
+    helpFile = Err.HelpFile: helpContext = Err.HelpContext
+    On Error GoTo Failed
+    Dim f As Integer, opened As Boolean
+    LastCheckpoint = checkpoint
+    f = FreeFile
+    If startRun Then
+        Open App.Path & "\test_progress.txt" For Output As #f
+    Else
+        Open App.Path & "\test_progress.txt" For Append As #f
+    End If
+    opened = True
+    Print #f, Format$(Now, "yyyy-mm-dd hh:nn:ss") & " | " & checkpoint
+Done:
+    On Error Resume Next
+    If opened Then Close #f
+    ' Logging must not erase the error that an existing handler will report.
+    Err.Number = number: Err.Description = description: Err.Source = source
+    Err.HelpFile = helpFile: Err.HelpContext = helpContext
+    Exit Sub
+Failed:
+    Debug.Print "Cannot write test_progress.txt: " & Err.Number & " " & Err.Description
+    Resume Done
+End Sub
+
+Public Sub ProgressError(ByVal operation As String, ByVal number As Long, ByVal description As String, Optional ByVal fatal As Boolean = False)
+    Dim detail As String
+    detail = operation & ": Err.Number=" & CStr(number) & "; Err.Description=" & description & "; last checkpoint=" & LastCheckpoint
+    Call Progress("ERROR " & detail)
+    If fatal Then
+        Call RunTestError("Fatal startup", detail)
+        Call WriteResultsToFile(App.Path & "\test_results.txt")
+    End If
+End Sub
 
 Public Sub Init()
     On Error GoTo Init_Err
@@ -73,6 +113,7 @@ Init_Resume:
     Exit Sub
     
 Init_Err:
+    Call ProgressError("UnitTesting.Init (handled)", Err.Number, Err.Description)
     Resume Init_Resume
 End Sub
 
@@ -297,6 +338,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
     Exit Function
     
 RunSuite_Err:
+    Call ProgressError("suite " & CStr(suiteIndex), Err.Number, Err.Description)
     Call RunTestError("suite execution", Err.Description)
     RunSuite = False
 End Function
@@ -308,10 +350,12 @@ Public Sub RunAllSuites()
     
     Dim i As Integer, failuresBefore As Integer
     For i = 1 To SUITE_COUNT
+        Call Progress("BEFORE suite " & CStr(i))
         failuresBefore = FailedTests
         If Not RunSuite(i) Then
             If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
         End If
+        Call Progress("AFTER suite " & CStr(i) & "; new failures=" & CStr(FailedTests - failuresBefore))
     Next i
     
     TotalElapsed = sw.ElapsedMilliseconds
@@ -319,9 +363,11 @@ End Sub
 
 Public Sub WriteResultsToFile(ByVal filePath As String)
     On Error GoTo WriteResultsToFile_Err
-    Dim f As Integer
+    Dim f As Integer, opened As Boolean, temporaryPath As String
+    temporaryPath = filePath & ".tmp"
     f = FreeFile
-    Open filePath For Output As #f
+    Open temporaryPath For Output As #f
+    opened = True
     Print #f, "=== AO20 TEST REPORT ==="
     Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
     
@@ -341,9 +387,14 @@ Public Sub WriteResultsToFile(ByVal filePath As String)
         Print #f, "RESULT: FAIL"
     End If
     Close #f
+    opened = False
+    ' Publish only the closed final report, never a partial result or checkpoint.
+    If LenB(Dir$(filePath)) <> 0 Then Kill filePath
+    Name temporaryPath As filePath
     Exit Sub
 WriteResultsToFile_Err:
-    Close #f
+    Call ProgressError("WriteResultsToFile", Err.Number, Err.Description)
+    If opened Then Close #f
 End Sub
 
 Public Function GetFailedTests() As Integer

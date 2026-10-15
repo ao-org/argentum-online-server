@@ -101,6 +101,9 @@ Public Sub InitializeAntiCheat()
         Callbacks.ActionRequired = FARPROC(AddressOf ClientActionRequired)
         InitResult = InitializeAC(Callbacks)
         If InitResult <> eOk Then
+            #If UNIT_TEST = 1 Then
+                Call UnitTesting.Progress("MODAL InitializeAntiCheat; SDK result=" & CStr(InitResult))
+            #End If
             Call MsgBox("El juego se inicio sin activar el anti cheat, debe activarlo para poder conectarse a los servidores.")
         End If
     End If
