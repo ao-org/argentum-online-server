@@ -308,6 +308,7 @@ Public Sub RunAllSuites()
     
     Dim i As Integer, failuresBefore As Integer
     For i = 1 To SUITE_COUNT
+        Call WriteResultsToFile(App.Path & "\test_results.txt", "suite " & CStr(i))
         failuresBefore = FailedTests
         If Not RunSuite(i) Then
             If FailedTests = failuresBefore Then Call RunTestError("suite " & CStr(i), "Suite returned failure")
@@ -317,13 +318,16 @@ Public Sub RunAllSuites()
     TotalElapsed = sw.ElapsedMilliseconds
 End Sub
 
-Public Sub WriteResultsToFile(ByVal filePath As String)
+Public Sub WriteResultsToFile(ByVal filePath As String, Optional ByVal incompleteStage As String = "")
     On Error GoTo WriteResultsToFile_Err
     Dim f As Integer
     f = FreeFile
     Open filePath For Output As #f
     Print #f, "=== AO20 TEST REPORT ==="
-    Print #f, "Total: " & TotalTests & " | Passed: " & PassedTests & " | Failed: " & FailedTests
+    Dim incomplete As Integer
+    If LenB(incompleteStage) <> 0 Then incomplete = 1
+    Print #f, "Total: " & (TotalTests + incomplete) & " | Passed: " & PassedTests & " | Failed: " & (FailedTests + incomplete)
+    If incomplete <> 0 Then Print #f, "Incomplete test run: " & incompleteStage
     
     If FailedTestCount > 0 Then
         Print #f, "Failed tests:"
@@ -335,7 +339,7 @@ Public Sub WriteResultsToFile(ByVal filePath As String)
     
     Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
     
-    If FailedTests = 0 Then
+    If FailedTests = 0 And incomplete = 0 Then
         Print #f, "RESULT: PASS"
     Else
         Print #f, "RESULT: FAIL"

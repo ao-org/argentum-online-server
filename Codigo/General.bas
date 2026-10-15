@@ -500,6 +500,8 @@ Sub Main()
     On Error GoTo Handler
 
     #If UNIT_TEST = 1 Then
+        ' Leave a failing report if unattended startup exits before the suite.
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: configuration")
         #If DIRECT_PLAY = 0 Then
         If LCase$(Trim$(Command$)) = "--test-light-orbs" Then
             Call Unit_Traps.InitializeTestWorld()
@@ -536,6 +538,10 @@ Sub Main()
     #End If
     Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
     Call load_stats
+
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: process check and configuration files")
+    #End If
     
     If GetProcessCount(App.EXEName & ".exe") > 1 Then
         ' Si lo hay, pregunto si lo queremos cerrar.
@@ -576,6 +582,9 @@ Sub Main()
         Call FileSystem.FileCopy(App.Path & "/Empty_db.db", App.Path & "/" & DatabaseFileName)
     End If
     ' ************************* Base de Datos ********************
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: database")
+    #End If
     'Conecto base de datos
     Call Database_Connect
     Call Database_Connect_Async
@@ -585,6 +594,9 @@ Sub Main()
     Call LoadDBMigrations
     ' ******************* FIN - Base de Datos ********************
     Call LoadGuildsDB
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: resource definitions")
+    #End If
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
     Call CargaNpcsDat
@@ -631,10 +643,16 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Fuentes"
     Call InitFontTypeColors
     If BootDelBackUp Then
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: world backup")
+        #End If
         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
         Call CargarBackUp
     Else
         frmCargando.Label1(2).Caption = "Cargando Mapas"
+        #If UNIT_TEST = 1 Then
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: maps and world modules")
+        #End If
         Call LoadMapData
     End If
     Call LoadAdjacentTopology
@@ -684,6 +702,9 @@ Sub Main()
     'castle module needs writer initialized
     Call LoadCastleModule
     Call CompleteConfigStartup()
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt", "startup: network and anti-cheat")
+    #End If
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
     ' ----------------------------------------------------
