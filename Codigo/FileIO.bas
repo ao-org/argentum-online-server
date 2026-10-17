@@ -1963,7 +1963,6 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                     npcfile = DatPath & "NPCs.dat"
                     NpcIndex = OpenNPC(NumNpc)
                     If NpcIndex > 0 Then
-                        MapData(NPCs(i).x, NPCs(i).y, Map).NpcIndex = NpcIndex
                         NpcList(NpcIndex).pos.Map = Map
                         NpcList(NpcIndex).pos.x = NPCs(i).x
                         NpcList(NpcIndex).pos.y = NPCs(i).y
@@ -1971,7 +1970,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         NpcList(NpcIndex).Orig = NpcList(NpcIndex).pos
                         If LenB(NpcList(NpcIndex).name) = 0 Then
                             MapData(NPCs(i).x, NPCs(i).y, Map).NpcIndex = 0
-                        Else
+                        ElseIf Not DeferMappedNpcInitialSpawn(NpcIndex) Then
                             Call MakeNPCChar(True, 0, NpcIndex, Map, NPCs(i).x, NPCs(i).y)
                         End If
                     Else
@@ -2836,6 +2835,7 @@ Sub BackUPnPc(NpcIndex As Integer)
     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
     'Flags
     Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(NpcList(NpcIndex).flags.Respawn))
+    Call WriteVar(npcfile, "NPC" & NpcNumero, "RespawnSchedule", val(NpcList(NpcIndex).flags.RespawnSchedule))
     Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(NpcList(NpcIndex).flags.backup))
     Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(NpcList(NpcIndex).flags.Domable))
     'Inventario
@@ -2899,6 +2899,10 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
     End If
     NpcList(NpcIndex).flags.NPCActive = True
     NpcList(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
+    Dim respawnScheduleValue As Long
+    respawnScheduleValue = val(GetVar(npcfile, "NPC" & NpcNumber, "RespawnSchedule"))
+    If respawnScheduleValue < eNpcRespawnAnyTime Or respawnScheduleValue > eNpcRespawnNightOnly Then respawnScheduleValue = eNpcRespawnAnyTime
+    NpcList(NpcIndex).flags.RespawnSchedule = CByte(respawnScheduleValue)
     NpcList(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
     NpcList(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
     NpcList(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
