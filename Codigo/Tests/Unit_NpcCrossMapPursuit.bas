@@ -24,6 +24,7 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc night respawn only works during nighttime", test_respawn_schedule_night_only())
     Call UnitTesting.RunTest("npc respawn day boundaries are inclusive", test_respawn_schedule_boundaries())
     Call UnitTesting.RunTest("npc invalid respawn schedule remains compatible", test_respawn_schedule_invalid())
+    Call UnitTesting.RunTest("npc scheduled initial spawn waits for a free origin", test_scheduled_initial_spawn_requires_free_origin())
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = True
 End Function
@@ -77,6 +78,35 @@ End Function
 Private Function test_respawn_schedule_invalid() As Boolean
     test_respawn_schedule_invalid = IsNpcRespawnScheduleAllowed(3, True) And _
                                     IsNpcRespawnScheduleAllowed(3, False)
+End Function
+
+Private Function test_scheduled_initial_spawn_requires_free_origin() As Boolean
+    Dim spawnPosition     As t_WorldPos
+    Dim originalNpcIndex  As Integer
+    Dim originalUserIndex As Integer
+
+    spawnPosition.Map = 34
+    spawnPosition.x = 50
+    spawnPosition.y = 50
+    originalNpcIndex = MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).NpcIndex
+    originalUserIndex = MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).UserIndex
+
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).NpcIndex = 0
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).UserIndex = 0
+    If Not IsNpcSpawnPositionAvailable(spawnPosition) Then GoTo Cleanup
+
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).NpcIndex = 1
+    If IsNpcSpawnPositionAvailable(spawnPosition) Then GoTo Cleanup
+
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).NpcIndex = 0
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).UserIndex = 1
+    If IsNpcSpawnPositionAvailable(spawnPosition) Then GoTo Cleanup
+
+    test_scheduled_initial_spawn_requires_free_origin = True
+
+Cleanup:
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).NpcIndex = originalNpcIndex
+    MapData(spawnPosition.x, spawnPosition.y, spawnPosition.Map).UserIndex = originalUserIndex
 End Function
 
 Private Function test_safe_destination_blocked() As Boolean

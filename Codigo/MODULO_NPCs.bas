@@ -900,6 +900,19 @@ Public Function IsNpcRespawnScheduleAllowed(ByVal RespawnSchedule As Byte, ByVal
     End Select
 End Function
 
+Public Function IsNpcSpawnPositionAvailable(ByRef SpawnPosition As t_WorldPos) As Boolean
+    On Error GoTo IsNpcSpawnPositionAvailable_Err
+    If Not InMapBounds(SpawnPosition.Map, SpawnPosition.x, SpawnPosition.y) Then Exit Function
+
+    With MapData(SpawnPosition.x, SpawnPosition.y, SpawnPosition.Map)
+        IsNpcSpawnPositionAvailable = (.NpcIndex = 0 And .UserIndex = 0)
+    End With
+    Exit Function
+
+IsNpcSpawnPositionAvailable_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.IsNpcSpawnPositionAvailable", Erl)
+End Function
+
 Private Function IsNpcRespawnAllowedNow(ByVal RespawnSchedule As Byte) As Boolean
     Dim dayStartHour As Long
     Dim nightStartHour As Long
@@ -1908,6 +1921,8 @@ Private Function RespawnQueuedNpc(ByRef QueueEntry As t_NpcRespawnQueueEntry) As
     If QueueEntry.RespawnFlag <> 0 Then
         RespawnQueuedNpc = True
     ElseIf Not IsNpcRespawnAllowedNow(QueueEntry.RespawnSchedule) Then
+        RespawnQueuedNpc = False
+    ElseIf QueueEntry.IsInitialSpawn <> 0 And Not IsNpcSpawnPositionAvailable(QueueEntry.Orig) Then
         RespawnQueuedNpc = False
     Else
         RespawnQueuedNpc = (CrearNPC(QueueEntry.NpcNumber, QueueEntry.SpawnMap, QueueEntry.Orig, 0, QueueEntry.IsInitialSpawn <> 0) <> 0)
