@@ -31,7 +31,9 @@ Public Const NpcIndexHeapSize       As Integer = 10000
 Private Type t_NpcRespawnQueueEntry
     Active As Byte
     InformarRespawn As Byte
+    IsInitialSpawn As Byte
     RespawnFlag As Byte
+    RespawnSchedule As Byte
     NpcNumber As Integer
     SndRespawn As Integer
     SpawnMap As Integer
@@ -146,7 +148,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     Dim EraCriminal As Byte
     Dim TiempoRespw As Long
     Dim i           As Long, j As Long
-    Dim Indice      As Integer
     ' Objetivo de pruebas nunca muere
     If NpcList(NpcIndex).npcType = DummyTarget Then
         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charindex, vbRed))
@@ -241,21 +242,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If TiempoRespw = 0 Then
         Call ReSpawnNpc(MiNPC)
     Else
-        Indice = ObtenerIndiceRespawn
-        If Indice = 0 Then
-            Call LogError("Respawn queue full | NpcNumber=" & MiNPC.Numero & " | QueueCapacity=" & MaxNPCs)
-            Exit Sub
-        End If
-        With RespawnList(Indice)
-            .Active = 1
-            .InformarRespawn = MiNPC.InformarRespawn
-            .RespawnFlag = MiNPC.flags.Respawn
-            .NpcNumber = MiNPC.Numero
-            .SndRespawn = MiNPC.flags.SndRespawn
-            .SpawnMap = NpcRespawnMap(MiNPC)
-            .Orig = MiNPC.Orig
-            .IntervaloRespawn = MiNPC.Contadores.IntervaloRespawn
-        End With
+        Call QueueNpcRespawn(MiNPC, TiempoRespw)
     End If
     Exit Sub
 ErrHandler:
@@ -286,6 +273,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         .Paralizado = 0
         .Inmovilizado = 0
         .Respawn = 0
+        .RespawnSchedule = eNpcRespawnAnyTime
         .RespawnOrigPos = 0
         .Snd1 = 0
         .Snd2 = 0
@@ -447,7 +435,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer, ByVal releaseReason As e_DeleteSource)
             End If
         Next i
     End If
-    If InMapBounds(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y) Then
+    If NpcList(NpcIndex).Char.charindex <> 0 And InMapBounds(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y) Then
         Call EraseNPCChar(NpcIndex)
     End If
     'Nos aseguramos de que el inventario sea removido...
@@ -478,7 +466,11 @@ TestSpawnTrigger_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
 End Function
 
-Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldPos, Optional ByVal CustomHead As Integer)
+Public Function CrearNPC(NroNPC As Integer, _
+                         Mapa As Integer, _
+                         OrigPos As t_WorldPos, _
+                         Optional ByVal CustomHead As Integer, _
+                         Optional ByVal ForceOrigPos As Boolean = False)
     'Crea un NPC del tipo NRONPC
     On Error GoTo CrearNPC_Err
     Dim NpcIndex    As Integer
@@ -496,7 +488,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         PuedeAgua = .flags.AguaValida = 1
         PuedeTierra = .flags.TierraInvalida = 0
         'Necesita ser respawned en un lugar especifico
-        If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) _
+        If (.flags.RespawnOrigPos <> 0 Or ForceOrigPos) And InMapBounds(OrigPos.Map, OrigPos.x, OrigPos.y) _
                 And (HayLava(OrigPos.Map, OrigPos.x, OrigPos.y) = (.flags.LavaValida = 1)) Then
             Map = OrigPos.Map
             x = OrigPos.x
@@ -897,9 +889,80 @@ Public Function NpcRespawnMap(ByRef npc As t_Npc) As Integer
     NpcRespawnMap = npc.Orig.Map
 End Function
 
+Public Function IsNpcRespawnScheduleAllowed(ByVal RespawnSchedule As Byte, ByVal IsDaytime As Boolean) As Boolean
+    Select Case RespawnSchedule
+        Case eNpcRespawnDayOnly
+            IsNpcRespawnScheduleAllowed = IsDaytime
+        Case eNpcRespawnNightOnly
+            IsNpcRespawnScheduleAllowed = Not IsDaytime
+        Case Else
+            IsNpcRespawnScheduleAllowed = True
+    End Select
+End Function
+
+Private Function IsNpcRespawnAllowedNow(ByVal RespawnSchedule As Byte) As Boolean
+    Dim dayStartHour As Long
+    Dim nightStartHour As Long
+    dayStartHour = CLng(SvrConfig.GetValue("NpcDayStartHour"))
+    nightStartHour = CLng(SvrConfig.GetValue("NpcNightStartHour"))
+    IsNpcRespawnAllowedNow = IsNpcRespawnScheduleAllowed(RespawnSchedule, WorldTime_IsDaytime(dayStartHour, nightStartHour))
+End Function
+
+Private Function QueueNpcRespawn(ByRef npc As t_Npc, _
+                                 ByVal RespawnInterval As Long, _
+                                 Optional ByVal IsInitialSpawn As Boolean = False) As Boolean
+    On Error GoTo QueueNpcRespawn_Err
+    Dim QueueIndex As Integer
+    QueueIndex = ObtenerIndiceRespawn()
+    If QueueIndex = 0 Then
+        Call LogError("Respawn queue full | NpcNumber=" & npc.Numero & " | QueueCapacity=" & MaxNPCs)
+        Exit Function
+    End If
+
+    With RespawnList(QueueIndex)
+        .Active = 1
+        .InformarRespawn = npc.InformarRespawn
+        .RespawnFlag = npc.flags.Respawn
+        .IsInitialSpawn = 0
+        If IsInitialSpawn Then
+            .RespawnFlag = 0
+            .IsInitialSpawn = 1
+        End If
+        .RespawnSchedule = npc.flags.RespawnSchedule
+        .NpcNumber = npc.Numero
+        .SndRespawn = npc.flags.SndRespawn
+        .SpawnMap = NpcRespawnMap(npc)
+        .Orig = npc.Orig
+        .IntervaloRespawn = RespawnInterval
+    End With
+    QueueNpcRespawn = True
+    Exit Function
+QueueNpcRespawn_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.QueueNpcRespawn", Erl)
+End Function
+
+Public Function DeferMappedNpcInitialSpawn(ByVal NpcIndex As Integer) As Boolean
+    On Error GoTo DeferMappedNpcInitialSpawn_Err
+    If NpcIndex <= 0 Or NpcIndex > MaxNPCs Then Exit Function
+    If NpcList(NpcIndex).flags.RespawnSchedule = eNpcRespawnAnyTime Then Exit Function
+    If IsNpcRespawnAllowedNow(NpcList(NpcIndex).flags.RespawnSchedule) And _
+            NpcList(NpcIndex).Contadores.IntervaloRespawn <= 0 Then Exit Function
+    If Not QueueNpcRespawn(NpcList(NpcIndex), NpcList(NpcIndex).Contadores.IntervaloRespawn, True) Then Exit Function
+    Call QuitarNPC(NpcIndex, eScheduledInitialSpawn)
+    DeferMappedNpcInitialSpawn = True
+    Exit Function
+DeferMappedNpcInitialSpawn_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.DeferMappedNpcInitialSpawn", Erl)
+End Function
+
 Sub ReSpawnNpc(MiNPC As t_Npc)
     On Error GoTo ReSpawnNpc_Err
-    If (MiNPC.flags.Respawn = 0) Then Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
+    If MiNPC.flags.Respawn <> 0 Then Exit Sub
+    If IsNpcRespawnAllowedNow(MiNPC.flags.RespawnSchedule) Then
+        Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
+    Else
+        Call QueueNpcRespawn(MiNPC, RespawnQueueRetryIntervalSeconds)
+    End If
     Exit Sub
 ReSpawnNpc_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
@@ -1025,6 +1088,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
     Dim AnimacionesCount As Integer
     Dim MaxInventory As Long
     Dim cant As Long
+    Dim respawnScheduleValue As Long
     With NpcInfoCache(NpcNumber)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
@@ -1095,6 +1159,12 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .IntervaloRespawnMin = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawnMin"))
         .IntervaloRespawnMax = Val(LeerNPCs.GetValue(SectionName, "IntervaloRespawn"))
         .InformarRespawn = Val(LeerNPCs.GetValue(SectionName, "InformarRespawn"))
+        respawnScheduleValue = Val(LeerNPCs.GetValue(SectionName, "RespawnSchedule", "0"))
+        If respawnScheduleValue < eNpcRespawnAnyTime Or respawnScheduleValue > eNpcRespawnNightOnly Then
+            Call LogError("Invalid RespawnSchedule | NpcNumber=" & NpcNumber & " | Value=" & respawnScheduleValue & " | Using=0")
+            respawnScheduleValue = eNpcRespawnAnyTime
+        End If
+        .RespawnSchedule = CInt(respawnScheduleValue)
         Dim dropsCount As Long
         dropsCount = val(LeerNPCs.GetValue(SectionName, "DropCount"))
         If dropsCount < 0 Then
@@ -1480,6 +1550,7 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .IntervaloLanzarHechizo = Info.IntervaloLanzarHechizo
         .Contadores.IntervaloRespawn = RandomNumber(Info.IntervaloRespawnMin, Info.IntervaloRespawnMax)
         .InformarRespawn = Info.InformarRespawn
+        .flags.RespawnSchedule = CByte(Info.RespawnSchedule)
         .DropCount = Info.DropCount
         If .DropCount > 0 Then
             ReDim .Drop(1 To .DropCount)
@@ -1810,7 +1881,9 @@ Private Sub ClearRespawnQueueSlot(ByVal QueueIndex As Integer)
     With RespawnList(QueueIndex)
         .Active = 0
         .InformarRespawn = 0
+        .IsInitialSpawn = 0
         .RespawnFlag = 0
+        .RespawnSchedule = eNpcRespawnAnyTime
         .NpcNumber = 0
         .SndRespawn = 0
         .SpawnMap = 0
@@ -1834,8 +1907,10 @@ Private Function RespawnQueuedNpc(ByRef QueueEntry As t_NpcRespawnQueueEntry) As
     On Error GoTo ErrHandler
     If QueueEntry.RespawnFlag <> 0 Then
         RespawnQueuedNpc = True
+    ElseIf Not IsNpcRespawnAllowedNow(QueueEntry.RespawnSchedule) Then
+        RespawnQueuedNpc = False
     Else
-        RespawnQueuedNpc = (CrearNPC(QueueEntry.NpcNumber, QueueEntry.SpawnMap, QueueEntry.Orig) <> 0)
+        RespawnQueuedNpc = (CrearNPC(QueueEntry.NpcNumber, QueueEntry.SpawnMap, QueueEntry.Orig, 0, QueueEntry.IsInitialSpawn <> 0) <> 0)
     End If
     Exit Function
 ErrHandler:
@@ -1848,20 +1923,23 @@ Public Sub ProcessRespawnQueue()
     Dim QueueEntry As t_NpcRespawnQueueEntry
     For QueueIndex = 1 To RespawnQueueLastUsedIndex
         If RespawnList(QueueIndex).Active <> 0 Then
-            If RespawnList(QueueIndex).IntervaloRespawn > 0 Then
-                RespawnList(QueueIndex).IntervaloRespawn = RespawnList(QueueIndex).IntervaloRespawn - 1
-            Else
-                QueueEntry = RespawnList(QueueIndex)
-                If RespawnQueuedNpc(QueueEntry) Then
-                    Call ReleaseRespawnQueueSlot(QueueIndex)
-                    If QueueEntry.InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, QueueEntry.NpcNumber, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
-                        If QueueEntry.SndRespawn > 0 Then
-                            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(QueueEntry.SndRespawn, NO_3D_SOUND, NO_3D_SOUND))
-                        End If
-                    End If
+            If RespawnList(QueueIndex).RespawnFlag <> 0 Or _
+                    IsNpcRespawnAllowedNow(RespawnList(QueueIndex).RespawnSchedule) Then
+                If RespawnList(QueueIndex).IntervaloRespawn > 0 Then
+                    RespawnList(QueueIndex).IntervaloRespawn = RespawnList(QueueIndex).IntervaloRespawn - 1
                 Else
-                    RespawnList(QueueIndex).IntervaloRespawn = RespawnQueueRetryIntervalSeconds
+                    QueueEntry = RespawnList(QueueIndex)
+                    If RespawnQueuedNpc(QueueEntry) Then
+                        Call ReleaseRespawnQueueSlot(QueueIndex)
+                        If QueueEntry.InformarRespawn = 1 Then
+                            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_VUELTO_MUNDO, QueueEntry.NpcNumber, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
+                            If QueueEntry.SndRespawn > 0 Then
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(QueueEntry.SndRespawn, NO_3D_SOUND, NO_3D_SOUND))
+                            End If
+                        End If
+                    Else
+                        RespawnList(QueueIndex).IntervaloRespawn = RespawnQueueRetryIntervalSeconds
+                    End If
                 End If
             End If
         End If

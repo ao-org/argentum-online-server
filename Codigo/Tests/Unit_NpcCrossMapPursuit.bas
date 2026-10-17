@@ -19,6 +19,11 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc combat rejects targets on another map", test_cross_map_combat_guard())
     Call UnitTesting.RunTest("npc cross-map route keeps AI active on empty map", test_route_keeps_ai_active())
     Call UnitTesting.RunTest("npc respawn keeps original spawn map", test_respawn_uses_original_map())
+    Call UnitTesting.RunTest("npc unrestricted respawn works in both periods", test_respawn_schedule_any_time())
+    Call UnitTesting.RunTest("npc day respawn only works during daytime", test_respawn_schedule_day_only())
+    Call UnitTesting.RunTest("npc night respawn only works during nighttime", test_respawn_schedule_night_only())
+    Call UnitTesting.RunTest("npc respawn day boundaries are inclusive", test_respawn_schedule_boundaries())
+    Call UnitTesting.RunTest("npc invalid respawn schedule remains compatible", test_respawn_schedule_invalid())
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = True
 End Function
@@ -45,6 +50,33 @@ Private Function test_respawn_uses_original_map() As Boolean
     npc.Orig.Map = 34
     npc.pos.Map = 35
     test_respawn_uses_original_map = (NpcRespawnMap(npc) = 34)
+End Function
+
+Private Function test_respawn_schedule_any_time() As Boolean
+    test_respawn_schedule_any_time = IsNpcRespawnScheduleAllowed(eNpcRespawnAnyTime, True) And _
+                                     IsNpcRespawnScheduleAllowed(eNpcRespawnAnyTime, False)
+End Function
+
+Private Function test_respawn_schedule_day_only() As Boolean
+    test_respawn_schedule_day_only = IsNpcRespawnScheduleAllowed(eNpcRespawnDayOnly, True) And _
+                                     Not IsNpcRespawnScheduleAllowed(eNpcRespawnDayOnly, False)
+End Function
+
+Private Function test_respawn_schedule_night_only() As Boolean
+    test_respawn_schedule_night_only = Not IsNpcRespawnScheduleAllowed(eNpcRespawnNightOnly, True) And _
+                                       IsNpcRespawnScheduleAllowed(eNpcRespawnNightOnly, False)
+End Function
+
+Private Function test_respawn_schedule_boundaries() As Boolean
+    test_respawn_schedule_boundaries = Not WorldTime_IsDaytimeAtMinute(359, 6, 20) And _
+                                       WorldTime_IsDaytimeAtMinute(360, 6, 20) And _
+                                       WorldTime_IsDaytimeAtMinute(1199, 6, 20) And _
+                                       Not WorldTime_IsDaytimeAtMinute(1200, 6, 20)
+End Function
+
+Private Function test_respawn_schedule_invalid() As Boolean
+    test_respawn_schedule_invalid = IsNpcRespawnScheduleAllowed(3, True) And _
+                                    IsNpcRespawnScheduleAllowed(3, False)
 End Function
 
 Private Function test_safe_destination_blocked() As Boolean
