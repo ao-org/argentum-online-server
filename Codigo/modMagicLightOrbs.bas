@@ -19,7 +19,7 @@ End Type
 Private UserOrbs() As t_MagicLightOrb
 Private OrbsInitialized As Boolean
 Private LastUpdate As Long
-#If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+#If UNIT_TEST = 1 Then
 Private CaptureOrbPackets As Boolean
 Private OrbUpserts As Long, OrbRemovals As Long, OrbTargetRequests As Long
 Private OrbWireValid As Boolean
@@ -128,7 +128,6 @@ SendMagicLightOrbSnapshot_Err:
 End Sub
 
 #If UNIT_TEST = 1 Then
-#If DIRECT_PLAY = 0 Then
 Public Function CaptureMagicLightOrbPacket() As Boolean
     If Not CaptureOrbPackets Then Exit Function
     Dim bytes() As Byte, writer As Network.Writer, packet As Integer
@@ -296,7 +295,6 @@ TestOrbLifecycle_Err:
     failure = "Err.Number=" & CStr(Err.Number) & "; " & Err.Description
     Resume TestOrbLifecycle_Cleanup
 End Function
-#End If
 Public Function test_suite_light_orbs() As Boolean
     On Error GoTo test_suite_light_orbs_Err
     Dim orb As t_MagicLightOrb
@@ -314,7 +312,6 @@ Public Function test_suite_light_orbs() As Boolean
     Call UnitTesting.RunTest("orb clock wrap active", OrbHasTime(orb, &H10))
     Call UnitTesting.RunTest("orb clock wrap expiry", Not OrbHasTime(orb, &H54))
     Call UnitTesting.RunTest("orb dedicated character particle", MAGIC_LIGHT_ORB_PARTICLE = 354)
-    #If DIRECT_PLAY = 0 Then
         Dim failure As String, originalUpper As Long
         originalUpper = UBound(Hechizos)
         failure = TestOrbLifecycle(True)
@@ -322,7 +319,6 @@ Public Function test_suite_light_orbs() As Boolean
         failure = TestOrbLifecycle()
         If LenB(failure) <> 0 Then Call UnitTesting.RunTestError("orb lifecycle", failure)
         Call UnitTesting.RunTest("orb lifecycle restores loaded spell bounds", UBound(Hechizos) = originalUpper)
-    #End If
     test_suite_light_orbs = True
     Exit Function
 test_suite_light_orbs_Err:

@@ -27,7 +27,6 @@ Attribute VB_Name = "Unit_Network_Aurora"
 '
 Option Explicit
 #If UNIT_TEST = 1 Then
-#If DIRECT_PLAY = 0 Then
 
 ' ==========================================================================
 ' Aurora Network Test Suite
@@ -37,10 +36,10 @@ Option Explicit
 '
 ' Uses Network.Writer and Network.reader COM classes from Aurora.Network DLL.
 ' All tests operate by instantiating Writer/Reader directly — no TCP connection,
-' no remote server, and no DirectPlay session required.
+' no remote server required.
 '
 ' Requires:
-'   - UNIT_TEST=1 and DIRECT_PLAY=0 conditional compilation flags
+'   - UNIT_TEST=1 conditional compilation flag
 '   - Aurora.Network DLL registered via regsvr32 Aurora.Network.dll
 ' ==========================================================================
 
@@ -1131,5 +1130,4 @@ ErrHandler:
     test_suite_network_aurora = False
 End Function
 
-#End If
 #End If

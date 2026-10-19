@@ -4,6 +4,7 @@ This document provides an overview and links to the detailed documentation for v
 
 ## Operations
 
+- [Network transport](./NetworkTransport.md): Aurora-only dependencies, build matrix and transport-removal validation.
 - [External production configuration](./ExternalConfiguration.md): managed paths, reload boundaries, staging rollout and rollback.
 
 ## Documented Modules

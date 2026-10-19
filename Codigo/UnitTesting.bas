@@ -46,11 +46,7 @@ Option Explicit
     Private TamingRecipients As Collection
     Private TamingRoutesValid As Boolean
 
-    #If DIRECT_PLAY = 0 Then
         Private Const SUITE_COUNT As Integer = 41
-    #Else
-        Private Const SUITE_COUNT As Integer = 40
-    #End If
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -328,12 +324,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 30: RunSuite = Unit_CircularLog.test_suite_circular_log()
         Case 31: RunSuite = Unit_StringValid.test_suite_string_valid()
         Case 32: RunSuite = Unit_SumarTiempo.test_suite_sumar_tiempo()
-#If DIRECT_PLAY = 1 Then
-        Case 33: RunSuite = Unit_Network.test_suite_network()
-#End If
-#If DIRECT_PLAY = 0 Then
         Case 33: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
-#End If
         Case 34: RunSuite = Unit_Weather.test_suite_weather()
         Case 35: RunSuite = test_suite_remort_persistence()
         Case 36: RunSuite = test_suite_remort_capability_state()
@@ -341,9 +332,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 38: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
         Case 39: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
         Case 40: RunSuite = test_suite_taming()
-        #If DIRECT_PLAY = 0 Then
         Case 41: RunSuite = Unit_Traps.test_suite_traps()
-        #End If
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False
@@ -1266,11 +1255,9 @@ End Function
 Private Function test_suite_taming() As Boolean
     Call test_suite_taming_pure
     Call RunTest("taming rejects an NPC-owned creature", test_taming_npc_owner())
-    #If DIRECT_PLAY = 0 Then
         Call RunTest("taming refreshes same NPC only for owner", test_taming_owner_refresh())
         Call RunTest("taming NoMascotas success stores without ghost", test_taming_special_map(True))
         Call RunTest("taming replacement wild NPC remains ordinary", test_taming_special_map(False))
-    #End If
     test_suite_taming = True
 End Function
 
@@ -1363,7 +1350,6 @@ ExpectedOverflow:
     test_taming_overflow = (Err.Number = 6)
 End Function
 
-#If DIRECT_PLAY = 0 Then
 Public Function CaptureTamingPacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
     If Not CaptureTaming Then Exit Function
     Dim writer As Network.Writer, bytes() As Byte, value As Variant
@@ -1449,9 +1435,7 @@ TestError:
     Call Progress("taming ownership fixture: " & CStr(Err.Number) & " " & Err.Description)
     Resume TestDone
 End Function
-#End If
 
-#If DIRECT_PLAY = 0 Then
 Private Function test_taming_special_map(ByVal noPets As Boolean) As Boolean
     On Error GoTo TestError
     Dim u As Integer, n As Integer, replacement As Integer, i As Long, charindex As Integer
@@ -1532,7 +1516,6 @@ TestError:
     Call Progress("taming map fixture: " & CStr(Err.Number) & " " & Err.Description)
     Resume TestDone
 End Function
-#End If
 
 Private Function test_taming_npc_owner() As Boolean
     On Error GoTo TestError
