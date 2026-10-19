@@ -2774,11 +2774,7 @@ SaveUser_Err:
 End Sub
 
 Public Sub RemoveTokenDatabase(ByVal UserIndex As Integer)
-    If modWorldAdmission.Enabled Then
-        Call Execute("DELETE FROM account_sessions WHERE id=? AND encrypted_token=?", UserList(UserIndex).encrypted_session_token_db_id, UserList(UserIndex).encrypted_session_token)
-    Else
-        Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
-    End If
+    Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
 
 Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)

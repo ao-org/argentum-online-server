@@ -1,8 +1,8 @@
 Attribute VB_Name = "modWorldAdmission"
 Option Explicit
 
-Private Const CLAIM_SQL As String = "INSERT OR IGNORE INTO world_account_claims(account_id,claim_id,token_id,world_instance) SELECT a.id,?,t.id,? FROM account_sessions t JOIN account a ON a.email=t.username WHERE t.encrypted_token=? AND t.decrypted_token=?"
-Private Const RELEASE_SQL As String = "DELETE FROM world_account_claims WHERE claim_id=? AND world_instance=?"
+Private Const CLAIM_SQL As String = "UPDATE account SET world_claim=?,world_instance=?,world_lock_path=? WHERE world_claim='' AND id IN (SELECT a.id FROM tokens t JOIN account a ON a.email=t.username WHERE t.encrypted_token=? AND t.decrypted_token=?)"
+Private Const RELEASE_SQL As String = "UPDATE account SET world_claim='',world_instance='',world_lock_path='' WHERE world_claim=? AND world_instance=?"
 
 ' Housing and world admission share short SQLite write transactions, never a
 ' transaction spanning gameplay. All runtime coordination uses ADO async work.
@@ -12,6 +12,7 @@ Private Declare Function CloseHandle Lib "kernel32" (ByVal handle As Long) As Lo
 Private mEnabled As Boolean
 Private mStartupFailed As Boolean
 Private mInstance As String
+Private mLockPath As String
 Private mProcessLock As Long
 Private mJobs As New Dictionary
 Private mConnections As New Dictionary
@@ -37,14 +38,6 @@ Public Sub CheckListenerSafety()
     If mStartupFailed Then Err.Raise 5, , "World admission initialization failed; restart after correcting the database error"
 End Sub
 
-Public Function SessionTable() As String
-    If mEnabled Then
-        SessionTable = "account_sessions"
-    Else
-        SessionTable = "tokens"
-    End If
-End Function
-
 Private Function NewIdentity() As String
     Dim bytes(0 To 15) As Byte
     Dim i As Long
@@ -66,13 +59,6 @@ Public Sub Initialize()
         Exit Sub
     End If
     Call rows.Close
-    Set rows = Connection.Execute("SELECT active FROM housing_coordination WHERE id=1")
-    If rows.EOF Then Err.Raise 5, , "Missing housing coordination configuration"
-    If rows.Fields(0).value <> 1 Then
-        Call rows.Close
-        Exit Sub
-    End If
-    Call rows.Close
 #If PYMMO = 0 Then
     Err.Raise 5, , "Coordinated admission requires PYMMO=1"
 #End If
@@ -87,7 +73,8 @@ Public Sub Initialize()
     Call rows.Close
     If Len(path) = 0 Or Left$(path, 2) = "\\" Then Err.Raise 5, , "World coordination requires a local SQLite file"
     mInstance = NewIdentity()
-    mProcessLock = CreateFile(path & ".world-" & mInstance & ".lock", &HC0000000, 0, 0, 4, &H80, 0)
+    mLockPath = path & ".world-" & mInstance & ".lock"
+    mProcessLock = CreateFile(mLockPath, &HC0000000, 0, 0, 4, &H80, 0)
     If mProcessLock = -1 Then Err.Raise 5, , "Cannot acquire world process lock"
     Set mDatabase = New ADODB.Connection
     mDatabase.CursorLocation = adUseClient
@@ -96,7 +83,7 @@ Public Sub Initialize()
     ' is asynchronous and does not use the blocking Query helper.
     Call mDatabase.Execute("PRAGMA busy_timeout=0")
     Call mDatabase.Execute("BEGIN IMMEDIATE")
-    Set rows = mDatabase.Execute("SELECT instance,lock_path FROM world_instances")
+    Set rows = mDatabase.Execute("SELECT DISTINCT world_instance,world_lock_path FROM account WHERE world_claim<>''")
     Do Until rows.EOF
         oldInstance = CStr(rows.Fields(0).value)
         oldLockPath = CStr(rows.Fields(1).value)
@@ -106,15 +93,13 @@ Public Sub Initialize()
         handle = CreateFile(oldLockPath, &HC0000000, 0, 0, 4, &H80, 0)
         If handle <> -1 Then
             ' Exclusive OS ownership proves the old process is gone. No TTL.
-            Call StartupCommand("DELETE FROM world_account_claims WHERE world_instance=?", oldInstance)
-            Call StartupCommand("DELETE FROM world_instances WHERE instance=?", oldInstance)
+            Call StartupCommand("UPDATE account SET world_claim='',world_instance='',world_lock_path='' WHERE world_instance=?", oldInstance)
             Call CloseHandle(handle)
         End If
         Call rows.MoveNext
     Loop
     Call rows.Close
-    Call StartupCommand("INSERT INTO world_instances(instance,lock_path) VALUES(?,?)", mInstance, path & ".world-" & mInstance & ".lock")
-    Call mDatabase.Execute("UPDATE housing_coordination SET world_version=1 WHERE id=1")
+    Call mDatabase.Execute("UPDATE housing_coordination SET world_version=3 WHERE id=1")
     Call mDatabase.Execute("COMMIT")
     Set mObserver = New clsDatabaseCompletion
     Call mObserver.Attach(mDatabase, True)
@@ -126,7 +111,7 @@ Public Sub Initialize()
     mEnabled = True
     Exit Sub
 Failed:
-    ' Never fall back to legacy admission after coordinated sessions are active.
+    ' Never listen without admission protection after housing schema is present.
     failure = Err.Description
     mStartupFailed = True
     On Error Resume Next
@@ -281,11 +266,11 @@ Public Sub Poll()
             Set mJob = job
             ' One autocommit statement validates the still-current token AND
             ' claims the account under the same SQLite writer exclusion as pay.
-            Call StartCommand(CLAIM_SQL, job.ClaimId, mInstance, job.EncryptedToken, job.DecryptedToken)
+            Call StartCommand(CLAIM_SQL, job.ClaimId, mInstance, mLockPath, job.EncryptedToken, job.DecryptedToken)
             Exit Sub
         ElseIf job.Stage = 2 Then
             Set mJob = job
-            Call StartCommand("SELECT t.* FROM account_sessions t JOIN world_account_claims c ON c.token_id=t.id WHERE c.claim_id=? AND c.world_instance=? AND t.encrypted_token=? AND t.decrypted_token=?", job.ClaimId, mInstance, job.EncryptedToken, job.DecryptedToken)
+            Call StartCommand("SELECT t.* FROM tokens t JOIN account a ON a.email=t.username WHERE a.world_claim=? AND a.world_instance=? AND t.encrypted_token=? AND t.decrypted_token=?", job.ClaimId, mInstance, job.EncryptedToken, job.DecryptedToken)
             Exit Sub
         End If
     Next key
@@ -336,11 +321,10 @@ Public Function test_suite_world_admission() As Boolean
     If otherLock <> -1 Then Call CloseHandle(otherLock)
     Set first = New ADODB.Connection
     Call first.Open("DRIVER={SQLite3 ODBC Driver};DATABASE=" & path)
-    Call first.Execute("CREATE TABLE account(id INTEGER PRIMARY KEY,email TEXT)")
-    Call first.Execute("CREATE TABLE account_sessions(id INTEGER PRIMARY KEY,username TEXT,encrypted_token TEXT,decrypted_token TEXT)")
-    Call first.Execute("CREATE TABLE world_account_claims(account_id INTEGER PRIMARY KEY,claim_id TEXT UNIQUE,token_id INTEGER,world_instance TEXT)")
-    Call first.Execute("INSERT INTO account VALUES(1,'owner')")
-    Call first.Execute("INSERT INTO account_sessions VALUES(1,'owner','encrypted','decrypted')")
+    Call first.Execute("CREATE TABLE account(id INTEGER PRIMARY KEY,email TEXT,world_claim TEXT NOT NULL DEFAULT '',world_instance TEXT NOT NULL DEFAULT '',world_lock_path TEXT NOT NULL DEFAULT '')")
+    Call first.Execute("CREATE TABLE tokens(id INTEGER PRIMARY KEY,username TEXT,encrypted_token TEXT,decrypted_token TEXT)")
+    Call first.Execute("INSERT INTO account(id,email) VALUES(1,'owner')")
+    Call first.Execute("INSERT INTO tokens VALUES(1,'owner','encrypted','decrypted')")
     Set mDatabase = New ADODB.Connection
     mDatabase.CursorLocation = adUseClient
     Call mDatabase.Open("DRIVER={SQLite3 ODBC Driver};DATABASE=" & path)
@@ -350,7 +334,7 @@ Public Function test_suite_world_admission() As Boolean
     mEnabled = True
     Call first.Execute("BEGIN IMMEDIATE")
     started = GetTickCountRaw()
-    Call StartCommand(CLAIM_SQL, "first", "world", "encrypted", "decrypted")
+    Call StartCommand(CLAIM_SQL, "first", "world", path & ".lock", "encrypted", "decrypted")
     elapsed = TicksElapsed(started, GetTickCountRaw())
     Call UnitTesting.RunTest("admission dispatch never waits for database lock", elapsed < 250)
     Do While TicksElapsed(started, GetTickCountRaw()) < 250
@@ -363,10 +347,10 @@ Public Function test_suite_world_admission() As Boolean
     ' Contention may finish with BUSY or succeed after release, depending on ODBC.
     Call StartCommand(RELEASE_SQL, "first", "world")
     Call AwaitTestCompletion()
-    Call StartCommand(CLAIM_SQL, "first", "world", "encrypted", "decrypted")
+    Call StartCommand(CLAIM_SQL, "first", "world", path & ".lock", "encrypted", "decrypted")
     Call AwaitTestCompletion()
     Call UnitTesting.RunTest("admission validates token and claims account atomically", Not mFailed And mRows = 1)
-    Call StartCommand(CLAIM_SQL, "second", "world", "encrypted", "decrypted")
+    Call StartCommand(CLAIM_SQL, "second", "world", path & ".lock", "encrypted", "decrypted")
     Call AwaitTestCompletion()
     Call UnitTesting.RunTest("admission rejects duplicate account claim", Not mFailed And mRows = 0)
     Call StartCommand(RELEASE_SQL, "stale", "world")
@@ -378,8 +362,11 @@ Public Function test_suite_world_admission() As Boolean
     Call StartCommand(RELEASE_SQL, "first", "world")
     Call AwaitTestCompletion()
     Call UnitTesting.RunTest("admission matching cleanup releases claim", Not mFailed And mRows = 1)
-    Call first.Execute("DELETE FROM account_sessions")
-    Call StartCommand(CLAIM_SQL, "old-token", "world", "encrypted", "decrypted")
+    Set rows = first.Execute("SELECT id,username,encrypted_token,decrypted_token FROM tokens")
+    Call UnitTesting.RunTest("admission preserves original session token", rows.Fields(0).value = 1 And rows.Fields(1).value = "owner" And rows.Fields(2).value = "encrypted" And rows.Fields(3).value = "decrypted")
+    Call rows.Close()
+    Call first.Execute("DELETE FROM tokens")
+    Call StartCommand(CLAIM_SQL, "old-token", "world", path & ".lock", "encrypted", "decrypted")
     Call AwaitTestCompletion()
     Call UnitTesting.RunTest("admission revoked issued token cannot claim", Not mFailed And mRows = 0)
 
@@ -414,8 +401,7 @@ Public Function test_suite_world_admission() As Boolean
     Call UnitTesting.RunTest("admission failed dispatch leaves no global barrier", mSaves.Count = 0)
     ' Exercise the production retirement path, not just the readiness predicate.
     mInstance = "test-process"
-    Call first.Execute("INSERT INTO account VALUES(2,'other')")
-    Call first.Execute("INSERT INTO world_account_claims VALUES(2,'other-owner',2,'test-process')")
+    Call first.Execute("INSERT INTO account(id,email,world_claim,world_instance,world_lock_path) VALUES(2,'other','other-owner','test-process','test.lock')")
     Set otherJob = New clsWorldAdmission
     otherJob.ClaimId = "other-owner"
     otherJob.Retired = True
@@ -423,7 +409,7 @@ Public Function test_suite_world_admission() As Boolean
     Call Poll()
     Call AwaitTestCompletion()
     Call Poll()
-    Set rows = first.Execute("SELECT COUNT(*) FROM world_account_claims WHERE account_id=2")
+    Set rows = first.Execute("SELECT COUNT(*) FROM account WHERE id=2 AND world_claim<>''")
     Call UnitTesting.RunTest("admission dispatch failure cannot strand unrelated account", CLng(rows.Fields(0).Value) = 0 And job.SaveFailed)
     Call rows.Close()
     Call UnitTesting.RunTest("admission unrelated retired job is released", Not mJobs.Exists("other-owner"))

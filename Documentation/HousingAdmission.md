@@ -6,19 +6,20 @@ change the game protocol. Existing `house_key` loading is unchanged.
 
 ## Ordering
 
-With the explicitly migrated, activated SQLite database:
+With the housing schema prepared automatically by login_server:
 
 1. `Protocol.HandleIncomingData` retains packet validation and queues a cloned
    login reader instead of immediately invoking either PYMMO login handler.
 2. `modWorldAdmission` asynchronously validates both token values against
-   `account_sessions` and claims the account using one `INSERT ... SELECT`.
+   the existing `tokens` table and sets `account.world_claim` using one conditional
+   UPDATE. `world_instance` and `world_lock_path` identify its cleanup owner.
    The same SQLite writer exclusion protects PYMMO's exchange transaction.
 3. After completion, a claim-bound session read revalidates the token. Only then
    does the original login handler continue and load character/house keys.
 4. The claim stays resident during admission, play and logout. Retiring the user
    retains its own outstanding asynchronous saves; ADO completion events,
    not dispatch return, establish when database work is finished.
-5. Release asynchronously deletes only the exact claim and process instance.
+5. Release asynchronously clears only the exact claim and process instance.
    User generations and connection identity guard stale callbacks.
 
 The runtime coordinator never polls in a wait loop, sleeps, drains saves or
@@ -30,16 +31,19 @@ redesigned by this change.
 
 ## Startup, recovery and failure
 
-Migration/cutover belongs to PYMMO's `serverhelper.housing_schema` and requires
-all old auth/world processes to be stopped. The default is inactive. Old tokens
-are cleared and new legacy-token inserts rejected, so incompatible PYMMO=1
-worlds cannot consume coordinated authentication. Do not enable this database
-mode for standalone PYMMO=0 or stress-login builds.
+login_server prepares the schema automatically; then start this VB6 build.
+There is no activation command or token replacement/deletion. Token values,
+encryption, registration and normal logout removal are unchanged. This world
+sets database readiness to version 3 only after initializing the account guard.
+All worlds sharing the database must be upgraded before housing is enabled.
+An old binary that ignores the account flag cannot be detected by a readiness
+row alone. Do not mix old, standalone PYMMO=0 or stress-login worlds with enabled
+housing. Purchasing remains disabled by default.
 
 Initialization precedes listening and uses no lock-wait timeout. A failed
 coordinated initialization cannot be bypassed by the GUI listener restart.
 Every process holds an exclusive OS handle beside the real local SQLite file.
-Its exact lock path is stored with the instance ID, so database path aliases do
+Its exact lock path is stored on each busy account with the instance ID, so database path aliases do
 not cause another process to probe an unrelated, unlocked sidecar file.
 Only an instance whose handle can be acquired is considered dead; no elapsed
 timeout permits eviction. Startup removes only those dead-instance claims.
@@ -85,10 +89,11 @@ already-issued-token admission, new key loading, final logout save, reconnect,
 two clients, interrupted admission and process crash recovery. Keep purchasing
 disabled until these gates and the read-only ownership audit are satisfied.
 
-Recorded validation (2026-10-19): Windows VB6 builds passed with `PYMMO=1`,
+Revised account-field validation: Windows VB6 builds passed with `PYMMO=1`,
 `LOGIN_STRESS_TEST=0`, both `DEBUGGING=0:UNIT_TEST=0` and
-`DEBUGGING=1:UNIT_TEST=1`. The admission suite now has 23 passing assertions. The
-full 42-suite run passed 461/461 on a disposable database and loopback fixture.
+`DEBUGGING=1:UNIT_TEST=1`. The admission suite has 24 passing assertions, including
+preservation of the original token row. The full 42-suite run passed 462/462 on
+a disposable database and loopback fixture.
 Review cases include claim-specific waits, definite/uncertain dispatch failure,
 duplicate/late completion, newer-session isolation, unrelated SQL, and actual
 removal of an unrelated account's claim despite another claim's failed save.
