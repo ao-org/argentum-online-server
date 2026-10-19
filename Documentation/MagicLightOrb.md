@@ -42,7 +42,7 @@ orb can still remove it. Only particle 354 is removed, never all character FX.
 The spell no longer emits floor packets 114/121 or changes MapData lights.
 
 The orb regression suite runs through the existing full server UnitTesting
-framework. Tests intercept outbound packets only under UNIT_TEST=1, DIRECT_PLAY=0.
+framework. Tests intercept outbound packets only under UNIT_TEST=1.
 The ordinary suite uses a saved/restored spell fixture and does not require an
 unmerged resources branch. Before coordinated deployment, run the full test
 server as `server.exe --validate-light-orb-resources` with the matching Dat path.
@@ -51,6 +51,10 @@ costs, cooldown, particle and bindability. Old ground-targeted data must fail
 this explicit integration check; passing unit tests alone does not validate a
 deployment. Do not deploy this server with the old resource definition.
 See HOO's `docs/magic-light-orb-spell.md` for visual design and manual acceptance.
+
+The dated validation records below predate transport removal. Their transport
+flags are historical; current builds use Aurora.Network unconditionally. See
+[NetworkTransport.md](NetworkTransport.md) for current build commands.
 
 Validation (2026-10-14): native Windows VB6 builds passed with DIRECT_PLAY=0,
 PYMMO=0/1 and UNIT_TEST=0/1. Focused runs passed 25/25 in both test builds;

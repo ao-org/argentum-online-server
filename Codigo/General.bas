@@ -503,7 +503,6 @@ Sub Main()
     #End If
 
     #If UNIT_TEST = 1 Then
-        #If DIRECT_PLAY = 0 Then
         If LCase$(Trim$(Command$)) = "--test-traps" Then
             Call UnitTesting.Progress("BEFORE Unit_Traps.InitializeTestWorld")
             Call Unit_Traps.InitializeTestWorld()
@@ -516,7 +515,6 @@ Sub Main()
             Call UnitTesting.Progress("AFTER UnitTesting.WriteResultsToFile")
             End
         End If
-        #End If
         If LCase$(Trim$(Command$)) = "--test-managed-config" Then
             Call UnitTesting.Progress("BEFORE RunManagedConfigTests")
             Call RunManagedConfigTests()
@@ -555,15 +553,6 @@ Sub Main()
     Call Uptime_Init
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER Uptime_Init")
-    #End If
-    #If DIRECT_PLAY = 1 Then
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("BEFORE InitDPlay")
-        #End If
-        InitDPlay
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("AFTER InitDPlay")
-        #End If
     #End If
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LogThis")
@@ -1070,7 +1059,6 @@ Sub Main()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER ResetMeteo")
     #End If
-    #If DIRECT_PLAY = 0 Then
         #If UNIT_TEST = 1 Then
             Call UnitTesting.Progress("BEFORE Protocol_Writes.InitializeAuxiliaryBuffer")
         #End If
@@ -1078,7 +1066,6 @@ Sub Main()
         #If UNIT_TEST = 1 Then
             Call UnitTesting.Progress("AFTER Protocol_Writes.InitializeAuxiliaryBuffer")
         #End If
-    #End If
     'castle module needs writer initialized
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LoadCastleModule")
@@ -1177,9 +1164,7 @@ UnitTest_ReportError:
             Call modNetwork.close_not_logged_sockets_if_timeout
         #End If
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
-        #If DIRECT_PLAY = 0 Then
             Call modNetwork.Tick(GetElapsed())
-        #End If
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
         Call UpdateMagicLightOrbs()
         Call UpdateEffectOverTime

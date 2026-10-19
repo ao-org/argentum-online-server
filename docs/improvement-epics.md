@@ -165,7 +165,7 @@ Reduce code duplication between client and server for modules that are functiona
 - [ ] Diff `PacketId.bas` between client and server — document any divergences and determine if they should be unified
 - [ ] Diff `AO20CryptoSysWrapper.bas` / `basCryptoSys.bas` between client and server
 - [ ] Diff `clsIniManager.cls` between client and server
-- [ ] Diff `clsNetReader.cls` / `clsNetWriter.cls` between client and server
+- Server serialization uses Aurora.Network; retired client buffer classes are not shared server modules.
 - [ ] Diff `ModAreas.bas` between client and server
 - [ ] Diff `modElapsedTime.bas` between client and server
 - [ ] For each shared module, decide: (a) keep in sync manually, (b) extract to a shared repo/DLL, or (c) accept divergence

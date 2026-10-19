@@ -27,12 +27,13 @@ ordinary-to-owned same-character refresh, owner/non-owner isolation, failed roll
 rejection, NoMascotas and a real replacement wild spawn. It uses existing test
 registration and SendData capture infrastructure, not a separate runner.
 
-The SendData capture call is guarded by `UNIT_TEST = 1 And DIRECT_PLAY = 0`.
-The capture implementation is inside UnitTesting's outer `UNIT_TEST = 1` block
-and its inner `DIRECT_PLAY = 0` block. Production `UNIT_TEST=0` excludes both;
+The SendData capture call is guarded by `UNIT_TEST = 1`.
+The capture implementation is inside UnitTesting's `UNIT_TEST = 1` block.
+Aurora.Network is now unconditional. Production `UNIT_TEST=0` excludes both;
 there is no runtime production capture or test behavior.
 
-Validated with native Windows VB6:
+Historical validation before transport removal (2026-10-19; see
+[NetworkTransport.md](NetworkTransport.md) for current commands):
 
 - DEBUGGING=1:PYMMO=1:UNIT_TEST=1:DIRECT_PLAY=0: build passed; full suite 427/427.
 - DEBUGGING=0:PYMMO=1:UNIT_TEST=0:DIRECT_PLAY=0: build passed.

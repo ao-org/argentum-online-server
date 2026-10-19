@@ -241,8 +241,8 @@ validation. No VB6 client or retired ProtocolGenerator changes are required.
 ## Validation
 
 `Codigo/Tests/Unit_Traps.bas` is registered in `Server.VBP` and the existing
-`UnitTesting.RunAllSuites` runner. Build with `UNIT_TEST=1`, `DIRECT_PLAY=0`
-(Aurora), then use the normal server unit-test startup. Results appear in the
+`UnitTesting.RunAllSuites` runner. Build with `UNIT_TEST=1` (Aurora.Network is
+the only transport), then use the normal server unit-test startup. Results appear in the
 existing `test_results.txt` report. There is no separate test project or script.
 
 For a focused run without database startup, listeners or installed resources,
@@ -266,6 +266,10 @@ Idle user/NPC slots, touched map tiles, configuration and effect definitions are
 saved/restored. Capture and helpers are excluded from `UNIT_TEST=0` binaries.
 Live matching-client combat/area delivery remains an integration check.
 
+The dated validation records below predate transport removal. Their former
+transport flags are historical, not supported build options. Current commands
+and the unchanged 41-suite registration are in [NetworkTransport.md](NetworkTransport.md).
+
 Phase 3.1 native validation (2026-10-13):
 
 - `PYMMO=0` and `PYMMO=1`, each with `UNIT_TEST=0` and `UNIT_TEST=1`,
@@ -283,9 +287,8 @@ Phase 3.1 native validation (2026-10-13):
   driver blocker below; full-suite success is not claimed.
 - No live matching-client/server gameplay validation was performed.
 
-Suite registration has no conditional holes: network suite 33 is selected for
-the transport, then all shared suites; Aurora adds trap suite 41. DirectPlay has
-40 suites and does not claim to execute the Aurora-only packet-capture suite.
+Suite registration has no conditional holes: network suite 33 is always Aurora,
+followed by all shared suites and trap suite 41, for 41 registered suites.
 Missing suite registrations/exceptions/failure returns are reported as failures.
 Individual trap failures also make `test_suite_traps()` return False.
 

@@ -69,10 +69,11 @@ There is a limitation when running and debugging the game within Visual Basic 6.
 
 # 🧪 Unit Testing
 
-The project includes a built-in unit test suite that validates core server modules. There are currently **24 registered suites**.
+The project includes a built-in unit test suite that validates core server modules. There are currently **41 registered suites**, including Aurora networking (33), magic light orbs (39), taming (40) and traps (41).
+Aurora.Network is the only server transport; see [network build and validation notes](Documentation/NetworkTransport.md).
 When compiled with `UNIT_TEST = 1`, the server runs all test suites on startup, writes results to `test_results.txt`, and exits immediately.
 
-#### Test suites
+#### Original suites (the full current registration is in `Codigo/UnitTesting.bas`)
 
 | # | Suite | Module under test | Notes |
 |---|-------|-------------------|-------|

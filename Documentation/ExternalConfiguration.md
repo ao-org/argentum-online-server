@@ -167,7 +167,7 @@ From a Windows Command Prompt in a development checkout with the registered
 VB6 dependencies, build the test executable:
 
 ```cmd
-start "" /wait "C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.EXE" /make Server.VBP /d UsarQueSocket=1:ConUpTime=1:AntiExternos=0:Lac=1:DEBUGGING=0:PYMMO=1:UNLOCK_CPU=1:DIRECT_PLAY=0:UNIT_TEST=1 /out "%TEMP%\ao-managed-config-build.log"
+start "" /wait "C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.EXE" /make Server.VBP /d UsarQueSocket=1:ConUpTime=1:AntiExternos=0:Lac=1:DEBUGGING=0:PYMMO=1:UNLOCK_CPU=1:UNIT_TEST=1 /out "%TEMP%\ao-managed-config-build.log"
 type "%TEMP%\ao-managed-config-build.log"
 ```
 
