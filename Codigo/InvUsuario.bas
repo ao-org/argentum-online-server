@@ -26,7 +26,58 @@ Attribute VB_Name = "InvUsuario"
 '
 '
 Option Explicit
+
+Public Const EQUIPPED_TORCH_OBJECT As Integer = 2675
+' Dedicated character effect; does not occupy the shield appearance or slot.
+Public Const EQUIPPED_TORCH_EFFECT As Integer = 355
 Private Const PATREON_HEAD = 900
+
+Public Function EquippedTorchSlot(ByVal UserIndex As Integer) As Byte
+    On Error GoTo TorchSlotError
+    Dim i As Long
+    With UserList(UserIndex).invent
+        For i = LBound(.Object) To UBound(.Object)
+            If .Object(i).ObjIndex = EQUIPPED_TORCH_OBJECT And .Object(i).Equipped Then
+                EquippedTorchSlot = CByte(i)
+                Exit Function
+            End If
+        Next i
+    End With
+    Exit Function
+TorchSlotError:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.EquippedTorchSlot", Erl)
+End Function
+
+Public Sub SendEquippedTorchSnapshot(ByVal Recipient As Integer, ByVal OwnerIndex As Integer)
+    On Error GoTo SnapshotError
+    With UserList(OwnerIndex)
+        If UserList(Recipient).pos.Map <> .pos.Map Then Exit Sub
+        If .flags.AdminInvisible = 1 Then
+            If Not CanUserSeeAdminInvisible(Recipient, OwnerIndex) Then Exit Sub
+        End If
+        Dim enabled As Boolean
+        enabled = EquippedTorchSlot(OwnerIndex) > 0 And .flags.Muerto = 0
+        ' Send visibility before the light, including snapshots split across frames.
+        If enabled And (.flags.invisible Or .flags.Oculto) Then
+            Call WriteSetInvisible(Recipient, OwnerIndex, True)
+        End If
+        Call SendData(SendTarget.ToIndex, Recipient, PrepareMessageParticleFX(.Char.charindex, EQUIPPED_TORCH_EFFECT, -1, Not enabled))
+    End With
+    Exit Sub
+SnapshotError:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.SendEquippedTorchSnapshot", Erl)
+End Sub
+
+Private Sub PublishEquippedTorch(ByVal UserIndex As Integer, ByVal enabled As Boolean)
+    On Error GoTo PublishError
+    If UserList(UserIndex).Char.charindex <= 0 Then Exit Sub
+    Dim route As SendTarget
+    If enabled Then route = SendTarget.ToPCAliveArea Else route = SendTarget.ToPCArea
+    Call SendData(route, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, EQUIPPED_TORCH_EFFECT, -1, Not enabled))
+    Exit Sub
+PublishError:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.PublishEquippedTorch", Erl)
+End Sub
 
 Public Function GetMaxInvOBJ() As Integer
 GetMaxInvOBJ = CInt(SvrConfig.GetValue("MaxInventoryObjs"))
@@ -170,6 +221,7 @@ End Function
 Sub LimpiarInventario(ByVal UserIndex As Integer)
     On Error GoTo LimpiarInventario_Err
     Dim j As Integer
+    If EquippedTorchSlot(UserIndex) > 0 Then Call PublishEquippedTorch(UserIndex, False)
     With UserList(UserIndex)
         ' A reused user slot must not retain items in locked Patreon slots.
         For j = LBound(.invent.Object) To UBound(.invent.Object)
@@ -704,6 +756,15 @@ Dim obj                         As t_ObjData
             End If
 
             obj = ObjData(.invent.Object(Slot).ObjIndex)
+
+            If .invent.Object(Slot).ObjIndex = EQUIPPED_TORCH_OBJECT Then
+                If .invent.Object(Slot).Equipped Then
+                    .invent.Object(Slot).Equipped = 0
+                    Call PublishEquippedTorch(UserIndex, False)
+                    Call UpdateUserInv(False, UserIndex, Slot)
+                End If
+                Exit Sub
+            End If
 
             Select Case obj.OBJType
                 Case e_OBJType.otWeapon
@@ -1525,6 +1586,19 @@ Dim Ropaje                      As Integer
                     Call WriteUpdateRM(UserIndex)
                 End If
             Case e_OBJType.otShield
+                If ObjIndex = EQUIPPED_TORCH_OBJECT Then
+                    If .invent.Object(Slot).Equipped Then
+                        Call Desequipar(UserIndex, Slot)
+                    Else
+                        Dim previousTorch As Byte
+                        previousTorch = EquippedTorchSlot(UserIndex)
+                        If previousTorch > 0 Then Call Desequipar(UserIndex, previousTorch)
+                        .invent.Object(Slot).Equipped = 1
+                        If Not UserIsLoggingIn Then Call PublishEquippedTorch(UserIndex, True)
+                        Call UpdateUserInv(False, UserIndex, Slot)
+                    End If
+                    Exit Sub
+                End If
                 If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eShiled) Then
                     Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub

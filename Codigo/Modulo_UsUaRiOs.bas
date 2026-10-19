@@ -1048,6 +1048,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
                         .flags.tiene_bandera)
                 Call SendMagicLightOrbSnapshot(sndIndex, UserIndex)
+                Call SendEquippedTorchSnapshot(sndIndex, UserIndex)
             Else
                 'Hide the name and clan - set privs as normal user
                 Call AgregarUser(UserIndex, .pos.Map, appear)
@@ -1792,6 +1793,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
         Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
         Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
+        Call Desequipar(UserIndex, EquippedTorchSlot(UserIndex))
         Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
         Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
         Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
