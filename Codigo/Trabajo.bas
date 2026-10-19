@@ -1842,10 +1842,15 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, Optional ByRe
                 .flags.ModificoMascotas = True
                 Call FollowAmo(NpcIndex)
                 Call ReSpawnNpc(NpcList(NpcIndex))
+                ' Refresh only the owner: the same visible NPC now has EsNPC = 2.
+                ' NoMascotas stores/removes it below, so do not publish a ghost pet.
+                If MapInfo(.pos.Map).NoMascotas = 0 Then
+                    Call MakeNPCChar(False, UserIndex, NpcIndex, NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y)
+                End If
                 ' Msg657=La criatura te ha aceptado como su amo.
                 Call WriteLocaleMsg(UserIndex, MSG_CRIATURA_HA_ACEPTADO_COMO_SU_AMO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_PROMEDIO_MAYOR)
                 ' Es zona segura?
-                If MapInfo(.pos.Map).NoMascotas = 1 Then
+                If MapInfo(.pos.Map).NoMascotas Then
                     petType = NpcList(NpcIndex).Numero
                     NroPets = .NroMascotas
                     Call QuitarNPC(NpcIndex, eNewPet)
