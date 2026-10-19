@@ -16,7 +16,6 @@ Private mProcessLock As Long
 Private mJobs As New Dictionary
 Private mConnections As New Dictionary
 Private mSaves As New Dictionary
-Private mSequence As Double
 Private mSaveScope As String
 Private mObservers() As clsDatabaseCompletion
 Private mDatabase As ADODB.Connection
@@ -204,11 +203,11 @@ Public Sub CoordinatorCompleted(ByVal rows As Long, ByVal failure As ADODB.Error
     mDone = True
 End Sub
 
-Private Function SavesFinished(ByVal barrier As Double) As Boolean
+Private Function SavesFinished(ByVal claimId As String) As Boolean
     Dim key As Variant, entry As Variant
     For Each key In mSaves.Keys
         entry = mSaves(key)
-        If entry(0) <= barrier Then Exit Function
+        If entry(0) = claimId Then Exit Function
     Next key
     SavesFinished = True
 End Function
@@ -229,13 +228,11 @@ Public Sub Poll()
         If mFailed Then
             ' Failed/uncertain writes are never interpreted as a released claim.
             job.Retired = True
-            job.SaveBarrier = mSequence
             job.Stage = 3
             If job.UserIndex = 0 And IsCurrent(job) Then Call KickConnection(job.ConnectionId, "world_admission_database_error")
         ElseIf job.Stage = 1 Then
             If mRows <> 1 Then
                 job.Retired = True
-                job.SaveBarrier = mSequence
                 job.Stage = 3
                 If IsCurrent(job) Then Call KickConnection(job.ConnectionId, "world_account_busy_or_invalid_session")
             Else
@@ -247,16 +244,17 @@ Public Sub Poll()
                     If Not mResult.EOF Then
                         Set mSession = mResult
                         job.Stage = 4
+                        mSaveScope = job.ClaimId
                         #If PYMMO = 1 Then
                             Call Protocol.ResumeWorldAdmission(job.ConnectionId, job.PacketId, job.Message)
                         #End If
+                        Call EndSave()
                         Set mSession = Nothing
                     End If
                 End If
             End If
             If job.UserIndex = 0 Then
                 job.Retired = True
-                job.SaveBarrier = mSequence
                 job.Stage = 3
             End If
         ElseIf job.Stage = 3 Then
@@ -272,7 +270,7 @@ Public Sub Poll()
     For Each key In mJobs.Keys
         Set job = mJobs(key)
         If job.Retired Then
-            If Not job.SaveFailed And SavesFinished(job.SaveBarrier) Then
+            If Not job.SaveFailed And SavesFinished(job.ClaimId) Then
                 job.Stage = 3
                 Set mJob = job
                 Call StartCommand(RELEASE_SQL, job.ClaimId, mInstance)
@@ -294,9 +292,10 @@ Public Sub Poll()
     Exit Sub
 Failed:
     Call LogError("World admission asynchronous operation failed: " & Err.Description)
+    Call SaveFailed()
+    Call EndSave()
     If Not mJob Is Nothing Then
         mJob.Retired = True
-        mJob.SaveBarrier = mSequence
         mJob.Stage = 3
     End If
     Set mJob = Nothing
@@ -318,10 +317,12 @@ Public Function test_suite_world_admission() As Boolean
     Dim path As String, first As ADODB.Connection, saveConnection As ADODB.Connection
     Dim saveObserver As clsDatabaseCompletion, saveCommand As ADODB.Command
     Dim started As Long, elapsed As Double, ticks As Long
-    Dim rows As ADODB.Recordset, job As clsWorldAdmission
+    Dim rows As ADODB.Recordset, job As clsWorldAdmission, otherJob As clsWorldAdmission
+    Dim originalInstance As String
     Dim liveLock As Long, otherLock As Long
     failedBefore = UnitTesting.GetFailedTests()
     originalEnabled = mEnabled
+    originalInstance = mInstance
     If mEnabled Or mJobs.Count <> 0 Then Err.Raise 5, , "Admission tests require an isolated non-coordinated test server"
     path = App.Path & "\admission-test-" & NewIdentity() & ".db"
     liveLock = CreateFile(path & ".lock", &HC0000000, 0, 0, 4, &H80, 0)
@@ -390,14 +391,55 @@ Public Function test_suite_world_admission() As Boolean
     Set saveCommand.ActiveConnection = saveConnection
     saveCommand.CommandType = adCmdText
     saveCommand.CommandText = "UPDATE account SET email='saved' WHERE id=1"
+    Set job = New clsWorldAdmission
+    job.ClaimId = "save-owner"
+    job.Stage = 4
+    Call mJobs.Add(job.ClaimId, job)
+    mSaveScope = job.ClaimId
     Call TrackSave(saveCommand)
-    Call UnitTesting.RunTest("admission cannot release before save completion", Not SavesFinished(mSequence))
+    Call UnitTesting.RunTest("admission cannot release before own save completion", Not SavesFinished(job.ClaimId))
+    Call UnitTesting.RunTest("admission unrelated account does not wait for save", SavesFinished("other-owner"))
     Call saveCommand.Execute(, , adAsyncExecute)
     started = GetTickCountRaw()
-    Do While Not SavesFinished(mSequence) And TicksElapsed(started, GetTickCountRaw()) < 5000
+    Do While Not SavesFinished(job.ClaimId) And TicksElapsed(started, GetTickCountRaw()) < 5000
         DoEvents
     Loop
-    Call UnitTesting.RunTest("admission observes actual asynchronous save completion", SavesFinished(mSequence))
+    Call UnitTesting.RunTest("admission observes actual asynchronous save completion", SavesFinished(job.ClaimId))
+    Call TrackSave(saveCommand)
+    Call SaveDispatchFailed(saveCommand, False)
+    Call UnitTesting.RunTest("admission definite pre-dispatch failure retires tracking", SavesFinished(job.ClaimId) And Not job.SaveFailed)
+    Call TrackSave(saveCommand)
+    Call SaveDispatchFailed(saveCommand, True)
+    Call UnitTesting.RunTest("admission uncertain dispatch retains only owner", job.SaveFailed And SavesFinished("other-owner"))
+    Call UnitTesting.RunTest("admission failed dispatch leaves no global barrier", mSaves.Count = 0)
+    ' Exercise the production retirement path, not just the readiness predicate.
+    mInstance = "test-process"
+    Call first.Execute("INSERT INTO account VALUES(2,'other')")
+    Call first.Execute("INSERT INTO world_account_claims VALUES(2,'other-owner',2,'test-process')")
+    Set otherJob = New clsWorldAdmission
+    otherJob.ClaimId = "other-owner"
+    otherJob.Retired = True
+    Call mJobs.Add(otherJob.ClaimId, otherJob)
+    Call Poll()
+    Call AwaitTestCompletion()
+    Call Poll()
+    Set rows = first.Execute("SELECT COUNT(*) FROM world_account_claims WHERE account_id=2")
+    Call UnitTesting.RunTest("admission dispatch failure cannot strand unrelated account", CLng(rows.Fields(0).Value) = 0 And job.SaveFailed)
+    Call rows.Close()
+    Call UnitTesting.RunTest("admission unrelated retired job is released", Not mJobs.Exists("other-owner"))
+    Call SaveDispatchFailed(saveCommand, True)
+    Call SaveCompleted(saveCommand, Nothing)
+    Call SaveCompleted(saveCommand, Nothing)
+    Call UnitTesting.RunTest("admission late duplicate completion preserves uncertainty", job.SaveFailed And mSaves.Count = 0)
+    Call mJobs.Remove(job.ClaimId)
+    Set job = New clsWorldAdmission
+    job.ClaimId = "replacement-owner"
+    Call mJobs.Add(job.ClaimId, job)
+    Call SaveCompleted(saveCommand, Nothing)
+    Call UnitTesting.RunTest("admission old completion cannot mark new claim", Not job.SaveFailed And SavesFinished(job.ClaimId))
+    Call EndSave()
+    Call TrackSave(saveCommand)
+    Call UnitTesting.RunTest("admission unrelated SQL is not tracked", mSaves.Count = 0)
     Set job = New clsWorldAdmission
     job.ClaimId = "new-session"
     job.ConnectionId = 9
@@ -422,8 +464,10 @@ Cleanup:
     Set first = Nothing
     Call mSaves.RemoveAll
     Call mConnections.RemoveAll
-    mSequence = 0
+    Call mJobs.RemoveAll
+    Call EndSave()
     mEnabled = originalEnabled
+    mInstance = originalInstance
     Kill path
     Kill path & ".lock"
     test_suite_world_admission = (UnitTesting.GetFailedTests() = failedBefore)
@@ -455,7 +499,6 @@ Public Sub ConnectionClosed(ByVal connectionId As Long)
     Call mConnections.Remove(CStr(connectionId))
     If job.UserIndex = 0 Then
         job.Retired = True
-        job.SaveBarrier = mSequence
     End If
 End Sub
 
@@ -476,7 +519,6 @@ Public Sub UserRetired(ByVal userIndex As Integer)
     Set job = FindUser(userIndex)
     If job Is Nothing Then Exit Sub
     job.Retired = True
-    job.SaveBarrier = mSequence
 End Sub
 
 Public Sub BeginSave(ByVal userIndex As Integer)
@@ -499,12 +541,27 @@ Public Sub SaveFailed()
 End Sub
 
 Public Sub TrackSave(ByVal command As ADODB.Command)
-    If Not mEnabled Then Exit Sub
+    If Not mEnabled Or Len(mSaveScope) = 0 Then Exit Sub
     Dim key As String
     key = CStr(ObjPtr(command))
     If mSaves.Exists(key) Then Err.Raise 5, , "Database command reused before completion"
-    mSequence = mSequence + 1
-    Call mSaves.Add(key, Array(mSequence, mSaveScope, command))
+    ' Keep the command alive and immutable until its execution is retired.
+    Call mSaves.Add(key, Array(mSaveScope, command))
+End Sub
+
+Public Sub SaveDispatchFailed(ByVal command As ADODB.Command, ByVal executionEntered As Boolean)
+    If Not mEnabled Or command Is Nothing Then Exit Sub
+    Dim key As String, entry As Variant, job As clsWorldAdmission
+    key = CStr(ObjPtr(command))
+    If Not mSaves.Exists(key) Then Exit Sub
+    entry = mSaves(key)
+    ' Once Execute was entered, a thrown COM error does not prove that the
+    ' provider stopped. Retain uncertainty on this exact claim, never globally.
+    If executionEntered And mJobs.Exists(entry(0)) Then
+        Set job = mJobs(entry(0))
+        job.SaveFailed = True
+    End If
+    Call mSaves.Remove(key)
 End Sub
 
 Public Sub SaveCompleted(ByVal command As ADODB.Command, ByVal failure As ADODB.Error)
@@ -514,9 +571,9 @@ Public Sub SaveCompleted(ByVal command As ADODB.Command, ByVal failure As ADODB.
     If Not mSaves.Exists(key) Then Exit Sub
     entry = mSaves(key)
     If Not failure Is Nothing Then
-        If Len(entry(1)) > 0 Then
-            If mJobs.Exists(entry(1)) Then
-                Set job = mJobs(entry(1))
+        If Len(entry(0)) > 0 Then
+            If mJobs.Exists(entry(0)) Then
+                Set job = mJobs(entry(0))
                 job.SaveFailed = True
             End If
         End If

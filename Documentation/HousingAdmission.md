@@ -16,7 +16,7 @@ With the explicitly migrated, activated SQLite database:
 3. After completion, a claim-bound session read revalidates the token. Only then
    does the original login handler continue and load character/house keys.
 4. The claim stays resident during admission, play and logout. Retiring the user
-   records the outstanding asynchronous save barrier; ADO completion events,
+   retains its own outstanding asynchronous saves; ADO completion events,
    not dispatch return, establish when database work is finished.
 5. Release asynchronously deletes only the exact claim and process instance.
    User generations and connection identity guard stale callbacks.
@@ -53,6 +53,23 @@ account ID alone, so a delayed old session cannot release a new session's claim.
 Runtime claim/release statements are short autocommit statements. There is no
 database transaction spanning play and no new network packet.
 
+## Review fix: claim-specific persistence
+
+Save tracking is keyed by an immutable execution command and its exact world
+claim. Account A never waits for B's saves or unrelated SQL. `SaveUser` covers
+full/final character saves and token removal; `SaveChangesInUser` now scopes
+incremental saves as well. Admission scopes new-character writes. Main character,
+inventory, bank, skills, pets, quests, skins and collectible writes inside these
+paths all pass through the tracked `Execute` path.
+
+Coordinated bank saves use a fresh command/parameter collection per dispatch;
+cached prepared commands cannot overwrite an outstanding execution's identity.
+Failure before Execute is entered retires unsubmitted tracking. A COM exception
+from inside Execute is conservatively uncertain: remove the orphan tracking
+entry but retain a sticky failure on only its owning claim until restart. Late
+or duplicate callbacks cannot clear that uncertainty or affect a newer claim.
+There are still no runtime waits or synchronous save drains.
+
 ## Tests
 
 `PYMMO=1, DEBUGGING=1, UNIT_TEST=1` registers suite 42 after the existing 41
@@ -70,8 +87,11 @@ disabled until these gates and the read-only ownership audit are satisfied.
 
 Recorded validation (2026-10-19): Windows VB6 builds passed with `PYMMO=1`,
 `LOGIN_STRESS_TEST=0`, both `DEBUGGING=0:UNIT_TEST=0` and
-`DEBUGGING=1:UNIT_TEST=1`. Native focused admission tests passed 14/14. The full
-42-suite run passed 452/452 on a disposable database and loopback fixture.
+`DEBUGGING=1:UNIT_TEST=1`. The admission suite now has 23 passing assertions. The
+full 42-suite run passed 461/461 on a disposable database and loopback fixture.
+Review cases include claim-specific waits, definite/uncertain dispatch failure,
+duplicate/late completion, newer-session isolation, unrelated SQL, and actual
+removal of an unrelated account's claim despite another claim's failed save.
 A separate production-build loopback smoke passed on disposable Windows SQLite
 state: coordinated startup/listening, a new connection greeting while another
 connection held the database write lock, exact-claim cleanup after valid-token

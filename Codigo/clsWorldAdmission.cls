@@ -20,4 +20,3 @@ Public DecryptedToken As String
 Public Stage As Long
 Public Retired As Boolean
 Public SaveFailed As Boolean
-Public SaveBarrier As Double

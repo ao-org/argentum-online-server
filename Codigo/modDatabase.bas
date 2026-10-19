@@ -137,6 +137,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     On Error GoTo Execute_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
+    Dim executionEntered As Boolean
     Command.ActiveConnection = Connection_async(Current_async)
     Command.CommandText = Text
     Command.CommandType = adCmdText
@@ -156,6 +157,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
         Call GetElapsedTime
     End If
     Call modWorldAdmission.TrackSave(Command)
+    executionEntered = True
     Call Command.Execute(, , adAsyncExecute)
     Current_async = Current_async + 1
     If Current_async = MAX_ASYNC Then
@@ -168,6 +170,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Execute = (Err.Number = 0)
     Exit Function
 Execute_Err:
+    Call modWorldAdmission.SaveDispatchFailed(Command, executionEntered)
     Call modWorldAdmission.SaveFailed()
     Debug.Assert False
     If (Err.Number <> 0) Then
@@ -212,7 +215,9 @@ End Sub
 Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
     On Error GoTo ExecutePreparedBankSaveErr
 
-    If Not BankSaveCmdInit Then
+    ' A cached command cannot identify distinct outstanding executions. In
+    ' coordinated mode use a fresh command, including its parameter collection.
+    If Not BankSaveCmdInit Or modWorldAdmission.Enabled Then
         ExecutePreparedBankSave = Execute(QUERY_SAVE_BANCOINV, Params)
         Exit Function
     End If

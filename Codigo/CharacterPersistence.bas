@@ -1427,6 +1427,7 @@ End Sub
 
 Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call modWorldAdmission.BeginSave(UserIndex)
 
     Dim PerformanceTimer As Long
     Dim TotalPerformanceTimer As Long
@@ -1441,6 +1442,7 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
 
         If Not .flags.UserLogged Then
             Call LogDatabaseError("Error trying to save a user not logged in SaveChangesInUser")
+            Call modWorldAdmission.EndSave()
             Exit Sub
         End If
 
@@ -1493,10 +1495,12 @@ Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
 
     End With
 
+    Call modWorldAdmission.EndSave()
     Exit Sub
 
 ErrorHandler:
     Call LogDatabaseError("Error in SaveChangesInUser. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+    Call modWorldAdmission.EndSave()
 End Sub
 
 Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
