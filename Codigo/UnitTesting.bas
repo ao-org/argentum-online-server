@@ -41,12 +41,12 @@ Option Explicit
     Private FailedTestCount As Long
     Private TotalElapsed   As Double
     Private LastCheckpoint As String
+    Private CaptureTaming As Boolean
+    Private TamingCreates As Collection
+    Private TamingRecipients As Collection
+    Private TamingRoutesValid As Boolean
 
-    #If DIRECT_PLAY = 0 Then
         Private Const SUITE_COUNT As Integer = 41
-    #Else
-        Private Const SUITE_COUNT As Integer = 40
-    #End If
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -324,12 +324,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 30: RunSuite = Unit_CircularLog.test_suite_circular_log()
         Case 31: RunSuite = Unit_StringValid.test_suite_string_valid()
         Case 32: RunSuite = Unit_SumarTiempo.test_suite_sumar_tiempo()
-#If DIRECT_PLAY = 1 Then
-        Case 33: RunSuite = Unit_Network.test_suite_network()
-#End If
-#If DIRECT_PLAY = 0 Then
         Case 33: RunSuite = Unit_Network_Aurora.test_suite_network_aurora()
-#End If
         Case 34: RunSuite = Unit_Weather.test_suite_weather()
         Case 35: RunSuite = test_suite_remort_persistence()
         Case 36: RunSuite = test_suite_remort_capability_state()
@@ -337,9 +332,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 38: RunSuite = Unit_AdminVisibility.test_suite_admin_visibility()
         Case 39: RunSuite = modMagicLightOrbs.test_suite_light_orbs()
         Case 40: RunSuite = test_suite_taming()
-        #If DIRECT_PLAY = 0 Then
         Case 41: RunSuite = Unit_Traps.test_suite_traps()
-        #End If
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False
@@ -1262,6 +1255,9 @@ End Function
 Private Function test_suite_taming() As Boolean
     Call test_suite_taming_pure
     Call RunTest("taming rejects an NPC-owned creature", test_taming_npc_owner())
+        Call RunTest("taming refreshes same NPC only for owner", test_taming_owner_refresh())
+        Call RunTest("taming NoMascotas success stores without ghost", test_taming_special_map(True))
+        Call RunTest("taming replacement wild NPC remains ordinary", test_taming_special_map(False))
     test_suite_taming = True
 End Function
 
@@ -1352,6 +1348,173 @@ Private Function test_taming_overflow() As Boolean
     Exit Function
 ExpectedOverflow:
     test_taming_overflow = (Err.Number = 6)
+End Function
+
+Public Function CaptureTamingPacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
+    If Not CaptureTaming Then Exit Function
+    Dim writer As Network.Writer, bytes() As Byte, value As Variant
+    Set writer = Protocol_Writes.GetWriterBuffer()
+    Call writer.GetData(bytes)
+    Call writer.Clear()
+    If CLng(bytes(0)) + CLng(bytes(1)) * 256& = ServerPacketID.eCharacterCreate Then
+        value = bytes
+        Call TamingCreates.Add(value)
+        Call TamingRecipients.Add(Recipient)
+        If Route <> SendTarget.ToIndex Then TamingRoutesValid = False
+    End If
+    CaptureTamingPacket = True
+End Function
+
+Private Function test_taming_owner_refresh() As Boolean
+    On Error GoTo TestError
+    Dim u As Integer, n As Integer, i As Integer, seed As Long, result As e_HooTamingResult
+    Dim oldUser As t_User, emptyUser As t_User, oldNpc As t_Npc, emptyNpc As t_Npc
+    Dim tile As t_MapBlock, saved As Boolean, bytes As Variant, oldNoPets As Boolean
+    For i = UBound(UserList) To 2 Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            u = i: Exit For
+        End If
+    Next i
+    For i = UBound(NpcList) To 1 Step -1
+        If Not NpcList(i).flags.NPCActive Then n = i: Exit For
+    Next i
+    If u = 0 Or n = 0 Then Exit Function
+    oldUser = UserList(u): oldNpc = NpcList(n): tile = MapData(50, 50, 1)
+    oldNoPets = MapInfo(1).NoMascotas: saved = True
+    UserList(u) = emptyUser: NpcList(n) = emptyNpc
+    With UserList(u)
+        .VersionId = 1: .Id = 123
+        .flags.Privilegios = e_PlayerType.User
+        .clase = e_Class.Druid
+        .pos.Map = 1: .pos.x = 49: .pos.y = 50
+        .Stats.ELV = 40: .Stats.UserSkills(e_Skill.Domar) = 100
+        .Stats.UserAtributos(e_Atributos.Carisma) = 21
+    End With
+    With NpcList(n)
+        .VersionId = 1: .Numero = 1: .Char.charindex = 77
+        .pos.Map = 1: .pos.x = 50: .pos.y = 50
+        .flags.Domable = 1: .MinTameLevel = 1
+        .flags.Respawn = 1
+    End With
+    MapInfo(1).NoMascotas = 0
+    Set TamingCreates = New Collection: Set TamingRecipients = New Collection
+    CaptureTaming = True: TamingRoutesValid = True
+    Call MakeNPCChar(False, u, n, 1, 50, 50)
+    bytes = TamingCreates(1)
+    If bytes(UBound(bytes) - 29) <> 1 Then GoTo TestDone
+    Set TamingCreates = New Collection: Set TamingRecipients = New Collection
+    ' Exercise real rolls with a bounded deterministic sequence, not a gameplay override.
+    Dim ignored As Single
+    ignored = Rnd(-1): Randomize 42
+    For seed = 1 To 100
+        Call DoDomar(u, n, result)
+        If result = eHooTamingResult_Success Then Exit For
+        If result <> eHooTamingResult_FailedRoll Or TamingCreates.Count <> 0 Then GoTo TestDone
+    Next seed
+    If result <> eHooTamingResult_Success Or TamingCreates.Count <> 1 Then GoTo TestDone
+    bytes = TamingCreates(1)
+    If TamingRecipients(1) <> u Or bytes(2) <> 77 Or bytes(3) <> 0 Then GoTo TestDone
+    If bytes(9) <> 50 Or bytes(10) <> 50 Or bytes(UBound(bytes) - 29) <> 2 Then GoTo TestDone
+    If UserList(u).MascotasIndex(1).ArrayIndex <> n Or NpcList(n).Char.charindex <> 77 Then GoTo TestDone
+    If NpcList(n).MaestroUser.ArrayIndex <> u Or UserList(u).NroMascotas <> 1 Then GoTo TestDone
+    Call MakeNPCChar(False, 1, n, 1, 50, 50)
+    bytes = TamingCreates(2)
+    If TamingRecipients(2) <> 1 Or bytes(UBound(bytes) - 29) <> 1 Then GoTo TestDone
+    Call DoDomar(u, n, result)
+    If result <> eHooTamingResult_Rejected Or TamingCreates.Count <> 2 Then GoTo TestDone
+    test_taming_owner_refresh = TamingRoutesValid
+TestDone:
+    CaptureTaming = False
+    Set TamingCreates = Nothing: Set TamingRecipients = Nothing
+    If saved Then
+        UserList(u) = oldUser: NpcList(n) = oldNpc: MapData(50, 50, 1) = tile
+        MapInfo(1).NoMascotas = oldNoPets
+    End If
+    Exit Function
+TestError:
+    Call Progress("taming ownership fixture: " & CStr(Err.Number) & " " & Err.Description)
+    Resume TestDone
+End Function
+
+Private Function test_taming_special_map(ByVal noPets As Boolean) As Boolean
+    On Error GoTo TestError
+    Dim u As Integer, n As Integer, replacement As Integer, i As Long, charindex As Integer
+    Dim oldUser As t_User, emptyUser As t_User, oldNoPets As Boolean, saved As Boolean
+    Dim origin As t_WorldPos, result As e_HooTamingResult, bytes As Variant, ignored As Single
+    Dim activeBefore(1 To MaxNPCs) As Boolean
+    For i = UBound(UserList) To 2 Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then u = i: Exit For
+    Next i
+    If u = 0 Then Exit Function
+    oldUser = UserList(u): oldNoPets = MapInfo(1).NoMascotas: saved = True
+    UserList(u) = emptyUser
+    With UserList(u)
+        .VersionId = 1: .Id = 123: .clase = e_Class.Druid
+        .flags.Privilegios = e_PlayerType.User
+        .pos.Map = 1: .Stats.ELV = 40
+        .Stats.UserSkills(e_Skill.Domar) = 100: .Stats.UserAtributos(e_Atributos.Carisma) = 21
+    End With
+    Set TamingCreates = New Collection: Set TamingRecipients = New Collection
+    CaptureTaming = True: TamingRoutesValid = True
+    origin.Map = 1: origin.x = 50: origin.y = 50
+    ' Exercise the real allocator, spawn and removal with an ordinary loaded creature.
+    n = CrearNPC(501, 1, origin)
+    If n = 0 Then GoTo TestDone
+    charindex = NpcList(n).Char.charindex
+    UserList(u).pos = NpcList(n).pos
+    NpcList(n).flags.Domable = 1: NpcList(n).MinTameLevel = 1
+    If noPets Then NpcList(n).flags.Respawn = 1 Else NpcList(n).flags.Respawn = 0
+    MapInfo(1).NoMascotas = noPets
+    Set TamingCreates = New Collection: Set TamingRecipients = New Collection
+    For i = 1 To MaxNPCs
+        activeBefore(i) = NpcList(i).flags.NPCActive
+    Next i
+    ignored = Rnd(-1): Randomize 42
+    For i = 1 To 100
+        Call DoDomar(u, n, result)
+        If result = eHooTamingResult_Success Then Exit For
+        If result <> eHooTamingResult_FailedRoll Or TamingCreates.Count <> 0 Then GoTo TestDone
+    Next i
+    If result <> eHooTamingResult_Success Then GoTo TestDone
+    If noPets Then
+        If TamingCreates.Count <> 0 Or NpcList(n).flags.NPCActive Then GoTo TestDone
+        If UserList(u).NroMascotas <> 1 Or UserList(u).MascotasType(1) <> 501 Then GoTo TestDone
+        If IsValidNpcRef(UserList(u).MascotasIndex(1)) Then GoTo TestDone
+    Else
+        For i = 1 To MaxNPCs
+            If NpcList(i).flags.NPCActive And Not activeBefore(i) Then
+                If replacement <> 0 Then GoTo TestDone
+                replacement = i
+            End If
+        Next i
+        If replacement = 0 Or replacement = n Or TamingCreates.Count <> 1 Then GoTo TestDone
+        bytes = TamingCreates(1)
+        If CLng(bytes(2)) + CLng(bytes(3)) * 256& <> charindex Then GoTo TestDone
+        If TamingRecipients(1) <> u Or bytes(UBound(bytes) - 29) <> 2 Then GoTo TestDone
+        If UserList(u).MascotasIndex(1).ArrayIndex <> n Then GoTo TestDone
+        If IsValidUserRef(NpcList(replacement).MaestroUser) Or NpcList(replacement).Numero <> 501 Then GoTo TestDone
+        Call MakeNPCChar(False, u, replacement, NpcList(replacement).pos.Map, NpcList(replacement).pos.x, NpcList(replacement).pos.y)
+        bytes = TamingCreates(2)
+        If CLng(bytes(2)) + CLng(bytes(3)) * 256& = charindex Then GoTo TestDone
+        If bytes(UBound(bytes) - 29) <> 1 Then GoTo TestDone
+    End If
+    test_taming_special_map = True
+TestDone:
+    If replacement > 0 Then
+        If NpcList(replacement).flags.NPCActive Then Call QuitarNPC(replacement, eNewPet)
+    End If
+    If n > 0 Then
+        If NpcList(n).flags.NPCActive Then Call QuitarNPC(n, eNewPet)
+    End If
+    CaptureTaming = False
+    Set TamingCreates = Nothing: Set TamingRecipients = Nothing
+    If saved Then
+        UserList(u) = oldUser: MapInfo(1).NoMascotas = oldNoPets
+    End If
+    Exit Function
+TestError:
+    Call Progress("taming map fixture: " & CStr(Err.Number) & " " & Err.Description)
+    Resume TestDone
 End Function
 
 Private Function test_taming_npc_owner() As Boolean

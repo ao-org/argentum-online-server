@@ -132,13 +132,8 @@ End Function
 
 Public Sub SendToConnection(ByVal ConnectionID, Optional Args As Variant)
     On Error GoTo SendToConnection_Err
-    #If DIRECT_PLAY = 0 Then
         Dim Writer As Network.Writer
         Set Writer = Protocol_Writes.GetWriterBuffer()
-    #Else
-        Dim Writer As clsNetWriter
-        Set Writer = Protocol_Writes.Writer
-    #End If
     Call modNetwork.SendToConnection(ConnectionID, Writer)
     Writer.Clear
     Exit Sub
@@ -148,19 +143,15 @@ SendToConnection_Err:
 End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False)
-    #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+    #If UNIT_TEST = 1 Then
         If CaptureMagicLightOrbPacket() Then Exit Sub
+        If UnitTesting.CaptureTamingPacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_Traps.CapturePacket(sndRoute, sndIndex) Then Exit Sub
     #End If
     Err.Clear
     On Error GoTo SendData_Err
-    #If DIRECT_PLAY = 0 Then
         Dim Buffer As Network.Writer
         Set Buffer = Protocol_Writes.GetWriterBuffer()
-    #Else
-        Dim Buffer As clsNetWriter
-        Set Buffer = Protocol_Writes.Writer
-    #End If
     Dim LoopC As Long
     Dim Map   As Integer
     Select Case sndRoute
@@ -333,11 +324,7 @@ SendData_Err:
     End If
 End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
-    #Else
-        Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
-        #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC      As Long
         Dim tempIndex  As Integer
@@ -383,11 +370,7 @@ SendToUserArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean)
-    #Else
-        Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean)
-        #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC      As Long
         Dim tempIndex  As Integer
@@ -429,11 +412,7 @@ SendToUserArea_Err:
     End Sub
 
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -464,11 +443,7 @@ SendToUserArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToUserArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -501,11 +476,7 @@ SendToUserArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToSuperioresArea_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
@@ -537,11 +508,7 @@ SendToSuperioresArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToSuperioresArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
-    #Else
-        Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
-        #End If
         On Error GoTo SendToUserAreaButindex_Err
         Dim LoopC      As Long
         Dim TempInt    As Integer
@@ -587,16 +554,11 @@ SendToUserAreaButindex_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Function CanSendToUser(ByRef SourceUser As t_User, _
                                    ByRef TargetUser As t_User, _
                                    ByVal TargetIndex As Integer, _
                                    ByRef Buffer As Network.Writer, _
                                    ByVal ValidateInvi As Boolean) As Boolean
-    #Else
-        Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As clsNetWriter, ByVal ValidateInvi As _
-                Boolean) As Boolean
-        #End If
         If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
         If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
         If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
@@ -626,11 +588,7 @@ Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t
     CheckGuildSend = True
 End Function
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
-    #Else
-        Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As clsNetWriter, Optional ByVal ValidateInvi As Boolean = False)
-        #End If
         On Error GoTo SendToUserAliveAreaButindex_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -653,11 +611,7 @@ SendToUserAliveAreaButindex_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToUserAreaButindex_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
@@ -691,11 +645,7 @@ SendToUserAreaButindex_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminAreaButIndex", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToUserAreaButindex_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
@@ -727,11 +677,7 @@ SendToUserAreaButindex_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButGMs", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToUserGuildArea_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -759,11 +705,7 @@ SendToUserGuildArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserGuildArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToNpcArea_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
@@ -793,11 +735,7 @@ SendToNpcArea_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToNpcArea_Err
         Dim LoopC     As Long
         Dim TempInt   As Integer
@@ -830,7 +768,7 @@ SendToNpcArea_Err:
     End Sub
 
 Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ParamArray Args() As Variant)
-    #If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+    #If UNIT_TEST = 1 Then
         If Unit_Traps.CapturePacket(-1, 0) Then Exit Sub
     #End If
     On Error GoTo SendToAreaByPos_Err
@@ -840,13 +778,8 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
     AreaX = 2 ^ (AreaX \ 12)
     AreaY = 2 ^ (AreaY \ 12)
     If Not MapaValido(Map) Then Exit Sub
-    #If DIRECT_PLAY = 0 Then
         Dim Buffer As Network.Writer
         Set Buffer = Protocol_Writes.GetWriterBuffer()
-    #Else
-        Dim Buffer As clsNetWriter
-        Set Buffer = Protocol_Writes.Writer
-    #End If
     For LoopC = 1 To ConnGroups(Map).CountEntrys
         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
@@ -866,11 +799,7 @@ SendToAreaByPos_Err:
     End If
 End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToMap_Err
         Dim LoopC     As Long
         Dim tempIndex As Integer
@@ -886,11 +815,7 @@ SendToMap_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToMapButIndex_Err
         Dim LoopC     As Long
         Dim Map       As Integer
@@ -909,11 +834,7 @@ SendToMapButIndex_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToMapButIndex", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToGroup_Err
         Dim LoopC As Long
         If UserIndex = 0 Then Exit Sub
@@ -930,11 +851,7 @@ SendToGroup_Err:
         Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroup", Erl)
     End Sub
 
-#If DIRECT_PLAY = 0 Then
     Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-    #Else
-        Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As clsNetWriter)
-        #End If
         On Error GoTo SendToGroupButIndex_Err
         Dim LoopC As Long
         If UserIndex = 0 Then Exit Sub

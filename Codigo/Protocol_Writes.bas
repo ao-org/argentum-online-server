@@ -26,7 +26,6 @@ Attribute VB_Name = "Protocol_Writes"
 '
 '
 Option Explicit
-#If DIRECT_PLAY = 0 Then
     Private Writer As Network.Writer
 
 Public Sub InitializeAuxiliaryBuffer()
@@ -37,10 +36,6 @@ Public Function GetWriterBuffer() As Network.Writer
     Set GetWriterBuffer = Writer
 End Function
 
-#Else
-    Public Writer As New clsNetWriter
-
-#End If
 #If PYMMO = 0 Then
     Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personajes() As t_PersonajeCuenta, ByVal count As Long)
         On Error GoTo WriteAccountCharacterList_Err

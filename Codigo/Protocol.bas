@@ -150,7 +150,6 @@ Public Type t_PersonajeCuenta
 End Type
 
 
-#If DIRECT_PLAY = 0 Then
 Public reader As Network.reader
 
 #If LOGIN_STRESS_TEST = 1 And PYMMO = 1 Then
@@ -178,10 +177,6 @@ Public Sub InitializePacketList()
 End Sub
 
 Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As Network.reader, Optional ByVal optional_user_index As Variant) As Boolean
-#Else
-    Public reader As New clsNetReader
-    Public Function HandleIncomingData(ByVal ConnectionID As Long, Message As DxVBLibA.DPNMSG_RECEIVE, Optional ByVal optional_user_index As Variant) As Boolean
-    #End If
     On Error Resume Next
     Dim UserIndex As Integer
     If Not IsMissing(optional_user_index) Then
@@ -189,11 +184,7 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     Else
         UserIndex = 0
     End If
-    #If DIRECT_PLAY = 0 Then
         Set reader = Message
-    #Else
-        reader.set_data Message
-    #End If
     Dim PacketId As Long
     PacketId = reader.ReadInt16
     Dim PacketName As String
@@ -202,7 +193,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
     Dim performance_timer As Long
     actual_time = GetTickCountRaw()
     performance_timer = actual_time
-    #If DIRECT_PLAY = 0 Then
         If TicksElapsed(Mapping(ConnectionID).TimeLastReset, actual_time) >= 5000 Then
             Mapping(ConnectionID).TimeLastReset = actual_time
             Mapping(ConnectionID).PacketCount = 0
@@ -258,7 +248,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             End If
             Exit Function
         End If
-    #End If
     If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
         If Not IsMissing(optional_user_index) Then ' userindex may be invalid here
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
@@ -2934,7 +2923,7 @@ End Sub
 ' Handles the "WorkLeftClick" message.
 '
 ' @param    UserIndex The index of the user sending the message.
-#If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+#If UNIT_TEST = 1 Then
 Public Sub TrapTestUseItem(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Keyboard As Boolean)
     Dim savedReader As Network.reader
     Set savedReader = reader

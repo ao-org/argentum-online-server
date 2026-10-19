@@ -1,6 +1,6 @@
 Attribute VB_Name = "Unit_Traps"
 Option Explicit
-#If UNIT_TEST = 1 And DIRECT_PLAY = 0 Then
+#If UNIT_TEST = 1 Then
 Private mUser As Integer, mNpc As Integer
 Private mPackets As Collection
 Private mOwnedPackets As Collection, mOrder As Collection
@@ -28,9 +28,7 @@ Public Sub InitializeTestWorld()
     MinYBorder = YMinMapSize + (YWindow \ 2)
     MaxXBorder = XMaxMapSize - (XWindow \ 2)
     MaxYBorder = YMaxMapSize - (YWindow \ 2)
-    #If DIRECT_PLAY = 0 Then
         Call InitializeAuxiliaryBuffer()
-    #End If
     Call InitializePools()
 End Sub
 
