@@ -17,10 +17,20 @@ tame storage/removal path runs. Its condition now tests the Boolean directly:
 FileIO loads True as -1, so the old `= 1` comparison skipped that path. The test
 verifies success, preserved recorded pet type/count and no active phantom NPC.
 
+The owner-only refresh is representation-only. The Boolean correction does
+affect gameplay on restricted maps: it restores the already-intended NoMascotas
+removal/storage restriction. This is a bug fix, not a balance or mechanics
+redesign. Neither change alters tame probability, power or pet capacity.
+
 UnitTesting suite 40 captures the real CharacterCreate serialization and checks
 ordinary-to-owned same-character refresh, owner/non-owner isolation, failed roll,
 rejection, NoMascotas and a real replacement wild spawn. It uses existing test
 registration and SendData capture infrastructure, not a separate runner.
+
+The SendData capture call is guarded by `UNIT_TEST = 1 And DIRECT_PLAY = 0`.
+The capture implementation is inside UnitTesting's outer `UNIT_TEST = 1` block
+and its inner `DIRECT_PLAY = 0` block. Production `UNIT_TEST=0` excludes both;
+there is no runtime production capture or test behavior.
 
 Validated with native Windows VB6:
 
