@@ -50,6 +50,7 @@ Private Sub OnServerError(ByVal Code As Long, ByVal Description As String)
 End Sub
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
+    Call modWorldAdmission.CheckListenerSafety()
     Set Server = New Network.Server
     ReDim Mapping(1 To MaxActiveConnections) As t_ConnectionMapping
     Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv, AddressOf OnServerError)
@@ -77,6 +78,7 @@ Public Sub Tick(ByVal Delta As Single)
         Call Server.Flush
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork flush", 200)
+    Call modWorldAdmission.Poll()
 End Sub
 
 Public Sub Poll()
@@ -352,6 +354,7 @@ Public Function MapConnectionToUser(ByVal ConnectionID As Long) As Integer
     Call PendingConnections.Remove(ConnectionID)
     UserList(FreeUser).ConnectionDetails = Mapping(ConnectionID).ConnectionDetails
     Call SetUserRef(Mapping(ConnectionID).UserRef, FreeUser)
+    Call modWorldAdmission.AttachUser(ConnectionID, CInt(FreeUser))
     MapConnectionToUser = FreeUser
     If FreeUser > LastUser Then
         LastUser = FreeUser
@@ -362,6 +365,7 @@ CheckDisconnectedUsers_Err:
 End Function
 
 Public Sub ClearConnection(ByVal Connection)
+    Call modWorldAdmission.ConnectionClosed(CLng(Connection))
     With Mapping(Connection)
         .TimeLastReset = 0
         .PacketCount = 0

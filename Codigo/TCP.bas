@@ -1175,6 +1175,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         Call SetUserRef(.DestUsu, 0)
         .Objeto = 0
     End With
+    Call modWorldAdmission.UserRetired(UserIndex)
     UserList(UserIndex).InUse = False
     Call IncreaseVersionId(UserIndex)
     Call ReleaseUser(UserIndex)

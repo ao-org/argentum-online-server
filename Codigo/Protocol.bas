@@ -305,6 +305,14 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             End If
         End If
     #End If
+    #If PYMMO = 1 Then
+        If modWorldAdmission.Enabled Then
+            If PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar Then
+                HandleIncomingData = modWorldAdmission.Queue(ConnectionID, PacketId, Message)
+                Exit Function
+            End If
+        End If
+    #End If
     Select Case PacketId
         Case ClientPacketID.eLoginExistingChar
             Call HandleLoginExistingChar(ConnectionID)
@@ -1445,6 +1453,15 @@ End Sub
 #End If
 #If PYMMO = 1 Then
 
+Public Sub ResumeWorldAdmission(ByVal ConnectionID As Long, ByVal PacketId As Long, ByVal Message As Network.reader)
+    Set reader = Message
+    Call reader.Skip(2)
+    If PacketId = ClientPacketID.eLoginExistingChar Then
+        Call HandleLoginExistingChar(ConnectionID)
+    ElseIf PacketId = ClientPacketID.eLoginNewChar Then
+        Call HandleLoginNewChar(ConnectionID)
+    End If
+End Sub
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Const LoginExistingCharWarnMs As Long = 80 ' ajusta a gusto
@@ -1536,7 +1553,11 @@ Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
     Call PerformanceTestStart(stepTimer)
 
     ' Nota: mantenemos tu SQL tal cual, solo medimos.
-    Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
+    If modWorldAdmission.Enabled Then
+        Set RS = modWorldAdmission.SessionForConnection(ConnectionID)
+    Else
+        Set RS = Query("SELECT * FROM tokens WHERE decrypted_token=?", decrypted_session_token)
+    End If
 
     If RS Is Nothing Then
         rsCount = -1
@@ -1752,7 +1773,11 @@ Private Sub HandleLoginNewChar(ByVal ConnectionID As Long)
 
     ' Para recibir el ID del user
     Dim RS As ADODB.Recordset
-    Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
+    If modWorldAdmission.Enabled Then
+        Set RS = modWorldAdmission.SessionForConnection(ConnectionID)
+    Else
+        Set RS = Query("SELECT * FROM tokens WHERE decrypted_token=?", decrypted_session_token)
+    End If
     If RS Is Nothing Or RS.RecordCount = 0 Then
         Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_INVALID_SESSION_TOKEN))
         Call KickConnection(ConnectionID)

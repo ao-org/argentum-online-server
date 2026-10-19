@@ -155,7 +155,8 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
     End If
-    Call Command.Execute(, , adAsyncExecute)  ' @TODO: We want some operation to be async
+    Call modWorldAdmission.TrackSave(Command)
+    Call Command.Execute(, , adAsyncExecute)
     Current_async = Current_async + 1
     If Current_async = MAX_ASYNC Then
         Current_async = 1
@@ -167,6 +168,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Execute = (Err.Number = 0)
     Exit Function
 Execute_Err:
+    Call modWorldAdmission.SaveFailed()
     Debug.Assert False
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
@@ -230,6 +232,7 @@ Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
         cmd.Parameters(i).Value = Params(i)
     Next i
 
+    Call modWorldAdmission.TrackSave(cmd)
     Call cmd.Execute(, , adAsyncExecute)
 
     Current_async = Current_async + 1
@@ -241,6 +244,7 @@ Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
     Exit Function
 
 ExecutePreparedBankSaveErr:
+    Call modWorldAdmission.SaveFailed()
     ExecutePreparedBankSave = False
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - ExecutePreparedBankSave")
 End Function

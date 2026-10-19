@@ -253,6 +253,7 @@ ErrHandler:
 End Sub
 
 Public Sub LogDatabaseError(Desc As String)
+    Call modWorldAdmission.SaveFailed()
     On Error GoTo ErrHandler
     Call LogThis(eType_Log.DatabaseError, "[Database.log] " & Desc, vbLogEventTypeError)
     Exit Sub

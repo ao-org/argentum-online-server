@@ -2756,6 +2756,7 @@ End Sub
 
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo SaveUser_Err
+    Call modWorldAdmission.BeginSave(UserIndex)
     If Logout Then
         Call UserDisconnected(UserIndex)
     End If
@@ -2764,13 +2765,20 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         Call RemoveTokenDatabase(UserIndex)
     End If
     UserList(UserIndex).Counters.LastSave = GetTickCountRaw()
+    Call modWorldAdmission.EndSave()
     Exit Sub
 SaveUser_Err:
+    Call modWorldAdmission.SaveFailed()
+    Call modWorldAdmission.EndSave()
     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 End Sub
 
 Public Sub RemoveTokenDatabase(ByVal UserIndex As Integer)
-    Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
+    If modWorldAdmission.Enabled Then
+        Call Execute("DELETE FROM account_sessions WHERE id=? AND encrypted_token=?", UserList(UserIndex).encrypted_session_token_db_id, UserList(UserIndex).encrypted_session_token)
+    Else
+        Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
+    End If
 End Sub
 
 Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)

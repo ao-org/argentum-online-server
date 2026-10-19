@@ -503,6 +503,11 @@ Sub Main()
     #End If
 
     #If UNIT_TEST = 1 Then
+        If LCase$(Trim$(Command$)) = "--test-world-admission" Then
+            Call modWorldAdmission.test_suite_world_admission()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
         If LCase$(Trim$(Command$)) = "--test-traps" Then
             Call UnitTesting.Progress("BEFORE Unit_Traps.InitializeTestWorld")
             Call Unit_Traps.InitializeTestWorld()
@@ -1080,6 +1085,7 @@ Sub Main()
         Call UnitTesting.Progress("AFTER CompleteConfigStartup")
         Call UnitTesting.Progress("BEFORE modNetwork.Listen")
     #End If
+    Call modWorldAdmission.Initialize()
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER modNetwork.Listen")
