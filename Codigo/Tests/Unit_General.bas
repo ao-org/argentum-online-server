@@ -2,6 +2,91 @@ Attribute VB_Name = "Unit_General"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
+Private CapturingAttributes As Boolean
+Private AttributeRecipient As Integer
+Private AttributeRoutesValid As Boolean
+Private FyaCount As Long
+Private LastFya() As Byte
+Private LastCounters() As Byte
+
+Public Function CaptureAttributePacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
+    If Not CapturingAttributes Then Exit Function
+    Dim Writer As Network.Writer, bytes() As Byte, packet As Long
+    Set Writer = Protocol_Writes.GetWriterBuffer()
+    Call Writer.GetData(bytes)
+    Call Writer.Clear()
+    packet = CLng(bytes(0)) + CLng(bytes(1)) * 256&
+    If packet = ServerPacketID.eFYA Or packet = ServerPacketID.eContadores Then
+        If Route <> SendTarget.ToIndex Or Recipient <> AttributeRecipient Then AttributeRoutesValid = False
+        If packet = ServerPacketID.eFYA Then
+            LastFya = bytes
+            FyaCount = FyaCount + 1
+        Else
+            LastCounters = bytes
+        End If
+    End If
+    CaptureAttributePacket = True
+End Function
+
+Private Function TestAttributeSync(ByVal Mode As Long) As Boolean
+    On Error GoTo TestError
+    Dim u As Integer, i As Long, oldUser As t_User, emptyUser As t_User, saved As Boolean
+    For i = UBound(UserList) To 2 Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            u = i: Exit For
+        End If
+    Next i
+    If u = 0 Then Exit Function
+    oldUser = UserList(u): saved = True
+    UserList(u) = emptyUser
+    With UserList(u)
+        .pos.Map = 1: .pos.x = 50: .pos.y = 50
+        .flags.Privilegios = e_PlayerType.Dios
+        .flags.TomoPocion = True
+        .flags.DuracionEfecto = 28
+        .Stats.UserAtributos(1) = 36: .Stats.UserAtributos(2) = 40
+        .Stats.UserAtributosBackUP(1) = 18: .Stats.UserAtributosBackUP(2) = 20
+        .Counters.Invisibilidad = 7
+    End With
+    CapturingAttributes = True: AttributeRecipient = u: AttributeRoutesValid = True
+    FyaCount = 0
+    If ServerPacketID.eFYA <> 102 Or ServerPacketID.eContadores <> 104 Then GoTo Cleanup
+    Select Case Mode
+        Case 0
+            Call WriteFYA(u)
+            If FyaCount <> 1 Or UBound(LastFya) <> 5 Then GoTo Cleanup
+            If LastFya(0) <> 102 Or LastFya(1) <> 0 Or LastFya(2) <> 36 Or LastFya(3) <> 40 Or LastFya(4) <> 28 Or LastFya(5) <> 0 Then GoTo Cleanup
+            Call WriteContadores(u)
+            If UBound(LastCounters) <> 5 Then GoTo Cleanup
+            If LastCounters(0) <> 104 Or LastCounters(1) <> 0 Or LastCounters(2) <> 7 Or LastCounters(3) <> 0 Or LastCounters(4) <> 28 Or LastCounters(5) <> 0 Then GoTo Cleanup
+            ' Verify little-endian duration beyond a single byte.
+            UserList(u).flags.DuracionEfecto = 258
+            Call WriteFYA(u)
+            If LastFya(4) <> 2 Or LastFya(5) <> 1 Then GoTo Cleanup
+        Case 1
+            UserList(u).flags.DuracionEfecto = 2
+            Call DuracionPociones(u)
+            If FyaCount <> 0 Or UserList(u).flags.DuracionEfecto <> 1 Then GoTo Cleanup
+            Call DuracionPociones(u)
+        Case 2
+            Call UserMod.UserDie(u)
+            If UserList(u).flags.Muerto <> 1 Then GoTo Cleanup
+    End Select
+    If Mode > 0 Then
+        If FyaCount <> 1 Or UBound(LastFya) <> 5 Then GoTo Cleanup
+        If LastFya(2) <> 18 Or LastFya(3) <> 20 Or LastFya(4) <> 0 Or LastFya(5) <> 0 Then GoTo Cleanup
+        If UserList(u).flags.DuracionEfecto <> 0 Then GoTo Cleanup
+    End If
+    TestAttributeSync = AttributeRoutesValid
+Cleanup:
+    CapturingAttributes = False
+    If saved Then UserList(u) = oldUser
+    Exit Function
+TestError:
+    TestAttributeSync = False
+    Resume Cleanup
+End Function
+
 ' ==========================================================================
 ' General Utilities Test Suite
 ' Tests pure utility functions from General.bas: Ceil (round up), Clamp
@@ -10,6 +95,9 @@ Option Explicit
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
 Public Function test_suite_general() As Boolean
+    Call UnitTesting.RunTest("attributes FYA and Contadores wire snapshots", TestAttributeSync(0))
+    Call UnitTesting.RunTest("attributes natural expiry publishes restored values and zero", TestAttributeSync(1))
+    Call UnitTesting.RunTest("attributes death publishes restored values and zero", TestAttributeSync(2))
     Call UnitTesting.RunTest("runner exception publishes FAIL beyond Integer range", UnitTesting.TestFailureReport())
     Call UnitTesting.RunTest("runner initialization token roundtrip", LenB(UnitTesting.encrypted_token) > 0 And AO20CryptoSysWrapper.DECRYPT(UnitTesting.private_key, UnitTesting.encrypted_token) = UnitTesting.decrypted_token)
     Call UnitTesting.RunTest("test_ceil_integer", test_ceil_integer())

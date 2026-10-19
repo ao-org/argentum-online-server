@@ -144,6 +144,7 @@ End Sub
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False)
     #If UNIT_TEST = 1 Then
+        If Unit_General.CaptureAttributePacket(sndRoute, sndIndex) Then Exit Sub
         If CaptureMagicLightOrbPacket() Then Exit Sub
         If UnitTesting.CaptureTamingPacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_Traps.CapturePacket(sndRoute, sndIndex) Then Exit Sub

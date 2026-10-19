@@ -1812,14 +1812,14 @@ Sub UserDie(ByVal UserIndex As Integer)
             .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         End If
         ' << Restauramos los atributos >>
+        ' Clear the shared duration before publishing the restored attributes.
+        .flags.DuracionEfecto = 0
         If .flags.TomoPocion Then
             For i = 1 To 4
                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
             Next i
             Call WriteFYA(UserIndex)
         End If
-        ' << Frenamos el contador de la droga >>
-        .flags.DuracionEfecto = 0
         '<< Cambiamos la apariencia del char >>
         If .flags.Navegando = 0 Then
             .Char.body = iCuerpoMuerto
