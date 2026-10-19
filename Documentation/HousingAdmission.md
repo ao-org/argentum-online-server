@@ -39,6 +39,8 @@ mode for standalone PYMMO=0 or stress-login builds.
 Initialization precedes listening and uses no lock-wait timeout. A failed
 coordinated initialization cannot be bypassed by the GUI listener restart.
 Every process holds an exclusive OS handle beside the real local SQLite file.
+Its exact lock path is stored with the instance ID, so database path aliases do
+not cause another process to probe an unrelated, unlocked sidecar file.
 Only an instance whose handle can be acquired is considered dead; no elapsed
 timeout permits eviction. Startup removes only those dead-instance claims.
 Other live worlds retain their claims. Do not relocate the database or delete
@@ -70,5 +72,10 @@ Recorded validation (2026-10-19): Windows VB6 builds passed with `PYMMO=1`,
 `LOGIN_STRESS_TEST=0`, both `DEBUGGING=0:UNIT_TEST=0` and
 `DEBUGGING=1:UNIT_TEST=1`. Native focused admission tests passed 14/14. The full
 42-suite run passed 452/452 on a disposable database and loopback fixture.
+A separate production-build loopback smoke passed on disposable Windows SQLite
+state: coordinated startup/listening, a new connection greeting while another
+connection held the database write lock, exact-claim cleanup after valid-token
+failed character admission, and restart recovery that cleared a dead process's
+claim while preserving a live process using its original different lock path.
 These are not a claim of a live HOO/PYMMO/VB6 purchase test. PYMMO=0 and MySQL
 coordination are not enabled by this feature.

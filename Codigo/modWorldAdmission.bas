@@ -58,7 +58,7 @@ End Function
 Public Sub Initialize()
     On Error GoTo Failed
     Dim rows As ADODB.Recordset
-    Dim path As String, oldInstance As String
+    Dim path As String, oldInstance As String, oldLockPath As String
     Dim handle As Long, i As Long
     Dim failure As String
     Set rows = Connection.Execute("SELECT name FROM sqlite_master WHERE type='table' AND name='housing_coordination'")
@@ -97,11 +97,14 @@ Public Sub Initialize()
     ' is asynchronous and does not use the blocking Query helper.
     Call mDatabase.Execute("PRAGMA busy_timeout=0")
     Call mDatabase.Execute("BEGIN IMMEDIATE")
-    Set rows = mDatabase.Execute("SELECT instance FROM world_instances")
+    Set rows = mDatabase.Execute("SELECT instance,lock_path FROM world_instances")
     Do Until rows.EOF
         oldInstance = CStr(rows.Fields(0).value)
+        oldLockPath = CStr(rows.Fields(1).value)
         If Len(oldInstance) <> 32 Or oldInstance Like "*[!0-9A-F]*" Then Err.Raise 5, , "Invalid world instance identity"
-        handle = CreateFile(path & ".world-" & oldInstance & ".lock", &HC0000000, 0, 0, 4, &H80, 0)
+        If Left$(oldLockPath, 2) = "\\" Or Right$(oldLockPath, 44) <> ".world-" & oldInstance & ".lock" Then Err.Raise 5, , "Invalid world instance lock path"
+        ' Use the original holder's path, not this process's database alias.
+        handle = CreateFile(oldLockPath, &HC0000000, 0, 0, 4, &H80, 0)
         If handle <> -1 Then
             ' Exclusive OS ownership proves the old process is gone. No TTL.
             Call StartupCommand("DELETE FROM world_account_claims WHERE world_instance=?", oldInstance)
@@ -111,7 +114,7 @@ Public Sub Initialize()
         Call rows.MoveNext
     Loop
     Call rows.Close
-    Call StartupCommand("INSERT INTO world_instances(instance) VALUES(?)", mInstance)
+    Call StartupCommand("INSERT INTO world_instances(instance,lock_path) VALUES(?,?)", mInstance, path & ".world-" & mInstance & ".lock")
     Call mDatabase.Execute("UPDATE housing_coordination SET world_version=1 WHERE id=1")
     Call mDatabase.Execute("COMMIT")
     Set mObserver = New clsDatabaseCompletion
