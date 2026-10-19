@@ -9,6 +9,116 @@ Private FyaCount As Long
 Private LastFya() As Byte
 Private LastCounters() As Byte
 
+Private CapturingTorch As Boolean
+Private TorchAdds As Long
+Private TorchRemoves As Long
+Private TorchLastRoute As Long
+Private TorchLastRecipient As Integer
+Private TorchOrder As String
+
+Public Function CaptureTorchPacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
+    If Not CapturingTorch Then Exit Function
+    Dim Writer As Network.Writer, bytes() As Byte, packet As Long
+    Set Writer = Protocol_Writes.GetWriterBuffer()
+    Call Writer.GetData(bytes)
+    Call Writer.Clear()
+    packet = CLng(bytes(0)) + CLng(bytes(1)) * 256&
+    If packet = ServerPacketID.eParticleFX Then
+        If UBound(bytes) <> 16 Then Err.Raise 5, , "Invalid torch effect wire length"
+        If bytes(4) <> 99 Or bytes(5) <> 1 Then Err.Raise 5, , "Invalid torch effect ID"
+        If bytes(6) <> 255 Or bytes(7) <> 255 Or bytes(8) <> 255 Or bytes(9) <> 255 Then Err.Raise 5, , "Invalid torch lifetime"
+        If bytes(10) = 0 Then TorchAdds = TorchAdds + 1 Else TorchRemoves = TorchRemoves + 1
+        TorchLastRoute = Route: TorchLastRecipient = Recipient
+    End If
+    TorchOrder = TorchOrder & CStr(packet) & ","
+    CaptureTorchPacket = True
+End Function
+
+Private Function TestTorchEquipment(ByVal Mode As Long) As Boolean
+    On Error GoTo TestError
+    Dim u As Integer, i As Long, saved As Boolean
+    Dim oldUser As t_User, emptyUser As t_User
+    Dim oldShield As t_ObjData, oldWeapon As t_ObjData, oldTorch As t_ObjData, blankObject As t_ObjData
+    For i = UBound(UserList) To 2 Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            u = i: Exit For
+        End If
+    Next i
+    If u = 0 Then Exit Function
+    oldUser = UserList(u): oldShield = ObjData(1): oldWeapon = ObjData(2): oldTorch = ObjData(EQUIPPED_TORCH_OBJECT)
+    saved = True
+    UserList(u) = emptyUser
+    ObjData(1) = blankObject: ObjData(2) = blankObject: ObjData(EQUIPPED_TORCH_OBJECT) = blankObject
+    ObjData(1).OBJType = e_OBJType.otShield: ObjData(1).ShieldAnim = 10
+    ObjData(2).OBJType = e_OBJType.otWeapon: ObjData(2).DosManos = 1
+    ObjData(EQUIPPED_TORCH_OBJECT).OBJType = e_OBJType.otShield
+    ObjData(EQUIPPED_TORCH_OBJECT).ShieldAnim = 140
+    With UserList(u)
+        .pos.Map = 1: .pos.x = 50: .pos.y = 50
+        .Char.charindex = 301
+        .flags.Privilegios = e_PlayerType.Dios
+        .CurrentInventorySlots = 20
+        .invent.Object(1).ObjIndex = 1: .invent.Object(1).amount = 1
+        .invent.Object(2).ObjIndex = EQUIPPED_TORCH_OBJECT: .invent.Object(2).amount = 1
+        .invent.Object(3).ObjIndex = EQUIPPED_TORCH_OBJECT: .invent.Object(3).amount = 1
+        .invent.Object(4).ObjIndex = 2: .invent.Object(4).amount = 1
+    End With
+    CapturingTorch = True: TorchAdds = 0: TorchRemoves = 0: TorchOrder = ""
+    If Mode = 1 Then Call EquiparInvItem(u, 2)
+    Call EquiparInvItem(u, 1)
+    If Mode <> 1 Then Call EquiparInvItem(u, 2)
+    With UserList(u)
+        If .invent.EquippedShieldSlot <> 1 Or .Char.ShieldAnim <> 10 Then GoTo Cleanup
+        If .invent.Object(1).Equipped <> 1 Or .invent.Object(2).Equipped <> 1 Then GoTo Cleanup
+        If TorchAdds <> 1 Or TorchRemoves <> 0 Then GoTo Cleanup
+        Select Case Mode
+            Case 0, 1
+                Call Desequipar(u, 2)
+                If .invent.EquippedShieldSlot <> 1 Or .Char.ShieldAnim <> 10 Then GoTo Cleanup
+                If EquippedTorchSlot(u) <> 0 Or TorchRemoves <> 1 Then GoTo Cleanup
+            Case 2
+                Call EquiparInvItem(u, 3)
+                If EquippedTorchSlot(u) <> 3 Or .invent.Object(2).Equipped <> 0 Then GoTo Cleanup
+                If TorchAdds <> 2 Or TorchRemoves <> 1 Or .invent.EquippedShieldSlot <> 1 Then GoTo Cleanup
+            Case 3
+                Call UserMod.UserDie(u)
+                If EquippedTorchSlot(u) <> 0 Or TorchRemoves <> 1 Then GoTo Cleanup
+            Case 4
+                .flags.Oculto = 1: TorchOrder = ""
+                Call SendEquippedTorchSnapshot(u, u)
+                If TorchOrder <> CStr(ServerPacketID.eSetInvisible) & "," & CStr(ServerPacketID.eParticleFX) & "," Then GoTo Cleanup
+                If TorchLastRoute <> SendTarget.ToIndex Or TorchLastRecipient <> u Then GoTo Cleanup
+                If .invent.EquippedShieldSlot <> 1 Or EquippedTorchSlot(u) <> 2 Then GoTo Cleanup
+            Case 5
+                Call EquiparInvItem(u, 4)
+                If .invent.EquippedShieldSlot <> 0 Or .invent.EquippedWeaponSlot <> 4 Then GoTo Cleanup
+                If EquippedTorchSlot(u) <> 2 Or TorchRemoves <> 0 Then GoTo Cleanup
+                Call EquiparInvItem(u, 1)
+                If .invent.EquippedWeaponSlot <> 0 Or .invent.EquippedShieldSlot <> 1 Then GoTo Cleanup
+            Case 6
+                Call QuitarUserInvItem(u, 2, 1)
+                If EquippedTorchSlot(u) <> 0 Or TorchRemoves <> 1 Or .invent.EquippedShieldSlot <> 1 Then GoTo Cleanup
+            Case 7
+                Call Desequipar(u, 2)
+                Call EquiparInvItem(u, 2, True)
+                If TorchAdds <> 1 Or EquippedTorchSlot(u) <> 2 Then GoTo Cleanup
+                Call SendEquippedTorchSnapshot(u, u)
+                If TorchAdds <> 2 Or .invent.EquippedShieldSlot <> 1 Then GoTo Cleanup
+        End Select
+    End With
+    TestTorchEquipment = True
+Cleanup:
+    CapturingTorch = False
+    If saved Then
+        UserList(u) = oldUser
+        ObjData(1) = oldShield: ObjData(2) = oldWeapon: ObjData(EQUIPPED_TORCH_OBJECT) = oldTorch
+    End If
+    Exit Function
+TestError:
+    Debug.Print "Torch test " & CStr(Mode) & ": " & CStr(Err.Number) & " " & Err.Description
+    Resume Cleanup
+End Function
+
 Public Function CaptureAttributePacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
     If Not CapturingAttributes Then Exit Function
     Dim Writer As Network.Writer, bytes() As Byte, packet As Long
@@ -95,6 +205,14 @@ End Function
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
 Public Function test_suite_general() As Boolean
+    Call UnitTesting.RunTest("torch preserves equipped shield", TestTorchEquipment(0))
+    Call UnitTesting.RunTest("shield preserves equipped torch", TestTorchEquipment(1))
+    Call UnitTesting.RunTest("torch replacement preserves shield", TestTorchEquipment(2))
+    Call UnitTesting.RunTest("torch death removes light exactly once", TestTorchEquipment(3))
+    Call UnitTesting.RunTest("torch hidden snapshot sends visibility first", TestTorchEquipment(4))
+    Call UnitTesting.RunTest("torch preserves two handed shield restriction", TestTorchEquipment(5))
+    Call UnitTesting.RunTest("torch inventory removal clears light only", TestTorchEquipment(6))
+    Call UnitTesting.RunTest("torch login restores separate equipment", TestTorchEquipment(7))
     Call UnitTesting.RunTest("attributes FYA and Contadores wire snapshots", TestAttributeSync(0))
     Call UnitTesting.RunTest("attributes natural expiry publishes restored values and zero", TestAttributeSync(1))
     Call UnitTesting.RunTest("attributes death publishes restored values and zero", TestAttributeSync(2))
