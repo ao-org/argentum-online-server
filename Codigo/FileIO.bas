@@ -3262,11 +3262,8 @@ Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
     End If
     Call FeatureToggles.Add(name, State)
     If name = NPC_CROSS_MAP_PURSUIT_FEATURE Then
-        If State Then
-            Call LoadAdjacentTopology
-        Else
-            Call ResetAdjacentTopology
-        End If
+        ' Visibility shares topology but does not depend on pursuit policy.
+        Call LoadAdjacentTopology()
     End If
 End Sub
 

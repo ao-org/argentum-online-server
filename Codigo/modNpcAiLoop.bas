@@ -93,6 +93,7 @@ Public Function NpcRequiresAiUpdate(ByVal NpcIndex As Integer) As Boolean
         If .pos.Map <= 0 Or .pos.Map > NumMaps Then Exit Function
         NpcRequiresAiUpdate = MapInfo(.pos.Map).NumUsers > 0 Or _
                               MapInfo(.pos.Map).ForceUpdate Or _
-                              .CrossMapRoute.Mode <> eNpcCrossMapRouteNone
+                              .CrossMapRoute.Mode <> eNpcCrossMapRouteNone Or _
+                              IsAdjacentNpcObserved(NpcIndex)
     End With
 End Function

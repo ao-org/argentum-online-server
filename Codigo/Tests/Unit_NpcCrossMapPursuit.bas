@@ -25,6 +25,11 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc respawn day boundaries are inclusive", test_respawn_schedule_boundaries())
     Call UnitTesting.RunTest("npc invalid respawn schedule remains compatible", test_respawn_schedule_invalid())
     Call UnitTesting.RunTest("npc scheduled initial spawn waits for a free origin", test_scheduled_initial_spawn_requires_free_origin())
+    Call UnitTesting.RunTest("adjacent visibility includes north seam", AdjacentNpcInsideInterest(50, 11, 50, 90, 0, -80))
+    Call UnitTesting.RunTest("adjacent visibility includes west seam", AdjacentNpcInsideInterest(14, 50, 87, 50, -74, 0))
+    Call UnitTesting.RunTest("adjacent visibility rejects distant NPC", Not AdjacentNpcInsideInterest(50, 50, 50, 50, 74, 0))
+    Call UnitTesting.RunTest("adjacent visibility includes radius boundary", AdjacentNpcInsideInterest(50, 50, 74, 68, 0, 0))
+    Call UnitTesting.RunTest("adjacent visibility excludes outside radius", Not AdjacentNpcInsideInterest(50, 50, 75, 68, 0, 0))
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = True
 End Function
@@ -230,7 +235,12 @@ Private Function test_feature_toggle() As Boolean
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
     If Not AdjacentTopologyAvailable() Then GoTo RestoreToggle
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, False)
-    test_feature_toggle = Not AdjacentTopologyAvailable()
+    Dim destination As t_WorldPos
+    destination.Map = 35
+    destination.x = 50
+    destination.y = 90
+    test_feature_toggle = AdjacentTopologyAvailable() And _
+        Not IsVerifiedNpcSpatialTransition(34, 50, 10, destination, False)
 RestoreToggle:
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, originalValue)
 End Function

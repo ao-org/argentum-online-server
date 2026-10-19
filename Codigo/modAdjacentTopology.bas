@@ -14,10 +14,6 @@ Private mFailureLogged As Boolean
 
 Public Sub LoadAdjacentTopology()
     Dim topologyPath As String
-    If Not IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE) Then
-        Call ResetAdjacentTopology
-        Exit Sub
-    End If
     topologyPath = App.Path & "\Recursos\config\legacy_overworld_topology.json"
 
     If Not FileExist(topologyPath, vbNormal) Then
@@ -26,7 +22,7 @@ Public Sub LoadAdjacentTopology()
     End If
 
     If LoadAdjacentTopologyJson(FileText(topologyPath)) Then
-        Call LogInfoServidor("NPC cross-map topology loaded maps=" & mMaps.Count & " edges=" & mEdges.Count)
+        Call LogInfoServidor("Adjacent topology loaded maps=" & mMaps.Count & " edges=" & mEdges.Count)
     End If
 End Sub
 
@@ -240,6 +236,16 @@ Private Sub DisableAdjacentTopology(ByVal reason As String)
     mAvailable = False
     If Not mFailureLogged Then
         mFailureLogged = True
-        Call LogError("NPC cross-map pursuit disabled: " & reason)
+        Call LogError("Adjacent topology unavailable: " & reason)
     End If
 End Sub
+
+Public Function AdjacentMapNeighbors(ByVal MapId As Integer) As Collection
+    On Error GoTo Failed
+    If Not mAvailable Then Exit Function
+    If Not mNeighbors.Exists(CStr(MapId)) Then Exit Function
+    Set AdjacentMapNeighbors = mNeighbors(CStr(MapId))
+    Exit Function
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modAdjacentTopology.AdjacentMapNeighbors", Erl)
+End Function

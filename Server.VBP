@@ -48,6 +48,7 @@ Class=CColaArray; Codigo\cColaArray.cls
 Class=clsAntiMassClon; Codigo\clsAntiMassClon.cls
 Module=PathFinding; Codigo\PathFinding.bas
 Module=modAdjacentTopology; Codigo\modAdjacentTopology.bas
+Module=modAdjacentNpcVisibility; Codigo\modAdjacentNpcVisibility.bas
 Module=modNpcCrossMapPursuit; Codigo\modNpcCrossMapPursuit.bas
 Module=mdlCOmercioConUsuario; Codigo\mdlCOmercioConUsuario.bas
 Module=modBanco; Codigo\modBanco.bas
