@@ -1515,13 +1515,13 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
         .Stats.ELV = 1
         .Stats.GLD = 0
         .Stats.Banco = 0
+        .flags.DuracionEfecto = 0
         If .flags.TomoPocion Then
             For i = 1 To 4
                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
             Next i
             Call WriteFYA(UserIndex)
         End If
-        .flags.DuracionEfecto = 0
         Call VaciarInventario(UserIndex)
         Call ResetCd(UserList(UserIndex))
         Call RellenarInventario(UserIndex)
