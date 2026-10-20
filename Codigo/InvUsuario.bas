@@ -220,6 +220,7 @@ End Function
 
 Sub LimpiarInventario(ByVal UserIndex As Integer)
     On Error GoTo LimpiarInventario_Err
+    Call InvalidateInventoryDestruction(UserIndex)
     Dim j As Integer
     If EquippedTorchSlot(UserIndex) > 0 Then Call PublishEquippedTorch(UserIndex, False)
     With UserList(UserIndex)
@@ -357,9 +358,11 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl())
 End Sub
 
-Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
+Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer, Optional ByRef Removed As Boolean = False)
     On Error GoTo QuitarUserInvItem_Err
+    Removed = False
     If Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Sub
+    Call InvalidateInventoryDestruction(UserIndex, Slot)
     With UserList(UserIndex).invent.Object(Slot)
         If .amount <= Cantidad And .Equipped = 1 Then
             Call Desequipar(UserIndex, Slot)
@@ -374,6 +377,7 @@ Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByV
         End If
         UserList(UserIndex).flags.ModificoInventario = True
     End With
+    Removed = True
     Exit Sub
 QuitarUserInvItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
@@ -381,6 +385,11 @@ End Sub
 
 Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
     On Error GoTo UpdateUserInv_Err
+    If UpdateAll Then
+        Call InvalidateInventoryDestruction(UserIndex)
+    Else
+        Call InvalidateInventoryDestruction(UserIndex, Slot)
+    End If
     Dim NullObj As t_UserOBJ
     Dim LoopC   As Byte
     'Actualiza un solo slot
@@ -557,6 +566,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         MeterItemEnInventario = False
         Exit Function
     End If
+    Call InvalidateInventoryDestruction(UserIndex, Slot)
     If UserList(UserIndex).invent.Object(Slot).ObjIndex = 0 Then
         UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
     End If
@@ -613,6 +623,7 @@ Private Function TryInsertGroundObjectIntoInventorySlot(ByVal UserIndex As Integ
     MaxStack = GetMaxInvOBJ()
     If DestinationSlot < 1 Or DestinationSlot > UserList(UserIndex).CurrentInventorySlots Then Exit Function
     If GroundObj.ObjIndex <= 0 Or GroundObj.amount <= 0 Or MaxStack <= 0 Then Exit Function
+    Call InvalidateInventoryDestruction(UserIndex, DestinationSlot)
     With UserList(UserIndex).invent.Object(DestinationSlot)
         If .ObjIndex = 0 Then
             FreeCapacity = MaxStack
@@ -739,11 +750,13 @@ PickObj_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObjAt", Erl)
 End Sub
 
-Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType)
+Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte, Optional ByVal bSkin As Boolean = False, Optional ByVal eSkinType As e_OBJType, Optional ByRef Completed As Boolean = False)
 
 Dim obj                         As t_ObjData
 
     On Error GoTo Desequipar_Err
+    Completed = False
+    If Not bSkin Then Call InvalidateInventoryDestruction(UserIndex, Slot)
 
     With UserList(UserIndex)
 
@@ -763,6 +776,7 @@ Dim obj                         As t_ObjData
                     Call PublishEquippedTorch(UserIndex, False)
                     Call UpdateUserInv(False, UserIndex, Slot)
                 End If
+                Completed = True
                 Exit Sub
             End If
 
@@ -949,6 +963,7 @@ Dim obj                         As t_ObjData
         End If
     End With
     
+    Completed = True
     Exit Sub
 Desequipar_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
@@ -1201,6 +1216,7 @@ Dim errordesc                   As String
 Dim Ropaje                      As Integer
 
     On Error GoTo ErrHandler
+    If Not bSkin Then Call InvalidateInventoryDestruction(UserIndex, Slot)
     With UserList(UserIndex)
         If Slot > get_num_inv_slots_from_tier(.Stats.tipoUsuario) Then
             'Patreon slot

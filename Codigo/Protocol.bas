@@ -926,6 +926,10 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleHooTargetedSpellCast(UserIndex)
         Case ClientPacketID.eHooHouseDoorAction
             Call HandleHooHouseDoorAction(UserIndex)
+        Case ClientPacketID.eHooInventoryDestructionPrepare
+            Call HandleInventoryDestructionPrepare(UserIndex, reader)
+        Case ClientPacketID.eHooInventoryDestructionConfirm
+            Call HandleInventoryDestructionConfirm(UserIndex, reader)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -1229,6 +1233,7 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
     End If
+    SupportedMask = SupportedMask Or HOO_CAP_INVENTORY_DESTRUCTION_V1
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 
@@ -6595,6 +6600,9 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim Equipado3            As Boolean
         
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
+        ' Invalidate even if a swap/merge eventually restores identical bytes.
+        Call InvalidateInventoryDestruction(UserIndex, SlotViejo)
+        Call InvalidateInventoryDestruction(UserIndex, SlotNuevo)
         
         'Reparacion de caña de pescar con hilo
         If TryRepairFishingRod(UserIndex, SlotViejo, SlotNuevo) Then Exit Sub
@@ -6778,6 +6786,17 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub DestructionTestMoveItem(ByVal UserIndex As Integer, ByRef Payload() As Byte)
+    Dim previous As Network.reader
+    Set previous = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    Call HandleMoveItem(UserIndex)
+    Set reader = previous
+End Sub
+#End If
 
 Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides

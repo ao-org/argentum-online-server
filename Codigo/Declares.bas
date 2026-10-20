@@ -3003,6 +3003,44 @@ Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
 ' &H10& belonged to the retired magic-orb extension; never reuse its capability.
+' &H20& belonged to the retired taming-result negotiation; never reuse it.
+Public Const HOO_CAP_INVENTORY_DESTRUCTION_V1 As Long = &H40&
+Public Const HOO_FEATURE_INVENTORY_DESTRUCTION_V1 As String = "hoo-inventory-destruction-v1"
+
+Public Enum e_InventoryDestructionCode
+    DestroyOkay = 0
+    DestroyUnsupported = 1
+    DestroyInvalidRequest = 2
+    DestroyUnavailable = 3
+    DestroyDead = 4
+    DestroyBusy = 5
+    DestroyActiveBoat = 6
+    DestroyActiveMount = 7
+    DestroyEventObjective = 8
+    DestroyStackChanged = 9
+    DestroyExpired = 10
+    DestroyInvalidToken = 11
+    DestroyRateLimited = 12
+    DestroyInternalFailure = 13
+End Enum
+
+Public Type t_InventoryDestruction
+    RequestId As Long
+    Token(0 To 15) As Byte
+    Slot As Byte
+    Item As t_UserOBJ
+    EffectiveElementalTags As Long
+    Quantity As Long
+    OwnerVersion As Integer
+    OwnerId As Long
+    PreparedAt As Long
+    LastPrepareAt As Long
+    HasPrepareTime As Boolean
+    Prepared As Boolean
+    Invalidated As Boolean
+    Completed As Boolean
+    Result As e_InventoryDestructionCode
+End Type
 
 Public Enum e_HooTamingResult
     eHooTamingResult_Success = 0
@@ -3096,6 +3134,7 @@ Public Type t_User
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
     HooCapabilities As t_HooClientCapabilities
+    InventoryDestruction As t_InventoryDestruction
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters
