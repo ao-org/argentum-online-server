@@ -83,6 +83,7 @@ Public Sub ClearNpcRef(ByRef NpcRef As t_NpcReference)
 End Sub
 
 Public Sub IncreaseNpcVersionId(ByVal NpcIndex As Integer)
+    Call RevokeNpcBow(NpcIndex)
     With NpcList(NpcIndex)
         If .VersionId > 32760 Then
             .VersionId = 0
@@ -123,6 +124,7 @@ Public Function GetNextAvailableNpc() As Integer
         Exit Function
     End If
     GetNextAvailableNpc = IdNpcLibres.IndexInfo(IdNpcLibres.currentIndex)
+    Call RevokeNpcBow(GetNextAvailableNpc)
     IdNpcLibres.currentIndex = IdNpcLibres.currentIndex - 1
     If NpcList(GetNextAvailableNpc).flags.NPCActive Then
         Call TraceError(Err.Number, "Trying to active the same id twice", "NPCs.GetNextAvailableNpc", Erl)
@@ -642,6 +644,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             'Para darle prioridad a ciertos simbolos
 
             Dim body As Integer
+            Dim queued As Boolean
             'Si está muerto el usuario y en zona insegura
             If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).pos.Map).Seguro = 0 Then
                 'Solamente mando el body si es de tipo revividor.
@@ -655,7 +658,8 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             End If
                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
                         .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
-                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero)
+                        .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero, queued)
+            If queued Then Call NpcBowCharacterCreated(sndIndex, NpcIndex, body)
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
                 Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
             End If
@@ -712,6 +716,7 @@ End Sub
 
 Sub EraseNPCChar(ByVal NpcIndex As Integer)
     On Error GoTo EraseNPCChar_Err
+    Call RevokeNpcBow(NpcIndex)
     If NpcList(NpcIndex).Char.charindex <> 0 Then CharList(NpcList(NpcIndex).Char.charindex) = 0
     If NpcList(NpcIndex).Char.charindex = LastChar Then
         Do Until CharList(LastChar) > 0
