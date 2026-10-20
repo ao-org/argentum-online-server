@@ -171,6 +171,7 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)
         If .VersionId > 32760 Then
@@ -884,6 +885,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         Call ActualizarVelocidadDeUsuario(UserIndex)
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call MakeUserChar(True, UserList(UserIndex).pos.Map, UserIndex, UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, 0)
+        Call ResumeNpcBowAfterArea(UserIndex)
     End With
     Exit Sub
 RevivirUsuario_Err:
@@ -1752,6 +1754,7 @@ End Sub
 '
 Sub UserDie(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call SuspendNpcBow(UserIndex)
     Call InvalidateInventoryDestruction(UserIndex)
     Call ClearPendingTargetableItem(UserIndex)
     Dim i  As Long

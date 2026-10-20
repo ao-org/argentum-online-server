@@ -631,6 +631,10 @@ Public Function PacketID_to_string(ByVal PacketId As ClientPacketID) As String
             PacketID_to_string = "eHooInventoryDestructionPrepare"
         Case ClientPacketID.eHooInventoryDestructionConfirm
             PacketID_to_string = "eHooInventoryDestructionConfirm"
+        Case ClientPacketID.eHooBowSubscribe
+            PacketID_to_string = "eHooBowSubscribe"
+        Case ClientPacketID.eHooBowAttack
+            PacketID_to_string = "eHooBowAttack"
         Case ClientPacketID.eActionOnGroupFrame
             PacketID_to_string = "eActionOnGroupFrame"
         Case ClientPacketID.eSetHotkeySlot

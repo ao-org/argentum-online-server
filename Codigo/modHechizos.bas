@@ -2203,6 +2203,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Invisibility) Then
         Call InfoHechizo(UserIndex)
         NpcList(NpcIndex).flags.invisible = 1
+        Call RevokeNpcBow(NpcIndex)
         b = True
     End If
     If Hechizos(hIndex).Envenena > 0 Then

@@ -241,6 +241,12 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
     End Select
     ProbExito = MaximoInt(5, MinimoInt(95, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
+    #If UNIT_TEST = 1 Then
+        If aType = Ranged Then
+            If Unit_NpcBow.ForceMiss(UserIndex, NpcIndex) Then UserImpactoNpc = False
+            If Unit_NpcBow.ForceHit(UserIndex, NpcIndex) Then UserImpactoNpc = True
+        End If
+    #End If
     If UserImpactoNpc Then
         Call SubirSkillDeArmaActual(UserIndex)
     End If
@@ -366,8 +372,9 @@ GetUserDamageWithItem_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamageWithItem", Erl)
 End Function
 
-Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
+Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType, Optional ByRef Completed As Boolean = False)
     On Error GoTo UserDamageNpc_Err
+    Completed = False
     With UserList(UserIndex)
         Dim Damage As Long, DamageBase As Long, DamageExtra As Long, Color As Long, DamageStr As String
         If .invent.EquippedWeaponObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).npcType = e_NPCType.Dragon Then
@@ -498,6 +505,7 @@ Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer,
             End If
         End If
     End With
+    Completed = True
     Exit Sub
 UserDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
@@ -807,8 +815,13 @@ NpcAtacaNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 End Sub
 
-Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType)
+Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal aType As AttackType, Optional ByRef AttemptCommitted As Boolean = False, Optional ByRef AttemptFinished As Boolean = False, Optional ByVal ChargeBowAttempt As Boolean = False)
     On Error GoTo UsuarioAtacaNpc_Err
+    AttemptCommitted = False
+    AttemptFinished = False
+    Dim targetVersion As Integer, targetChar As Integer, damageCompleted As Boolean
+    targetVersion = NpcList(NpcIndex).VersionId
+    targetChar = NpcList(NpcIndex).Char.charindex
     'Si el npc es solo atacable para clanes y el usuario no tiene clan, le avisa y sale de la funcion
     If NpcList(NpcIndex).OnlyForGuilds = 1 And UserList(UserIndex).GuildIndex <= 0 Then
         'Msg2001=Debes pertenecer a un clan para atacar a este NPC
@@ -819,6 +832,11 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
     Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
     If UserAttackInteractionResult.CanAttack Then
+        If ChargeBowAttempt Then
+            If aType <> Ranged Then Exit Sub
+            If Not CommitNpcBowCosts(UserIndex) Then Exit Sub
+        End If
+        AttemptCommitted = True
         If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
     Else
         Exit Sub
@@ -864,7 +882,17 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             UserList(UserIndex).flags.Mimetizado = e_EstadoMimetismo.FormaBichoSinProteccion
         End If
         ' Resta la vida del NPC
-        Call UserDamageNpc(UserIndex, NpcIndex, aType)
+        Call UserDamageNpc(UserIndex, NpcIndex, aType, damageCompleted)
+        If ChargeBowAttempt And Not damageCompleted Then
+            Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
+            Exit Sub
+        End If
+        ' A killing arrow may release/reuse this slot. Skip target visuals, but
+        ' retain paired effect callbacks (including attacker damage restoration).
+        If aType = Ranged Then
+            If Not NpcList(NpcIndex).flags.NPCActive Or NpcList(NpcIndex).VersionId <> targetVersion Or _
+                NpcList(NpcIndex).Char.charindex <> targetChar Then GoTo RangedHitFinished
+        End If
         Dim Arma          As Integer: Arma = UserList(UserIndex).invent.EquippedWeaponObjIndex
         Dim municionIndex As Integer: municionIndex = UserList(UserIndex).invent.EquippedMunitionObjIndex
         Dim Particula     As Integer
@@ -885,6 +913,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                 End If
             End If
         End If
+RangedHitFinished:
         Call EffectsOverTime.TargetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
     Else
         Call EffectsOverTime.TargetFailedAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
@@ -894,9 +923,67 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, , , IIf(UserList(UserIndex).flags.invisible + UserList( _
                 UserIndex).flags.Oculto > 0, False, True)))
     End If
+    AttemptFinished = True
     Exit Sub
 UsuarioAtacaNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
+End Sub
+
+Public Function ResolveNpcBowShot(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ProjectileType As Byte, ByRef Committed As Boolean, Optional ByVal ChargeBowAttempt As Boolean = False) As Boolean
+    On Error GoTo Failed
+    Dim targetPos As t_WorldPos, finished As Boolean
+    targetPos = NpcList(NpcIndex).pos
+    Call UsuarioAtacaNpc(UserIndex, NpcIndex, Ranged, Committed, finished, ChargeBowAttempt)
+    If ChargeBowAttempt Then
+        If Not finished Or Not Committed Then Exit Function
+    End If
+    If ProjectileType > 0 And UserList(UserIndex).flags.Oculto = 0 Then
+        Call SendData(ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, targetPos.x, targetPos.y, ProjectileType))
+    End If
+    If UserList(UserIndex).flags.AdminInvisible = 0 Then
+        Call SendData(ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
+    End If
+    ResolveNpcBowShot = finished And Committed
+    Exit Function
+Failed:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ResolveNpcBowShot", Erl)
+End Function
+
+' Shared completion for the legacy tile path and identity-based NPC shots.
+' Keep sound, ammunition, free-zone rules and item cooldown semantics together.
+Public Sub FinishProjectileAttempt(ByVal UserIndex As Integer, ByRef WeaponData As t_ObjData, ByVal Consumed As Boolean, Optional ByRef Completed As Boolean = False, Optional ByVal RequireRemoval As Boolean = False)
+    Dim slot As Integer, removed As Boolean
+    Completed = False
+    With UserList(UserIndex).invent
+        If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
+            slot = .EquippedMunitionSlot
+            If WeaponData.CreaWav > 0 Then
+                Call SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(WeaponData.CreaWav, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+            End If
+            If slot <> 0 Then
+                If Consumed And Not IsConsumableFreeZone(UserIndex) Then
+                    Call QuitarUserInvItem(UserIndex, CByte(slot), 1, removed)
+                    ' The identity request must not acknowledge a swallowed removal error.
+                    ' Legacy callers retain their existing completion behaviour.
+                    If RequireRemoval And Not removed Then Exit Sub
+                End If
+                If .Object(slot).amount > 0 Then
+                    .EquippedMunitionSlot = slot
+                    .EquippedMunitionObjIndex = .Object(slot).ObjIndex
+                    .Object(slot).Equipped = 1
+                Else
+                    .EquippedMunitionSlot = 0
+                    .EquippedMunitionObjIndex = 0
+                End If
+                Call UpdateUserInv(False, UserIndex, CByte(slot))
+            ElseIf RequireRemoval And Consumed Then
+                Exit Sub
+            End If
+        ElseIf Consumed Then
+            Call UpdateCd(UserIndex, WeaponData.cdType)
+        End If
+    End With
+    Completed = True
 End Sub
 
 Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
