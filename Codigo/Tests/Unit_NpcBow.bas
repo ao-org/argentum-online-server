@@ -26,7 +26,7 @@ Public Sub InitializeTestWorld()
     Set SvrConfig = New ServerConfig
     Call SvrConfig.LoadSettings(App.Path & "\Example.Configuracion.ini")
     Call LoadFeatureToggles()
-    ReDim UserList(1 To 2)
+    ReDim UserList(1 To 4)
     ReDim ObjData(0 To 4000)
     ReDim MapInfo(1 To 300)
     ReDim MapData(1 To 100, 1 To 100, 1 To 300)
@@ -105,6 +105,7 @@ Private Sub Fixture()
     forceHitRoll = False
     failAmmoAfterShot = False
     failDamageAfterHit = False
+    BowTestFailBindingIndex = False
     Set packets = New Collection
     nowTick = GetTickCountRaw()
     With UserList(u)
@@ -574,11 +575,144 @@ Private Sub TestCase(ByVal index As Integer)
                 UserList(u).NpcBow.WindowCount = 5
                 Call Expect(LenB(NpcBowDiagnostic(u, reply)) = 0, "trace bounded independently of gameplay")
             #End If
+        Case 54 To 62
+            Call TestReverseObservers(index)
     End Select
     If index >= 16 And index <= 25 Then
         Call Expect(UserList(u).invent.Object(2).amount = IIf(index = 17, 0, 20), "rejection preserves ammo")
         Call Expect(UserList(u).Stats.MinSta = IIf(index = 16, 9, 100), "rejection preserves energy")
     End If
+End Sub
+
+Private Sub TestReverseObservers(ByVal index As Integer)
+    On Error GoTo Failed
+    Dim a As Integer, b As Integer, i As Long, baseline As Long
+    Dim savedA As t_User, savedB As t_User, emptyState As t_NpcBowState
+    Dim saved As Boolean, failure As String, oldToken As t_BowIdentity
+    For i = UBound(UserList) To 1 Step -1
+        If i <> u And Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            If a = 0 Then
+                a = i
+            Else
+                b = i
+                Exit For
+            End If
+        End If
+    Next i
+    Call Expect(a > 0 And b > 0, "two isolated observer slots")
+    savedA = UserList(a): savedB = UserList(b): saved = True
+    UserList(a) = UserList(u): UserList(a).NpcBow = emptyState: UserList(a).Id = 102
+    UserList(b) = UserList(u): UserList(b).NpcBow = emptyState: UserList(b).Id = 103
+    UserList(b).pos.Map = m - 1
+    Call SubscribeNpcBow(a)
+    Call SubscribeNpcBow(b)
+    Call Expect(UserList(b).NpcBow.Ready And Not UserList(b).NpcBow.BindingIndex.Exists(n), "unrelated-map subscriber has no binding")
+    baseline = BowTestObserverBuckets()
+    Call Expect(BowTestObservers(n) = 2, "two observers indexed")
+    Call BowTestVisits(True)
+    Select Case index
+        Case 54
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 2 And BowTestObservers(n) = 2, "movement visits only actual observers, not other maps")
+            Call MakeNPCChar(False, u, n, m, 51, 50)
+            Call MakeNPCChar(False, a, n, m, 51, 50)
+            Call Expect(BowTestObservers(n) = 2, "duplicate creates do not duplicate reverse membership")
+        Case 55
+            UserList(a).pos.y = 1
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 2 And BowTestObservers(n) = 1, "departure removes one observer while iterating")
+            Call Expect(Not UserList(a).NpcBow.BindingIndex.Exists(n) And UserList(u).NpcBow.BindingIndex.Exists(n), "departure keeps only matching forward binding")
+            Call BowTestVisits(True)
+            NpcList(n).pos.y = 100
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 1 And BowTestObservers(n) = 0, "next move visits only remaining observer")
+        Case 56
+            UserList(a).ConnectionDetails.ConnIDValida = False
+            Call CloseSocketSL(a)
+            Call Expect(BowTestObservers(n) = 1, "disconnect removes reverse membership")
+            Call SuspendNpcBow(u)
+            Call Expect(BowTestObservers(n) = 0 And BowTestObserverBuckets() = baseline - 1, "context retirement removes empty bucket")
+            Call ResumeNpcBowAfterArea(u)
+            Call Expect(BowTestObservers(n) = 1, "new context restores exactly one membership")
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 1, "no disconnected or retired observer visited")
+        Case 57
+            oldToken = UserList(u).NpcBow.Bindings(UserList(u).NpcBow.BindingIndex(n)).Token
+            Call Expect(ReleaseNpc(n, eDie), "real NPC release")
+            Call Expect(BowTestVisits() = 2 And BowTestObservers(n) = 0, "release revokes both observers")
+            Call Expect(Not UserList(u).NpcBow.BindingIndex.Exists(n) And Not UserList(a).NpcBow.BindingIndex.Exists(n), "release clears both forward entries")
+            Call Expect(GetNextAvailableNpc() = n, "reuse exact released NPC slot")
+            NpcList(n).flags.NPCActive = True
+            Call MakeNPCChar(False, u, n, m, 51, 50)
+            Call Expect(BowTestObservers(n) = 1, "reuse has only newly delivered observer")
+            With UserList(u).NpcBow.Bindings(UserList(u).NpcBow.BindingIndex(n)).Token
+                Call Expect(.Low <> oldToken.Low Or .High <> oldToken.High, "reused NPC has new identity")
+            End With
+            Call BowTestVisits(True)
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 1, "reuse never visits obsolete observers")
+        Case 58
+            failPacket = ServerPacketID.eHooBowBinding
+            Call MakeNPCChar(False, a, n, m, 51, 50)
+            Call Expect(BowTestObservers(n) = 1 And Not UserList(a).NpcBow.BindingIndex.Exists(n), "failed refresh retires both indexes even if revoke fails")
+            Call MakeNPCChar(False, a, n, m, 51, 50)
+            Call Expect(BowTestObservers(n) = 1, "failed new binding publishes no reverse entry")
+            Call RevokeNpcBow(n)
+            Call Expect(BowTestObservers(n) = 0 And Not UserList(u).NpcBow.BindingIndex.Exists(n), "failed revoke delivery still retires authorization")
+            Call ClearNpcBow(a)
+            failPacket = ServerPacketID.eHooBowContext
+            Call SubscribeNpcBow(a)
+            Call Expect(Not UserList(a).NpcBow.Subscribed And BowTestObservers(n) = 0, "failed context starts with no observer")
+        Case 59
+            Call ClearNpcBow(a)
+            BowTestFailBindingIndex = True
+            Call SubscribeNpcBow(a)
+            BowTestFailBindingIndex = False
+            Call Expect(Not UserList(a).NpcBow.Subscribed And BowTestObservers(n) = 1, "partial index insertion clears only failed context")
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 1 And UserList(u).NpcBow.BindingIndex.Exists(n), "failed issuance leaves no orphan observer")
+        Case 60
+            Call ClearNpcBow(a)
+            Call ClearNpcBow(u)
+            For i = 1 To 40
+                Call SubscribeNpcBow(u)
+                Call SubscribeNpcBow(a)
+                Call Expect(BowTestObservers(n) = 2, "cycle binds exactly two")
+                Call RevokeNpcBow(n)
+                Call ClearNpcBow(u)
+                Call ClearNpcBow(a)
+                Call Expect(BowTestObserverBuckets() = baseline - 1, "cycle returns reverse index to baseline")
+            Next i
+            Call Expect(BowTestVisits() = 80, "cycles revoke exactly actual observers")
+        Case 61
+            UserList(a).VersionId = UserList(a).VersionId + 1
+            Call PruneNpcBowActor(n)
+            Call Expect(BowTestVisits() = 2 And BowTestObservers(n) = 1 And Not UserList(a).NpcBow.Subscribed, "stale session removed without affecting current observer")
+            Call SubscribeNpcBow(a)
+            Call Expect(BowTestObservers(n) = 2, "reused user slot has one new membership")
+            UserList(a).pos.y = 1
+            Call PruneNpcBowUser(a)
+            Call Expect(BowTestObservers(n) = 1, "user-area prune detaches reverse index")
+        Case 62
+            Call RevokeNpcBow(n)
+            Call BowTestVisits(True)
+            Call PruneNpcBowActor(n)
+            Call RevokeNpcBow(n)
+            Call Expect(BowTestVisits() = 0 And BowTestObserverBuckets() = baseline - 1, "unobserved fast path does not visit any subscriber")
+    End Select
+Cleanup:
+    BowTestFailBindingIndex = False
+    failPacket = -1
+    If saved Then
+        Call ClearNpcBow(a)
+        Call ClearNpcBow(b)
+        UserList(a) = savedA: UserList(b) = savedB
+    End If
+    If LenB(failure) > 0 Then Err.Raise vbObjectError + 181, "NPC bow observer test", failure
+    Exit Sub
+Failed:
+    failure = CStr(Err.Number) & ": " & Err.Description
+    Resume Cleanup
 End Sub
 
 Private Sub RunCase(ByVal index As Integer)
@@ -620,7 +754,7 @@ Public Function test_suite_npc_bow() As Boolean
     saved = True
     IntervaloFlechasCazadores = 500: IntervaloMagiaGolpe = 700: IntervaloGolpeMagia = 800
     capturing = True
-    For i = 1 To 53
+    For i = 1 To 62
         Call RunCase(i)
     Next i
     test_suite_npc_bow = UnitTesting.GetFailedTests() = before

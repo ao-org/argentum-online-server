@@ -65,8 +65,14 @@ context, clearing the request cache or restarting a shot.
 
 Loaded-area checks use the same geometry as ModAreas. Departed bindings are
 revoked before AreaChanged, which implicitly prunes HOO actors. Every NPC move
-also checks subscribers, even when no area-cell boundary was crossed. Deletion,
+also checks its bound observers, even when no area-cell boundary was crossed. Deletion,
 NPC allocation/release, invisibility and wild-to-pet transitions revoke bindings.
+An NPC-to-observers reverse index limits movement pruning and lifetime revocation
+to users holding that NPC's binding, rather than every subscribed user. NPCs
+without observers take a dictionary-lookup-only fast path. Both directions are
+retired before a revoke is sent; context cleanup removes all reverse memberships
+and empty buckets. Issuance failures unwind partial index insertion. Iteration
+uses a snapshot of observer keys so removals cannot skip another observer.
 Attacks independently recheck map, tile occupancy, health, live character index,
 ownership, version and token. A creature returning to view gets a fresh token
 and does not resume an earlier repeated attack.
@@ -150,8 +156,8 @@ Native Windows validation (2026-10-20):
 
 | Configuration | Native build | Focused NPC bow | Full existing runner |
 | --- | --- | ---: | ---: |
-| `DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 53/53 | 532/532 |
-| `DEBUGGING=1:PYMMO=0:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 53/53 | 532/532 |
+| `DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 62/62 | 541/541 |
+| `DEBUGGING=1:PYMMO=0:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 62/62 | 541/541 |
 | `DEBUGGING=0:PYMMO=1:UNIT_TEST=0:UNLOCK_CPU=1` | Passed | Not applicable | Not applicable |
 | `DEBUGGING=0:PYMMO=0:UNIT_TEST=0:UNLOCK_CPU=1` | Passed | Not applicable | Not applicable |
 
@@ -162,6 +168,10 @@ resources, a fresh empty development database, and loopback port 17669.
 No production database was used. Tests include real killing-hit cleanup,
 deterministic misses, final-arrow depletion, free-consumable zones, cached
 post-commit damage/ammunition failures, and exact high-bit identity wire bytes.
+Reverse-index tests count actual observer visits, not elapsed time: multiple
+observers, unrelated-map subscribers, zero observers, departure, disconnect,
+context retirement, NPC release/reuse, failed sends and partial index insertion
+are covered. Forty bind/revoke cycles return the reverse index to its baseline.
 
 Live coordinated checks are still required: moving NPCs, final killing shots,
 rapid selection changes with delayed replies, map travel, death/resurrection,

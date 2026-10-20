@@ -3,8 +3,32 @@ Option Explicit
 
 Private nextIdentity As t_BowIdentity
 Private identitiesExhausted As Boolean
-Private subscribers As New Dictionary
+' Sparse reverse index: NPC -> users with a live forward binding.
+Private observersByNpc As New Dictionary
 Private Const REQUESTS_PER_SECOND As Integer = 32
+#If UNIT_TEST = 1 Then
+Private observerVisits As Long
+Public BowTestFailBindingIndex As Boolean
+#End If
+
+Private Sub AddObserver(ByVal npcIndex As Integer, ByVal userIndex As Integer)
+    Dim observers As Dictionary
+    If observersByNpc.Exists(npcIndex) Then
+        Set observers = observersByNpc(npcIndex)
+    Else
+        Set observers = New Dictionary
+        Call observersByNpc.Add(npcIndex, observers)
+    End If
+    If Not observers.Exists(userIndex) Then Call observers.Add(userIndex, True)
+End Sub
+
+Private Sub RemoveObserver(ByVal npcIndex As Integer, ByVal userIndex As Integer)
+    If Not observersByNpc.Exists(npcIndex) Then Exit Sub
+    Dim observers As Dictionary
+    Set observers = observersByNpc(npcIndex)
+    If observers.Exists(userIndex) Then Call observers.Remove(userIndex)
+    If observers.Count = 0 Then Call observersByNpc.Remove(npcIndex)
+End Sub
 
 ' One process-wide unsigned 64-bit sequence covers contexts and binding tokens.
 ' A restarted server has no surviving transport sessions; exhaustion fails closed.
@@ -26,15 +50,35 @@ End Function
 
 Public Sub ClearNpcBow(ByVal userIndex As Integer, Optional ByVal PreserveBudget As Boolean = False)
     Dim emptyState As t_NpcBowState
+    Dim i As Integer
+    ' Use occupied slots, not BindingIndex: issuance may fail between the two
+    ' dictionary inserts. Every partial binding must still be detachable.
+    With UserList(userIndex).NpcBow
+        For i = 1 To .BindingCount
+            If .Bindings(i).NpcIndex <> 0 Then Call RemoveObserver(.Bindings(i).NpcIndex, userIndex)
+        Next i
+    End With
     If PreserveBudget Then
         emptyState.WindowStart = UserList(userIndex).NpcBow.WindowStart
         emptyState.WindowCount = UserList(userIndex).NpcBow.WindowCount
     End If
     UserList(userIndex).NpcBow = emptyState
-    If subscribers.Exists(userIndex) Then Call subscribers.Remove(userIndex)
 End Sub
 
 #If UNIT_TEST = 1 Then
+Public Function BowTestObservers(ByVal npcIndex As Integer) As Long
+    If observersByNpc.Exists(npcIndex) Then BowTestObservers = observersByNpc(npcIndex).Count
+End Function
+
+Public Function BowTestObserverBuckets() As Long
+    BowTestObserverBuckets = observersByNpc.Count
+End Function
+
+Public Function BowTestVisits(Optional ByVal reset As Boolean = False) As Long
+    BowTestVisits = observerVisits
+    If reset Then observerVisits = 0
+End Function
+
 Public Function BowTestIdentityWrap() As Boolean
     Dim saved As t_BowIdentity, wasExhausted As Boolean, value As t_BowIdentity
     saved = nextIdentity
@@ -134,6 +178,8 @@ Failed:
 End Sub
 
 Private Sub RevokeForUser(ByVal userIndex As Integer, ByVal npcIndex As Integer)
+    On Error GoTo Failed
+    Call RemoveObserver(npcIndex, userIndex)
     With UserList(userIndex).NpcBow
         If .BindingIndex Is Nothing Then Exit Sub
         If Not .BindingIndex.Exists(npcIndex) Then Exit Sub
@@ -145,12 +191,23 @@ Private Sub RevokeForUser(ByVal userIndex As Integer, ByVal npcIndex As Integer)
         .Bindings(slot) = emptyBinding
         If CurrentSession(userIndex) Then Call WriteBinding(userIndex, 2, old)
     End With
+    Exit Sub
+Failed:
+    Call ClearNpcBow(userIndex, True)
+    Call TraceError(Err.Number, Err.Description, "NpcBow.RevokeForUser", Erl)
 End Sub
 
 Public Sub RevokeNpcBow(ByVal npcIndex As Integer)
     On Error GoTo Failed
-    Dim key As Variant
-    For Each key In subscribers.Keys
+    If Not observersByNpc.Exists(npcIndex) Then Exit Sub
+    Dim key As Variant, keys As Variant, observers As Dictionary
+    Set observers = observersByNpc(npcIndex)
+    ' Keys is a snapshot; revocation removes entries (including the bucket).
+    keys = observers.Keys
+    For Each key In keys
+        #If UNIT_TEST = 1 Then
+            observerVisits = observerVisits + 1
+        #End If
         Call RevokeForUser(CInt(key), npcIndex)
     Next key
     Exit Sub
@@ -180,13 +237,32 @@ End Sub
 ' Called on every NPC movement, even when its area-cell identity is unchanged.
 Public Sub PruneNpcBowActor(ByVal npcIndex As Integer)
     On Error GoTo Failed
-    Dim key As Variant
-    For Each key In subscribers.Keys
-        If Not VisibleNpc(CInt(key), npcIndex) Then Call RevokeForUser(CInt(key), npcIndex)
+    If Not observersByNpc.Exists(npcIndex) Then Exit Sub
+    Dim key As Variant, keys As Variant, observers As Dictionary
+    Set observers = observersByNpc(npcIndex)
+    keys = observers.Keys
+    For Each key In keys
+        #If UNIT_TEST = 1 Then
+            observerVisits = observerVisits + 1
+        #End If
+        Call PruneNpcBowObserver(CInt(key), npcIndex)
     Next key
     Exit Sub
 Failed:
     Call TraceError(Err.Number, Err.Description, "NpcBow.PruneActor", Erl)
+End Sub
+
+Private Sub PruneNpcBowObserver(ByVal userIndex As Integer, ByVal npcIndex As Integer)
+    On Error GoTo Failed
+    If Not CurrentSession(userIndex) Then
+        Call ClearNpcBow(userIndex, True)
+    ElseIf Not VisibleNpc(userIndex, npcIndex) Then
+        Call RevokeForUser(userIndex, npcIndex)
+    End If
+    Exit Sub
+Failed:
+    Call ClearNpcBow(userIndex, True)
+    Call TraceError(Err.Number, Err.Description, "NpcBow.PruneObserver", Erl)
 End Sub
 
 ' Only MakeNPCChar calls this, after its owner-specific Create was queued.
@@ -217,9 +293,9 @@ Public Sub NpcBowCharacterCreated(ByVal userIndex As Integer, ByVal npcIndex As 
         Next i
         If slot = 0 Then
             If .BindingCount >= MaxNPCs Then Exit Sub
-            .BindingCount = .BindingCount + 1
-            slot = .BindingCount
-            ReDim Preserve .Bindings(1 To .BindingCount)
+            slot = .BindingCount + 1
+            ReDim Preserve .Bindings(1 To slot)
+            .BindingCount = slot
         End If
         If Not AllocateBowIdentity(binding.Token) Then
             Call ClearNpcBow(userIndex, True)
@@ -230,6 +306,12 @@ Public Sub NpcBowCharacterCreated(ByVal userIndex As Integer, ByVal npcIndex As 
         binding.CharIndex = NpcList(npcIndex).Char.charindex
         If Not WriteBinding(userIndex, 1, binding) Then Exit Sub
         .Bindings(slot) = binding
+        ' No yield between publication and both index inserts. The occupied
+        ' slot lets ClearNpcBow unwind either partial insert on failure.
+        Call AddObserver(npcIndex, userIndex)
+        #If UNIT_TEST = 1 Then
+            If BowTestFailBindingIndex Then Err.Raise 5, "NpcBow test", "binding index insertion"
+        #End If
         Call .BindingIndex.Add(npcIndex, slot)
     End With
     Exit Sub
@@ -259,7 +341,6 @@ Public Sub SubscribeNpcBow(ByVal userIndex As Integer)
         Set .BindingIndex = New Dictionary
         .Subscribed = True
         .WantsSubscription = True
-        Call subscribers.Add(userIndex, True)
     End With
     If Not WriteContext(userIndex, 0) Then GoTo Abort
     Dim npcIndex As Integer, queued As Boolean
