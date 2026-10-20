@@ -171,6 +171,7 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)
         If .VersionId > 32760 Then
             .VersionId = 0
@@ -1422,6 +1423,7 @@ End Function
 
 Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object As t_UserOBJ)
     On Error GoTo ChangeUserInv_Err
+    Call InvalidateInventoryDestruction(UserIndex, Slot)
     UserList(UserIndex).invent.Object(Slot) = Object
     Call WriteChangeInventorySlot(UserIndex, Slot)
     Exit Sub
@@ -1750,6 +1752,7 @@ End Sub
 '
 Sub UserDie(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call InvalidateInventoryDestruction(UserIndex)
     Call ClearPendingTargetableItem(UserIndex)
     Dim i  As Long
     Dim aN As Integer
