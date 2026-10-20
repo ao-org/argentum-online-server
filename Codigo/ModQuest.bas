@@ -700,32 +700,32 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
         Select Case UserList(UserIndex).Faccion.Status
             Case e_Facciones.Ciudadano
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Citizen) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case e_Facciones.Armada
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalArmy) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case e_Facciones.consejo
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalCouncil) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case e_Facciones.Criminal
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Criminal) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case e_Facciones.Caos
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosLegion) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case e_Facciones.concilio
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosCouncil) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
                     Exit Function
                 End If
             Case Else
