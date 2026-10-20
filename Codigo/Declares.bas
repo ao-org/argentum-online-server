@@ -3004,12 +3004,10 @@ Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
 ' &H10& belonged to the retired magic-orb extension; never reuse its capability.
 ' &H20& belonged to the retired taming-result negotiation; never reuse it.
-Public Const HOO_CAP_INVENTORY_DESTRUCTION_V1 As Long = &H40&
-Public Const HOO_FEATURE_INVENTORY_DESTRUCTION_V1 As String = "hoo-inventory-destruction-v1"
 
 Public Enum e_InventoryDestructionCode
     DestroyOkay = 0
-    DestroyUnsupported = 1
+    DestroyUnsupported = 1 ' Reserved wire code; destruction is required, not negotiated.
     DestroyInvalidRequest = 2
     DestroyUnavailable = 3
     DestroyDead = 4

@@ -1233,7 +1233,6 @@ Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal R
     If IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_HOUSE_DOOR_ACTIONS_V1
     End If
-    SupportedMask = SupportedMask Or HOO_CAP_INVENTORY_DESTRUCTION_V1
     AcceptedHooCapabilityMask = RequestedMask And SupportedMask
 End Function
 

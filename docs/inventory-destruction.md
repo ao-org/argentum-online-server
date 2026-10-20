@@ -5,21 +5,14 @@ inventory slot. This permanently removes that quantity without rewards or a
 ground object. Drop bindings, `Intirable`, `Instransferible`, `Newbie`, the
 legacy DeleteItem packet and GM ground-object DestroyItems command are unchanged.
 
-## Deployment and capability
+## Deployment
 
-Deploy the server before the matching HOO client. The server advertises
-`hoo-inventory-destruction-v1` through the existing client toggles packet and
-accepts capability bit `0x40` in existing capability protocol version 1. Both
-prepare and confirm require that negotiated bit. **Do not reuse `0x10`: that
-bit is reserved for the retired orb extension, and `0x20` is reserved for
-retired taming-result negotiation.**
-
-This feature is an explicitly requested exception to the general policy against
-new capabilities. ProtocolGenerator remains retired: its companion change only
-documents and validates the additive ID contract, without regenerating templates
-or outputs (the legacy randomizer would renumber live IDs). The contract must
-remain synchronized with the server and coordinated HOO changes.
-Unrelated packets and capability gates are unchanged. No database changes exist.
+Destruction is part of the required HOO/server protocol. It has no capability
+bit, feature advertisement, acknowledgement gate or feature toggle. Deploy the
+matching server and HOO changes together; older servers do not implement these
+messages. Preparation and confirmation work without capability negotiation.
+Unrelated legacy packets, capabilities and toggles are unchanged. No database
+changes exist.
 
 ## Wire format
 
@@ -69,9 +62,10 @@ Result, in order:
 | Exact quantity | int32 |
 | Expiry seconds | int16 |
 
-Code 0 means prepared at stage 0 or removed at stage 1. Codes 1..13 are:
-Unsupported, InvalidRequest, Unavailable, Dead, Busy, ActiveBoat, ActiveMount,
-EventObjective, StackChanged, Expired, InvalidToken, RateLimited, InternalFailure.
+Code 0 means prepared at stage 0 or removed at stage 1. Code 1 is reserved
+(formerly Unsupported; never emitted). Codes 2..13 remain InvalidRequest,
+Unavailable, Dead, Busy, ActiveBoat, ActiveMount, EventObjective, StackChanged,
+Expired, InvalidToken, RateLimited, InternalFailure.
 Prepare success expires after 30 seconds; all other results carry expiry zero.
 An unknown confirm token is echoed with request ID zero and InvalidToken.
 Known-token results keep the original request identity. Error item fields may be
@@ -153,8 +147,10 @@ VB6.EXE /make /d DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1 /out build.log Ser
 server.exe --test-inventory-destruction
 ```
 
-The focused suite uses the real Aurora reader/writer, production handlers,
-ordinary inventory removal and real move/change paths. It captures outgoing
+The focused suite runs without negotiated capabilities and explicitly verifies
+successful unnegotiated preparation and confirmation. It uses the real Aurora
+reader/writer, production handlers, ordinary inventory removal and real
+move/change paths. It captures outgoing
 packets only under UNIT_TEST=1. The fixture restores the chosen idle user's
 state and object definitions before returning to the full suite.
 
@@ -178,4 +174,5 @@ cancel/input focus, each equipment family (including torch and stat accessories)
 NPC/player trade, active navigation/mounting versus spares, live event objectives,
 packet loss/late replies, session switching, and normal save/relog. Verify that
 the exact quantity disappears, no reward/ground object appears, house ownership
-is unaffected, and old clients cannot invoke the gated endpoint.
+is unaffected, and both required-protocol endpoints work without a capability
+handshake.

@@ -50,9 +50,6 @@ Private Sub Fixture()
         .invent.Object(1).ObjIndex = 1
         .invent.Object(1).amount = 10
         .Stats.GLD = 731
-        .HooCapabilities.Negotiated = True
-        .HooCapabilities.ProtocolVersion = 1
-        .HooCapabilities.CapabilityMask = HOO_CAP_INVENTORY_DESTRUCTION_V1
     End With
     Set packets = New Collection
 End Sub
@@ -198,9 +195,11 @@ Private Sub TestCase(ByVal index As Integer)
             Call CloseSocketSL(testUser)
             Call Expect(Confirm(prepared, reply) = DestroyInvalidToken, "teardown token discarded")
         Case 23
-            Call Expect(HOO_CAP_INVENTORY_DESTRUCTION_V1 = &H40&, "fresh capability avoids retired orb/taming bits")
-            UserList(testUser).HooCapabilities.Negotiated = False
-            Call Expect(Prepare(prepared) = DestroyUnsupported, "capability required")
+            Call Expect(Not UserList(testUser).HooCapabilities.Negotiated, "fixture has no negotiated capabilities")
+            Call Expect(UserList(testUser).HooCapabilities.CapabilityMask = 0, "fixture has no capability bits")
+            Call Expect(Prepare(prepared) = DestroyOkay, "required protocol prepares without negotiation")
+            Call Expect(Confirm(prepared, reply) = DestroyOkay, "required protocol confirms without negotiation")
+            Call Expect(UserList(testUser).invent.Object(1).amount = 7, "unnegotiated confirmation removes exact quantity")
         Case 24
             Call Expect(Prepare(prepared) = DestroyOkay, "prepare rate")
             Call Expect(Prepare(reply, 1, 1, 124) = DestroyRateLimited, "bounded preparation rate")
@@ -381,7 +380,7 @@ Public Function test_suite_inventory_destruction() As Boolean
     capturing = True
     names = Array("single", "partial", "entire", "drop flags", "slots", "quantities", "equipment cleanup", _
         "transactions", "boat", "mount", "objective", "stale prepare", "replacement", "amount", "tags", "equipped state", _
-        "move out and back", "ChangeUserInv", "expiry", "duplicate", "session identity", "teardown", "unsupported", _
+        "move out and back", "ChangeUserInv", "expiry", "duplicate", "session identity", "teardown", "unnegotiated protocol", _
         "rate limit", "death", "key", "natural tags", "wire", "parsers", "malformed", "tick wrap", "partial equipment", _
         "unequip error", "replacement prepare", "trade after prepare", "disconnect", "equipped and error wire", _
         "consume restored stack", "inactive transport cleanup", "abandoned same-slot targeting", "unrelated targeting")

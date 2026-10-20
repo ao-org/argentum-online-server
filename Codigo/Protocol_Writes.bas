@@ -4730,8 +4730,7 @@ Public Function PrepareActiveToggles()
     Dim ActiveToggles()   As String
     Dim ActiveToggleCount As Integer
     ActiveToggles = GetActiveToggles(ActiveToggleCount)
-    Call Writer.WriteInt16(ActiveToggleCount + 1)
-    Call Writer.WriteString8(HOO_FEATURE_INVENTORY_DESTRUCTION_V1)
+    Call Writer.WriteInt16(ActiveToggleCount)
     Dim i As Integer
     For i = 0 To ActiveToggleCount - 1
         Call Writer.WriteString8(ActiveToggles(i))

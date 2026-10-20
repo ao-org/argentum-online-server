@@ -93,10 +93,6 @@ Public Function PrepareInventoryDestruction(ByVal UserIndex As Integer, ByVal Re
         .LastPrepareAt = NowTick
     End With
     If RequestId <= 0 Then GoTo Done
-    If Not UserSupportsHooCapability(UserIndex, HOO_CAP_INVENTORY_DESTRUCTION_V1) Then
-        code = DestroyUnsupported
-        GoTo Done
-    End If
     If previous.HasPrepareTime Then
         If TicksElapsed(previous.LastPrepareAt, NowTick) < PREPARE_INTERVAL_MS Then
             code = DestroyRateLimited
@@ -169,8 +165,6 @@ Public Function ConfirmInventoryDestruction(ByVal UserIndex As Integer, ByRef To
         .Completed = True
         .Result = DestroyInternalFailure
     End With
-    code = DestroyUnsupported
-    If Not UserSupportsHooCapability(UserIndex, HOO_CAP_INVENTORY_DESTRUCTION_V1) Then GoTo Done
     code = DestroyExpired
     If TicksElapsed(reply.PreparedAt, NowTick) >= TOKEN_LIFETIME_MS Then GoTo Done
     code = DestroyStackChanged
