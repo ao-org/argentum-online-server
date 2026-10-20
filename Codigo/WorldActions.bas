@@ -27,6 +27,35 @@ Attribute VB_Name = "WorldActions"
 '
 Option Explicit
 
+Public Enum e_WorldClickCharacter
+    WorldClickNone = 0
+    WorldClickUser = 1
+    WorldClickNpc = 2
+End Enum
+
+' Direct tile occupants take priority. The tile below is only a legacy
+' head-click fallback when the requested tile contains no character.
+Public Function ResolveWorldClickCharacter(ByVal DirectUser As Integer, ByVal DirectNpc As Integer, ByVal BelowUser As Integer, ByVal BelowNpc As Integer, ByRef TargetIndex As Integer, ByRef UseBelowTile As Boolean) As e_WorldClickCharacter
+    On Error GoTo ResolveWorldClickCharacter_Err
+    TargetIndex = 0
+    UseBelowTile = (DirectUser = 0 And DirectNpc = 0)
+    If UseBelowTile Then
+        DirectUser = BelowUser
+        DirectNpc = BelowNpc
+    End If
+    ' Preserve NPC precedence when a player and NPC share the same tile.
+    If DirectNpc > 0 Then
+        TargetIndex = DirectNpc
+        ResolveWorldClickCharacter = WorldClickNpc
+    ElseIf DirectUser > 0 Then
+        TargetIndex = DirectUser
+        ResolveWorldClickCharacter = WorldClickUser
+    End If
+    Exit Function
+ResolveWorldClickCharacter_Err:
+    Call TraceError(Err.Number, Err.Description, "WorldActions.ResolveWorldClickCharacter", Erl)
+End Function
+
 Public Function GetMapName(ByVal Map As Long) As String
     On Error GoTo get_map_name_Err
     GetMapName = MapInfo(Map).map_name

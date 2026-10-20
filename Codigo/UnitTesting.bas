@@ -46,7 +46,7 @@ Option Explicit
     Private TamingRecipients As Collection
     Private TamingRoutesValid As Boolean
 
-        Private Const SUITE_COUNT As Integer = 42
+        Private Const SUITE_COUNT As Integer = 43
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -334,6 +334,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 40: RunSuite = test_suite_taming()
         Case 41: RunSuite = Unit_Traps.test_suite_traps()
         Case 42: RunSuite = Unit_InventoryDestruction.test_suite_inventory_destruction()
+        Case 43: RunSuite = Unit_WorldClick.test_suite_world_click()
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False

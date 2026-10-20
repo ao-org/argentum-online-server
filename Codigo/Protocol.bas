@@ -2663,22 +2663,23 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
                 Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
         If Not InMapBounds(.pos.Map, x, y) Then Exit Sub
         Call LookatTile(UserIndex, .pos.Map, x, y)
-        Dim ClickedUserIndex As Integer
-        Dim ClickedNpcIndex As Integer
-        ClickedUserIndex = MapData(x, y, .pos.Map).UserIndex
-        ClickedNpcIndex = MapData(x, y, .pos.Map).NpcIndex
+        Dim belowUser As Integer
+        Dim belowNpc As Integer
+        Dim targetIndex As Integer
+        Dim useBelowTile As Boolean
+        Dim targetKind As e_WorldClickCharacter
         If y < YMaxMapSize Then
-            If ClickedUserIndex = 0 Then
-                ClickedUserIndex = MapData(x, y + 1, .pos.Map).UserIndex
-            End If
-            If ClickedNpcIndex = 0 Then
-                ClickedNpcIndex = MapData(x, y + 1, .pos.Map).NpcIndex
-            End If
+            belowUser = MapData(x, y + 1, .pos.Map).UserIndex
+            belowNpc = MapData(x, y + 1, .pos.Map).NpcIndex
         End If
-        If ClickedUserIndex = 0 Then
-            If ClickedNpcIndex = 0 Or IsNpcWorldInteractable(ClickedNpcIndex) Then
+        targetKind = ResolveWorldClickCharacter(MapData(x, y, .pos.Map).UserIndex, MapData(x, y, .pos.Map).NpcIndex, belowUser, belowNpc, targetIndex, useBelowTile)
+        If targetKind = WorldClickNpc Then
+            If IsNpcWorldInteractable(targetIndex) Then
+                If useBelowTile Then y = y + 1
                 Call HandleWorldAction(UserIndex, .pos.Map, x, y)
             End If
+        ElseIf targetKind = WorldClickNone Then
+            Call HandleWorldAction(UserIndex, .pos.Map, x, y)
         End If
     End With
     Exit Sub

@@ -1158,32 +1158,16 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
             End If
         End If
         Dim yy As Byte
-        If y + 1 <= YMaxMapSize Then
-            'it's a character?
-            If MapData(x, y + 1, Map).UserIndex > 0 Then
-                TempCharIndex = MapData(x, y + 1, Map).UserIndex
-                yy = y + 1
-                FoundChar = 1
-            End If
-            'it's an npc?
-            If MapData(x, y + 1, Map).NpcIndex > 0 Then
-                TempCharIndex = MapData(x, y + 1, Map).NpcIndex
-                FoundChar = 2
-            End If
+        Dim belowUser As Integer
+        Dim belowNpc As Integer
+        Dim useBelowTile As Boolean
+        If y < YMaxMapSize Then
+            belowUser = MapData(x, y + 1, Map).UserIndex
+            belowNpc = MapData(x, y + 1, Map).NpcIndex
         End If
-        If FoundChar = 0 Then
-            'it's a character?
-            If MapData(x, y, Map).UserIndex > 0 Then
-                TempCharIndex = MapData(x, y, Map).UserIndex
-                yy = y
-                FoundChar = 1
-            End If
-            'it's an npc?
-            If MapData(x, y, Map).NpcIndex > 0 Then
-                TempCharIndex = MapData(x, y, Map).NpcIndex
-                FoundChar = 2
-            End If
-        End If
+        FoundChar = ResolveWorldClickCharacter(MapData(x, y, Map).UserIndex, MapData(x, y, Map).NpcIndex, belowUser, belowNpc, TempCharIndex, useBelowTile)
+        yy = y
+        If useBelowTile And y < YMaxMapSize Then yy = y + 1
         'Reaccion al personaje
         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             If UserList(TempCharIndex).pos.x <> x Or UserList(TempCharIndex).pos.y <> yy Then
