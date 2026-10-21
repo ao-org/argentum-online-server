@@ -3,8 +3,39 @@ Option Explicit
 #If UNIT_TEST = 1 Then
 
 Private Const TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,36,78],""edges"":[[34,35,0,-80],[35,34,0,80],[35,36,74,0],[36,35,-74,0],[34,78,-74,0],[78,34,74,0]]}"
+Private Const ADJACENT_TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35],""edges"":[[34,35,0,-80],[35,34,0,80]]}"
+Private adjacentCaptureActive As Boolean
+Private adjacentPackets As Collection
+Private adjacentAccepted As Collection
+Private adjacentFailAttempt As Long
+Private adjacentCaptureError As String
+Private adjacentTick As Long
+Private adjacentNpc As Integer
+
+Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByRef Queued As Boolean) As Boolean
+    If Not adjacentCaptureActive Then Exit Function
+    On Error GoTo Failed
+    CaptureAdjacentPacket = True
+    Queued = False
+    Dim writer As Network.Writer, bytes() As Byte, packet As Variant
+    Set writer = Protocol_Writes.GetWriterBuffer()
+    Call writer.GetData(bytes)
+    Call writer.Clear()
+    packet = bytes
+    Call adjacentPackets.Add(packet)
+    Queued = adjacentPackets.Count <> adjacentFailAttempt
+    Call adjacentAccepted.Add(Queued)
+    If sndRoute <> ToIndex Or sndIndex <> 1 Then adjacentCaptureError = "unexpected recipient or route"
+    Exit Function
+Failed:
+    adjacentCaptureError = CStr(Err.Number) & ": " & Err.Description
+    Queued = False
+    If Not writer Is Nothing Then Call writer.Clear()
+End Function
 
 Public Function test_suite_npc_cross_map_pursuit() As Boolean
+    Dim failuresBefore As Long, names As Variant, group As Long
+    failuresBefore = UnitTesting.GetFailedTests()
     Call UnitTesting.RunTest("npc topology loads verified edges", test_topology_load_and_edges())
     Call UnitTesting.RunTest("npc topology routes shortest next hop", test_topology_next_hop())
     Call UnitTesting.RunTest("npc topology routes multiple hops", test_topology_multi_hop())
@@ -25,9 +56,679 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call UnitTesting.RunTest("npc respawn day boundaries are inclusive", test_respawn_schedule_boundaries())
     Call UnitTesting.RunTest("npc invalid respawn schedule remains compatible", test_respawn_schedule_invalid())
     Call UnitTesting.RunTest("npc scheduled initial spawn waits for a free origin", test_scheduled_initial_spawn_requires_free_origin())
+    Call UnitTesting.RunTest("adjacent visibility includes north seam", AdjacentNpcInsideInterest(50, 11, 50, 90, 0, -80))
+    Call UnitTesting.RunTest("adjacent visibility includes west seam", AdjacentNpcInsideInterest(14, 50, 87, 50, -74, 0))
+    Call UnitTesting.RunTest("adjacent visibility rejects distant NPC", Not AdjacentNpcInsideInterest(50, 50, 50, 50, 74, 0))
+    Call UnitTesting.RunTest("adjacent visibility includes radius boundary", AdjacentNpcInsideInterest(50, 50, 74, 68, 0, 0))
+    Call UnitTesting.RunTest("adjacent visibility excludes outside radius", Not AdjacentNpcInsideInterest(50, 50, 75, 68, 0, 0))
+    names = Split("wire and unchanged silence|initial hidden|visible to hidden|hidden to visible|unsafe dead viewer reviver only|safe dead viewer|hidden owned NPC|hidden NPC staff viewer|reset failure|initial upsert failure|changed upsert failure|remove failure|reuse failed remove|reuse ordering|partial upsert success|partial remove success|viewer version reset|viewer map reset|explicit same map reset|LastUser shrink|disconnect cleanup|invisible reviver|visible pets and summons|zero body|reuse failed replacement|version during failed upsert|map during failed remove|connection during failed upsert", "|")
+    For group = 0 To UBound(names)
+        Call RunAdjacentCase(group + 1, CStr(names(group)))
+    Next group
+    names = Split("exact connection and length|wrong connection|partial enqueue|oversized enqueue|late callback|nested probe preserves outer|same connection closes|other connection closes|duplicate callback", "|")
+    For group = 0 To UBound(names)
+        Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
+    Next group
+    names = Split("checked-in diagonal map transitions|southeast boundaries|southwest boundaries|northeast boundaries|northwest boundaries|cycles and two edge cap|ambiguous source excluded|positive wide composition|negative wide composition|instance and visibility retain|diagonal retry and map reset", "|")
+    For group = 0 To UBound(names)
+        Call RunAdjacentTwoHopCase(group + 1, CStr(names(group)))
+    Next group
     Call LoadAdjacentTopology
-    test_suite_npc_cross_map_pursuit = True
+    test_suite_npc_cross_map_pursuit = UnitTesting.GetFailedTests() = failuresBefore
 End Function
+
+Private Sub AdjacentExpect(ByVal condition As Boolean, ByVal description As String)
+    If Not condition Then Err.Raise vbObjectError + 183, "Adjacent NPC regression", description
+End Sub
+
+Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0)
+    Set adjacentPackets = New Collection
+    Set adjacentAccepted = New Collection
+    adjacentFailAttempt = failAttempt
+    adjacentCaptureError = vbNullString
+End Sub
+
+Private Function AdjacentPacketReader(ByVal index As Long, ByVal packetId As Integer, ByVal length As Long) As Network.reader
+    Dim bytes() As Byte, reader As New Network.reader
+    bytes = adjacentPackets(index)
+    Call AdjacentExpect(UBound(bytes) - LBound(bytes) + 1 = length, "exact wire length")
+    Call reader.SetData(bytes)
+    Call AdjacentExpect(reader.ReadInt16() = packetId, "packet order/ID")
+    Set AdjacentPacketReader = reader
+End Function
+
+Private Sub ExpectAdjacentActor(ByVal index As Long, ByVal packetId As Integer, ByVal npcIndex As Integer, ByVal version As Integer, ByVal accepted As Boolean)
+    Dim reader As Network.reader, length As Long
+    length = 10
+    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = 32
+    Set reader = AdjacentPacketReader(index, packetId, length)
+    Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "current epoch")
+    Call AdjacentExpect(reader.ReadInt16() = npcIndex, "exact NPC index")
+    Call AdjacentExpect(reader.ReadInt16() = version, "exact NPC lifetime")
+    Call AdjacentExpect(CBool(adjacentAccepted(index)) = accepted, "enqueue outcome")
+End Sub
+
+Private Sub TickAdjacent()
+    adjacentTick = adjacentTick + 100
+    Call UpdateAdjacentNpcVisibility(adjacentTick)
+    Call AdjacentExpect(adjacentCaptureError = vbNullString, "capture: " & adjacentCaptureError)
+    ' A marker after every production update catches leaked shared-writer bytes.
+    Dim writer As Network.Writer, bytes() As Byte
+    Set writer = Protocol_Writes.GetWriterBuffer()
+    Call writer.WriteInt16(&H6A5B)
+    Call writer.GetData(bytes)
+    Call writer.Clear()
+    Call AdjacentExpect(UBound(bytes) = 1, "shared writer was not cleared")
+    Call AdjacentExpect(bytes(0) = &H5B And bytes(1) = &H6A, "writer marker")
+End Sub
+
+Private Sub AddAdjacentSecondNpc()
+    NpcList(adjacentNpc + 1) = NpcList(adjacentNpc)
+    With NpcList(adjacentNpc + 1)
+        .pos.x = 51
+        .Char.charindex = 124
+        .npcType = e_NPCType.Comun
+    End With
+    MapData(51, 90, 35).NpcIndex = adjacentNpc + 1
+End Sub
+
+Private Sub CheckAdjacentCase(ByVal group As Long)
+    Dim reader As Network.reader, epoch As Long, bytes() As Byte, i As Long
+    Select Case group
+        Case 1
+            With NpcList(adjacentNpc).Char
+                .head = 267: .WeaponAnim = 524: .ShieldAnim = 781
+                .CascoAnim = 1038: .CartAnim = 1295
+            End With
+            NpcList(adjacentNpc).flags.NPCIdle = True
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "reset then one upsert")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "reset epoch")
+            Call AdjacentExpect(reader.ReadInt16() = 34, "viewer map")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eAdjacentNpcUpsert, 32)
+            Call reader.ReadInt32(): Call reader.ReadInt16(): Call reader.ReadInt16()
+            Call AdjacentExpect(reader.ReadInt16() = 35, "source map")
+            Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source position")
+            Call AdjacentExpect(reader.ReadInt16() = 10 And reader.ReadInt16() = 267, "body/head widths")
+            Call AdjacentExpect(reader.ReadInt8() = e_Heading.NORTH, "heading")
+            Call AdjacentExpect(reader.ReadInt16() = 524 And reader.ReadInt16() = 781, "weapon/shield widths")
+            Call AdjacentExpect(reader.ReadInt16() = 1038 And reader.ReadInt16() = 1295, "helmet/cart widths")
+            Call AdjacentExpect(reader.ReadReal32() = 1 And reader.ReadBool(), "speed and idle")
+            Call AdjacentExpect(reader.GetAvailable() = 0, "complete payload consumed")
+            #If PYMMO = 1 Then
+                Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 214 And ServerPacketID.eAdjacentNpcUpsert = 215 And ServerPacketID.eAdjacentNpcRemove = 216, "HOO literal packet IDs")
+            #Else
+                Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 215 And ServerPacketID.eAdjacentNpcUpsert = 216 And ServerPacketID.eAdjacentNpcRemove = 217, "PYMMO=0 ordinals")
+            #End If
+            bytes = adjacentPackets(2)
+            Call AdjacentExpect(bytes(10) = 35 And bytes(11) = 0 And bytes(16) = 11 And bytes(17) = 1, "little endian fields")
+            Call AdjacentExpect(bytes(27) = 0 And bytes(28) = 0 And bytes(29) = 128 And bytes(30) = 63 And bytes(31) = 1, "Single and Boolean representation")
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And IsAdjacentNpcObserved(adjacentNpc), "accepted cache and AI observation")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "unchanged state is silent")
+        Case 2, 7, 8, 22, 24
+            NpcList(adjacentNpc).flags.invisible = 1
+            If group = 7 Then Call SetUserRef(NpcList(adjacentNpc).MaestroUser, 1)
+            If group = 8 Then UserList(1).flags.Privilegios = e_PlayerType.Admin
+            If group = 22 Then
+                NpcList(adjacentNpc).npcType = e_NPCType.Revividor
+                UserList(1).flags.Muerto = 1
+            End If
+            If group = 24 Then
+                NpcList(adjacentNpc).flags.invisible = 0
+                NpcList(adjacentNpc).Char.body = 0
+            End If
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "excluded actor sends reset only")
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 0, "excluded actor not cached")
+            Call AdjacentExpect(Not IsAdjacentNpcObserved(adjacentNpc), "excluded actor not observed")
+        Case 3, 4
+            If group = 4 Then NpcList(adjacentNpc).flags.invisible = 1
+            Call TickAdjacent
+            Call ClearAdjacentCapture
+            If group = 3 Then
+                NpcList(adjacentNpc).flags.invisible = 1
+            Else
+                NpcList(adjacentNpc).flags.invisible = 0
+            End If
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "one visibility transition")
+            If group = 3 Then
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+                Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 0 And Not IsAdjacentNpcObserved(adjacentNpc), "hide retires observation")
+            Else
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+                Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And IsAdjacentNpcObserved(adjacentNpc), "visible actor restored")
+            End If
+        Case 5
+            Call AddAdjacentSecondNpc
+            NpcList(adjacentNpc + 1).npcType = e_NPCType.Revividor
+            UserList(1).flags.Muerto = 1
+            MapInfo(35).Seguro = 1 ' Viewer map, not source map, controls ghost visibility.
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "dead unsafe sees only reviver")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc + 1, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = -1, "ordinary NPC excluded")
+        Case 6
+            UserList(1).flags.Muerto = 1
+            MapInfo(34).Seguro = 1
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "safe dead viewer sees ordinary NPC")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+        Case 9
+            adjacentFailAttempt = 1
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And Not CBool(adjacentAccepted(1)), "failed reset stops snapshot")
+            Call AdjacentExpect(AdjacentNpcTestEpoch(1) = 0 And AdjacentNpcTestKnownCount(1) = 0, "failed reset does not initialize cache")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > 0, "retry reset then snapshot")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+        Case 10
+            adjacentFailAttempt = 2
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "reset accepted, upsert attempted")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, False)
+            epoch = AdjacentNpcTestEpoch(1)
+            Call AdjacentExpect(epoch > 0 And AdjacentNpcTestKnownCount(1) = 0, "no cache commit for rejected upsert")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) = epoch, "retry upsert without reset")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+        Case 11
+            Call TickAdjacent
+            NpcList(adjacentNpc).Char.body = 11
+            Call ClearAdjacentCapture(1)
+            Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, False)
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "unchanged failed update retried")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            bytes = adjacentPackets(1)
+            Call AdjacentExpect(bytes(14) = 11, "retried new appearance")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "successful update cached")
+        Case 12
+            Call TickAdjacent
+            NpcList(adjacentNpc).flags.invisible = 1
+            Call ClearAdjacentCapture(1)
+            Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, False)
+            Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = 3, "failed remove retains delivered lifetime")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "failed removal retried")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 0, "successful removal retired")
+        Case 13, 14, 25
+            Call TickAdjacent
+            NpcList(adjacentNpc).VersionId = 4
+            If group = 13 Then
+                Call ClearAdjacentCapture(1)
+                Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1, "failed removal prevents replacement upsert")
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, False)
+                Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = 3, "old lifetime retained")
+            End If
+            If group = 25 Then
+                Call ClearAdjacentCapture(2)
+            Else
+                Call ClearAdjacentCapture
+            End If
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "reuse removes before upsert")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 4, group <> 25)
+            If group = 25 Then
+                Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = -1, "accepted removal survives failed replacement")
+                Call ClearAdjacentCapture
+                Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1, "only replacement retried")
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 4, True)
+            End If
+            Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = 4, "replacement committed")
+        Case 15
+            Call AddAdjacentSecondNpc
+            adjacentFailAttempt = 3
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 3, "partial initial snapshot")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call ExpectAdjacentActor(3, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc + 1, 3, False)
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1, "accepted prefix retained")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "accepted prefix not resent")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc + 1, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 2, "both delivered actors cached")
+        Case 16
+            Call AddAdjacentSecondNpc
+            Call TickAdjacent
+            NpcList(adjacentNpc).flags.invisible = 1
+            NpcList(adjacentNpc + 1).flags.invisible = 1
+            Call ClearAdjacentCapture(2)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "two removals attempted")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcRemove, adjacentNpc + 1, 3, False)
+            Call AdjacentExpect(AdjacentNpcTestKnownVersion(1, adjacentNpc) = -1 And AdjacentNpcTestKnownVersion(1, adjacentNpc + 1) = 3, "partial removals committed independently")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "only failed removal retried")
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc + 1, 3, True)
+        Case 17, 18, 19
+            Call TickAdjacent
+            epoch = AdjacentNpcTestEpoch(1)
+            If group = 17 Then UserList(1).VersionId = 8
+            If group = 18 Then UserList(1).pos.Map = 35
+            If group = 19 Then Call InvalidateAdjacentNpcViewer(1)
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(AdjacentNpcTestEpoch(1) > epoch, "new subscription epoch")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call reader.ReadInt32()
+            Call AdjacentExpect(reader.ReadInt16() = UserList(1).pos.Map, "reset map")
+            If group = 18 Then
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "source becomes local, no adjacent duplicate")
+            Else
+                Call AdjacentExpect(adjacentPackets.Count = 2, "new subscription snapshot")
+                Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            End If
+        Case 20, 21
+            Call TickAdjacent
+            epoch = AdjacentNpcTestEpoch(1)
+            If group = 20 Then
+                LastUser = 0
+            Else
+                UserList(1).ConnectionDetails.ConnIDValida = False
+            End If
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0 And AdjacentNpcTestKnownCount(1) = 0 And AdjacentNpcTestEpoch(1) = 0, "retired viewer releases cache without packets")
+            Call AdjacentExpect(Not IsAdjacentNpcObserved(adjacentNpc), "retired viewer no longer drives AI")
+            LastUser = 1
+            UserList(1).ConnectionDetails.ConnIDValida = True
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "reconnect creates fresh snapshot")
+        Case 23
+            Call AddAdjacentSecondNpc
+            Call SetUserRef(NpcList(adjacentNpc).MaestroUser, 1)
+            Call SetNpcRef(NpcList(adjacentNpc + 1).MaestroNPC, adjacentNpc)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 3 And AdjacentNpcTestKnownCount(1) = 2, "visible pets and summons retained")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call ExpectAdjacentActor(3, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc + 1, 3, True)
+        Case 26, 28
+            adjacentFailAttempt = 2
+            Call TickAdjacent
+            epoch = AdjacentNpcTestEpoch(1)
+            Call AdjacentExpect(epoch > 0 And AdjacentNpcTestKnownCount(1) = 0, "failed snapshot awaiting retry")
+            If group = 26 Then
+                UserList(1).VersionId = 8
+            Else
+                UserList(1).ConnectionDetails.ConnID = 43
+            End If
+            NpcList(adjacentNpc).Char.body = 11
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "new identity resets instead of retrying old epoch")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "replacement reset epoch")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            bytes = adjacentPackets(2)
+            Call AdjacentExpect(bytes(14) = 11, "new snapshot uses current appearance")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "obsolete retry does not reappear")
+        Case 27
+            Call TickAdjacent
+            epoch = AdjacentNpcTestEpoch(1)
+            NpcList(adjacentNpc).flags.invisible = 1
+            Call ClearAdjacentCapture(1)
+            Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, False)
+            UserList(1).pos.Map = 35
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) > epoch, "map replacement discards failed old removal")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call reader.ReadInt32()
+            Call AdjacentExpect(reader.ReadInt16() = 35 And AdjacentNpcTestKnownCount(1) = 0, "new map starts empty")
+            Call ClearAdjacentCapture
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "no stale removal replay on new map")
+    End Select
+End Sub
+
+Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
+    On Error GoTo Failed
+    Dim oldUser As t_User, oldNpc As t_Npc, oldSecond As t_Npc, emptyUser As t_User, emptyNpc As t_Npc
+    Dim oldMap34 As t_MapInfo, oldMap35 As t_MapInfo, emptyTile As t_MapBlock
+    Dim tiles34(1 To 100, 1 To 100) As t_MapBlock, tiles35(1 To 100, 1 To 100) As t_MapBlock
+    Dim oldLastUser As Integer, x As Integer, y As Integer, saved As Boolean, passed As Boolean, failure As String
+    Call AdjacentExpect(NumMaps >= 35 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized test world")
+    adjacentNpc = UBound(NpcList) - 1
+    oldUser = UserList(1): oldNpc = NpcList(adjacentNpc): oldSecond = NpcList(adjacentNpc + 1)
+    oldLastUser = LastUser
+    oldMap34 = MapInfo(34): oldMap35 = MapInfo(35)
+    For y = 1 To 100
+        For x = 1 To 100
+            tiles34(x, y) = MapData(x, y, 34)
+            tiles35(x, y) = MapData(x, y, 35)
+        Next x
+    Next y
+    saved = True
+    Call AdjacentNpcTestResetState
+    Call AdjacentExpect(LoadAdjacentTopologyJson(ADJACENT_TEST_TOPOLOGY, False), "fixture topology")
+    For y = 1 To 100
+        For x = 1 To 100
+            MapData(x, y, 34) = emptyTile
+            MapData(x, y, 35) = emptyTile
+        Next x
+    Next y
+    MapInfo(34).MapResource = 34: MapInfo(35).MapResource = 35
+    MapInfo(34).Seguro = 0: MapInfo(35).Seguro = 0
+    UserList(1) = emptyUser
+    LastUser = 1
+    With UserList(1)
+        .Id = 101: .VersionId = 7
+        .flags.UserLogged = True
+        .flags.Privilegios = e_PlayerType.User
+        .ConnectionDetails.ConnIDValida = True
+        .ConnectionDetails.ConnID = 42
+        .pos.Map = 34: .pos.x = 50: .pos.y = 11
+    End With
+    NpcList(adjacentNpc) = emptyNpc
+    NpcList(adjacentNpc + 1) = emptyNpc
+    With NpcList(adjacentNpc)
+        .flags.NPCActive = True
+        .VersionId = 3
+        .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
+        .pos.Map = 35: .pos.x = 50: .pos.y = 90
+        .npcType = e_NPCType.Comun
+    End With
+    MapData(50, 90, 35).NpcIndex = adjacentNpc
+    Call InitializeAuxiliaryBuffer
+    Call ClearAdjacentCapture
+    adjacentTick = 1000
+    adjacentCaptureActive = True
+    Call CheckAdjacentCase(group)
+    passed = True
+    GoTo Cleanup
+Failed:
+    failure = CStr(Err.Number) & ": " & Err.Description
+    Resume Cleanup
+Cleanup:
+    On Error GoTo 0
+    adjacentCaptureActive = False
+    Call AdjacentNpcTestResetState
+    If saved Then
+        UserList(1) = oldUser: NpcList(adjacentNpc) = oldNpc: NpcList(adjacentNpc + 1) = oldSecond
+        LastUser = oldLastUser
+        MapInfo(34) = oldMap34: MapInfo(35) = oldMap35
+        For y = 1 To 100
+            For x = 1 To 100
+                MapData(x, y, 34) = tiles34(x, y)
+                MapData(x, y, 35) = tiles35(x, y)
+            Next x
+        Next y
+    End If
+    If passed Then
+        Call UnitTesting.RunTest("adjacent stream " & name, True)
+    Else
+        Call UnitTesting.RunTestError("adjacent stream " & name, failure)
+    End If
+End Sub
+
+Private Function TwoHopJson(ByVal edges As String) As String
+    TwoHopJson = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,78,80],""edges"":[" & edges & "]}"
+End Function
+
+Private Function TwoHopDiamond(ByVal dx As Long, ByVal dy As Long, Optional ByVal conflict As Boolean = False) As String
+    Dim otherDx As Long
+    otherDx = dx
+    If conflict Then otherDx = dx - 1
+    TwoHopDiamond = TwoHopJson("[34,35," & dx & ",0],[35,34," & -dx & ",0]," & _
+        "[34,78,0," & dy & "],[78,34,0," & -dy & "]," & _
+        "[35,80,0," & dy & "],[80,35,0," & -dy & "]," & _
+        "[78,80," & otherDx & ",0],[80,78," & -otherDx & ",0]")
+End Function
+
+Private Sub PlaceTwoHopNpc(ByVal mapId As Integer, ByVal x As Byte, ByVal y As Byte)
+    With NpcList(adjacentNpc)
+        If .pos.Map > 0 Then MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
+        .pos.Map = mapId: .pos.x = x: .pos.y = y
+    End With
+    MapData(x, y, mapId).NpcIndex = adjacentNpc
+End Sub
+
+Private Sub ExpectTwoHopPlacement(ByVal sourceMap As Integer, ByVal targetMap As Integer, ByVal dx As Long, ByVal dy As Long, ByVal depth As Integer)
+    Dim placements() As t_AdjacentNpcPlacement, count As Long, i As Long, found As Long
+    Call AdjacentExpect(TryGetAdjacentVisibilityPlacements(sourceMap, placements, count), "placements available")
+    For i = 1 To count
+        Call AdjacentExpect(placements(i).MapId <> sourceMap, "active map excluded")
+        If i > 1 Then
+            Call AdjacentExpect(placements(i).Depth > placements(i - 1).Depth Or _
+                (placements(i).Depth = placements(i - 1).Depth And placements(i).MapId > placements(i - 1).MapId), "stable depth/map order")
+        End If
+        If placements(i).MapId = targetMap Then
+            found = found + 1
+            Call AdjacentExpect(placements(i).Dx = dx And placements(i).Dy = dy And placements(i).Depth = depth, "exact composed transform")
+        End If
+    Next i
+    Call AdjacentExpect(found = 1, "source included once")
+End Sub
+
+Private Sub ExpectTwoHopAbsent(ByVal sourceMap As Integer, ByVal targetMap As Integer)
+    Dim placements() As t_AdjacentNpcPlacement, count As Long, i As Long
+    Call AdjacentExpect(TryGetAdjacentVisibilityPlacements(sourceMap, placements, count), "placements available")
+    For i = 1 To count
+        Call AdjacentExpect(placements(i).MapId <> targetMap, "excluded source absent")
+    Next i
+End Sub
+
+Private Sub CheckAdjacentTwoHopCase(ByVal group As Long)
+    Dim dx As Long, dy As Long, sx As Long, sy As Long, epoch As Long
+    Dim reader As Network.reader, topologyPath As String, bytes() As Byte
+    Select Case group
+        Case 1
+            topologyPath = App.Path & "\Recursos\config\legacy_overworld_topology.json"
+            Call AdjacentExpect(FileExist(topologyPath, vbNormal), "checked-in topology fixture exists")
+            Call AdjacentExpect(LoadAdjacentTopologyJson(FileText(topologyPath), False), "checked-in topology loads")
+            Call ExpectTwoHopPlacement(78, 34, 74, 0, 1)
+            Call ExpectTwoHopPlacement(80, 34, 74, 80, 2)
+            Call PlaceTwoHopNpc(34, 15, 10)
+            UserList(1).pos.Map = 78: UserList(1).pos.x = 90: UserList(1).pos.y = 10
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "first map reset/upsert")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            epoch = AdjacentNpcTestEpoch(1)
+            UserList(1).pos.Map = 80: UserList(1).pos.y = 90
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "diagonal entry fresh reset/upsert")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call reader.ReadInt32()
+            Call AdjacentExpect(reader.ReadInt16() = 80, "new active map serialized")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            bytes = adjacentPackets(2)
+            Call AdjacentExpect(bytes(10) = 34 And bytes(11) = 0 And bytes(12) = 15 And bytes(13) = 10, "wire keeps source map and tile")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(34) = 1 And AdjacentNpcTestKnownCount(1) = 1, "two routes one scan one actor")
+            epoch = AdjacentNpcTestEpoch(1)
+            UserList(1).pos.Map = 78: UserList(1).pos.y = 10
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "return resets old diagonal view")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And NpcList(adjacentNpc).VersionId = 3, "same lifetime no ghosts")
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "return snapshot idempotent")
+        Case 2 To 5
+            sx = 1: sy = 1
+            If group = 3 Or group = 5 Then sx = -1
+            If group = 4 Or group = 5 Then sy = -1
+            dx = sx * 74: dy = sy * 80
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(dx, dy), False), "corner topology")
+            Call ExpectTwoHopPlacement(34, 80, dx, dy, 2)
+            UserList(1).pos.x = 50 + sx * 40: UserList(1).pos.y = 50 + sy * 40
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22))
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestKnownCount(1) = 1, "inclusive corner boundary")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestScanCount(80) = 1, "diamond source scanned once")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1 And AdjacentNpcTestScanCount(78) = 1, "empty intermediates scanned without blocking diagonal")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10 + sx), CByte(50 - sy * 22))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "one past horizontal boundary excluded")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22 + sy))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "one past vertical boundary excluded")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+        Case 6
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopJson("[34,35,10,0],[35,34,-10,0],[35,78,10,0],[78,35,-10,0],[78,80,10,0],[80,78,-10,0]"), False), "cycle chain")
+            Call ExpectTwoHopPlacement(34, 35, 10, 0, 1)
+            Call ExpectTwoHopPlacement(34, 78, 20, 0, 2)
+            Call ExpectTwoHopAbsent(34, 34): Call ExpectTwoHopAbsent(34, 80)
+            Call PlaceTwoHopNpc(80, 20, 50)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "third edge NPC excluded despite nearby projection")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(34) = 0 And AdjacentNpcTestScanCount(80) = 0, "active and depth-three maps not scanned")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1 And AdjacentNpcTestScanCount(78) = 1, "reachable empty sources scanned once")
+        Case 7
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(74, 80, True), False), "contradictory reciprocal topology")
+            Call ExpectTwoHopAbsent(34, 80)
+            UserList(1).pos.x = 90: UserList(1).pos.y = 90
+            Call PlaceTwoHopNpc(80, 15, 10)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "ambiguous source fails closed")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(80) = 0, "ambiguous source never scanned")
+        Case 8, 9
+            dx = 30000
+            If group = 9 Then dx = -30000
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopJson("[34,35," & dx & ",0],[35,34," & -dx & ",0],[35,80," & dx & ",0],[80,35," & -dx & ",0]"), False), "wide offset topology")
+            Call ExpectTwoHopPlacement(34, 80, dx * 2, 0, 2)
+            Call PlaceTwoHopNpc(80, 50, 50)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "far transforms do not overflow into view")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 0 And AdjacentNpcTestScanCount(80) = 0, "nonintersecting maps never scanned")
+        Case 10, 11
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(74, 80), False), "diagonal lifecycle topology")
+            UserList(1).pos.x = 90: UserList(1).pos.y = 90
+            Call PlaceTwoHopNpc(80, 15, 10)
+            If group = 10 Then
+                MapInfo(80).MapResource = 35
+                Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestScanCount(80) = 0, "source instance excluded")
+                MapInfo(80).MapResource = 80
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0 And AdjacentNpcTestKnownCount(1) = 0, "invisible diagonal excluded")
+                NpcList(adjacentNpc).flags.invisible = 0
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+                MapInfo(34).MapResource = 35
+                NpcList(adjacentNpc).flags.invisible = 0
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0 And AdjacentNpcTestScanCount(80) = 0, "viewer instance excluded")
+            Else
+                Call ClearAdjacentCapture(2): Call TickAdjacent
+                epoch = AdjacentNpcTestEpoch(1)
+                Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestKnownCount(1) = 0, "failed diagonal upsert not cached")
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) = epoch, "same epoch retries only missing upsert")
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture(1): Call TickAdjacent
+                Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1, "failed diagonal remove retains known actor")
+                UserList(1).pos.Map = 80
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) > epoch And AdjacentNpcTestKnownCount(1) = 0, "map reset drops obsolete failed remove")
+                Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0, "obsolete retry never returns")
+            End If
+    End Select
+End Sub
+
+Private Sub RunAdjacentTwoHopCase(ByVal group As Long, ByVal name As String)
+    On Error GoTo Failed
+    Dim ids As Variant, i As Long, x As Integer, y As Integer, mapId As Integer
+    Dim maps(0 To 3) As t_MapInfo, tiles() As t_MapBlock, emptyTile As t_MapBlock
+    Dim oldUser As t_User, oldNpc As t_Npc, emptyUser As t_User, emptyNpc As t_Npc
+    Dim oldLastUser As Integer, saved As Boolean, passed As Boolean, failure As String
+    Call AdjacentExpect(NumMaps >= 80 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized two-hop world")
+    ids = Array(34, 35, 78, 80)
+    ReDim tiles(1 To 100, 1 To 100, 0 To 3)
+    adjacentNpc = UBound(NpcList) - 1
+    oldUser = UserList(1): oldNpc = NpcList(adjacentNpc): oldLastUser = LastUser
+    For i = 0 To 3
+        mapId = CInt(ids(i)): maps(i) = MapInfo(mapId)
+        For y = 1 To 100
+            For x = 1 To 100
+                tiles(x, y, i) = MapData(x, y, mapId)
+            Next x
+        Next y
+    Next i
+    saved = True
+    Call AdjacentNpcTestResetState
+    For i = 0 To 3
+        mapId = CInt(ids(i))
+        MapInfo(mapId).MapResource = mapId: MapInfo(mapId).Seguro = 0
+        For y = 1 To 100
+            For x = 1 To 100
+                MapData(x, y, mapId) = emptyTile
+            Next x
+        Next y
+    Next i
+    UserList(1) = emptyUser: LastUser = 1
+    With UserList(1)
+        .Id = 101: .VersionId = 7: .flags.UserLogged = True: .flags.Privilegios = e_PlayerType.User
+        .ConnectionDetails.ConnIDValida = True: .ConnectionDetails.ConnID = 42
+        .pos.Map = 34: .pos.x = 50: .pos.y = 50
+    End With
+    NpcList(adjacentNpc) = emptyNpc
+    With NpcList(adjacentNpc)
+        .flags.NPCActive = True: .VersionId = 3: .npcType = e_NPCType.Comun
+        .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
+    End With
+    Call InitializeAuxiliaryBuffer: Call ClearAdjacentCapture
+    adjacentTick = 1000: adjacentCaptureActive = True
+    Call CheckAdjacentTwoHopCase(group)
+    passed = True
+    GoTo Cleanup
+Failed:
+    failure = CStr(Err.Number) & ": " & Err.Description
+    Resume Cleanup
+Cleanup:
+    On Error GoTo 0
+    adjacentCaptureActive = False
+    Call AdjacentNpcTestResetState
+    If saved Then
+        UserList(1) = oldUser: NpcList(adjacentNpc) = oldNpc: LastUser = oldLastUser
+        For i = 0 To 3
+            mapId = CInt(ids(i)): MapInfo(mapId) = maps(i)
+            For y = 1 To 100
+                For x = 1 To 100
+                    MapData(x, y, mapId) = tiles(x, y, i)
+                Next x
+            Next y
+        Next i
+    End If
+    If passed Then
+        Call UnitTesting.RunTest("adjacent two-hop " & name, True)
+    Else
+        Call UnitTesting.RunTestError("adjacent two-hop " & name, failure)
+    End If
+End Sub
 
 Private Function test_safe_destination_allowed() As Boolean
     Dim originalToggle As Boolean
@@ -230,7 +931,12 @@ Private Function test_feature_toggle() As Boolean
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
     If Not AdjacentTopologyAvailable() Then GoTo RestoreToggle
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, False)
-    test_feature_toggle = Not AdjacentTopologyAvailable()
+    Dim destination As t_WorldPos
+    destination.Map = 35
+    destination.x = 50
+    destination.y = 90
+    test_feature_toggle = AdjacentTopologyAvailable() And _
+        Not IsVerifiedNpcSpatialTransition(34, 50, 10, destination, False)
 RestoreToggle:
     Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, originalValue)
 End Function

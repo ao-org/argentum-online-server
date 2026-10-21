@@ -248,6 +248,9 @@ Public Enum ServerPacketID
     eHooBowContext ' 211 with PYMMO=1.
     eHooBowBinding ' 212 with PYMMO=1.
     eHooBowResult ' 213 with PYMMO=1.
+    eAdjacentNpcReset
+    eAdjacentNpcUpsert
+    eAdjacentNpcRemove
     eMaxPacket
     [PacketCount]
 End Enum

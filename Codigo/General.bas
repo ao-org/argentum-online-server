@@ -1187,6 +1187,7 @@ UnitTest_ReportError:
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
+        Call UpdateAdjacentNpcVisibility(GlobalFrameTime)
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState

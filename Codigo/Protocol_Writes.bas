@@ -696,6 +696,7 @@ End Sub
 Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
     On Error GoTo WriteChangeMap_Err
     Call SuspendNpcBow(UserIndex)
+    Call InvalidateAdjacentNpcViewer(UserIndex)
     Call ClearPendingTargetableItem(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eChangeMap)
     Call Writer.WriteInt16(Map)
