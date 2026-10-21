@@ -171,6 +171,8 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearNpcBow(UserIndex)
+    Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)
         If .VersionId > 32760 Then
             .VersionId = 0
@@ -883,6 +885,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         Call ActualizarVelocidadDeUsuario(UserIndex)
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim, .Char.BackpackAnim)
         Call MakeUserChar(True, UserList(UserIndex).pos.Map, UserIndex, UserList(UserIndex).pos.Map, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, 0)
+        Call ResumeNpcBowAfterArea(UserIndex)
     End With
     Exit Sub
 RevivirUsuario_Err:
@@ -1048,6 +1051,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
                         .flags.tiene_bandera)
                 Call SendMagicLightOrbSnapshot(sndIndex, UserIndex)
+                Call SendEquippedTorchSnapshot(sndIndex, UserIndex)
             Else
                 'Hide the name and clan - set privs as normal user
                 Call AgregarUser(UserIndex, .pos.Map, appear)
@@ -1421,6 +1425,7 @@ End Function
 
 Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object As t_UserOBJ)
     On Error GoTo ChangeUserInv_Err
+    Call InvalidateInventoryDestruction(UserIndex, Slot)
     UserList(UserIndex).invent.Object(Slot) = Object
     Call WriteChangeInventorySlot(UserIndex, Slot)
     Exit Sub
@@ -1749,6 +1754,8 @@ End Sub
 '
 Sub UserDie(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call SuspendNpcBow(UserIndex)
+    Call InvalidateInventoryDestruction(UserIndex)
     Call ClearPendingTargetableItem(UserIndex)
     Dim i  As Long
     Dim aN As Integer
@@ -1792,6 +1799,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
         Call Desequipar(UserIndex, .invent.EquippedWeaponSlot)
         Call Desequipar(UserIndex, .invent.EquippedShieldSlot)
+        Call Desequipar(UserIndex, EquippedTorchSlot(UserIndex))
         Call Desequipar(UserIndex, .invent.EquippedHelmetSlot)
         Call Desequipar(UserIndex, .invent.EquippedRingAccesorySlot)
         Call Desequipar(UserIndex, .invent.EquippedWorkingToolSlot)
@@ -1812,14 +1820,14 @@ Sub UserDie(ByVal UserIndex As Integer)
             .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         End If
         ' << Restauramos los atributos >>
+        ' Clear the shared duration before publishing the restored attributes.
+        .flags.DuracionEfecto = 0
         If .flags.TomoPocion Then
             For i = 1 To 4
                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
             Next i
             Call WriteFYA(UserIndex)
         End If
-        ' << Frenamos el contador de la droga >>
-        .flags.DuracionEfecto = 0
         '<< Cambiamos la apariencia del char >>
         If .flags.Navegando = 0 Then
             .Char.body = iCuerpoMuerto

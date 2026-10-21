@@ -244,6 +244,10 @@ Public Enum ServerPacketID
     eHooTamingResult
     eHooOwnedTrap ' 208 with PYMMO=1; mandatory owner-only trap lifecycle.
     eHooTrapUseResult ' 209 with PYMMO=1; correlated inventory-use outcome.
+    eHooInventoryDestructionResult ' 210 with PYMMO=1.
+    eHooBowContext ' 211 with PYMMO=1.
+    eHooBowBinding ' 212 with PYMMO=1.
+    eHooBowResult ' 213 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum
@@ -570,6 +574,10 @@ Public Enum ClientPacketID
     eRequestRemort
     eHooTargetedSpellCast
     eHooHouseDoorAction
+    eHooInventoryDestructionPrepare ' 313 with PYMMO=1.
+    eHooInventoryDestructionConfirm ' 314 with PYMMO=1.
+    eHooBowSubscribe ' 315 with PYMMO=1.
+    eHooBowAttack ' 316 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum

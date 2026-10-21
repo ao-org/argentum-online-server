@@ -926,6 +926,14 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleHooTargetedSpellCast(UserIndex)
         Case ClientPacketID.eHooHouseDoorAction
             Call HandleHooHouseDoorAction(UserIndex)
+        Case ClientPacketID.eHooInventoryDestructionPrepare
+            Call HandleInventoryDestructionPrepare(UserIndex, reader)
+        Case ClientPacketID.eHooInventoryDestructionConfirm
+            Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.eHooBowSubscribe
+            Call HandleNpcBowSubscribe(UserIndex, reader)
+        Case ClientPacketID.eHooBowAttack
+            Call HandleNpcBowAttack(UserIndex, reader)
             #If PYMMO = 0 Then
             Case ClientPacketID.eCreateAccount
                 Call HandleCreateAccount(ConnectionID)
@@ -3120,48 +3128,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
                         If UserAttackInteractionResult.CanAttack Then
                             If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                            Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
+                            Dim npcAttemptCommitted As Boolean
+                            Call ResolveNpcBowShot(UserIndex, tN, ProjectileType, npcAttemptCommitted)
                             consumirMunicion = True
-                            If ProjectileType > 0 And .flags.Oculto = 0 Then
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, x, y, _
-                                        ProjectileType))
-                            End If
-                            'Si no es GM invisible, le envio el movimiento del arma.
-                            If UserList(UserIndex).flags.AdminInvisible = 0 Then
-                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
-                            End If
                         Else
                             consumirMunicion = False
                         End If
                     End If
                 End If
-                With .invent
-                    If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
-                        DummyInt = .EquippedMunitionSlot
-                        If ObjData(.EquippedWeaponObjIndex).CreaWav > 0 Then
-                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(.EquippedWeaponObjIndex).CreaWav, UserList(UserIndex).pos.x, _
-                                    UserList(UserIndex).pos.y))
-                        End If
-                        If DummyInt <> 0 Then
-                            'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-                            If consumirMunicion And Not IsConsumableFreeZone(UserIndex) Then
-                                Call QuitarUserInvItem(UserIndex, DummyInt, 1)
-                            End If
-                            If .Object(DummyInt).amount > 0 Then
-                                'QuitarUserInvItem unequipps the ammo, so we equip it again
-                                .EquippedMunitionSlot = DummyInt
-                                .EquippedMunitionObjIndex = .Object(DummyInt).ObjIndex
-                                .Object(DummyInt).Equipped = 1
-                            Else
-                                .EquippedMunitionSlot = 0
-                                .EquippedMunitionObjIndex = 0
-                            End If
-                            Call UpdateUserInv(False, UserIndex, DummyInt)
-                        End If
-                    ElseIf consumirMunicion Then
-                        Call UpdateCd(UserIndex, WeaponData.cdType)
-                    End If
-                End With
+                Call FinishProjectileAttempt(UserIndex, WeaponData, consumirMunicion)
                 '-----------------------------------
             Case e_Skill.Magia
                 'Target whatever is in that tile
@@ -3646,6 +3621,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                 SpawnedNpc = SpawnNpc(NpcList(.flags.TargetNPC.ArrayIndex).Criaturas(PetIndex).NpcIndex, NpcList(.flags.TargetNPC.ArrayIndex).pos, True, False)
                 If SpawnedNpc > 0 Then
                     NpcList(SpawnedNpc).MaestroNPC = .flags.TargetNPC
+                    Call RevokeNpcBow(SpawnedNpc)
                     NpcList(.flags.TargetNPC.ArrayIndex).Mascotas = NpcList(.flags.TargetNPC.ArrayIndex).Mascotas + 1
                 End If
             End If
@@ -6595,6 +6571,9 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         Dim Equipado3            As Boolean
         
         If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
+        ' Invalidate even if a swap/merge eventually restores identical bytes.
+        Call InvalidateInventoryDestruction(UserIndex, SlotViejo)
+        Call InvalidateInventoryDestruction(UserIndex, SlotNuevo)
         
         'Reparacion de caña de pescar con hilo
         If TryRepairFishingRod(UserIndex, SlotViejo, SlotNuevo) Then Exit Sub
@@ -6778,6 +6757,17 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub DestructionTestMoveItem(ByVal UserIndex As Integer, ByRef Payload() As Byte)
+    Dim previous As Network.reader
+    Set previous = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    Call HandleMoveItem(UserIndex)
+    Set reader = previous
+End Sub
+#End If
 
 Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides

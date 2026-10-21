@@ -1839,6 +1839,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, Optional ByRe
                 Call SetNpcRef(.MascotasIndex(Index), NpcIndex)
                 .MascotasType(Index) = NpcList(NpcIndex).Numero
                 Call SetUserRef(NpcList(NpcIndex).MaestroUser, UserIndex)
+                Call RevokeNpcBow(NpcIndex)
                 .flags.ModificoMascotas = True
                 Call FollowAmo(NpcIndex)
                 Call ReSpawnNpc(NpcList(NpcIndex))

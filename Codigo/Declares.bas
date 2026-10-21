@@ -3004,6 +3004,100 @@ Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&
 Public Const HOO_CAP_HOUSE_DOOR_ACTIONS_V1 As Long = &H8&
 ' &H10& belonged to the retired magic-orb extension; never reuse its capability.
+' &H20& belonged to the retired taming-result negotiation; never reuse it.
+
+Public Enum e_InventoryDestructionCode
+    DestroyOkay = 0
+    DestroyUnsupported = 1 ' Reserved wire code; destruction is required, not negotiated.
+    DestroyInvalidRequest = 2
+    DestroyUnavailable = 3
+    DestroyDead = 4
+    DestroyBusy = 5
+    DestroyActiveBoat = 6
+    DestroyActiveMount = 7
+    DestroyEventObjective = 8
+    DestroyStackChanged = 9
+    DestroyExpired = 10
+    DestroyInvalidToken = 11
+    DestroyRateLimited = 12
+    DestroyInternalFailure = 13
+End Enum
+
+Public Type t_BowIdentity
+    Low As Long
+    High As Long
+End Type
+
+Public Enum e_NpcBowResult
+    BowAccepted = 0
+    BowRateLimited = 1
+    BowOutOfRange = 2
+    BowNoEnergy = 3
+    BowNoAmmo = 4
+    BowInvalidEquipment = 5
+    BowActorBlocked = 6
+    BowInvalidTarget = 7
+    BowInvalidContext = 8
+    BowForbiddenTarget = 9
+    BowInternalError = 10
+End Enum
+
+Public Type t_NpcBowRequest
+    Context As t_BowIdentity
+    RequestId As Long
+    CharIndex As Integer
+    Token As t_BowIdentity
+End Type
+
+Public Type t_NpcBowReply
+    Request As t_NpcBowRequest
+    Code As e_NpcBowResult
+    RetryAfter As Long
+    Committed As Boolean ' Internal diagnostic/cache metadata; not serialized.
+End Type
+
+Public Type t_NpcBowBinding
+    NpcIndex As Integer
+    NpcVersion As Integer
+    CharIndex As Integer
+    Token As t_BowIdentity
+End Type
+
+Public Type t_NpcBowState
+    WantsSubscription As Boolean
+    Subscribed As Boolean
+    Ready As Boolean
+    Context As t_BowIdentity
+    OwnerId As Long
+    OwnerVersion As Integer
+    Map As Integer
+    Bindings() As t_NpcBowBinding
+    BindingIndex As Dictionary
+    BindingCount As Integer
+    LastRequest As Long
+    Replies(0 To 15) As t_NpcBowReply
+    NextReply As Byte
+    WindowStart As Long
+    WindowCount As Integer
+End Type
+
+Public Type t_InventoryDestruction
+    RequestId As Long
+    Token(0 To 15) As Byte
+    Slot As Byte
+    Item As t_UserOBJ
+    EffectiveElementalTags As Long
+    Quantity As Long
+    OwnerVersion As Integer
+    OwnerId As Long
+    PreparedAt As Long
+    LastPrepareAt As Long
+    HasPrepareTime As Boolean
+    Prepared As Boolean
+    Invalidated As Boolean
+    Completed As Boolean
+    Result As e_InventoryDestructionCode
+End Type
 
 Public Enum e_HooTamingResult
     eHooTamingResult_Success = 0
@@ -3097,6 +3191,8 @@ Public Type t_User
     pos As t_WorldPos
     ConnectionDetails As t_ConnectionInfo
     HooCapabilities As t_HooClientCapabilities
+    InventoryDestruction As t_InventoryDestruction
+    NpcBow As t_NpcBowState
     CurrentInventorySlots As Byte
     BancoInvent As t_BancoInventario
     Counters As t_UserCounters

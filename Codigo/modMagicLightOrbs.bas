@@ -135,6 +135,13 @@ Public Function CaptureMagicLightOrbPacket() As Boolean
     Call writer.GetData(bytes)
     Call writer.Clear()
     packet = CInt(bytes(0)) + CInt(bytes(1)) * 256
+    ' Character snapshots also synchronize the independent equipped torch.
+    If packet = ServerPacketID.eParticleFX And UBound(bytes) = 16 Then
+        If CLng(bytes(4)) + CLng(bytes(5)) * 256& = EQUIPPED_TORCH_EFFECT Then
+            CaptureMagicLightOrbPacket = True
+            Exit Function
+        End If
+    End If
     OrbPacketOrder = OrbPacketOrder & CStr(packet) & ","
     If packet = ServerPacketID.eParticleFX Then
         OrbWireValid = OrbWireValid And UBound(bytes) = 16 And bytes(4) = 98 And bytes(5) = 1

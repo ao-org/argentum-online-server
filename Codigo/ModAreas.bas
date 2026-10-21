@@ -196,6 +196,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         If MaxX > 100 Then MaxX = 100
         Map = UserList(UserIndex).pos.Map
         'Esto es para ke el cliente elimine lo "fuera de area..."
+        Call PruneNpcBowUser(UserIndex)
         Call WriteAreaChanged(UserIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
         'Actualizamos!!!
         For x = MinX To MaxX
@@ -244,6 +245,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
     End With
+    Call ResumeNpcBowAfterArea(UserIndex)
     Exit Sub
 CheckUpdateNeededUser_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
@@ -273,6 +275,7 @@ End Sub
 
 Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     On Error GoTo CheckUpdateNeededNpc_Err
+    Call PruneNpcBowActor(NpcIndex)
     ' Se llama cuando se mueve un Npc
     If NpcList(NpcIndex).AreasInfo.AreaID = AreasInfo(NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y) Then Exit Sub
     Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, x As Long, y As Long
@@ -341,6 +344,18 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
 CheckUpdateNeededNpc_Err:
     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 End Sub
+
+' The bow stream uses the same loaded-area bounds, not the stale target cursor.
+Public Function NpcBowInLoadedArea(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
+    With UserList(UserIndex)
+        If .pos.Map <> NpcList(NpcIndex).pos.Map Then Exit Function
+        Dim minX As Long, minY As Long
+        minX = ((.pos.x \ AREA_DIM) - AREA_RADIUS_X) * AREA_DIM
+        minY = ((.pos.y \ AREA_DIM) - AREA_RADIUS_Y) * AREA_DIM
+        NpcBowInLoadedArea = NpcList(NpcIndex).pos.x >= minX And NpcList(NpcIndex).pos.x < minX + AREA_TILE_WIDTH And _
+                            NpcList(NpcIndex).pos.y >= minY And NpcList(NpcIndex).pos.y < minY + AREA_TILE_HEIGHT
+    End With
+End Function
  
 Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
     On Error GoTo QuitarUser_Err
