@@ -4,9 +4,23 @@ Status: draft implementation; requires matching HOO/server builds and Windows ru
 
 ## Scope
 
-Render server-owned NPCs on directly connected overworld maps. NPCs remain separate from the active-map character table and cannot be targeted, collided with, tamed, traded with or attacked across a seam. No ProtocolGenerator work and no new capability negotiation. Existing unrelated capability infrastructure is unchanged.
+Render server-owned NPCs on overworld maps reachable through at most two topology edges. NPCs remain separate from the active-map character table and cannot be targeted, collided with, tamed, traded with or attacked across a seam. No ProtocolGenerator work and no new capability negotiation. Existing unrelated capability infrastructure is unchanged.
 
-The server samples intersecting direct-neighbor tile rectangles every 100 ms and sends changes only. Interest is +/-24 tiles horizontally and +/-18 vertically in the viewer map's coordinate space, capped at 128 NPCs per viewer. Selection is deterministic by manifest neighbor order, then source tile order. This is a bounded Phase 1 region, not a guarantee of full viewport coverage at every resolution/zoom. No client-supplied map subscriptions are accepted.
+The server samples intersecting one- and two-hop tile rectangles every 100 ms and sends changes only. Interest is +/-24 tiles horizontally and +/-18 vertically in the viewer map's coordinate space, capped at 128 NPCs per viewer. Selection follows HOO's placement order: minimum topology depth, then map ID, then source tile order (y, x). This is a bounded Phase 1 region, not a guarantee of full viewport coverage at every resolution/zoom. No client-supplied map subscriptions are accepted.
+
+Visibility composes signed edge offsets using 32-bit arithmetic. Identical placements
+reached by multiple paths are scanned once. Returning to the active map is excluded,
+and discovery stops after exactly two edge levels, even in cyclic topology. Empty
+or out-of-interest intermediate maps do not prevent second-hop discovery. Only each
+placement's intersection with the player-centered interest rectangle is scanned.
+Conflicting offsets for one source map suppress that map for this viewer: the wire
+identifies a source map, not a path, so selecting an arbitrary transform is unsafe.
+
+For example, from map 80, both 80 -> 78 -> 34 and 80 -> 35 -> 34 place Nix at
+(+74,+80). A guard there is sent once after the map-80 reset, and is sent again in
+the new map-78 scene on return. No diagonal manifest edges are added; pursuit and
+movement routing still use only the original edges. Perfect crossing continuity
+remains Phase 2 work, not stale-scene retention.
 
 The current server topology is a strict subset of HOO's manifest (20 directed edges are absent; shared edges agree). Phase 1 uses that shared subset and does not expand pursuit routes. Aligning the extra map coverage belongs to Phase 3.
 
@@ -64,12 +78,19 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
 
 - Ten focused C++ tests pass in a standalone Linux GoogleTest build using production scene, packet decoder, WorldState and WorldMap sources.
 - Changed C++ implementation translation units pass GCC C++20 syntax checks, including world rendering, event handling and the frame controller.
-- The visibility/send-recovery pass executed the full native VB6 unit suite in an
+- The two-hop pass executed the full native VB6 unit suite in an
   isolated loopback test environment with `DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1`:
-  **589/589 passed for PYMMO=1 and 589/589 for PYMMO=0**. This includes 28 new
-  production-path adjacent collection/refresh groups and nine enqueue-probe groups.
+  **600/600 passed for PYMMO=1 and 600/600 for PYMMO=0**. This includes 11 new
+  two-hop groups, the previous 28 production collection/refresh groups and nine enqueue-probe groups.
   Tests capture real serialized packets and inject failed acceptance; they verify
   packet ordering, cache contents, stale lifetime handling and shared-writer cleanup.
+- Two-hop groups cover the checked-in Nix corner and fresh snapshots across
+  78 -> 80 -> 78; all four signed corners; exact interest boundaries; one scan for
+  convergent paths; empty intermediates; cycles, active-map exclusion and the
+  two-edge cap; conflicting offsets; +/-60000 composition; instances and retries.
+- HOO's production loader/prepared-scene/render-entry tests passed natively on
+  Windows Release: 55/55 focused adjacent, overworld and map-placement tests,
+  including three new corner regressions. HOO required no runtime changes.
 - New coverage includes hidden/visible transitions, staff/owner and dead-viewer
   rules, reset/upsert/remove failures, partial success, unchanged-state silence,
   NPC-slot reuse, and map/user-generation/connection changes during recovery.
@@ -97,5 +118,7 @@ Use matching draft builds at a verified direct seam, for example map 34/35 (offs
 7. Check a logical map alias/instance: no NPCs from unrelated world instances appear.
 8. Hide and reveal an adjacent NPC without moving it: removal followed by a fresh
    visible record, including staff/owner viewers and dead viewers near revivers.
+9. Observe the Nix guard from map 78, enter map 80 and return. Each new scene must
+   receive that guard again, once, at the appropriate composed placement.
 
-Later phases cover seamless handoffs, richer movement semantics, corner/multi-hop coverage, viewport/zoom guarantees, complete visual parity and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.
+Later phases cover seamless handoffs, richer movement semantics, coverage beyond two edges, viewport/zoom guarantees, complete visual parity and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.

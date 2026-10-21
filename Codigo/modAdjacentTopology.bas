@@ -12,6 +12,96 @@ Private mEdgeDy As Scripting.Dictionary
 Private mNeighbors As Scripting.Dictionary
 Private mFailureLogged As Boolean
 
+Public Type t_AdjacentNpcPlacement
+    MapId As Integer
+    dx As Long
+    dy As Long
+    Depth As Integer
+End Type
+
+' Visibility only: never add composed edges to movement/pursuit routing.
+Public Function TryGetAdjacentVisibilityPlacements(ByVal FromMap As Integer, ByRef placements() As t_AdjacentNpcPlacement, ByRef count As Long) As Boolean
+    On Error GoTo Failed
+    count = 0
+    Erase placements
+    TryGetAdjacentVisibilityPlacements = True
+    If Not mAvailable Then Exit Function
+    If Not mMaps.Exists(CStr(FromMap)) Then Exit Function
+    ReDim placements(1 To mMaps.Count)
+    Dim indices As New Scripting.Dictionary, conflicts As New Scripting.Dictionary
+    Dim firstHop As Collection, secondHop As Collection
+    Dim first As Variant, second As Variant
+    Dim dx As Integer, dy As Integer, nextDx As Integer, nextDy As Integer
+    Set firstHop = mNeighbors(CStr(FromMap))
+    For Each first In firstHop
+        If TryGetAdjacentEdge(FromMap, CInt(first), dx, dy) Then
+            Call AddVisibilityPlacement(placements, count, indices, conflicts, CInt(first), CLng(dx), CLng(dy), 1)
+        End If
+    Next first
+    ' Expand every direct neighbor, regardless of NPCs or interest intersection.
+    ' Exactly two edge levels bound cycles and discovery work.
+    For Each first In firstHop
+        If TryGetAdjacentEdge(FromMap, CInt(first), dx, dy) Then
+            Set secondHop = mNeighbors(CStr(first))
+            For Each second In secondHop
+                If CInt(second) <> FromMap Then
+                    If TryGetAdjacentEdge(CInt(first), CInt(second), nextDx, nextDy) Then
+                        Call AddVisibilityPlacement(placements, count, indices, conflicts, CInt(second), CLng(dx) + CLng(nextDx), CLng(dy) + CLng(nextDy), 2)
+                    End If
+                End If
+            Next second
+        End If
+    Next first
+    ' Packets identify source maps, not paths. Suppress ambiguous transforms rather
+    ' than picking one that may disagree with the client's prepared terrain view.
+    Dim i As Long, kept As Long, j As Long, placement As t_AdjacentNpcPlacement
+    For i = 1 To count
+        If Not conflicts.Exists(CStr(placements(i).MapId)) Then
+            kept = kept + 1
+            placements(kept) = placements(i)
+        End If
+    Next i
+    count = kept
+    ' HOO sorts by depth, map ID, y, x; one unambiguous placement per map means
+    ' the last two tie-breakers cannot differ here. NPCs then follow tile order.
+    For i = 2 To count
+        placement = placements(i)
+        j = i - 1
+        Do While j > 0
+            If placements(j).Depth < placement.Depth Then Exit Do
+            If placements(j).Depth = placement.Depth And placements(j).MapId < placement.MapId Then Exit Do
+            placements(j + 1) = placements(j)
+            j = j - 1
+        Loop
+        placements(j + 1) = placement
+    Next i
+    Exit Function
+Failed:
+    count = 0
+    TryGetAdjacentVisibilityPlacements = False
+    Call TraceError(Err.Number, Err.Description, "modAdjacentTopology.TryGetAdjacentVisibilityPlacements", Erl)
+End Function
+
+Private Sub AddVisibilityPlacement(ByRef placements() As t_AdjacentNpcPlacement, ByRef count As Long, ByVal indices As Scripting.Dictionary, ByVal conflicts As Scripting.Dictionary, ByVal MapId As Integer, ByVal dx As Long, ByVal dy As Long, ByVal Depth As Integer)
+    Dim key As String, index As Long
+    key = CStr(MapId)
+    If indices.Exists(key) Then
+        index = CLng(indices(key))
+        If placements(index).dx <> dx Or placements(index).dy <> dy Then
+            If Not conflicts.Exists(key) Then Call conflicts.Add(key, True)
+        End If
+        Exit Sub
+    End If
+    count = count + 1
+    Call indices.Add(key, count)
+    With placements(count)
+        .MapId = MapId
+        .dx = dx
+        .dy = dy
+        .Depth = Depth
+    End With
+End Sub
+
 Public Sub LoadAdjacentTopology()
     Dim topologyPath As String
     topologyPath = App.Path & "\Recursos\config\legacy_overworld_topology.json"

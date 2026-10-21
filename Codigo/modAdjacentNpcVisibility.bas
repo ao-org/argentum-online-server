@@ -3,7 +3,7 @@ Attribute VB_Name = "modAdjacentNpcVisibility"
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
 
-' Phase 1: bounded direct-neighbor interest, independent of pursuit policy.
+' Phase 1: bounded two-hop interest, independent of pursuit policy.
 Public Const ADJACENT_NPC_RADIUS_X As Integer = 24
 Public Const ADJACENT_NPC_RADIUS_Y As Integer = 18
 Public Const ADJACENT_NPC_LIMIT As Integer = 128
@@ -17,6 +17,9 @@ Private mKnown As Scripting.Dictionary
 Private mSessions As Scripting.Dictionary
 Private mEpochs As Scripting.Dictionary
 Private mObserved As Scripting.Dictionary
+#If UNIT_TEST = 1 Then
+Private mScans As Scripting.Dictionary
+#End If
 
 Public Function IsAdjacentNpcObserved(ByVal NpcIndex As Integer) As Boolean
     If mObserved Is Nothing Then Exit Function
@@ -25,7 +28,7 @@ End Function
 
 Public Function AdjacentNpcInsideInterest(ByVal viewerX As Integer, ByVal viewerY As Integer, _
                                           ByVal npcX As Integer, ByVal npcY As Integer, _
-                                          ByVal dx As Integer, ByVal dy As Integer) As Boolean
+                                          ByVal dx As Long, ByVal dy As Long) As Boolean
     AdjacentNpcInsideInterest = Abs(CLng(npcX) + dx - viewerX) <= ADJACENT_NPC_RADIUS_X And _
                                 Abs(CLng(npcY) + dy - viewerY) <= ADJACENT_NPC_RADIUS_Y
 End Function
@@ -36,6 +39,9 @@ Public Sub UpdateAdjacentNpcVisibility(ByVal currentTime As Long)
         If TicksElapsed(mLastUpdate, currentTime) < UPDATE_INTERVAL_MS Then Exit Sub
     End If
     mLastUpdate = currentTime
+    #If UNIT_TEST = 1 Then
+        Set mScans = New Scripting.Dictionary
+    #End If
     If mKnown Is Nothing Then
         Set mKnown = New Scripting.Dictionary
         Set mSessions = New Scripting.Dictionary
@@ -136,25 +142,33 @@ Private Function CollectVisible(ByVal userIndex As Integer, ByRef result As Scri
     If mapId <= 0 Or mapId > NumMaps Then Exit Function
     ' Resource aliases/instances are deliberately unsupported in Phase 1.
     If MapInfo(mapId).MapResource <> mapId Then Exit Function
-    Dim neighbors As Collection
-    Set neighbors = AdjacentMapNeighbors(mapId)
-    If neighbors Is Nothing Then Exit Function
-    Dim item As Variant
+    Dim placements() As t_AdjacentNpcPlacement, count As Long, i As Long
+    If Not TryGetAdjacentVisibilityPlacements(mapId, placements, count) Then
+        CollectVisible = False
+        Exit Function
+    End If
     Dim neighbor As Integer
-    Dim dx As Integer, dy As Integer
+    Dim dx As Long, dy As Long
     Dim x As Long, y As Long
     Dim x0 As Long, x1 As Long, y0 As Long, y1 As Long
     Dim npcIndex As Integer
     Dim key As String
-    For Each item In neighbors
-        neighbor = CInt(item)
+    For i = 1 To count
+        neighbor = placements(i).MapId
+        dx = placements(i).dx
+        dy = placements(i).dy
         If neighbor > 0 And neighbor <= NumMaps Then
             If MapInfo(neighbor).MapResource = neighbor Then
-                If TryGetAdjacentEdge(mapId, neighbor, dx, dy) Then
-                    x0 = max(XMinMapSize, CLng(UserList(userIndex).pos.x) - dx - ADJACENT_NPC_RADIUS_X)
-                    x1 = min(XMaxMapSize, CLng(UserList(userIndex).pos.x) - dx + ADJACENT_NPC_RADIUS_X)
-                    y0 = max(YMinMapSize, CLng(UserList(userIndex).pos.y) - dy - ADJACENT_NPC_RADIUS_Y)
-                    y1 = min(YMaxMapSize, CLng(UserList(userIndex).pos.y) - dy + ADJACENT_NPC_RADIUS_Y)
+                x0 = max(XMinMapSize, CLng(UserList(userIndex).pos.x) - dx - ADJACENT_NPC_RADIUS_X)
+                x1 = min(XMaxMapSize, CLng(UserList(userIndex).pos.x) - dx + ADJACENT_NPC_RADIUS_X)
+                y0 = max(YMinMapSize, CLng(UserList(userIndex).pos.y) - dy - ADJACENT_NPC_RADIUS_Y)
+                y1 = min(YMaxMapSize, CLng(UserList(userIndex).pos.y) - dy + ADJACENT_NPC_RADIUS_Y)
+                If x0 <= x1 And y0 <= y1 Then
+                    #If UNIT_TEST = 1 Then
+                        key = CStr(neighbor)
+                        If Not mScans.Exists(key) Then Call mScans.Add(key, 0)
+                        mScans(key) = CLng(mScans(key)) + 1
+                    #End If
                     For y = y0 To y1
                         For x = x0 To x1
                             npcIndex = MapData(x, y, neighbor).NpcIndex
@@ -175,7 +189,7 @@ Private Function CollectVisible(ByVal userIndex As Integer, ByRef result As Scri
                 End If
             End If
         End If
-    Next item
+    Next i
     Exit Function
 Failed:
     CollectVisible = False
@@ -288,6 +302,11 @@ Failed:
 End Sub
 
 #If UNIT_TEST = 1 Then
+Public Function AdjacentNpcTestScanCount(ByVal MapId As Integer) As Long
+    If mScans Is Nothing Then Exit Function
+    If mScans.Exists(CStr(MapId)) Then AdjacentNpcTestScanCount = CLng(mScans(CStr(MapId)))
+End Function
+
 Public Sub AdjacentNpcTestResetState()
     mLastUpdate = 0
     mGeneration = 0
@@ -295,6 +314,7 @@ Public Sub AdjacentNpcTestResetState()
     Set mSessions = Nothing
     Set mEpochs = Nothing
     Set mObserved = Nothing
+    Set mScans = Nothing
 End Sub
 
 Public Function AdjacentNpcTestKnownCount(ByVal userIndex As Integer) As Long

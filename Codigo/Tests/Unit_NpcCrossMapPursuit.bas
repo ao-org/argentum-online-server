@@ -69,6 +69,10 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
     Next group
+    names = Split("checked-in diagonal map transitions|southeast boundaries|southwest boundaries|northeast boundaries|northwest boundaries|cycles and two edge cap|ambiguous source excluded|positive wide composition|negative wide composition|instance and visibility retain|diagonal retry and map reset", "|")
+    For group = 0 To UBound(names)
+        Call RunAdjacentTwoHopCase(group + 1, CStr(names(group)))
+    Next group
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = UnitTesting.GetFailedTests() = failuresBefore
 End Function
@@ -478,6 +482,251 @@ Cleanup:
         Call UnitTesting.RunTest("adjacent stream " & name, True)
     Else
         Call UnitTesting.RunTestError("adjacent stream " & name, failure)
+    End If
+End Sub
+
+Private Function TwoHopJson(ByVal edges As String) As String
+    TwoHopJson = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,78,80],""edges"":[" & edges & "]}"
+End Function
+
+Private Function TwoHopDiamond(ByVal dx As Long, ByVal dy As Long, Optional ByVal conflict As Boolean = False) As String
+    Dim otherDx As Long
+    otherDx = dx
+    If conflict Then otherDx = dx - 1
+    TwoHopDiamond = TwoHopJson("[34,35," & dx & ",0],[35,34," & -dx & ",0]," & _
+        "[34,78,0," & dy & "],[78,34,0," & -dy & "]," & _
+        "[35,80,0," & dy & "],[80,35,0," & -dy & "]," & _
+        "[78,80," & otherDx & ",0],[80,78," & -otherDx & ",0]")
+End Function
+
+Private Sub PlaceTwoHopNpc(ByVal mapId As Integer, ByVal x As Byte, ByVal y As Byte)
+    With NpcList(adjacentNpc)
+        If .pos.Map > 0 Then MapData(.pos.x, .pos.y, .pos.Map).NpcIndex = 0
+        .pos.Map = mapId: .pos.x = x: .pos.y = y
+    End With
+    MapData(x, y, mapId).NpcIndex = adjacentNpc
+End Sub
+
+Private Sub ExpectTwoHopPlacement(ByVal sourceMap As Integer, ByVal targetMap As Integer, ByVal dx As Long, ByVal dy As Long, ByVal depth As Integer)
+    Dim placements() As t_AdjacentNpcPlacement, count As Long, i As Long, found As Long
+    Call AdjacentExpect(TryGetAdjacentVisibilityPlacements(sourceMap, placements, count), "placements available")
+    For i = 1 To count
+        Call AdjacentExpect(placements(i).MapId <> sourceMap, "active map excluded")
+        If i > 1 Then
+            Call AdjacentExpect(placements(i).Depth > placements(i - 1).Depth Or _
+                (placements(i).Depth = placements(i - 1).Depth And placements(i).MapId > placements(i - 1).MapId), "stable depth/map order")
+        End If
+        If placements(i).MapId = targetMap Then
+            found = found + 1
+            Call AdjacentExpect(placements(i).Dx = dx And placements(i).Dy = dy And placements(i).Depth = depth, "exact composed transform")
+        End If
+    Next i
+    Call AdjacentExpect(found = 1, "source included once")
+End Sub
+
+Private Sub ExpectTwoHopAbsent(ByVal sourceMap As Integer, ByVal targetMap As Integer)
+    Dim placements() As t_AdjacentNpcPlacement, count As Long, i As Long
+    Call AdjacentExpect(TryGetAdjacentVisibilityPlacements(sourceMap, placements, count), "placements available")
+    For i = 1 To count
+        Call AdjacentExpect(placements(i).MapId <> targetMap, "excluded source absent")
+    Next i
+End Sub
+
+Private Sub CheckAdjacentTwoHopCase(ByVal group As Long)
+    Dim dx As Long, dy As Long, sx As Long, sy As Long, epoch As Long
+    Dim reader As Network.reader, topologyPath As String, bytes() As Byte
+    Select Case group
+        Case 1
+            topologyPath = App.Path & "\Recursos\config\legacy_overworld_topology.json"
+            Call AdjacentExpect(FileExist(topologyPath, vbNormal), "checked-in topology fixture exists")
+            Call AdjacentExpect(LoadAdjacentTopologyJson(FileText(topologyPath), False), "checked-in topology loads")
+            Call ExpectTwoHopPlacement(78, 34, 74, 0, 1)
+            Call ExpectTwoHopPlacement(80, 34, 74, 80, 2)
+            Call PlaceTwoHopNpc(34, 15, 10)
+            UserList(1).pos.Map = 78: UserList(1).pos.x = 90: UserList(1).pos.y = 10
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2, "first map reset/upsert")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            epoch = AdjacentNpcTestEpoch(1)
+            UserList(1).pos.Map = 80: UserList(1).pos.y = 90
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "diagonal entry fresh reset/upsert")
+            Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+            Call reader.ReadInt32()
+            Call AdjacentExpect(reader.ReadInt16() = 80, "new active map serialized")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            bytes = adjacentPackets(2)
+            Call AdjacentExpect(bytes(10) = 34 And bytes(11) = 0 And bytes(12) = 15 And bytes(13) = 10, "wire keeps source map and tile")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(34) = 1 And AdjacentNpcTestKnownCount(1) = 1, "two routes one scan one actor")
+            epoch = AdjacentNpcTestEpoch(1)
+            UserList(1).pos.Map = 78: UserList(1).pos.y = 10
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestEpoch(1) > epoch, "return resets old diagonal view")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And NpcList(adjacentNpc).VersionId = 3, "same lifetime no ghosts")
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "return snapshot idempotent")
+        Case 2 To 5
+            sx = 1: sy = 1
+            If group = 3 Or group = 5 Then sx = -1
+            If group = 4 Or group = 5 Then sy = -1
+            dx = sx * 74: dy = sy * 80
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(dx, dy), False), "corner topology")
+            Call ExpectTwoHopPlacement(34, 80, dx, dy, 2)
+            UserList(1).pos.x = 50 + sx * 40: UserList(1).pos.y = 50 + sy * 40
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22))
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestKnownCount(1) = 1, "inclusive corner boundary")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Call AdjacentExpect(AdjacentNpcTestScanCount(80) = 1, "diamond source scanned once")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1 And AdjacentNpcTestScanCount(78) = 1, "empty intermediates scanned without blocking diagonal")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10 + sx), CByte(50 - sy * 22))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "one past horizontal boundary excluded")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22 + sy))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 0, "one past vertical boundary excluded")
+            Call PlaceTwoHopNpc(80, CByte(50 - sx * 10), CByte(50 - sy * 22))
+            Call ClearAdjacentCapture: Call TickAdjacent
+            Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+        Case 6
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopJson("[34,35,10,0],[35,34,-10,0],[35,78,10,0],[78,35,-10,0],[78,80,10,0],[80,78,-10,0]"), False), "cycle chain")
+            Call ExpectTwoHopPlacement(34, 35, 10, 0, 1)
+            Call ExpectTwoHopPlacement(34, 78, 20, 0, 2)
+            Call ExpectTwoHopAbsent(34, 34): Call ExpectTwoHopAbsent(34, 80)
+            Call PlaceTwoHopNpc(80, 20, 50)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "third edge NPC excluded despite nearby projection")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(34) = 0 And AdjacentNpcTestScanCount(80) = 0, "active and depth-three maps not scanned")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1 And AdjacentNpcTestScanCount(78) = 1, "reachable empty sources scanned once")
+        Case 7
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(74, 80, True), False), "contradictory reciprocal topology")
+            Call ExpectTwoHopAbsent(34, 80)
+            UserList(1).pos.x = 90: UserList(1).pos.y = 90
+            Call PlaceTwoHopNpc(80, 15, 10)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "ambiguous source fails closed")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(80) = 0, "ambiguous source never scanned")
+        Case 8, 9
+            dx = 30000
+            If group = 9 Then dx = -30000
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopJson("[34,35," & dx & ",0],[35,34," & -dx & ",0],[35,80," & dx & ",0],[80,35," & -dx & ",0]"), False), "wide offset topology")
+            Call ExpectTwoHopPlacement(34, 80, dx * 2, 0, 2)
+            Call PlaceTwoHopNpc(80, 50, 50)
+            Call TickAdjacent
+            Call AdjacentExpect(adjacentPackets.Count = 1, "far transforms do not overflow into view")
+            Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 0 And AdjacentNpcTestScanCount(80) = 0, "nonintersecting maps never scanned")
+        Case 10, 11
+            Call AdjacentExpect(LoadAdjacentTopologyJson(TwoHopDiamond(74, 80), False), "diagonal lifecycle topology")
+            UserList(1).pos.x = 90: UserList(1).pos.y = 90
+            Call PlaceTwoHopNpc(80, 15, 10)
+            If group = 10 Then
+                MapInfo(80).MapResource = 35
+                Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestScanCount(80) = 0, "source instance excluded")
+                MapInfo(80).MapResource = 80
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0 And AdjacentNpcTestKnownCount(1) = 0, "invisible diagonal excluded")
+                NpcList(adjacentNpc).flags.invisible = 0
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcRemove, adjacentNpc, 3, True)
+                MapInfo(34).MapResource = 35
+                NpcList(adjacentNpc).flags.invisible = 0
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0 And AdjacentNpcTestScanCount(80) = 0, "viewer instance excluded")
+            Else
+                Call ClearAdjacentCapture(2): Call TickAdjacent
+                epoch = AdjacentNpcTestEpoch(1)
+                Call AdjacentExpect(adjacentPackets.Count = 2 And AdjacentNpcTestKnownCount(1) = 0, "failed diagonal upsert not cached")
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) = epoch, "same epoch retries only missing upsert")
+                Call ExpectAdjacentActor(1, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+                NpcList(adjacentNpc).flags.invisible = 1
+                Call ClearAdjacentCapture(1): Call TickAdjacent
+                Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1, "failed diagonal remove retains known actor")
+                UserList(1).pos.Map = 80
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestEpoch(1) > epoch And AdjacentNpcTestKnownCount(1) = 0, "map reset drops obsolete failed remove")
+                Set reader = AdjacentPacketReader(1, ServerPacketID.eAdjacentNpcReset, 8)
+                Call ClearAdjacentCapture: Call TickAdjacent
+                Call AdjacentExpect(adjacentPackets.Count = 0, "obsolete retry never returns")
+            End If
+    End Select
+End Sub
+
+Private Sub RunAdjacentTwoHopCase(ByVal group As Long, ByVal name As String)
+    On Error GoTo Failed
+    Dim ids As Variant, i As Long, x As Integer, y As Integer, mapId As Integer
+    Dim maps(0 To 3) As t_MapInfo, tiles() As t_MapBlock, emptyTile As t_MapBlock
+    Dim oldUser As t_User, oldNpc As t_Npc, emptyUser As t_User, emptyNpc As t_Npc
+    Dim oldLastUser As Integer, saved As Boolean, passed As Boolean, failure As String
+    Call AdjacentExpect(NumMaps >= 80 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized two-hop world")
+    ids = Array(34, 35, 78, 80)
+    ReDim tiles(1 To 100, 1 To 100, 0 To 3)
+    adjacentNpc = UBound(NpcList) - 1
+    oldUser = UserList(1): oldNpc = NpcList(adjacentNpc): oldLastUser = LastUser
+    For i = 0 To 3
+        mapId = CInt(ids(i)): maps(i) = MapInfo(mapId)
+        For y = 1 To 100
+            For x = 1 To 100
+                tiles(x, y, i) = MapData(x, y, mapId)
+            Next x
+        Next y
+    Next i
+    saved = True
+    Call AdjacentNpcTestResetState
+    For i = 0 To 3
+        mapId = CInt(ids(i))
+        MapInfo(mapId).MapResource = mapId: MapInfo(mapId).Seguro = 0
+        For y = 1 To 100
+            For x = 1 To 100
+                MapData(x, y, mapId) = emptyTile
+            Next x
+        Next y
+    Next i
+    UserList(1) = emptyUser: LastUser = 1
+    With UserList(1)
+        .Id = 101: .VersionId = 7: .flags.UserLogged = True: .flags.Privilegios = e_PlayerType.User
+        .ConnectionDetails.ConnIDValida = True: .ConnectionDetails.ConnID = 42
+        .pos.Map = 34: .pos.x = 50: .pos.y = 50
+    End With
+    NpcList(adjacentNpc) = emptyNpc
+    With NpcList(adjacentNpc)
+        .flags.NPCActive = True: .VersionId = 3: .npcType = e_NPCType.Comun
+        .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
+    End With
+    Call InitializeAuxiliaryBuffer: Call ClearAdjacentCapture
+    adjacentTick = 1000: adjacentCaptureActive = True
+    Call CheckAdjacentTwoHopCase(group)
+    passed = True
+    GoTo Cleanup
+Failed:
+    failure = CStr(Err.Number) & ": " & Err.Description
+    Resume Cleanup
+Cleanup:
+    On Error GoTo 0
+    adjacentCaptureActive = False
+    Call AdjacentNpcTestResetState
+    If saved Then
+        UserList(1) = oldUser: NpcList(adjacentNpc) = oldNpc: LastUser = oldLastUser
+        For i = 0 To 3
+            mapId = CInt(ids(i)): MapInfo(mapId) = maps(i)
+            For y = 1 To 100
+                For x = 1 To 100
+                    MapData(x, y, mapId) = tiles(x, y, i)
+                Next x
+            Next y
+        Next i
+    End If
+    If passed Then
+        Call UnitTesting.RunTest("adjacent two-hop " & name, True)
+    Else
+        Call UnitTesting.RunTestError("adjacent two-hop " & name, failure)
     End If
 End Sub
 
