@@ -2180,6 +2180,9 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
     Call Writer.WriteInt8(UserList(UserIndex).genero)
     Call Writer.WriteInt32(UserList(UserIndex).Stats.PuntosPesca)
     Call Writer.WriteInt8(UserList(UserIndex).raza)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.JineteLevel)
+    Call Writer.WriteInt32(UserList(UserIndex).Faccion.FactionScore)
+    Call Writer.WriteInt16(UserList(UserIndex).Hogar)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteMiniStats_Err:
