@@ -12,6 +12,34 @@ The current server topology is a strict subset of HOO's manifest (20 directed ed
 
 Topology loading is independent of the pursuit switch. Only ordinary maps whose logical ID equals their resource ID are eligible. Missing topology means an empty adjacent scene; normal active-map play continues. Observed NPCs become eligible for the existing AI update, even when their map has no resident players; combat, movement legality and pursuit policy remain authoritative and unchanged.
 
+## Visibility and send recovery
+
+Adjacent collection excludes NPCs whose `flags.invisible` is nonzero or whose body
+is absent. The visual-only packet has no invisibility representation, so hidden
+NPCs are omitted even for staff or their owner; the normal NPC path has no
+viewer-specific invisibility exception to reproduce. Player visibility exceptions
+do not apply. The existing `MakeNPCChar` dead-viewer rule remains: on an unsafe
+viewer map, only visible revivers are included. Instance restrictions are unchanged.
+Becoming hidden removes an existing adjacent record; becoming visible sends a fresh
+upsert without requiring movement or an appearance change.
+
+The cache records only packets accepted by the reliable transport queue, not
+confirmed client receipt. Aurora's `Send` COM return alone does not prove enqueue:
+the adjacent-only opt-in checks its synchronous forwarding callback for the expected
+connection and full payload length, successful send return, and unchanged user
+identity. No transport DLL changes or client acknowledgements are required. Other
+send callers retain their existing behavior.
+
+A failed reset leaves the subscription uninitialized and sends no upserts. After a
+successful reset, each accepted removal/upsert updates the known cache individually.
+The first failed difference stops that refresh; the next 100 ms sample retries the
+remaining differences. Already accepted changes are not resent. An old NPC lifetime
+must be removed successfully before its slot's replacement is upserted. There is no
+extra retry queue or unbounded snapshot loop. Shared writer bytes are cleared on
+both accepted and rejected sends, and send-failure diagnostics are rate-limited.
+User generation, connection, map replacement and disconnect invalidate obsolete
+state. Current interest still drives the existing observed-NPC AI during retries.
+
 ## Wire contract
 
 IDs below are for PYMMO=1. VB6's existing conditional PYMMO=0 ordinal shift remains; it is not a compatibility target. All multibyte values are little endian. The existing transport frame surrounds these payloads.
@@ -36,8 +64,25 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
 
 - Ten focused C++ tests pass in a standalone Linux GoogleTest build using production scene, packet decoder, WorldState and WorldMap sources.
 - Changed C++ implementation translation units pass GCC C++20 syntax checks, including world rendering, event handling and the frame controller.
-- VB6 topology/pursuit unit coverage is updated and five interest-boundary checks are added; these require Windows/VB6 execution.
-- The review-fix pass compiled the native Windows VB6 server with `DEBUGGING=0:PYMMO=1:UNIT_TEST=0:UNLOCK_CPU=1`. No server runtime logic changed in that pass; server unit suites and live GL seam validation were not rerun. See the coordinated PRs for current client build/test evidence.
+- The visibility/send-recovery pass executed the full native VB6 unit suite in an
+  isolated loopback test environment with `DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1`:
+  **589/589 passed for PYMMO=1 and 589/589 for PYMMO=0**. This includes 28 new
+  production-path adjacent collection/refresh groups and nine enqueue-probe groups.
+  Tests capture real serialized packets and inject failed acceptance; they verify
+  packet ordering, cache contents, stale lifetime handling and shared-writer cleanup.
+- New coverage includes hidden/visible transitions, staff/owner and dead-viewer
+  rules, reset/upsert/remove failures, partial success, unchanged-state silence,
+  NPC-slot reuse, and map/user-generation/connection changes during recovery.
+- Enqueue-probe tests cover complete/wrong/partial/duplicate callbacks, reentrancy,
+  close invalidation and late callbacks. They are deterministic unit tests, not a
+  real-socket queue-saturation test. The callback semantics were checked against
+  the installed Aurora implementation; no Aurora files or dependencies changed.
+- Native production builds passed for both `PYMMO=0` and `PYMMO=1` with
+  `DEBUGGING=0:UNIT_TEST=0:UNLOCK_CPU=1`. All four builds used `VB6.exe /make /d
+  <definitions> /out <log> Server.VBP`; each new executable was verified. Existing
+  local project reference settings were left untouched and uncommitted.
+- Matching live HOO/server seam checks were not performed in this pass. See the
+  coordinated PRs for current build evidence and outstanding visual acceptance.
 
 ## Required runtime acceptance before merging
 
@@ -50,5 +95,7 @@ Use matching draft builds at a verified direct seam, for example map 34/35 (offs
 5. Reload the same map, teleport, logout/relogin and switch accounts: no retained adjacent records.
 6. Cross the boundary in both directions, including a pursuing NPC. Record polling gaps for Phase 2; no persistent duplicate/ghost is acceptable.
 7. Check a logical map alias/instance: no NPCs from unrelated world instances appear.
+8. Hide and reveal an adjacent NPC without moving it: removal followed by a fresh
+   visible record, including staff/owner viewers and dead viewers near revivers.
 
 Later phases cover seamless handoffs, richer movement semantics, corner/multi-hop coverage, viewport/zoom guarantees, complete visual parity and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.

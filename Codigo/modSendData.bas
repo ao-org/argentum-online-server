@@ -142,9 +142,10 @@ SendToConnection_Err:
     Call Writer.Clear
 End Sub
 
-Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False, Optional ByRef Queued As Boolean = False)
+Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False, Optional ByRef Queued As Boolean = False, Optional ByVal RequireQueueConfirmation As Boolean = False)
     Queued = False
     #If UNIT_TEST = 1 Then
+        If Unit_NpcCrossMapPursuit.CaptureAdjacentPacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_NpcBow.CapturePacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_InventoryDestruction.CapturePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureAttributePacket(sndRoute, sndIndex) Then Exit Sub
@@ -165,8 +166,12 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
             If sndIndex >= LBound(UserList) And sndIndex <= UBound(UserList) Then
                 With UserList(sndIndex)
                     If (.ConnectionDetails.ConnIDValida) Then
-                        Call modNetwork.Send(sndIndex, Buffer)
-                        Queued = True
+                        If RequireQueueConfirmation Then
+                            Queued = modNetwork.TrySend(sndIndex, Buffer)
+                        Else
+                            Call modNetwork.Send(sndIndex, Buffer)
+                            Queued = True
+                        End If
                     End If
                 End With
             End If
@@ -324,6 +329,11 @@ SendData_Err:
         Call Buffer.Clear
     End If
     If (Err.Number <> 0) Then
+        If RequireQueueConfirmation Then
+            Queued = False
+            Err.Clear
+            Exit Sub
+        End If
         Dim errorContext As String
         errorContext = BuildSendDataContext(sndRoute, sndIndex, ValidateInvi, Args)
         Call TraceError(Err.Number, Err.Description & " | Context: " & errorContext, "modSendData.SendData", Erl)

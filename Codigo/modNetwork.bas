@@ -45,6 +45,44 @@ End Type
     Const MaxActiveConnections = 10000
     Private PendingConnections As New Dictionary
 
+Private Type t_QueueAcceptanceProbe
+    Active As Boolean
+    Connection As Long
+    Length As Long
+    Forwarded As Boolean
+    Invalidated As Boolean
+End Type
+Private queueProbe As t_QueueAcceptanceProbe
+
+Private Function BeginQueueProbe(ByVal Connection As Long, ByVal Length As Long) As Boolean
+    If queueProbe.Active Or Length <= 0 Then Exit Function
+    Dim emptyProbe As t_QueueAcceptanceProbe
+    queueProbe = emptyProbe
+    queueProbe.Active = True
+    queueProbe.Connection = Connection
+    queueProbe.Length = Length
+    BeginQueueProbe = True
+End Function
+
+Private Sub ObserveQueueForward(ByVal Connection As Long, ByVal Length As Long)
+    If Not queueProbe.Active Or Connection <> queueProbe.Connection Then Exit Sub
+    If Length <> queueProbe.Length Or queueProbe.Forwarded Then
+        queueProbe.Invalidated = True
+    Else
+        queueProbe.Forwarded = True
+    End If
+End Sub
+
+Private Sub InvalidateQueueProbe(ByVal Connection As Long)
+    If queueProbe.Active And queueProbe.Connection = Connection Then queueProbe.Invalidated = True
+End Sub
+
+Private Function FinishQueueProbe() As Boolean
+    FinishQueueProbe = queueProbe.Active And queueProbe.Forwarded And Not queueProbe.Invalidated
+    Dim emptyProbe As t_QueueAcceptanceProbe
+    queueProbe = emptyProbe
+End Function
+
 Private Sub OnServerError(ByVal Code As Long, ByVal Description As String)
     Debug.Print "Server error:", Code, Description
 End Sub
@@ -87,6 +125,80 @@ End Sub
 Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
     Call Server.Send(UserList(UserIndex).ConnectionDetails.ConnID, False, Buffer)
 End Sub
+
+' Aurora Send returns S_OK even on rejection. Its forward callback is synchronous
+' after copying the complete frame; successful return completes the queue commit.
+' This confirms local enqueue only, never delivery to the remote client.
+Public Function TrySend(ByVal UserIndex As Long, ByRef Buffer As Network.Writer) As Boolean
+    On Error GoTo Failed
+    Dim Connection As Long, userId As Long, version As Integer, ownsProbe As Boolean
+    If queueProbe.Active Then Exit Function
+    If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
+    With UserList(UserIndex)
+        If Not .ConnectionDetails.ConnIDValida Then Exit Function
+        Connection = .ConnectionDetails.ConnID
+        userId = .Id
+        version = .VersionId
+    End With
+    ownsProbe = BeginQueueProbe(Connection, Buffer.GetOffset())
+    If Not ownsProbe Then Exit Function
+    Call Server.Send(Connection, False, Buffer)
+    With UserList(UserIndex)
+        If .Id <> userId Or .VersionId <> version Or Not .ConnectionDetails.ConnIDValida Or _
+           .ConnectionDetails.ConnID <> Connection Then Call InvalidateQueueProbe(Connection)
+    End With
+    TrySend = FinishQueueProbe()
+    Exit Function
+Failed:
+    If ownsProbe Then
+        Call InvalidateQueueProbe(Connection)
+        Call FinishQueueProbe()
+    End If
+    ' The opt-in caller reports the first failure of its retry group.
+    Err.Clear
+End Function
+
+#If UNIT_TEST = 1 Then
+Public Function TestQueueAcceptanceProbe(ByVal caseIndex As Integer) As Boolean
+    If queueProbe.Active Then Exit Function
+    Dim nested As Boolean
+    If Not BeginQueueProbe(123, 32) Then Exit Function
+    Select Case caseIndex
+        Case 1
+            Call ObserveQueueForward(123, 32)
+            TestQueueAcceptanceProbe = FinishQueueProbe()
+        Case 2
+            Call ObserveQueueForward(124, 32)
+            TestQueueAcceptanceProbe = Not FinishQueueProbe()
+        Case 3, 4
+            Call ObserveQueueForward(123, IIf(caseIndex = 3, 31, 33))
+            Call ObserveQueueForward(123, 32)
+            TestQueueAcceptanceProbe = Not FinishQueueProbe()
+        Case 5
+            Call FinishQueueProbe()
+            Call ObserveQueueForward(123, 32)
+            TestQueueAcceptanceProbe = Not FinishQueueProbe()
+        Case 6
+            nested = BeginQueueProbe(124, 8)
+            Call ObserveQueueForward(123, 32)
+            TestQueueAcceptanceProbe = FinishQueueProbe() And Not nested
+        Case 7, 8
+            Call ObserveQueueForward(123, 32)
+            Call InvalidateQueueProbe(IIf(caseIndex = 7, 123, 124))
+            If caseIndex = 7 Then
+                TestQueueAcceptanceProbe = Not FinishQueueProbe()
+            Else
+                TestQueueAcceptanceProbe = FinishQueueProbe()
+            End If
+        Case 9
+            Call ObserveQueueForward(123, 32)
+            Call ObserveQueueForward(123, 32)
+            TestQueueAcceptanceProbe = Not FinishQueueProbe()
+        Case Else
+            Call FinishQueueProbe()
+    End Select
+End Function
+#End If
 
 Public Sub SendToConnection(ByVal ConnectionID As Long, ByRef Buffer As Network.Writer)
     Call Server.Send(ConnectionID, False, Buffer)
@@ -195,6 +307,7 @@ OnServerConnect_Err:
 End Sub
 
 Private Sub OnServerClose(ByVal Connection As Long)
+    Call InvalidateQueueProbe(Connection)
     On Error GoTo OnServerClose_Err:
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection).UserRef
@@ -232,8 +345,10 @@ End Sub
 
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.reader)
     On Error GoTo OnServerSend_Err:
+    If queueProbe.Active Then Call ObserveQueueForward(Connection, Message.GetAvailable())
     Exit Sub
 OnServerSend_Err:
+    Call InvalidateQueueProbe(Connection)
     Call Kick(Connection, "send_error", "modNetwork.OnServerSend_Err", -1, vbNullString, -1, "err=" & Err.Number & " desc=" & Err.Description)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub

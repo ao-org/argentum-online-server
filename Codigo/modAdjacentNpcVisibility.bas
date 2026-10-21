@@ -8,7 +8,10 @@ Public Const ADJACENT_NPC_RADIUS_X As Integer = 24
 Public Const ADJACENT_NPC_RADIUS_Y As Integer = 18
 Public Const ADJACENT_NPC_LIMIT As Integer = 128
 Private Const UPDATE_INTERVAL_MS As Long = 100
+Private Const FAILURE_LOG_INTERVAL_MS As Long = 10000
 Private mLastUpdate As Long
+Private mLastFailureLog As Long
+Private mFailureLogged As Boolean
 Private mGeneration As Long
 Private mKnown As Scripting.Dictionary
 Private mSessions As Scripting.Dictionary
@@ -73,60 +76,69 @@ Private Sub RefreshViewer(ByVal userIndex As Integer)
     Dim previous As Scripting.Dictionary
     Dim current As New Scripting.Dictionary
     key = CStr(userIndex)
-    session = CStr(UserList(userIndex).VersionId) & ":" & CStr(UserList(userIndex).pos.Map)
+    session = CStr(UserList(userIndex).VersionId) & ":" & CStr(UserList(userIndex).pos.Map) & ":" & CStr(UserList(userIndex).ConnectionDetails.ConnID)
     If mSessions.Exists(key) Then
         If mSessions(key) <> session Then
-            mKnown.Remove key
-            mSessions.Remove key
-            mEpochs.Remove key
+            Call InvalidateAdjacentNpcViewer(userIndex)
         End If
     End If
+    If Not CollectVisible(userIndex, current) Then Exit Sub
+    Dim npcKey As Variant
+    Dim npcIndex As Integer
+    ' Interest keeps AI active even while a transport enqueue is being retried.
+    For Each npcKey In current.Keys
+        If Not mObserved.Exists(npcKey) Then mObserved.Add npcKey, True
+    Next npcKey
     If Not mKnown.Exists(key) Then
         Set previous = New Scripting.Dictionary
         If mGeneration = &H7FFFFFFF Then mGeneration = 0
         mGeneration = mGeneration + 1
+        ' Do not publish initialization until the reset was accepted by transport.
+        If Not SendReset(userIndex, mGeneration) Then Exit Sub
         mKnown.Add key, previous
         mSessions.Add key, session
         mEpochs.Add key, mGeneration
-        Call SendReset(userIndex, mGeneration)
     End If
     Set previous = mKnown(key)
     epoch = CLng(mEpochs(key))
-    Call CollectVisible(userIndex, current)
-    Dim npcKey As Variant
-    Dim npcIndex As Integer
+    ' Commit each accepted difference, so partial success is neither lost nor replayed.
+    ' Keys is a snapshot: removing entries during this loop is safe.
     For Each npcKey In previous.Keys
         If Not current.Exists(npcKey) Then
-            Call SendRemove(userIndex, epoch, CInt(npcKey), CInt(Split(CStr(previous(npcKey)), "|")(0)))
+            If Not SendRemove(userIndex, epoch, CInt(npcKey), CInt(Split(CStr(previous(npcKey)), "|")(0))) Then Exit Sub
+            previous.Remove npcKey
         ElseIf Split(CStr(previous(npcKey)), "|")(0) <> Split(CStr(current(npcKey)), "|")(0) Then
-            Call SendRemove(userIndex, epoch, CInt(npcKey), CInt(Split(CStr(previous(npcKey)), "|")(0)))
+            If Not SendRemove(userIndex, epoch, CInt(npcKey), CInt(Split(CStr(previous(npcKey)), "|")(0))) Then Exit Sub
+            previous.Remove npcKey
         End If
     Next npcKey
     For Each npcKey In current.Keys
         npcIndex = CInt(npcKey)
         If Not previous.Exists(npcKey) Then
-            Call SendUpsert(userIndex, epoch, npcIndex)
+            If Not SendUpsert(userIndex, epoch, npcIndex) Then Exit Sub
+            previous.Add npcKey, current(npcKey)
         ElseIf previous(npcKey) <> current(npcKey) Then
-            Call SendUpsert(userIndex, epoch, npcIndex)
+            If Not SendUpsert(userIndex, epoch, npcIndex) Then Exit Sub
+            previous(npcKey) = current(npcKey)
         End If
-        If Not mObserved.Exists(npcKey) Then mObserved.Add npcKey, True
     Next npcKey
-    Set mKnown(key) = current
     Exit Sub
 Failed:
     Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.RefreshViewer", Erl)
+    Call InvalidateAdjacentNpcViewer(userIndex)
 End Sub
 
-Private Sub CollectVisible(ByVal userIndex As Integer, ByRef result As Scripting.Dictionary)
+Private Function CollectVisible(ByVal userIndex As Integer, ByRef result As Scripting.Dictionary) As Boolean
     On Error GoTo Failed
     Dim mapId As Integer
     mapId = UserList(userIndex).pos.Map
-    If mapId <= 0 Or mapId > NumMaps Then Exit Sub
+    CollectVisible = True
+    If mapId <= 0 Or mapId > NumMaps Then Exit Function
     ' Resource aliases/instances are deliberately unsupported in Phase 1.
-    If MapInfo(mapId).MapResource <> mapId Then Exit Sub
+    If MapInfo(mapId).MapResource <> mapId Then Exit Function
     Dim neighbors As Collection
     Set neighbors = AdjacentMapNeighbors(mapId)
-    If neighbors Is Nothing Then Exit Sub
+    If neighbors Is Nothing Then Exit Function
     Dim item As Variant
     Dim neighbor As Integer
     Dim dx As Integer, dy As Integer
@@ -150,11 +162,10 @@ Private Sub CollectVisible(ByVal userIndex As Integer, ByRef result As Scripting
                                 With NpcList(npcIndex)
                                     If .flags.NPCActive And .Char.charindex > 0 And .pos.Map = neighbor And .pos.x = x And .pos.y = y And _
                                         AdjacentNpcInsideInterest(UserList(userIndex).pos.x, UserList(userIndex).pos.y, .pos.x, .pos.y, dx, dy) Then
-                                        ' Match normal NPC visibility for dead viewers on unsafe maps.
-                                        If UserList(userIndex).flags.Muerto = 0 Or MapInfo(mapId).Seguro <> 0 Or .npcType = e_NPCType.Revividor Then
+                                        If CanViewerSeeAdjacentNpc(userIndex, npcIndex) Then
                                             key = CStr(npcIndex)
                                             If Not result.Exists(key) Then result.Add key, VisualFingerprint(npcIndex)
-                                            If result.Count >= ADJACENT_NPC_LIMIT Then Exit Sub
+                                            If result.Count >= ADJACENT_NPC_LIMIT Then Exit Function
                                         End If
                                     End If
                                 End With
@@ -165,10 +176,22 @@ Private Sub CollectVisible(ByVal userIndex As Integer, ByRef result As Scripting
             End If
         End If
     Next item
-    Exit Sub
+    Exit Function
 Failed:
+    CollectVisible = False
     Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.CollectVisible", Erl)
-End Sub
+End Function
+
+Private Function CanViewerSeeAdjacentNpc(ByVal userIndex As Integer, ByVal npcIndex As Integer) As Boolean
+    With NpcList(npcIndex)
+        ' The visual-only packet cannot represent hidden/translucent NPCs. There is
+        ' no staff/owner exception in the NPC path (player visibility differs).
+        If .flags.invisible <> 0 Or .Char.body <= 0 Then Exit Function
+        ' Match MakeNPCChar's dead-viewer rule using the viewer's map safety.
+        CanViewerSeeAdjacentNpc = UserList(userIndex).flags.Muerto = 0 Or _
+            MapInfo(UserList(userIndex).pos.Map).Seguro <> 0 Or .npcType = e_NPCType.Revividor
+    End With
+End Function
 
 Private Function VisualFingerprint(ByVal npcIndex As Integer) As String
     With NpcList(npcIndex)
@@ -178,21 +201,22 @@ Private Function VisualFingerprint(ByVal npcIndex As Integer) As String
     End With
 End Function
 
-Private Sub SendReset(ByVal userIndex As Integer, ByVal epoch As Long)
+Private Function SendReset(ByVal userIndex As Integer, ByVal epoch As Long) As Boolean
     On Error GoTo Failed
     Dim writer As Network.Writer
     Set writer = Protocol_Writes.GetWriterBuffer()
     Call writer.WriteInt16(ServerPacketID.eAdjacentNpcReset)
     Call writer.WriteInt32(epoch)
     Call writer.WriteInt16(UserList(userIndex).pos.Map)
-    Call modSendData.SendData(ToIndex, userIndex)
-    Exit Sub
+    Call modSendData.SendData(ToIndex, userIndex, , False, SendReset, True)
+    If Not SendReset Then Call ReportSendFailure(userIndex, "reset")
+    Exit Function
 Failed:
+    Call ReportSendFailure(userIndex, "reset serialization", Err.Number, Err.Description)
     If Not writer Is Nothing Then Call writer.Clear()
-    Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.SendReset", Erl)
-End Sub
+End Function
 
-Private Sub SendRemove(ByVal userIndex As Integer, ByVal epoch As Long, ByVal npcIndex As Integer, ByVal version As Integer)
+Private Function SendRemove(ByVal userIndex As Integer, ByVal epoch As Long, ByVal npcIndex As Integer, ByVal version As Integer) As Boolean
     On Error GoTo Failed
     Dim writer As Network.Writer
     Set writer = Protocol_Writes.GetWriterBuffer()
@@ -200,14 +224,15 @@ Private Sub SendRemove(ByVal userIndex As Integer, ByVal epoch As Long, ByVal np
     Call writer.WriteInt32(epoch)
     Call writer.WriteInt16(npcIndex)
     Call writer.WriteInt16(version)
-    Call modSendData.SendData(ToIndex, userIndex)
-    Exit Sub
+    Call modSendData.SendData(ToIndex, userIndex, , False, SendRemove, True)
+    If Not SendRemove Then Call ReportSendFailure(userIndex, "remove")
+    Exit Function
 Failed:
+    Call ReportSendFailure(userIndex, "remove serialization", Err.Number, Err.Description)
     If Not writer Is Nothing Then Call writer.Clear()
-    Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.SendRemove", Erl)
-End Sub
+End Function
 
-Private Sub SendUpsert(ByVal userIndex As Integer, ByVal epoch As Long, ByVal npcIndex As Integer)
+Private Function SendUpsert(ByVal userIndex As Integer, ByVal epoch As Long, ByVal npcIndex As Integer) As Boolean
     On Error GoTo Failed
     Dim writer As Network.Writer
     Set writer = Protocol_Writes.GetWriterBuffer()
@@ -229,11 +254,24 @@ Private Sub SendUpsert(ByVal userIndex As Integer, ByVal epoch As Long, ByVal np
         Call writer.WriteReal32(.Char.speeding)
         Call writer.WriteBool(.flags.NPCIdle)
     End With
-    Call modSendData.SendData(ToIndex, userIndex)
-    Exit Sub
+    Call modSendData.SendData(ToIndex, userIndex, , False, SendUpsert, True)
+    If Not SendUpsert Then Call ReportSendFailure(userIndex, "upsert")
+    Exit Function
 Failed:
+    Call ReportSendFailure(userIndex, "upsert serialization", Err.Number, Err.Description)
     If Not writer Is Nothing Then Call writer.Clear()
-    Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.SendUpsert", Erl)
+End Function
+
+Private Sub ReportSendFailure(ByVal userIndex As Integer, ByVal operation As String, Optional ByVal errorNumber As Long = 0, Optional ByVal description As String = "enqueue not accepted")
+    ' A broken connection must not generate a log line on every 100 ms retry.
+    Dim now As Long
+    now = GetTickCountRaw()
+    If mFailureLogged Then
+        If TicksElapsed(mLastFailureLog, now) < FAILURE_LOG_INTERVAL_MS Then Exit Sub
+    End If
+    mFailureLogged = True
+    mLastFailureLog = now
+    Call TraceError(errorNumber, "user=" & CStr(userIndex) & " " & operation & ": " & description, "modAdjacentNpcVisibility.Send", 0)
 End Sub
 
 Public Sub InvalidateAdjacentNpcViewer(ByVal userIndex As Integer)
@@ -241,11 +279,41 @@ Public Sub InvalidateAdjacentNpcViewer(ByVal userIndex As Integer)
     If mKnown Is Nothing Then Exit Sub
     Dim key As String
     key = CStr(userIndex)
-    If Not mKnown.Exists(key) Then Exit Sub
-    mKnown.Remove key
-    mSessions.Remove key
-    mEpochs.Remove key
+    If mKnown.Exists(key) Then mKnown.Remove key
+    If mSessions.Exists(key) Then mSessions.Remove key
+    If mEpochs.Exists(key) Then mEpochs.Remove key
     Exit Sub
 Failed:
     Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.InvalidateViewer", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub AdjacentNpcTestResetState()
+    mLastUpdate = 0
+    mGeneration = 0
+    Set mKnown = Nothing
+    Set mSessions = Nothing
+    Set mEpochs = Nothing
+    Set mObserved = Nothing
+End Sub
+
+Public Function AdjacentNpcTestKnownCount(ByVal userIndex As Integer) As Long
+    If mKnown Is Nothing Then Exit Function
+    If Not mKnown.Exists(CStr(userIndex)) Then Exit Function
+    AdjacentNpcTestKnownCount = mKnown(CStr(userIndex)).Count
+End Function
+
+Public Function AdjacentNpcTestEpoch(ByVal userIndex As Integer) As Long
+    If mEpochs Is Nothing Then Exit Function
+    If mEpochs.Exists(CStr(userIndex)) Then AdjacentNpcTestEpoch = CLng(mEpochs(CStr(userIndex)))
+End Function
+
+Public Function AdjacentNpcTestKnownVersion(ByVal userIndex As Integer, ByVal npcIndex As Integer) As Integer
+    AdjacentNpcTestKnownVersion = -1
+    If mKnown Is Nothing Then Exit Function
+    If Not mKnown.Exists(CStr(userIndex)) Then Exit Function
+    Dim known As Scripting.Dictionary
+    Set known = mKnown(CStr(userIndex))
+    If known.Exists(CStr(npcIndex)) Then AdjacentNpcTestKnownVersion = CInt(Split(CStr(known(CStr(npcIndex))), "|")(0))
+End Function
+#End If
