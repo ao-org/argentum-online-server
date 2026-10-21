@@ -23,6 +23,8 @@ Attribute VB_Name = "WorldTime"
 '  - Always returns non-negative [0 .. DayLen-1]
 ' ============================
 Option Explicit
+Public Const DEFAULT_NPC_DAY_START_HOUR As Long = 6
+Public Const DEFAULT_NPC_NIGHT_START_HOUR As Long = 20
 ' ---- Module state ----
 Private WT_DayLenMs As Long     ' ms per in-game day (>=1)
 Private WT_BaseTick As Long     ' synthetic base tick (raw tick) so elapsed = TicksElapsed(Base, NowRaw)
@@ -62,6 +64,44 @@ End Function
 ' Convenience: seconds within the day
 Public Function WorldTime_Sec() As Long
     WorldTime_Sec = WorldTime_Ms() \ 1000
+End Function
+
+' Current in-game minute within the 24-hour fantasy day [0 .. 1439].
+Public Function WorldTime_MinuteOfDay() As Long
+    Dim dayLen As Long
+    dayLen = WorldTime_DayLenMs()
+    If dayLen <= 0 Then dayLen = 1
+    WorldTime_MinuteOfDay = CLng(Fix((WorldTime_Ms() * 1440#) / dayLen))
+End Function
+
+' Evaluates a fantasy minute against configurable day/night boundaries.
+' Day starts inclusively at dayStartHour; night starts inclusively at nightStartHour.
+Public Function WorldTime_IsDaytimeAtMinute(ByVal minuteOfDay As Long, _
+                                             ByVal dayStartHour As Long, _
+                                             ByVal nightStartHour As Long) As Boolean
+    If dayStartHour < 0 Or dayStartHour > 23 Or _
+       nightStartHour < 0 Or nightStartHour > 23 Or _
+       dayStartHour = nightStartHour Then
+        dayStartHour = DEFAULT_NPC_DAY_START_HOUR
+        nightStartHour = DEFAULT_NPC_NIGHT_START_HOUR
+    End If
+
+    minuteOfDay = PosMod(CDbl(minuteOfDay), 1440)
+
+    Dim dayStartMinute As Long
+    Dim nightStartMinute As Long
+    dayStartMinute = dayStartHour * 60
+    nightStartMinute = nightStartHour * 60
+
+    If dayStartMinute < nightStartMinute Then
+        WorldTime_IsDaytimeAtMinute = (minuteOfDay >= dayStartMinute And minuteOfDay < nightStartMinute)
+    Else
+        WorldTime_IsDaytimeAtMinute = (minuteOfDay >= dayStartMinute Or minuteOfDay < nightStartMinute)
+    End If
+End Function
+
+Public Function WorldTime_IsDaytime(ByVal dayStartHour As Long, ByVal nightStartHour As Long) As Boolean
+    WorldTime_IsDaytime = WorldTime_IsDaytimeAtMinute(WorldTime_MinuteOfDay(), dayStartHour, nightStartHour)
 End Function
 
 ' Get/Set day length

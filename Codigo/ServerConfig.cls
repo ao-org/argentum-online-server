@@ -75,6 +75,8 @@ Public Function LoadSettings(ByVal Filename As String, Optional ByVal source As 
     mSettings.Add "OroPorNivel", val(reader.GetValue("CONFIGURACIONES", "OroPorNivel"))
     mSettings.Add "MaxInventoryObjs", CInt(val(reader.GetValue("CONFIGURACIONES", "MaxInventoryObjs", DEFAULT_MAX_INVENTORY_OBJS)))
     mSettings.Add "DayLength", CLng(val(reader.GetValue("CONFIGURACIONES", "DuracionDia"))) * 60 * 1000
+    mSettings.Add "NpcDayStartHour", CLng(val(reader.GetValue("CONFIGURACIONES", "NpcDayStartHour", CStr(DEFAULT_NPC_DAY_START_HOUR))))
+    mSettings.Add "NpcNightStartHour", CLng(val(reader.GetValue("CONFIGURACIONES", "NpcNightStartHour", CStr(DEFAULT_NPC_NIGHT_START_HOUR))))
     mSettings.Add "CostoPerdonPorCiudadano", CLng(val(reader.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano")))
     mSettings.Add "ChatGlobal", CInt(val(reader.GetValue("CONFIGURACIONES", "ChatGlobal", "1")))
     mSettings.Add "ChatGlobalCosto", CLng(val(reader.GetValue("CONFIGURACIONES", "ChatGlobalCosto", "2500")))

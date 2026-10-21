@@ -202,6 +202,7 @@ Public Enum e_DeleteSource
     eClearInvasion
     eAiResetNpc
     eClearHunt
+    eScheduledInitialSpawn
 End Enum
 
 Public lstUsuariosDonadores()        As String
@@ -3279,6 +3280,12 @@ Public Enum e_Inmunities
     eTranslation = 1
 End Enum
 
+Public Enum e_NpcRespawnSchedule
+    eNpcRespawnAnyTime = 0
+    eNpcRespawnDayOnly = 1
+    eNpcRespawnNightOnly = 2
+End Enum
+
 Public Enum e_BehaviorFlags
     eAttackUsers = 1
     eAttackNpc = 2
@@ -3302,6 +3309,7 @@ Public Type t_NPCFlags
     GolpeExacto As Byte
     Domable As Integer
     Respawn As Byte
+    RespawnSchedule As Byte
     NPCActive As Boolean '¿Esta vivo?
     Follow As Boolean
     Faccion As e_Facciones
@@ -3506,6 +3514,7 @@ Public Type t_NpcInfoCache
     RestriccionAtaque As Integer
     RestriccionAyuda As Integer
     RespawnValue As Integer
+    RespawnSchedule As Integer
     DontHitVisiblePlayers As Integer
     AddToMapAiList As Integer
     DisplayCastMessage As Integer
