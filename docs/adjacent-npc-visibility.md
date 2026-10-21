@@ -30,14 +30,14 @@ Full snapshots interpolate a single-tile move using existing character speed tim
 
 ## HOO integration
 
-Decoded events flow through GameEventHandler into WorldState's separate AdjacentNpcScene. Its records never enter active-map occupancy or interaction state. The existing character scene list adds render-only entries with source-map pointers and signed placement offsets, using prepared terrain ownership to suppress overlapping roots. Painter rows use composite coordinates. Roof visibility uses the source map and rendering uses a camera shifted by the map placement. The frame controller submits character texture demand, including all headings, through the existing streamer. Render-only flags suppress authoritative targeting effects and transient character-index effects.
+Decoded events flow through GameEventHandler into WorldState's separate AdjacentNpcScene. Its records never enter active-map occupancy or interaction state. The existing character scene list adds render-only entries with source-map pointers and signed placement offsets. Terrain ownership does not filter NPCs; records are deduplicated by NPC identity and lifecycle, and duplicate views render each NPC only once. Painter rows use composite coordinates. Roof visibility uses the source map and rendering uses a camera shifted by the map placement. The frame controller submits character texture demand, including all headings, through the existing streamer. Render-only flags suppress authoritative targeting effects and transient character-index effects.
 
 ## Validation
 
 - Ten focused C++ tests pass in a standalone Linux GoogleTest build using production scene, packet decoder, WorldState and WorldMap sources.
 - Changed C++ implementation translation units pass GCC C++20 syntax checks, including world rendering, event handling and the frame controller.
 - VB6 topology/pursuit unit coverage is updated and five interest-boundary checks are added; these require Windows/VB6 execution.
-- Neither full Windows client/CTest nor VB6 compilation nor live GL seam validation ran in the editing environment.
+- The review-fix pass compiled the native Windows VB6 server with `DEBUGGING=0:PYMMO=1:UNIT_TEST=0:UNLOCK_CPU=1`. No server runtime logic changed in that pass; server unit suites and live GL seam validation were not rerun. See the coordinated PRs for current client build/test evidence.
 
 ## Required runtime acceptance before merging
 
