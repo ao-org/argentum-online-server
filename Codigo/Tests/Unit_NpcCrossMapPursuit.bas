@@ -923,6 +923,18 @@ Private Function test_checked_in_manifest() As Boolean
     If Not LoadAdjacentTopologyJson(FileText(topologyPath), False) Then Exit Function
     If Not TryGetAdjacentEdge(34, 35, dx, dy) Then Exit Function
     If dx <> 0 Or dy <> -80 Or Not AdjacentTopologyContainsMap(557) Then Exit Function
+    ' Keep the previously omitted client connections in the shared server data.
+    Dim reviewedEdges As Variant, reviewedEdge As Variant, parts As Variant
+    reviewedEdges = Array("40,41,0,80", "41,42,0,80", "42,43,0,80", "43,44,0,80", _
+        "44,45,-74,0", "342,343,0,80", "520,529,0,80", "521,530,0,80", _
+        "529,530,74,0", "529,535,-74,0", "529,536,0,80")
+    For Each reviewedEdge In reviewedEdges
+        parts = Split(CStr(reviewedEdge), ",")
+        If Not TryGetAdjacentEdge(CInt(parts(0)), CInt(parts(1)), dx, dy) Then Exit Function
+        If dx <> CInt(parts(2)) Or dy <> CInt(parts(3)) Then Exit Function
+        If Not TryGetAdjacentEdge(CInt(parts(1)), CInt(parts(0)), dx, dy) Then Exit Function
+        If dx <> -CInt(parts(2)) Or dy <> -CInt(parts(3)) Then Exit Function
+    Next reviewedEdge
     ' Terrain packs and server visibility load separate manifest copies.
     ' Keep the repaired Veril seam present in the server's installed copy too.
     If Not AdjacentTopologyContainsMap(144) Or Not AdjacentTopologyContainsMap(145) Then Exit Function

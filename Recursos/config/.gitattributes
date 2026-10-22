@@ -1,0 +1,2 @@
+# Keep the shared topology byte-identical on Windows, Linux and macOS.
+legacy_overworld_topology.json text eol=lf -working-tree-encoding

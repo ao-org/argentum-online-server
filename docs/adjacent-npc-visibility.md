@@ -22,13 +22,18 @@ the new map-78 scene on return. No diagonal manifest edges are added; pursuit an
 movement routing still use only the original edges. Perfect crossing continuity
 remains Phase 2 work, not stale-scene retention.
 
-The server topology is a reviewed subset of HOO's manifest. Shared edges must agree;
-never assume updating HOO or its asset packs updates the server's separate copy.
-The Veril repair adds only maps 144/145 and reciprocal offsets (+74,0)/(-74,0),
-matching HOO PR #736 and assets PR #675. Other missing connections remain outside
-this patch. The same manifest also feeds existing NPC pursuit, so this connection
-becomes eligible under the existing pursuit toggle and safety rules; no AI rules
-or feature switches are changed.
+The server, HOO and assets topology files must contain the same reviewed data.
+The synchronized manifest has 437 maps and 1,494 directed edges, retaining the
+additions from server #1873 and assets #676. It also restores the server's older
+missing catacomb (40-45), southern-sea (529 and its neighboring seams), and
+342/343 connections: seven maps and 22 directed edges. Each matches the existing
+offline map audit's VerifiedSpatial classification. No existing edge is removed
+or changed. These routes become eligible for existing NPC visibility and pursuit
+under the unchanged toggle, safe-map, instance and movement checks.
+
+Updating source files does not deploy the server's loose file or the client's
+pack. Run HOO's `tools/check_topology_sync.py` against the selected three
+checkouts before release and verify installed data separately.
 
 Topology loading is independent of the pursuit switch. Only ordinary maps whose logical ID equals their resource ID are eligible. Missing topology means an empty adjacent scene; normal active-map play continues. Observed NPCs become eligible for the existing AI update, even when their map has no resident players; combat, movement legality and pursuit policy remain authoritative and unchanged.
 
@@ -138,10 +143,11 @@ There are three separately maintained source copies:
 - Server: `Recursos/config/legacy_overworld_topology.json`, loaded as a loose file
   from `App.Path` by `LoadAdjacentTopology` at startup.
 
-For each repaired seam, verify both map IDs and both signed offsets in all three
-copies. Review server additions explicitly because the graph also supplies pursuit;
-do not blindly replace its entire reviewed subset with the larger client graph.
-A client/assets PR or a rebuilt Steam pack does not deploy server data.
+Require byte-for-byte equality of the three source copies, checking both map IDs
+and signed offsets. Review server additions explicitly because the graph also
+supplies pursuit, then synchronize the complete approved file. Do not retain a
+stale server subset. A client/assets PR or rebuilt Steam pack does not deploy
+server data.
 
 Deploy this server JSON beside the actual server executable under `Recursos/config`,
 then restart through the normal release process and check `Adjacent topology loaded`
