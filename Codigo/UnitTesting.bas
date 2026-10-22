@@ -455,6 +455,14 @@ Private Function test_suite_remort_persistence() As Boolean
     Call RunTest("remort_count load validation", test_remort_count_load_validation())
     Call RunTest("remort_count normal save SQL", test_remort_count_normal_save_sql())
     Call RunTest("last_logout save SQL", test_last_logout_save_sql())
+    Call RunTest("last_logout load SQL", InStr(1, QUERY_LOAD_MAINPJ, "last_logout", vbTextCompare) > 0)
+    Call RunTest("last_logout UTC timestamp", FormatPreviousLogoutUtc(1792620900#) = "2026-10-21 22:15:00 UTC")
+    Call RunTest("last_logout SQLite text timestamp", FormatPreviousLogoutUtc("1792620900") = "2026-10-21 22:15:00 UTC")
+    Call RunTest("last_logout beyond 2038", FormatPreviousLogoutUtc(2147483648#) = "2038-01-19 03:14:08 UTC")
+    Call RunTest("last_logout missing omitted", FormatPreviousLogoutUtc(Null) = vbNullString And FormatPreviousLogoutUtc(Empty) = vbNullString)
+    Call RunTest("last_logout nonpositive omitted", FormatPreviousLogoutUtc(0) = vbNullString And FormatPreviousLogoutUtc(-1) = vbNullString)
+    Call RunTest("last_logout invalid omitted", FormatPreviousLogoutUtc("invalid") = vbNullString And FormatPreviousLogoutUtc(1.5) = vbNullString)
+    Call RunTest("last_logout overflow omitted", FormatPreviousLogoutUtc(253402300800#) = vbNullString)
     test_suite_remort_persistence = True
 End Function
 

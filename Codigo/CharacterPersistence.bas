@@ -379,6 +379,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Stats.ELO = RS!ELO
         .Stats.JineteLevel = RS!jinete_level
         .Stats.RemortCount = NormalizeRemortCount(RS!remort_count)
+        .PreviousLogoutUtc = FormatPreviousLogoutUtc(RS!last_logout)
         .Counters.Pena = RS!counter_pena
         .ChatGlobal = RS!chat_global
         .ChatCombate = RS!chat_combate
@@ -734,6 +735,26 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     End If
     Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
 End Sub
+
+Public Function FormatPreviousLogoutUtc(ByVal PersistedValue As Variant) As String
+    On Error GoTo InvalidTimestamp
+    If IsNull(PersistedValue) Or IsEmpty(PersistedValue) Then Exit Function
+    If Not IsNumeric(PersistedValue) Then Exit Function
+
+    Dim seconds As Double
+    seconds = CDbl(PersistedValue)
+    If seconds <= 0# Or seconds > 253402300799# Then Exit Function
+    If seconds <> Fix(seconds) Then Exit Function
+
+    ' Unix seconds are UTC. Date arithmetic avoids DateAdd's signed-Long/2038 limit.
+    Dim logoutDate As Date
+    logoutDate = CDate(CDbl(DateSerial(1970, 1, 1)) + seconds / 86400#)
+    FormatPreviousLogoutUtc = Format$(logoutDate, "yyyy-mm-dd hh:nn:ss") & " UTC"
+    Exit Function
+InvalidTimestamp:
+    ' Optional presentation data must never prevent character login.
+    FormatPreviousLogoutUtc = vbNullString
+End Function
 
 Public Function NormalizeRemortCount(ByVal PersistedValue As Variant) As Long
     On Error GoTo InvalidValue

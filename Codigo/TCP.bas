@@ -1123,6 +1123,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         .ConnectionDetails.ConnIDValida = False
         .ConnectionDetails.ConnID = 0
+        .PreviousLogoutUtc = vbNullString
         .Stats.shield = 0
         If .Grupo.EnGrupo Then
             If .Grupo.Lider.ArrayIndex = UserIndex Then

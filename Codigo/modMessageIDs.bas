@@ -26,6 +26,7 @@ Attribute VB_Name = "modMessageIDs"
 '
 '
 Option Explicit
+Public Const MSG_PREVIOUS_LOGOUT As Integer = 2297
     
     
 Public Const MSG_NO_PARALYZED                                  As Integer = 1123
