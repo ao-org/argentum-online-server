@@ -732,6 +732,9 @@ Dim tStr                        As String
         Else
             Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_NUEVO_ACTUALMENTE_NIVEL_BUEN_VIAJE_MUCHA_SUERTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, .name & "¬" & .Stats.ELV & "¬" & GetMapName(.pos.Map)) ' Msg1439=¡Bienvenido de nuevo ¬1! Actualmente estas en el nivel ¬2 en ¬3, ¡buen viaje y mucha suerte!
         End If
+        If LenB(.PreviousLogoutUtc) <> 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_PREVIOUS_LOGOUT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, .PreviousLogoutUtc)
+        End If
         If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
             Call WriteSafeModeOff(UserIndex)
             .flags.Seguro = False
