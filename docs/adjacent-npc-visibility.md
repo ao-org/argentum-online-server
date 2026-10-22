@@ -22,7 +22,13 @@ the new map-78 scene on return. No diagonal manifest edges are added; pursuit an
 movement routing still use only the original edges. Perfect crossing continuity
 remains Phase 2 work, not stale-scene retention.
 
-The current server topology is a strict subset of HOO's manifest (20 directed edges are absent; shared edges agree). Phase 1 uses that shared subset and does not expand pursuit routes. Aligning the extra map coverage belongs to Phase 3.
+The server topology is a reviewed subset of HOO's manifest. Shared edges must agree;
+never assume updating HOO or its asset packs updates the server's separate copy.
+The Veril repair adds only maps 144/145 and reciprocal offsets (+74,0)/(-74,0),
+matching HOO PR #736 and assets PR #675. Other missing connections remain outside
+this patch. The same manifest also feeds existing NPC pursuit, so this connection
+becomes eligible under the existing pursuit toggle and safety rules; no AI rules
+or feature switches are changed.
 
 Topology loading is independent of the pursuit switch. Only ordinary maps whose logical ID equals their resource ID are eligible. Missing topology means an empty adjacent scene; normal active-map play continues. Observed NPCs become eligible for the existing AI update, even when their map has no resident players; combat, movement legality and pursuit policy remain authoritative and unchanged.
 
@@ -122,3 +128,33 @@ Use matching draft builds at a verified direct seam, for example map 34/35 (offs
    receive that guard again, once, at the appropriate composed placement.
 
 Later phases cover seamless handoffs, richer movement semantics, coverage beyond two edges, viewport/zoom guarantees, complete visual parity and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.
+
+## Topology deployment checklist
+
+There are three separately maintained source copies:
+
+- HOO: `resources/config/legacy_overworld_topology.json`.
+- Assets: `config/legacy_overworld_topology.json`, packaged into `core.hoopack`.
+- Server: `Recursos/config/legacy_overworld_topology.json`, loaded as a loose file
+  from `App.Path` by `LoadAdjacentTopology` at startup.
+
+For each repaired seam, verify both map IDs and both signed offsets in all three
+copies. Review server additions explicitly because the graph also supplies pursuit;
+do not blindly replace its entire reviewed subset with the larger client graph.
+A client/assets PR or a rebuilt Steam pack does not deploy server data.
+
+Deploy this server JSON beside the actual server executable under `Recursos/config`,
+then restart through the normal release process and check `Adjacent topology loaded`
+in the server log. Compare the installed file with the reviewed revision; counts
+alone are not freshness evidence. Do not replace private server configuration.
+This PR does not authorize a deployment or restart.
+
+Validate 144 -> 145 and 145 -> 144 with a real visible NPC near the seam: observe it
+before crossing, cross, and verify it remains available in the new adjacent scene.
+Also test pursuit enabled/disabled and existing safe-map restrictions. Adjacent NPCs
+remain visual-only across maps, and the existing polling/handoff delay still applies.
+
+The checked-in-manifest VB6 regression now requires both Veril edges and actual
+visibility placements in both directions. Run the existing NPC cross-map suite
+against the deployment's manifest; do not substitute a synthetic manifest for this
+release check. HOO's `docs/steam-resource-build.md` documents client pack verification.

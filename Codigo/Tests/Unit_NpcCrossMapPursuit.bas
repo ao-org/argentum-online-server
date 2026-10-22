@@ -922,7 +922,21 @@ Private Function test_checked_in_manifest() As Boolean
     If Not FileExist(topologyPath, vbNormal) Then Exit Function
     If Not LoadAdjacentTopologyJson(FileText(topologyPath), False) Then Exit Function
     If Not TryGetAdjacentEdge(34, 35, dx, dy) Then Exit Function
-    test_checked_in_manifest = (dx = 0 And dy = -80 And AdjacentTopologyContainsMap(557))
+    If dx <> 0 Or dy <> -80 Or Not AdjacentTopologyContainsMap(557) Then Exit Function
+    ' Terrain packs and server visibility load separate manifest copies.
+    ' Keep the repaired Veril seam present in the server's installed copy too.
+    If Not AdjacentTopologyContainsMap(144) Or Not AdjacentTopologyContainsMap(145) Then Exit Function
+    If Not TryGetAdjacentEdge(144, 145, dx, dy) Then Exit Function
+    If dx <> 74 Or dy <> 0 Then Exit Function
+    If Not TryGetAdjacentEdge(145, 144, dx, dy) Then Exit Function
+    If dx <> -74 Or dy <> 0 Then Exit Function
+    Dim placements() As t_AdjacentNpcPlacement, count As Long
+    If Not TryGetAdjacentVisibilityPlacements(145, placements, count) Then Exit Function
+    If count <> 1 Then Exit Function
+    If placements(1).MapId <> 144 Or placements(1).dx <> -74 Or placements(1).dy <> 0 Then Exit Function
+    If Not TryGetAdjacentVisibilityPlacements(144, placements, count) Then Exit Function
+    If count <> 1 Then Exit Function
+    test_checked_in_manifest = (placements(1).MapId = 145 And placements(1).dx = 74 And placements(1).dy = 0)
 End Function
 
 Private Function test_feature_toggle() As Boolean
