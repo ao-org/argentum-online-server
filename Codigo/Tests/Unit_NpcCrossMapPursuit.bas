@@ -930,13 +930,23 @@ Private Function test_checked_in_manifest() As Boolean
     If dx <> 74 Or dy <> 0 Then Exit Function
     If Not TryGetAdjacentEdge(145, 144, dx, dy) Then Exit Function
     If dx <> -74 Or dy <> 0 Then Exit Function
+    If Not TryGetAdjacentEdge(144, 143, dx, dy) Then Exit Function
+    If dx <> 0 Or dy <> -80 Then Exit Function
+    If Not TryGetAdjacentEdge(143, 144, dx, dy) Then Exit Function
+    If dx <> 0 Or dy <> 80 Then Exit Function
     Dim placements() As t_AdjacentNpcPlacement, count As Long
+    ' The reviewed 143-144 connection extends Veril's two-hop neighborhood.
+    ' Assert the complete depth-ordered sets, including offsets and no duplicates.
     If Not TryGetAdjacentVisibilityPlacements(145, placements, count) Then Exit Function
-    If count <> 1 Then Exit Function
+    If count <> 2 Then Exit Function
     If placements(1).MapId <> 144 Or placements(1).dx <> -74 Or placements(1).dy <> 0 Then Exit Function
+    If placements(1).Depth <> 1 Or placements(2).Depth <> 2 Then Exit Function
+    If placements(2).MapId <> 143 Or placements(2).dx <> -74 Or placements(2).dy <> -80 Then Exit Function
     If Not TryGetAdjacentVisibilityPlacements(144, placements, count) Then Exit Function
-    If count <> 1 Then Exit Function
-    test_checked_in_manifest = (placements(1).MapId = 145 And placements(1).dx = 74 And placements(1).dy = 0)
+    If count <> 2 Then Exit Function
+    If placements(1).MapId <> 143 Or placements(1).dx <> 0 Or placements(1).dy <> -80 Then Exit Function
+    If placements(1).Depth <> 1 Or placements(2).Depth <> 1 Then Exit Function
+    test_checked_in_manifest = (placements(2).MapId = 145 And placements(2).dx = 74 And placements(2).dy = 0)
 End Function
 
 Private Function test_feature_toggle() As Boolean
