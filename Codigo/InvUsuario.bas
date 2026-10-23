@@ -1495,13 +1495,6 @@ Dim Ropaje                      As Integer
                     End If
                     Exit Sub
                 End If
-                'Quita el anterior
-                If .invent.EquippedArmorObjIndex > 0 Then
-                    errordesc = "Armadura 2"
-                    Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
-                    Call ActualizarVelocidadDeUsuario(UserIndex)
-                    errordesc = "Armadura 3"
-                End If
                 'Si esta equipando armadura faccionaria fuera de zona segura o fuera de trigger seguro y no tiene los stats full
                 If Not UserIsLoggingIn Then
                     If obj.Real > 0 Or obj.Caos > 0 Then
@@ -1516,6 +1509,14 @@ Dim Ropaje                      As Integer
                             End If
                         End If
                     End If
+                End If
+                'Validar el reemplazo antes de quitar la armadura actual.
+                'Quita el anterior
+                If .invent.EquippedArmorObjIndex > 0 Then
+                    errordesc = "Armadura 2"
+                    Call Desequipar(UserIndex, .invent.EquippedArmorSlot)
+                    Call ActualizarVelocidadDeUsuario(UserIndex)
+                    errordesc = "Armadura 3"
                 End If
                 'Lo equipa
                 If Len(obj.CreaGRH) <> 0 Then
