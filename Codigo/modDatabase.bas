@@ -843,9 +843,36 @@ SanitizeNullValue_Err:
     Call TraceError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
 End Function
 
-Public Sub SetMessageInfoDatabase(ByVal name As String, ByVal Message As String)
-    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(name))
-End Sub
+Public Function SetMessageInfoDatabase(ByVal name As String, ByVal Message As String) As Boolean
+    On Error GoTo SetMessageInfoDatabase_Err
+
+    ' GM replies must be durable before the command reports success.  In particular,
+    ' an asynchronous write can lose the reply when the target reconnects immediately.
+    Dim Command  As New ADODB.Command
+    Dim Affected As Long
+
+    Command.ActiveConnection = Connection
+    ' The deployed SQLite ODBC driver does not expose SQLite's newer concat()
+    ' function.  The || operator works on every supported SQLite version.
+    Command.CommandText = "update user set message_info = coalesce(message_info, '') || ? where upper(name) = ?;"
+    Command.CommandType = adCmdText
+    Command.Prepared = True
+    Command.Parameters.Append CreateParameter(Message, adParamInput)
+    Command.Parameters.Append CreateParameter(UCase$(name), adParamInput)
+
+    Call Command.Execute(Affected, , adExecuteNoRecords)
+    ' Some ODBC providers report -1 when the statement succeeds without a
+    ' precise affected-row count.  Only zero means that no character matched.
+    SetMessageInfoDatabase = (Affected <> 0)
+
+    If Not SetMessageInfoDatabase Then
+        Call LogDatabaseError("SetMessageInfoDatabase did not find user: " & name)
+    End If
+    Exit Function
+
+SetMessageInfoDatabase_Err:
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - SetMessageInfoDatabase. UserName: " & name)
+End Function
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
