@@ -150,6 +150,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
         If Unit_InventoryDestruction.CapturePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureAttributePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureTorchPacket(sndRoute, sndIndex) Then Exit Sub
+        If Unit_General.CaptureArmorPacket() Then Exit Sub
         If CaptureMagicLightOrbPacket() Then Exit Sub
         If UnitTesting.CaptureTamingPacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_Traps.CapturePacket(sndRoute, sndIndex) Then Exit Sub
