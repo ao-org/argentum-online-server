@@ -743,11 +743,6 @@ Sub Main()
     Call Contruir_Querys
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER Contruir_Querys")
-        Call UnitTesting.Progress("BEFORE PreparePreparedCommands")
-    #End If
-    Call PreparePreparedCommands
-    #If UNIT_TEST = 1 Then
-        Call UnitTesting.Progress("AFTER PreparePreparedCommands")
         Call UnitTesting.Progress("BEFORE LoadDBMigrations")
     #End If
     Call LoadDBMigrations
@@ -1178,6 +1173,8 @@ UnitTest_ReportError:
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
             Call modNetwork.Tick(GetElapsed())
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
+        Call TickCharacterSaves()
+        If CharacterSaveShutdownRequested Then Call CerrarServidor()
         Call UpdateMagicLightOrbs()
         Call UpdateEffectOverTime
         Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
@@ -2077,7 +2074,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
+    Call RequestCharacterSaveNotice()
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
     Exit Sub
@@ -2197,17 +2194,19 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
-    Call SaveCastlesToDb
-    'Save stats!!!
-    Call frmMain.QuitarIconoSystray
-    ' Limpieza del socket del servidor.
-    Call modNetwork.Disconnect
-    Dim LoopC As Long
-    For LoopC = 1 To MaxUsers
-        If UserList(LoopC).ConnectionDetails.ConnIDValida Then
-            Call CloseSocket(LoopC)
-        End If
-    Next
+    If Not CharacterSaveShutdownRequested Then
+        Call StopCharacterSaveAdmission()
+        Call SaveCastlesToDb()
+        Call modNetwork.Disconnect()
+        Dim LoopC As Long
+        For LoopC = 1 To MaxUsers
+            If UserList(LoopC).ConnectionDetails.ConnIDValida Then Call CloseSocket(LoopC)
+        Next
+        Call ReportUnresolvedCharacterSaves()
+    End If
+    ' Keep pumping the normal loop; never drain asynchronous saves on the UI thread.
+    If CharacterSavesUnresolved() Then Exit Sub
+    Call frmMain.QuitarIconoSystray()
     Call UnloadAntiCheat
     If Database_Enabled Then Database_Close
     End

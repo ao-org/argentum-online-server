@@ -20,7 +20,7 @@ Public Enum e_CardRarity
     gold = 3
 End Enum
 
-Private Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
+Public Const UPSERT_NEW_COLLECTIBLE_CARDS As String = _
     "INSERT INTO account_collectible_cards (account_id, card_quantities) " & _
     "VALUES (?, ?) " & _
     "ON CONFLICT(account_id) " & _
@@ -111,41 +111,6 @@ GetUserCollectibleCards_Err:
     Set Cmd = Nothing
 End Function
 
-Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVal QueryBreakDown As String)
-    On Error GoTo SaveUserAccountCollectibleCards_Err
-    Dim Cmd As ADODB.Command
-    Dim QuantityData(0 To 1023) As Byte
-    Dim i As Integer
-    
-    ' Copy user's quantity array to 0-based array for database (1024 bytes)
-    For i = 1 To MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE
-        QuantityData(i - 1) = UserList(UserIndex).AccountCollectibleCardQuantities(i)
-    Next i
-    
-    ' Create command to upsert the blob
-    Set Cmd = New ADODB.Command
-    With Cmd
-        .ActiveConnection = Connection ' Your SQLite connection object
-        .CommandText = UPSERT_NEW_COLLECTIBLE_CARDS
-        .CommandType = adCmdText
-        
-        ' Add account_id parameter
-        .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , UserList(UserIndex).AccountID)
-        
-        ' Add quantity blob parameter (1024 bytes)
-        .Parameters.Append .CreateParameter("@QuantityData", adVarBinary, adParamInput, MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE, QuantityData)
-        
-        ' Execute the upsert
-        .Execute
-    End With
-    
-    Set Cmd = Nothing
-    Exit Function
-
-SaveUserAccountCollectibleCards_Err:
-    Call TraceError(Err.Number, Err.Description, "ModCollectibleCards.SaveUserAccountCollectibleCards", Erl)
-    Set Cmd = Nothing
-End Function
 
 Public Function AddCollectibleCardToUser(ByVal UserIndex As Integer, ByRef ObjCard As t_Obj) As Boolean
     If ObjCard.ObjIndex = 0 Then Exit Function

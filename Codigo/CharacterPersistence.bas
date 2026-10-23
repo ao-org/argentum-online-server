@@ -265,6 +265,11 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
     LoadCharacterFromDB = False
     With UserList(UserIndex)
         Debug.Assert .id > 0
+        If CharacterHasUnfinishedSave(.Id) Then
+            failureReason = "El personaje tiene un guardado pendiente o fallido. Intenta de nuevo; si persiste, contacta al administrador."
+            Exit Function
+        End If
+        If Not ReserveCharacterSaveSession(UserList(UserIndex), failureReason) Then Exit Function
         ' Load main character data using the user name.
         Set RS = Query(QUERY_LOAD_MAINPJ, .id)
         If RS Is Nothing Then Exit Function
@@ -614,50 +619,69 @@ Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub SaveCharacterDB(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+    Call CaptureCharacterSave(UserIndex, Logout, True)
+End Sub
+
+Private Sub CaptureCharacterSave(ByVal UserIndex As Integer, ByVal Logout As Boolean, ByVal fullSave As Boolean)
     On Error GoTo ErrorHandler
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     Dim QueryBreakdown As String
+    Dim snapshot As t_User, job As clsCharacterSave, enqueued As Boolean, resetPending As Boolean
+    If Not UserList(UserIndex).flags.UserLogged Then Exit Sub
+    If Not CanCaptureCharacterSave(UserList(UserIndex), Logout) Then Exit Sub
+    Set job = New clsCharacterSave
+    Call job.Initialize(UserIndex, UserList(UserIndex), Logout)
+    snapshot = UserList(UserIndex)
     Call Builder.Clear
-    With UserList(UserIndex)
-        Debug.Assert .flags.UserLogged = True
-        If Not .flags.UserLogged Then
-            Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
-            Exit Sub
+    With snapshot
+        resetPending = (.SaveResetEpoch <> .SavedResetEpoch)
+        If resetPending Then
+            Call job.Add("update user set is_reset = 1 where id = ?;", .Id)
+            Call job.Add("update quest set quest_id = 0, npcs = 0, npcstarget = 0 where user_id = ?;", .Id)
+            Call job.Add("delete from quest_done where user_id = ?;", .Id)
+            .SavedResetEpoch = .SaveResetEpoch
+            fullSave = True
         End If
-        Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown, Logout)
-        Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
-        Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
-        If HasBankChanged(UserIndex) Then
-            Call SaveCharacterBankInventoryDB(UserList(UserIndex), QueryBreakdown)
-        Else
-            If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
-            QueryBreakdown = QueryBreakdown & "save bank inventory: skipped"
+        Call SaveCharacterMainDB(snapshot, QueryBreakdown, job, Logout)
+        Call job.RequireSingleRow()
+        If .SavePublicationPrice > 0 Then Call job.Add("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", .SavePublicationPrice, .Id)
+        If fullSave Or HaveSpellsChanged(UserIndex) Then Call SaveCharacterSpellsDB(snapshot, QueryBreakdown, job)
+        If fullSave Or HasInventoryChanged(UserIndex) Then Call SaveCharacterInventoryDB(snapshot, QueryBreakdown, job)
+        ' A queued autosave can still change the bank after this final snapshot is captured.
+        If Logout Or resetPending Or HasBankChanged(UserIndex) Then
+            Call SaveCharacterBankInventoryDB(snapshot, QueryBreakdown, job)
         End If
-        Call SaveCharacterSkillsDB(UserList(UserIndex), QueryBreakdown)
-        Call SaveCharacterPetsDB(UserList(UserIndex), QueryBreakdown)
-        ' ************************** User quests *********************************
-        Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown, Builder)
-        Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
-        Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
-        Call InitUserPersistSnapshot(UserIndex)
-        If IsFeatureEnabled("collectible_cards") Then
+        Call SaveCharacterSkillsDB(snapshot, QueryBreakdown, job)
+        If fullSave Or HavePetsChanged(UserIndex) Then Call SaveCharacterPetsDB(snapshot, QueryBreakdown, job)
+        If fullSave Or HaveQuestsChanged(UserIndex) Then Call SaveCharacterQuestsDB(snapshot, QueryBreakdown, Builder, job)
+        Call SaveCharacterQuestsDoneDB(snapshot, QueryBreakdown, Builder, job)
+        Call SaveInventorySkins(snapshot, job)
+        If fullSave And IsFeatureEnabled("collectible_cards") Then
             If .flags.DirtyCollectibleCardCollection Then
-                Call SaveUserAccountCollectibleCards(UserIndex, QueryBreakDown)
+                Call job.AddCards(snapshot)
                 .flags.DirtyCollectibleCardCollection = False
-            Else
-                If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
-                QueryBreakdown = QueryBreakdown & "save collectible cards: skipped"
             End If
         End If
+        If Logout Then Call job.Add("delete from tokens where id = ?;", .encrypted_session_token_db_id)
+        Call job.Seal(snapshot)
+        Call EnqueueCharacterSave(job)
+        enqueued = True
         Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
     End With
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+    Dim failure As String
+    failure = "snapshot capture error=" & Err.Number & " " & Err.Description
+    If Not job Is Nothing And Not enqueued Then
+        Call job.MarkFailed(failure, False)
+        Call job.Seal(snapshot)
+        Call EnqueueCharacterSave(job)
+    End If
+    Call LogDatabaseError(failure & " char=" & UserList(UserIndex).Id)
 End Sub
 
-Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, Optional ByVal Logout As Boolean = False)
+Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave, Optional ByVal Logout As Boolean = False)
     Dim QueryTimer As Long
     Dim Params() As Variant
     ReDim Params(62)
@@ -729,9 +753,9 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Debug.Assert i = UBound(Params) + 1
     QueryTimer = GetTickCountRaw()
     If Logout Then
-        Call Execute(QUERY_UPDATE_MAINPJ_LOGOUT, Params)
+        Call job.Add(QUERY_UPDATE_MAINPJ_LOGOUT, Params)
     Else
-        Call Execute(QUERY_UPDATE_MAINPJ, Params)
+        Call job.Add(QUERY_UPDATE_MAINPJ, Params)
     End If
     Call AppendQueryDuration(QueryBreakdown, "update main", QueryTimer)
 End Sub
@@ -773,7 +797,7 @@ InvalidValue:
     NormalizeRemortCount = 0
 End Function
 
-Private Sub SaveCharacterSpellsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterSpellsDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -787,14 +811,14 @@ Private Sub SaveCharacterSpellsDB(ByRef U As t_User, ByRef QueryBreakdown As Str
         ParamC = ParamC + 3
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_UPSERT_SPELLS, Params)
+    Call job.Add(QUERY_UPSERT_SPELLS, Params)
     Call AppendQueryDuration(QueryBreakdown, "upsert spells", QueryTimer)
     For LoopC = 1 To MAXUSERHECHIZOS
         U.Persist.LastSpells(LoopC) = U.Stats.UserHechizos(LoopC)
     Next LoopC
 End Sub
 
-Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -811,14 +835,14 @@ Private Sub SaveCharacterInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As 
         ParamC = ParamC + 6
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_UPSERT_INVENTORY, Params)
+    Call job.Add(QUERY_UPSERT_INVENTORY, Params)
     Call AppendQueryDuration(QueryBreakdown, "upsert inventory", QueryTimer)
     For LoopC = 1 To MAX_INVENTORY_SLOTS
         U.Persist.LastInventory(LoopC) = U.invent.Object(LoopC)
     Next LoopC
 End Sub
 
-Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -834,14 +858,14 @@ Private Sub SaveCharacterBankInventoryDB(ByRef U As t_User, ByRef QueryBreakdown
         ParamC = ParamC + 5
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call ExecutePreparedBankSave(Params)
+    Call job.Add(QUERY_SAVE_BANCOINV, Params)
     Call AppendQueryDuration(QueryBreakdown, "save bank inventory", QueryTimer)
     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
         U.Persist.LastBank(LoopC) = U.BancoInvent.Object(LoopC)
     Next LoopC
 End Sub
 
-Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -881,7 +905,7 @@ Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As Str
     Next LoopC
 
     QueryTimer = GetTickCountRaw()
-    Call Execute(Builder.ToString(), Params)
+    Call job.Add(Builder.ToString(), Params)
     Call AppendQueryDuration(QueryBreakdown, "upsert skills", QueryTimer)
     Call Builder.Clear
 
@@ -893,7 +917,7 @@ Private Sub SaveCharacterSkillsDB(ByRef U As t_User, ByRef QueryBreakdown As Str
     Next LoopC
 End Sub
 
-Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String)
+Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
@@ -917,7 +941,7 @@ Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
         ParamC = ParamC + 3
     Next LoopC
     QueryTimer = GetTickCountRaw()
-    Call Execute(QUERY_UPSERT_PETS, Params)
+    Call job.Add(QUERY_UPSERT_PETS, Params)
     Call AppendQueryDuration(QueryBreakdown, "upsert pets", QueryTimer)
     For LoopC = 1 To MAXMASCOTAS
         If IsValidNpcRef(U.MascotasIndex(LoopC)) Then
@@ -933,13 +957,13 @@ Private Sub SaveCharacterPetsDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Next LoopC
 End Sub
 
-Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder)
+Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim Params() As Variant
     Dim LoopC As Long
     Dim ParamC As Long
 
-    If Not HaveQuestsDoneChanged(U) Then
+    If Not job.IsFinal And Not HaveQuestsDoneChanged(U) Then
         If Len(QueryBreakdown) > 0 Then QueryBreakdown = QueryBreakdown & "; "
         QueryBreakdown = QueryBreakdown & "quests done skipped"
         Exit Sub
@@ -960,12 +984,12 @@ Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As
             ParamC = ParamC + 2
         Next LoopC
         QueryTimer = GetTickCountRaw()
-        Call Execute(SqlBuilder.ToString(), Params)
+        Call job.Add(SqlBuilder.ToString(), Params)
         Call AppendQueryDuration(QueryBreakdown, "replace quests done", QueryTimer)
         Call SqlBuilder.Clear
     Else
         QueryTimer = GetTickCountRaw()
-        Call Execute("DELETE FROM quest_done WHERE user_id = ?;", U.Id)
+        Call job.Add("DELETE FROM quest_done WHERE user_id = ?;", U.Id)
         Call AppendQueryDuration(QueryBreakdown, "delete quests done", QueryTimer)
     End If
 
@@ -979,14 +1003,7 @@ Private Sub SaveCharacterQuestsDoneDB(ByRef U As t_User, ByRef QueryBreakdown As
     End If
 End Sub
 
-Private Sub SaveCharacterInventorySkinsDB(ByVal UserIndex As Integer, ByRef QueryBreakdown As String)
-    Dim QueryTimer As Long
-    QueryTimer = GetTickCountRaw()
-    Call SaveInventorySkins(UserIndex)
-    Call AppendQueryDuration(QueryBreakdown, "save inventory skins", QueryTimer)
-End Sub
-
-Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder)
+Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As String, ByRef SqlBuilder As cStringBuilder, ByVal job As clsCharacterSave)
     Dim QueryTimer As Long
     Dim LoopC As Long
     Dim LoopK As Long
@@ -1060,7 +1077,7 @@ Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As 
         Next LoopC
 
         QueryTimer = GetTickCountRaw()
-        Call Execute(SqlBuilder.ToString())
+        Call job.Add(SqlBuilder.ToString())
         Call AppendQueryDuration(QueryBreakdown, "replace dirty quests", QueryTimer)
         Call SqlBuilder.Clear
     End If
@@ -1077,7 +1094,7 @@ Private Sub SaveCharacterQuestsDB(ByRef User As t_User, ByRef QueryBreakdown As 
         SqlBuilder.Append ")"
 
         QueryTimer = GetTickCountRaw()
-        Call Execute(SqlBuilder.ToString())
+        Call job.Add(SqlBuilder.ToString())
         Call AppendQueryDuration(QueryBreakdown, "delete dirty quests", QueryTimer)
         Call SqlBuilder.Clear
     End If
@@ -1188,6 +1205,37 @@ Public Sub InitUserPersistSnapshot(ByVal UserIndex As Integer)
         Call UpdateSavedQuests(UserIndex)
         Call UpdateSavedQuestsDone(UserIndex)
     End With
+End Sub
+
+' Commit acknowledges the captured values, not whatever now occupies the player slot.
+Public Sub AcknowledgeCharacterSave(ByRef current As t_User, ByRef saved As t_User)
+    Dim i As Long, k As Long, changed As Boolean
+    current.Persist = saved.Persist
+    current.SavedResetEpoch = saved.SavedResetEpoch
+    If current.SavePublicationPrice = saved.SavePublicationPrice Then current.SavePublicationPrice = 0
+    For i = 1 To NUMSKILLS
+        current.Stats.SkillDirty(i) = (current.Stats.UserSkills(i) <> saved.Persist.LastSkills(i))
+    Next i
+    For i = 1 To MAXUSERQUESTS
+        changed = (current.QuestStats.Quests(i).QuestIndex <> saved.Persist.LastQuests(i).QuestIndex)
+        If Not changed And current.QuestStats.Quests(i).QuestIndex > 0 Then
+            For k = 1 To QuestList(current.QuestStats.Quests(i).QuestIndex).RequiredNPCs
+                If GetIntegerArrayValue(current.QuestStats.Quests(i).NPCsKilled, k) <> GetIntegerArrayValue(saved.Persist.LastQuests(i).NPCsKilled, k) Then changed = True
+            Next k
+            For k = 1 To QuestList(current.QuestStats.Quests(i).QuestIndex).RequiredTargetNPCs
+                If GetIntegerArrayValue(current.QuestStats.Quests(i).NPCsTarget, k) <> GetIntegerArrayValue(saved.Persist.LastQuests(i).NPCsTarget, k) Then changed = True
+            Next k
+        End If
+        current.QuestStats.Quests(i).Dirty = changed
+    Next i
+    If Not saved.flags.DirtyCollectibleCardCollection Then
+        changed = False
+        For i = 1 To UBound(current.AccountCollectibleCardQuantities)
+            If current.AccountCollectibleCardQuantities(i) <> saved.AccountCollectibleCardQuantities(i) Then changed = True
+        Next i
+        If Not changed Then current.flags.DirtyCollectibleCardCollection = False
+    End If
+    current.Counters.LastSave = GetTickCountRaw()
 End Sub
 
 Public Function HaveSpellsChanged(ByVal UserIndex As Integer) As Boolean
@@ -1447,88 +1495,19 @@ Public Sub UpdateSavedQuestsDone(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
-    On Error GoTo ErrorHandler
-
-    Dim PerformanceTimer As Long
-    Dim TotalPerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    Call PerformanceTestStart(TotalPerformanceTimer)
-
-    Dim QueryBreakdown As String
-
-    Call Builder.Clear
-
-    With UserList(UserIndex)
-
-        If Not .flags.UserLogged Then
-            Call LogDatabaseError("Error trying to save a user not logged in SaveChangesInUser")
-            Exit Sub
-        End If
-
-        Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown)
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] main data id:" & .Id, 50)
-
-        If HaveSpellsChanged(UserIndex) Then
-            Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] spells update id:" & .Id, 50)
-        End If
-
-        If HasInventoryChanged(UserIndex) Then
-            Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory update id:" & .Id, 50)
-        End If
-
-        If HasBankChanged(UserIndex) Then
-            Call SaveCharacterBankInventoryDB(UserList(UserIndex), QueryBreakdown)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] bank update id:" & .Id, 50)
-        Else
-            If LenB(QueryBreakdown) <> 0 Then QueryBreakdown = QueryBreakdown & "; "
-            QueryBreakdown = QueryBreakdown & "save bank inventory: skipped"
-        End If
-
-        If HaveSkillsChanged(UserIndex) Then
-            Call SaveCharacterSkillsDB(UserList(UserIndex), QueryBreakdown)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] skills update id:" & .Id, 50)
-        End If
-
-        If HavePetsChanged(UserIndex) Then
-            Call SaveCharacterPetsDB(UserList(UserIndex), QueryBreakdown)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] pets update id:" & .Id, 50)
-        End If
-
-        If HaveQuestsChanged(UserIndex) Then
-            Call SaveCharacterQuestsDB(UserList(UserIndex), QueryBreakdown, Builder)
-            Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests update id:" & .Id, 50)
-        End If
-
-        Call SaveCharacterQuestsDoneDB(UserList(UserIndex), QueryBreakdown, Builder)
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] quests done update id:" & .Id, 50)
-
-        Call SaveCharacterInventorySkinsDB(UserIndex, QueryBreakdown)
-        Call PerformTimeLimitCheck(PerformanceTimer, "SaveChangesInUser [" & .name & "] inventory skins update id:" & .Id, 50)
-
-        .Counters.LastSave = GetTickCountRaw()
-
-        Call PerformTimeLimitCheck(TotalPerformanceTimer, "SaveChangesInUser [" & .name & "] total id:" & .Id, 50)
-        Call LogSaveCharacterDuration(PerformanceTimer, QueryBreakdown, .name, .Id)
-
-    End With
-
-    Exit Sub
-
-ErrorHandler:
-    Call LogDatabaseError("Error in SaveChangesInUser. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
+    Call CaptureCharacterSave(UserIndex, False, False)
 End Sub
 
-Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
+Public Function SaveNewCharacterDB(ByVal UserIndex As Integer) As Boolean
     On Error GoTo ErrorHandler
     
 #If LOGIN_STRESS_TEST = 1 Then
-    If UserList(UserIndex).AccountID = -9999 Then Exit Sub
+    If UserList(UserIndex).AccountID = -9999 Then SaveNewCharacterDB = True: Exit Function
 #End If
     Dim LoopC    As Long
     Dim ParamC   As Integer
     Dim Params() As Variant
+    Dim job As clsCharacterSave, reason As String, enqueued As Boolean
     With UserList(UserIndex)
         Dim i As Integer
         i = 0
@@ -1561,15 +1540,21 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
         Params(post_increment(i)) = .Stats.MinAGU
         Params(post_increment(i)) = .flags.Desnudo
         Params(post_increment(i)) = .Faccion.Status
+        DBError = vbNullString
         Call Query(QUERY_SAVE_MAINPJ, Params)
+        If LenB(DBError) Then Call Err.Raise(5, , DBError)
         ' Para recibir el ID del user
         Dim RS As ADODB.Recordset
         Set RS = Query("SELECT last_insert_rowid()")
         If RS Is Nothing Then
-            .Id = 1
+            Call Err.Raise(5, , "Cannot read created character ID")
         Else
             .Id = val(RS.Fields(0).value)
         End If
+        If Not ReserveCharacterSaveSession(UserList(UserIndex), reason) Then Call Err.Raise(5, , reason)
+        Set job = New clsCharacterSave
+        Call job.Initialize(UserIndex, UserList(UserIndex), False)
+        Call job.MarkCreation()
         ' ******************* SPELLS **********************
         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
         ParamC = 0
@@ -1579,7 +1564,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
             ParamC = ParamC + 3
         Next LoopC
-        Call Execute(QUERY_SAVE_SPELLS, Params)
+        Call job.Add(QUERY_SAVE_SPELLS, Params)
         ' ******************* INVENTORY *******************
         ReDim Params(MAX_INVENTORY_SLOTS * 6 - 1)
         ParamC = 0
@@ -1592,7 +1577,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 5) = .invent.Object(LoopC).ElementalTags
             ParamC = ParamC + 6
         Next LoopC
-        Call Execute(QUERY_SAVE_INVENTORY, Params)
+        Call job.Add(QUERY_SAVE_INVENTORY, Params)
         ' ******************* SKILLS *******************
         ReDim Params(NUMSKILLS * 3 - 1)
         ParamC = 0
@@ -1602,7 +1587,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = .Stats.UserSkills(LoopC)
             ParamC = ParamC + 3
         Next LoopC
-        Call Execute(QUERY_SAVE_SKILLS, Params)
+        Call job.Add(QUERY_SAVE_SKILLS, Params)
         ' ******************* QUESTS *******************
         ReDim Params(MAXUSERQUESTS * 2 - 1)
         ParamC = 0
@@ -1611,7 +1596,7 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 1) = LoopC
             ParamC = ParamC + 2
         Next LoopC
-        Call Execute(QUERY_SAVE_QUESTS, Params)
+        Call job.Add(QUERY_SAVE_QUESTS, Params)
         ' ******************* PETS ********************
         ReDim Params(MAXMASCOTAS * 3 - 1)
         ParamC = 0
@@ -1621,12 +1606,21 @@ Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
             Params(ParamC + 2) = 0
             ParamC = ParamC + 3
         Next LoopC
-        Call Execute(QUERY_SAVE_PETS, Params)
+        Call job.Add(QUERY_SAVE_PETS, Params)
+        Call job.Seal(UserList(UserIndex))
+        Call EnqueueCharacterSave(job)
+        enqueued = True
+        SaveNewCharacterDB = True
     End With
-    Exit Sub
+    Exit Function
 ErrorHandler:
+    If Not job Is Nothing And Not enqueued Then
+        Call job.MarkFailed("creation snapshot: " & Err.Description, False)
+        Call job.Seal(UserList(UserIndex))
+        Call EnqueueCharacterSave(job)
+    End If
     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
-End Sub
+End Function
 
 Function LoadSkinsInventory(ByVal UserIndex As Integer) As Boolean
 
@@ -1705,7 +1699,7 @@ ErrHandler:
 
 End Function
 
-Function SaveInventorySkins(ByVal UserIndex As Integer) As Boolean
+Private Sub SaveInventorySkins(ByRef User As t_User, ByVal job As clsCharacterSave)
 
 Dim i                           As Integer
 Dim UpsertCount                 As Long
@@ -1718,9 +1712,7 @@ Dim DeleteSql                   As cStringBuilder
 Dim UpsertParamIndex            As Long
 Dim DeleteParamIndex            As Long
 
-    On Error GoTo SaveInventorySkins_Error
-
-    With UserList(UserIndex)
+    With User
         If .Id > 0 And .Invent_Skins.count > 0 Then
             For i = 1 To .Invent_Skins.count
                 SkinId = .Invent_Skins.Object(i).ObjIndex
@@ -1759,7 +1751,7 @@ Dim DeleteParamIndex            As Long
                 Next i
 
                 UpsertSql.Append " ON CONFLICT(user_id, skin_id) DO UPDATE SET type_skin = excluded.type_skin, skin_equipped = excluded.skin_equipped"
-                Call Execute(UpsertSql.ToString, UpsertParams)
+                Call job.Add(UpsertSql.ToString, UpsertParams)
                 Set UpsertSql = Nothing
             End If
 
@@ -1786,21 +1778,10 @@ Dim DeleteParamIndex            As Long
                 Next i
 
                 DeleteSql.Append ")"
-                Call Execute(DeleteSql.ToString, DeleteParams)
+                Call job.Add(DeleteSql.ToString, DeleteParams)
                 Set DeleteSql = Nothing
             End If
 
-            SaveInventorySkins = True
-        Else
-            SaveInventorySkins = False
         End If
     End With
-
-    On Error GoTo 0
-    Exit Function
-
-SaveInventorySkins_Error:
-    SaveInventorySkins = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
-
-End Function
+End Sub

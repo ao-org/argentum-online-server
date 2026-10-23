@@ -3157,6 +3157,10 @@ End Type
 
 'Tipo de los Usuarios
 Public Type t_User
+    SaveSession As Long
+    SaveResetEpoch As Long
+    SavedResetEpoch As Long
+    SavePublicationPrice As Long
     name As String
     Alias As String
     PreviousLogoutUtc As String
