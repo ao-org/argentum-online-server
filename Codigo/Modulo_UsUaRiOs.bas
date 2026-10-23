@@ -350,6 +350,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
 
 Dim n                           As Integer
 Dim tStr                        As String
+Dim previousMessageInfo         As String
 
     On Error GoTo Complete_ConnectUser_Err
     
@@ -803,6 +804,7 @@ Dim tStr                        As String
             Dim Lines() As String
             Dim messagePayload As String
             Dim messageSeparator As Long
+            previousMessageInfo = .MENSAJEINFORMACION
             .MENSAJEINFORMACION = LimitGmReplyHistory(.MENSAJEINFORMACION)
             Lines = Split(.MENSAJEINFORMACION, vbNewLine)
             For i = 0 To UBound(Lines)
@@ -821,6 +823,9 @@ Dim tStr                        As String
                 End If
             Next
             .MENSAJEINFORMACION = ExtractGmReplyHistory(.MENSAJEINFORMACION)
+            If .MENSAJEINFORMACION <> previousMessageInfo Then
+                Call ReplaceMessageInfoDatabase(.name, .MENSAJEINFORMACION)
+            End If
         End If
         If EventoActivo Then
             Call WriteLocaleMsg(UserIndex, MSG_TIEMPO_RESTANTE_MINUTO_1625, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento) 'Msg1625=¬1. Tiempo restante: ¬2 minuto(s).

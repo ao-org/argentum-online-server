@@ -874,6 +874,40 @@ SetMessageInfoDatabase_Err:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - SetMessageInfoDatabase. UserName: " & name)
 End Function
 
+Public Function ReplaceMessageInfoDatabase(ByVal name As String, ByVal Message As String) As Boolean
+    On Error GoTo ReplaceMessageInfoDatabase_Err
+
+    ' message_info is deliberately excluded from the asynchronous character-save
+    ' query. All writes to this column use the synchronous connection so an older
+    ' pending character save cannot overwrite a newly appended GM reply.
+    Dim Command  As New ADODB.Command
+    Dim Affected As Long
+
+    Command.ActiveConnection = Connection
+    If LenB(Message) = 0 Then
+        Command.CommandText = "update user set message_info = '' where upper(name) = ?;"
+    Else
+        Command.CommandText = "update user set message_info = ? where upper(name) = ?;"
+    End If
+    Command.CommandType = adCmdText
+    Command.Prepared = True
+    If LenB(Message) <> 0 Then
+        Command.Parameters.Append CreateParameter(Message, adParamInput)
+    End If
+    Command.Parameters.Append CreateParameter(UCase$(name), adParamInput)
+
+    Call Command.Execute(Affected, , adExecuteNoRecords)
+    ReplaceMessageInfoDatabase = (Affected <> 0)
+
+    If Not ReplaceMessageInfoDatabase Then
+        Call LogDatabaseError("ReplaceMessageInfoDatabase did not find user: " & name)
+    End If
+    Exit Function
+
+ReplaceMessageInfoDatabase_Err:
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - ReplaceMessageInfoDatabase. UserName: " & name)
+End Function
+
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub

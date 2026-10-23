@@ -7,6 +7,7 @@ Public Function test_suite_gm_support_history() As Boolean
     Call UnitTesting.RunTest("GM support history retains the newest replies", test_retains_newest_replies())
     Call UnitTesting.RunTest("GM support history preserves pending ordinary messages", test_preserves_ordinary_messages())
     Call UnitTesting.RunTest("GM support history extraction excludes ordinary messages", test_extracts_only_replies())
+    Call UnitTesting.RunTest("Character saves do not overwrite GM reply history", test_character_save_preserves_replies())
     test_suite_gm_support_history = True
     Exit Function
 test_suite_gm_support_history_Err:
@@ -45,6 +46,12 @@ Private Function test_extracts_only_replies() As Boolean
     history = UserMod.ExtractGmReplyHistory(source)
     test_extracts_only_replies = InStr(1, history, "ordinary notification", vbBinaryCompare) = 0 And _
         InStr(1, history, UserMod.GM_REPLY_MESSAGE_PREFIX & "GM", vbBinaryCompare) > 0
+End Function
+
+Private Function test_character_save_preserves_replies() As Boolean
+    test_character_save_preserves_replies = _
+        InStr(1, QUERY_UPDATE_MAINPJ, "message_info", vbTextCompare) = 0 And _
+        InStr(1, QUERY_UPDATE_MAINPJ_LOGOUT, "message_info", vbTextCompare) = 0
 End Function
 
 #End If
