@@ -5555,6 +5555,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
         Dim username As String
         Dim mensaje  As String
         Dim tUser    As t_UserReference
+        Dim targetLoggedIn As Boolean
         Dim targetConnected As Boolean
         Dim storedReply As String
         username = reader.ReadString8()
@@ -5565,9 +5566,11 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_UTILICE_MENSAJEINFORMACION_NICK_MENSAJE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 tUser = NameIndex(username)
+                targetLoggedIn = False
                 targetConnected = False
                 If IsValidUserRef(tUser) Then
-                    targetConnected = UserList(tUser.ArrayIndex).flags.UserLogged And UserList(tUser.ArrayIndex).ConnectionDetails.ConnIDValida
+                    targetLoggedIn = UserList(tUser.ArrayIndex).flags.UserLogged
+                    targetConnected = targetLoggedIn And UserList(tUser.ArrayIndex).ConnectionDetails.ConnIDValida
                 End If
                 If Not PersonajeExiste(username) Then
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_EXISTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -5578,8 +5581,14 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     ' socket can remain referenced briefly, and an in-memory-only reply would
                     ' otherwise disappear before the next login.
                     If SetMessageInfoDatabase(username, storedReply) Then
-                        If targetConnected Then
+                        ' Keep the logged-in copy synchronized even after its connection
+                        ' becomes invalid. The delayed disconnect save writes this field
+                        ' back to the database and must not overwrite the new reply.
+                        If targetLoggedIn Then
                             UserList(tUser.ArrayIndex).MENSAJEINFORMACION = UserMod.LimitGmReplyHistory(UserList(tUser.ArrayIndex).MENSAJEINFORMACION & storedReply)
+                        End If
+
+                        If targetConnected Then
                             'Msg2169=¬1 respondió tu consulta: ¬2
                             Call WriteShowMessageBox(tUser.ArrayIndex, MSG_QUESTION_ANSWERED, GetUserDisplayName(UserIndex) & "¬" & mensaje)
                         End If
