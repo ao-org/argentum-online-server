@@ -1889,9 +1889,11 @@ Public Sub WriteNpcCraftingObjects(ByVal UserIndex As Integer, ByVal CraftingTyp
     Set Recipes = Crafteos.Item(CraftingType)
     Call Writer.WriteInt16(Recipes.Count)
     Dim Recipe As clsCrafteo
-    For Each Recipe In Recipes.Items
+    Dim RecipeValue As Variant
+    For Each RecipeValue In Recipes.Items
+        Set Recipe = RecipeValue
         Call Writer.WriteInt16(Recipe.Resultado)
-    Next Recipe
+    Next RecipeValue
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteNpcCraftingObjects_Err:

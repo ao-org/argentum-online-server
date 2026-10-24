@@ -118,12 +118,14 @@ Public Function FindCraftingRecipe(ByVal CraftingType As Byte, ByVal ResultObjIn
     Dim Recipes As Dictionary
     Set Recipes = Crafteos.Item(CraftingType)
     Dim Recipe As clsCrafteo
-    For Each Recipe In Recipes.Items
+    Dim RecipeValue As Variant
+    For Each RecipeValue In Recipes.Items
+        Set Recipe = RecipeValue
         If Recipe.Resultado = ResultObjIndex Then
             Set FindCraftingRecipe = Recipe
             Exit Function
         End If
-    Next Recipe
+    Next RecipeValue
     Exit Function
 FindCraftingRecipe_Err:
     Call TraceError(Err.Number, Err.Description, "modCrafteos.FindCraftingRecipe", Erl)
