@@ -54,12 +54,13 @@ Public Sub ResetUserAccountCollectibleCardCollection(ByRef User As t_User)
     Next i
 End Sub
 
-Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_User)
+Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_User, Optional ByRef failureReason As String) As Boolean
     On Error GoTo GetUserCollectibleCards_Err
     Dim RS As ADODB.Recordset
     Dim Cmd As ADODB.Command
     Dim i As Integer
     Dim QuantityData() As Byte
+    If Not CanLoadAccountCollectibleCards(User.AccountID, failureReason) Then Exit Function
     
     ' Wipe any card data left in memory by a previous account that occupied
     ' this slot before loading the real collection for the current account.
@@ -103,6 +104,7 @@ Public Function SetupUserAccountAccountCollectibleCardBitArray(ByRef User As t_U
     
     Set RS = Nothing
     Set Cmd = Nothing
+    SetupUserAccountAccountCollectibleCardBitArray = True
     Exit Function
 
 GetUserCollectibleCards_Err:

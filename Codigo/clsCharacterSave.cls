@@ -16,6 +16,7 @@ Option Explicit
 Private mCommands As New Collection
 Private mSnapshot As t_User
 Private mCharacterId As Long
+Private mCardAccountId As Long
 Private mSession As Long
 Private mUserIndex As Integer
 Private mFinal As Boolean
@@ -27,11 +28,15 @@ Private mCompletedStatements As Long
 Private mCreation As Boolean
 Private mSingleRowStatement As Long
 
-Friend Sub Initialize(ByVal userIndex As Integer, ByRef User As t_User, ByVal finalSave As Boolean)
+Friend Sub Initialize(ByVal userIndex As Integer, ByRef User As t_User, ByVal finalSave As Boolean, Optional ByVal savesCards As Boolean = False)
     mCharacterId = User.Id
     mSession = User.SaveSession
     mUserIndex = userIndex
     mFinal = finalSave
+    If savesCards Then
+        mCardAccountId = User.AccountID
+        Call RetainAccountCardSave(Me)
+    End If
 End Sub
 
 ' Parameters are copied into private commands now, never read from a reused UserList slot.
@@ -54,6 +59,7 @@ End Sub
 
 Friend Sub AddCards(ByRef User As t_User)
     If mSealed Then Call Err.Raise(5, , "Save snapshot is sealed")
+    If mCardAccountId = 0 Or mCardAccountId <> User.AccountID Then Call Err.Raise(5, , "Missing account card save dependency")
     Dim cmd As New ADODB.Command, data(0 To 1023) As Byte, i As Long
     For i = 1 To UBound(User.AccountCollectibleCardQuantities)
         data(i - 1) = User.AccountCollectibleCardQuantities(i)
@@ -121,6 +127,9 @@ End Property
 Friend Property Get CharacterId() As Long
     CharacterId = mCharacterId
 End Property
+Friend Property Get CardAccountId() As Long
+    CardAccountId = mCardAccountId
+End Property
 Friend Property Get SessionId() As Long
     SessionId = mSession
 End Property
@@ -147,7 +156,7 @@ Friend Sub MarkFailed(ByVal reason As String, ByVal completedFailure As Boolean)
     mState = CharacterSaveFailed
     mFailure = reason
     mRetryable = completedFailure
-    Call LogDatabaseError("Character save FAILED char=" & mCharacterId & " session=" & mSession & " final=" & mFinal & " completed=" & mCompletedStatements & " callback_failure=" & completedFailure & " " & reason)
+    Call LogDatabaseError("Character save FAILED char=" & mCharacterId & " session=" & mSession & " card_account=" & mCardAccountId & " final=" & mFinal & " completed=" & mCompletedStatements & " callback_failure=" & completedFailure & " " & reason)
     If mCompletedStatements < mCommands.Count Then Call LogDatabaseError("Failed save SQL: " & Left$(mCommands(mCompletedStatements + 1).CommandText, 512))
 End Sub
 Friend Sub Retry()
@@ -167,6 +176,7 @@ Friend Sub Committed()
         Exit Sub
     End If
     mState = CharacterSaveSucceeded
+    Call ReleaseAccountCardSave(Me)
     If mUserIndex < 1 Or mUserIndex > MaxUsers Then Exit Sub
     With UserList(mUserIndex)
         If .Id <> mCharacterId Or .SaveSession <> mSession Then Exit Sub

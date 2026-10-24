@@ -265,6 +265,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
     LoadCharacterFromDB = False
     With UserList(UserIndex)
         Debug.Assert .id > 0
+        If Not CanLoadAccountCollectibleCards(.AccountID, failureReason) Then Exit Function
         If CharacterHasUnfinishedSave(.Id) Then
             failureReason = "El personaje tiene un guardado pendiente o fallido. Intenta de nuevo; si persiste, contacta al administrador."
             Exit Function
@@ -314,7 +315,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
         Call SetupUserQuests(UserList(UserIndex))
         Call SetupUserQuestsDone(UserList(UserIndex))
         If IsFeatureEnabled("collectible_cards") Then
-            Call SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex))
+            If Not SetupUserAccountAccountCollectibleCardBitArray(UserList(UserIndex), failureReason) Then Exit Function
         End If
         ' Load additional inventories.
         inventoryLoaded = LoadCharacterInventory(UserIndex, failureReason)
@@ -631,8 +632,17 @@ Private Sub CaptureCharacterSave(ByVal UserIndex As Integer, ByVal Logout As Boo
     If Not UserList(UserIndex).flags.UserLogged Then Exit Sub
     If Not CanCaptureCharacterSave(UserList(UserIndex), Logout) Then Exit Sub
     Set job = New clsCharacterSave
-    Call job.Initialize(UserIndex, UserList(UserIndex), Logout)
+    With UserList(UserIndex)
+        Call job.Initialize(UserIndex, UserList(UserIndex), Logout, _
+            (fullSave Or .SaveResetEpoch <> .SavedResetEpoch) And IsFeatureEnabled("collectible_cards") And .flags.DirtyCollectibleCardCollection)
+    End With
     snapshot = UserList(UserIndex)
+    #If UNIT_TEST = 1 Then
+        If job.CardAccountId <> 0 And CharacterSaveTestFailCardCapture Then
+            CharacterSaveTestFailCardCapture = False
+            Call Err.Raise(5, , "Injected capture failure before card statement")
+        End If
+    #End If
     Call Builder.Clear
     With snapshot
         resetPending = (.SaveResetEpoch <> .SavedResetEpoch)
@@ -1508,6 +1518,7 @@ Public Function SaveNewCharacterDB(ByVal UserIndex As Integer) As Boolean
     Dim ParamC   As Integer
     Dim Params() As Variant
     Dim job As clsCharacterSave, reason As String, enqueued As Boolean
+    If Not CanLoadAccountCollectibleCards(UserList(UserIndex).AccountID, reason) Then Exit Function
     With UserList(UserIndex)
         Dim i As Integer
         i = 0

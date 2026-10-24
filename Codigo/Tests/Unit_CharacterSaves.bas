@@ -7,10 +7,12 @@ Private connectionString As String
 Private passed As Boolean
 Private snapshots() As t_User
 Private originalDB As ADODB.Connection
+Private cardsEnabled As Boolean
 
 Public Function test_suite_character_saves() As Boolean
     On Error GoTo Failed
-    ReDim snapshots(1 To 6)
+    ReDim snapshots(1 To 9)
+    cardsEnabled = IsFeatureEnabled("collectible_cards")
     Dim oldMax As Integer, originalConnection As String
     snapshots(1) = UserList(1)
     oldMax = MaxUsers
@@ -31,8 +33,12 @@ Public Function test_suite_character_saves() As Boolean
     Call TestCapacityAndShutdown()
     Call TestCallbacks()
     Call TestProductionSnapshot()
+    Call TestAccountCards()
 Done:
     On Error Resume Next
+    Call SetFeatureToggle("collectible_cards", cardsEnabled)
+    CharacterSaveTestFailCardCapture = False
+    CharacterSaveTestFailCardEnqueue = False
     If Not originalDB Is Nothing Then Set Connection = originalDB
     Set originalDB = Nothing
     Call InitializeCharacterSaves(originalConnection)
@@ -328,5 +334,222 @@ Private Sub TestCallbacks()
     Call worker.TestLateCompletion(oldCommand)
     Call Check(Value("SELECT value FROM saved WHERE id=901") = 15, "uncertain failure never reexecutes on late callback")
     Call ReleaseCharacterSaveSession(snapshots(2))
+End Sub
+
+Private Function CreateCardCharacter(ByVal accountId As Long, ByVal name As String) As t_User
+    Dim creation As clsCharacterSave
+    UserList(1) = snapshots(6)
+    With UserList(1)
+        .AccountID = accountId
+        .name = name
+        .clase = 1
+        .raza = 1
+        .genero = 1
+        .Stats.ELV = 1
+        .Stats.MaxHp = 10
+        .Stats.MinHp = 10
+        .pos.Map = 1
+        .pos.x = 50
+        .pos.y = 50
+        .Char.body = 1
+        .Char.head = 1
+    End With
+    If Not SaveNewCharacterDB(1) Then Call Err.Raise(5, , "Card fixture creation refused")
+    Set creation = CharacterSaveTestJob(UserList(1).Id)
+    Call AwaitJob(creation)
+    If creation.Result <> CharacterSaveSucceeded Then Call Err.Raise(5, , creation.Failure)
+    Call InitUserPersistSnapshot(1)
+    UserList(1).flags.UserLogged = True
+    CreateCardCharacter = UserList(1)
+End Function
+
+Private Sub CardAdmission(ByRef User As t_User)
+    UserList(1) = snapshots(6)
+    UserList(1).Id = User.Id
+    UserList(1).AccountID = User.AccountID
+End Sub
+
+Private Sub TestAccountCards()
+    Dim clone As String, accountId As Long, otherId As Long, reason As String, i As Long
+    Dim delayed As clsCharacterSave, first As clsCharacterSave, final As clsCharacterSave, other As clsCharacterSave
+    clone = App.Path & "\character-save-cards-unit.db"
+    If Len(Dir$(clone)) Then Kill clone
+    Call Connection.Execute("VACUUM INTO '" & Replace(clone, "'", "''") & "'")
+    Call db.Close()
+    connectionString = "DRIVER={SQLite3 ODBC Driver};DATABASE=" & clone
+    db.CursorLocation = adUseClient
+    Call db.Open(connectionString)
+    Call InitializeCharacterSaves(connectionString)
+    Set originalDB = Connection
+    Set Connection = db
+    Call SetFeatureToggle("collectible_cards", True)
+    Call db.Execute("INSERT INTO account(email,password,salt,validate_code) VALUES('cards-a@invalid','test','test','test')")
+    accountId = Value("SELECT last_insert_rowid()")
+    Call db.Execute("INSERT INTO account(email,password,salt,validate_code) VALUES('cards-other@invalid','test','test','test')")
+    otherId = Value("SELECT last_insert_rowid()")
+    snapshots(7) = CreateCardCharacter(accountId, "cards_character_a")
+    snapshots(8) = CreateCardCharacter(accountId, "cards_character_b")
+    snapshots(9) = CreateCardCharacter(otherId, "cards_other_account")
+    Call ReleaseCharacterSaveSession(snapshots(8))
+    Call ReleaseCharacterSaveSession(snapshots(9))
+    Call db.Execute("INSERT INTO account_collectible_cards(account_id,card_quantities) VALUES(" & accountId & ",zeroblob(1024))")
+
+    UserList(1) = snapshots(7)
+    ' Keep the regression inside the existing loader's readable range. The installed
+    ' ODBC driver's 255-byte BLOB metadata truncation is independent of save ordering.
+    For i = 1 To 255
+        UserList(1).AccountCollectibleCardQuantities(i) = CByte(i Mod 11)
+    Next i
+    UserList(1).AccountCollectibleCardQuantities(200) = 10
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    Set delayed = NewJob(UserList(1), False, "WITH RECURSIVE n(x) AS (VALUES(1) UNION ALL SELECT x+1 FROM n WHERE x<1000000) SELECT max(x) FROM n")
+    Call EnqueueCharacterSave(delayed)
+    Call SaveCharacterDB(1, True)
+    Set final = CharacterSaveTestJob(snapshots(7).Id, True)
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call TickCharacterSaves()
+    Call CardAdmission(snapshots(8))
+    Call Check(Not LoadCharacterFromDB(1, reason) And Len(reason) > 0 And UserList(1).SaveSession = 0, "cards same account admission blocked before load/reservation")
+    Call Check(Not SetupUserAccountAccountCollectibleCardBitArray(UserList(1), reason), "cards direct collection loader cannot bypass pending write")
+    UserList(1).Id = 0
+    UserList(1).name = "cards_new_blocked"
+    Call Check(Not SaveNewCharacterDB(1) And Value("SELECT count(*) FROM user WHERE name='cards_new_blocked'") = 0, "cards new character admission refuses before insert")
+    Call Check(final.Result = CharacterSavePending And Value("SELECT hex(substr(card_quantities,200,1))='00' FROM account_collectible_cards WHERE account_id=" & accountId) = 1, "cards fixture still has old blob while logout pending")
+    Call CardAdmission(snapshots(9))
+    Call Check(LoadCharacterFromDB(1, reason), "cards unrelated account can enter while write pending")
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call AwaitJob(final)
+    Call CardAdmission(snapshots(8))
+    Call Check(LoadCharacterFromDB(1, reason), "cards completion permits another character entry")
+    Dim matches As Boolean
+    matches = (UserList(1).AccountCollectibleCardQuantities(200) = 10)
+    For i = 1 To 1024
+        If i <= 255 Then
+            If i <> 200 And UserList(1).AccountCollectibleCardQuantities(i) <> CByte(i Mod 11) Then matches = False
+        Else
+            If UserList(1).AccountCollectibleCardQuantities(i) <> 0 Then matches = False
+        End If
+    Next i
+    Call Check(matches And Value("SELECT length(card_quantities) FROM account_collectible_cards WHERE account_id=" & accountId) = 1024, "cards real 1024-byte snapshot roundtrip preserves fixture values")
+    UserList(1).flags.UserLogged = True
+    UserList(1).AccountCollectibleCardQuantities(211) = 9
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    Call SaveCharacterDB(1, True)
+    Set final = CharacterSaveTestJob(UserList(1).Id)
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call AwaitJob(final)
+    Call CardAdmission(snapshots(7))
+    Call Check(LoadCharacterFromDB(1, reason) And UserList(1).AccountCollectibleCardQuantities(211) = 9 And UserList(1).AccountCollectibleCardQuantities(200) = 10, "cards second character addition retains first character cards")
+    Call Check(Value("SELECT length(card_quantities)=1024 AND hex(substr(card_quantities,200,1))='0A' AND hex(substr(card_quantities,211,1))='09' FROM account_collectible_cards WHERE account_id=" & accountId) = 1, "cards database retains both additions in full-length blob")
+
+    UserList(1).flags.UserLogged = True
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    UserList(1).AccountCollectibleCardQuantities(1) = 7
+    Call SaveCharacterDB(1)
+    Set first = CharacterSaveTestJob(UserList(1).Id)
+    UserList(1).AccountCollectibleCardQuantities(1) = 8
+    Call SaveCharacterDB(1, True)
+    Set final = CharacterSaveTestJob(UserList(1).Id, True)
+    Call AwaitJob(first)
+    Call Check(Not CanLoadAccountCollectibleCards(accountId, reason) And UserList(1).flags.DirtyCollectibleCardCollection, "cards first completion retains final dependency and newer dirty data")
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call CardAdmission(snapshots(9))
+    Call Check(LoadCharacterFromDB(1, reason), "cards reused player slot belongs to unrelated account")
+    UserList(1).flags.UserLogged = True
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    UserList(1).AccountCollectibleCardQuantities(2) = 6
+    Call SaveCharacterDB(1, True)
+    Set other = CharacterSaveTestJob(UserList(1).Id)
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call first.Committed()
+    Call ReleaseAccountCardSave(first)
+    Call Check(Not CanLoadAccountCollectibleCards(accountId, reason) And Not CanLoadAccountCollectibleCards(otherId, reason), "cards duplicate old completion cannot clear either newer dependency")
+    Call AwaitJob(final)
+    Call Check(UserList(1).AccountID = otherId And UserList(1).AccountCollectibleCardQuantities(2) = 6, "cards old session completion cannot acknowledge reused slot")
+    Call AwaitJob(other)
+    Call Check(CanLoadAccountCollectibleCards(accountId, reason) And CanLoadAccountCollectibleCards(otherId, reason), "cards all relevant jobs must complete independently")
+
+    Call CardAdmission(snapshots(8))
+    Call Check(LoadCharacterFromDB(1, reason), "cards recovery fixture admits current collection")
+    UserList(1).flags.UserLogged = True
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    UserList(1).AccountCollectibleCardQuantities(3) = 10
+    Call db.Execute("CREATE TRIGGER fail_card_write BEFORE UPDATE ON account_collectible_cards BEGIN SELECT RAISE(ABORT,'injected card write failure'); END")
+    Call SaveCharacterDB(1, True)
+    Set final = CharacterSaveTestJob(UserList(1).Id)
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call AwaitJob(final)
+    Call CardAdmission(snapshots(7))
+    Call Check(final.Result = CharacterSaveFailed And final.Retryable And Not LoadCharacterFromDB(1, reason), "cards failed native UPSERT blocks account reload")
+    Call Check(CanLoadAccountCollectibleCards(otherId, reason), "cards failed account does not block unrelated account")
+    Call db.Execute("DROP TRIGGER fail_card_write")
+    Call Check(RetryFailedCharacterSave(final.CharacterId), "cards reviewed recovery resumes failed UPSERT")
+    Call AwaitJob(final)
+    Call Check(LoadCharacterFromDB(1, reason) And UserList(1).AccountCollectibleCardQuantities(3) = 10, "cards reviewed recovery releases dependency with correct blob")
+
+    Call SetFeatureToggle("collectible_cards", False)
+    UserList(1).flags.UserLogged = True
+    UserList(1).flags.DirtyCollectibleCardCollection = True
+    UserList(1).AccountCollectibleCardQuantities(3) = 1
+    Call SaveCharacterDB(1, True)
+    Set final = CharacterSaveTestJob(UserList(1).Id)
+    Call Check(final.CardAccountId = 0 And CanLoadAccountCollectibleCards(accountId, reason), "cards disabled creates no account dependency")
+    Call ReleaseCharacterSaveSession(UserList(1))
+    Call AwaitJob(final)
+    Call Check(UserList(1).flags.DirtyCollectibleCardCollection And Value("SELECT hex(substr(card_quantities,3,1))='0A' FROM account_collectible_cards WHERE account_id=" & accountId) = 1, "cards disabled preserves blob and dirty state")
+    Call SetFeatureToggle("collectible_cards", True)
+    Call TestCardCaptureFailures()
+    Call TestCardCallbackIdentity()
+    Set Connection = originalDB
+    Set originalDB = Nothing
+End Sub
+
+Private Sub TestCardCaptureFailures()
+    Dim mode As Long, reason As String, job As clsCharacterSave
+    For mode = 1 To 2
+        Call InitializeCharacterSaves(connectionString)
+        Call CardAdmission(snapshots(7))
+        If Not LoadCharacterFromDB(1, reason) Then Call Err.Raise(5, , reason)
+        UserList(1).flags.UserLogged = True
+        UserList(1).flags.DirtyCollectibleCardCollection = True
+        CharacterSaveTestFailCardCapture = (mode = 1)
+        CharacterSaveTestFailCardEnqueue = (mode = 2)
+        Call SaveCharacterDB(1, True)
+        Set job = CharacterSaveTestJob(UserList(1).Id)
+        Call ReleaseCharacterSaveSession(UserList(1))
+        Call CardAdmission(snapshots(8))
+        Call Check(job.Result = CharacterSaveFailed And Not job.Retryable And Not LoadCharacterFromDB(1, reason), "cards capture/enqueue failure retains account dependency " & mode)
+        Call Check(Not RetryFailedCharacterSave(job.CharacterId), "cards incomplete snapshot cannot be resumed " & mode)
+    Next mode
+End Sub
+
+Private Sub TestCardCallbackIdentity()
+    Dim worker As New clsCharacterSaveWorker, job As New clsCharacterSave, nextJob As New clsCharacterSave
+    Dim command As ADODB.Command, reason As String
+    Call InitializeCharacterSaves(connectionString)
+    Call worker.OpenConnection(connectionString)
+    worker.TestSynchronous = True
+    Call job.Initialize(0, snapshots(7), False, True)
+    Call job.AddCards(snapshots(7))
+    Call job.Seal(snapshots(7))
+    Call worker.Start(job)
+    Call worker.Tick()
+    Set command = worker.TestCommand
+    Call worker.Tick()
+    Call nextJob.Initialize(0, snapshots(9), True, True)
+    Call nextJob.AddCards(snapshots(9))
+    Call nextJob.Seal(snapshots(9))
+    worker.TestDispatchError = True
+    Call worker.Start(nextJob)
+    Call worker.Tick()
+    Call worker.TestLateCompletion(command)
+    Call job.Committed()
+    Call Check(CanLoadAccountCollectibleCards(snapshots(7).AccountID, reason) And Not CanLoadAccountCollectibleCards(snapshots(9).AccountID, reason), "cards stale callback cannot release different account uncertain write")
+    Call worker.TestLateCompletion(worker.TestCommand)
+    Call Check(nextJob.Result = CharacterSaveFailed And Not nextJob.Retryable And Not CanLoadAccountCollectibleCards(snapshots(9).AccountID, reason), "cards uncertain submission stays blocked after late own callback")
+    Call SetFeatureToggle("collectible_cards", False)
+    Call Check(CanLoadAccountCollectibleCards(snapshots(9).AccountID, reason), "cards disabled admission bypasses unused collection")
+    Call SetFeatureToggle("collectible_cards", True)
+    Call Check(Not CanLoadAccountCollectibleCards(snapshots(9).AccountID, reason), "cards reenabled retains unresolved dependency")
 End Sub
 #End If

@@ -66,6 +66,43 @@ acknowledgement. The autosave timestamp advances only on complete success.
 The existing manual-save completion message is also deferred until the tracked
 queue completes; autosave logs count requests, not falsely acknowledged saves.
 
+### Account collectible-card dependency
+
+Collectible cards are a 1024-byte **account** blob, not character-owned data.
+When a full save requires that blob, the job captures its authenticated account
+ID and registers an account dependency **before** constructing SQL or enqueueing.
+This closes the logout-A/login-B race: a different character on the same account
+cannot load an old blob while A's save remains pending, failed or uncertain.
+
+The name/ID admission paths share the guarded character loader. New-character
+admission checks before creating its row, and the collection loader checks again
+before reading or resetting its arrays. Rejection uses the existing dynamic
+message box. A successful character reservation clears its failure message so
+inventory loading does not mistake a successful reservation for a load error.
+
+Each dependency retains the exact immutable job, not a user slot or an account
+counter. Only that job's verified whole-save completion removes it. Multiple
+card-bearing jobs retain separate dependencies; one completion, a duplicate or
+an old session's callback cannot release another. Capture/enqueue failures retain
+the dependency. Provider-confirmed failure uses the existing reviewed recovery;
+the account becomes loadable after **all** its card-bearing jobs succeed.
+Failure logs include `card_account` alongside character/session identity.
+
+Unrelated accounts and saves without dirty cards are unaffected. With collectible
+cards disabled, the existing no-load/no-write behavior remains; re-enabling does
+not discard an unresolved dependency. Dirty-state reconciliation is unchanged.
+There is no per-account online-session limit or account SQL transaction.
+
+This only protects subsequent loads in this world-server process. Two characters
+that already loaded the same account blob before either save was registered can
+still overwrite each other's changes; that preexisting simultaneous-online case
+and cross-process writers are outside this fix. The dependency is not durable
+across a crash or restart.
+
+**Scope decision:** the manual-save review finding is explicitly deferred.
+This card-race correction does not change `GuardarUsuarios`, its notifications,
+or manual-save scheduling.
+
 ## Paths covered
 
 - Main character fields, spells, inventory (including elemental tags), bank,
@@ -87,15 +124,16 @@ queue completes; autosave logs count requests, not falsely acknowledged saves.
   `CloseUser`/`ResetUserSlot` may release the live slot without deleting the job.
 
 This does not serialize arbitrary administrator SQL, offline GM edits, other
-processes, guild history or account-wide writes. Operators must not edit a
+processes, guild history or other account-wide writes. Operators must not edit a
 blocked character behind its retained snapshot. Those operations are not
 character-session snapshot writers and are not covered by this completion result.
 
 ## Failure and recovery
 
 A failed job stays at the head of its character's queue; later jobs and login
-remain blocked. Other characters may continue. The database error log records
-character/session IDs, whether this was final, completed-statement count, the
+remain blocked. Other characters on that account also wait if the failed snapshot
+includes cards; unrelated accounts can continue. The database error log records
+character/session/card-account IDs, whether this was final, completed-statement count, the
 failing SQL prefix and the provider error. A submission exception has an
 **uncertain outcome**: its exact connection and command are quarantined, never
 reused or automatically retried. Missing callbacks remain unresolved; no timeout
@@ -142,17 +180,37 @@ acknowledgement, bounded admission/final capacity, shutdown, callbacks during
 submission and stale/duplicate callbacks. The snapshot case executes real
 creation/save SQL and checks the final main/inventory/bank/skill/logout values.
 
+The card regressions clone that disposable fixture and execute the real full-save
+capture, `AddCards` UPSERT, asynchronous worker callbacks, character/new-character
+admission and collection loader. They verify delayed A/logout versus B/login,
+both additions surviving B's later save, multiple outstanding dependencies,
+unrelated accounts, reused slots, duplicate/stale callbacks, provider-confirmed
+card failure and reviewed recovery, uncertain submission, capture/enqueue failure,
+dirty changes during an older save, and feature disable/re-enable behavior.
+
+**Separate preexisting driver limitation, not corrected here:** on the tested
+SQLite3 ODBC 0.9999 stack, a declared `BLOB` column reports a defined size of 255.
+The production `adUseClient` read exposes only 255 bytes; an `adUseServer` read
+reports 1024 bytes but zero-fills the tail. An independent 32-bit ADO probe using
+the unchanged table declaration and SELECT reproduced this without the save
+scheduler: SQL reported a 1024-byte blob with final byte `0A`, whereas the client
+cursor returned 255 bytes. Therefore the race fixtures use full 1024-byte blobs
+with distinct nonzero cards within indices 1-255 and zero padding afterward.
+Tests do not establish preservation of cards above that range on this driver.
+That existing loader/provider issue requires a separate scoped fix; this change
+does not alter BLOB reads, values or the SQL representation to hide it.
+
 Build definitions (no transport flag):
 
-Windows validation on 2026-10-23, based on master
+Windows validation on 2026-10-24, PR base master
 `68efe0f856cbf2837496a5c832d318c586c6626c`:
 
 | PYMMO | DEBUGGING | UNIT_TEST | Native build | Executed suite |
 | --- | --- | --- | --- | --- |
 | 0 | 0 | 0 | Pass | Not run (production build) |
 | 1 | 0 | 0 | Pass | Not run (production build) |
-| 0 | 1 | 1 | Pass | 672/672 passed, 44 suites |
-| 1 | 1 | 1 | Pass | 672/672 passed, 44 suites |
+| 0 | 1 | 1 | Pass | 701/701 passed, 44 suites |
+| 1 | 1 | 1 | Pass | 701/701 passed, 44 suites |
 
 Compilation used a separate source copy while the user's VB6 IDE remained open.
 The test executables ran on loopback port 17669 with disposable fixture databases;

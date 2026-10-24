@@ -12,6 +12,7 @@ Private Const SAVE_WORKERS As Long = 2
 Private sessions As Scripting.Dictionary
 Private sessionCharacters As Scripting.Dictionary
 Private queues As Scripting.Dictionary
+Private accountCardSaves As Scripting.Dictionary
 Private retired As Scripting.Dictionary
 Private finalized As Scripting.Dictionary
 Private workers(1 To SAVE_WORKERS) As clsCharacterSaveWorker
@@ -20,6 +21,10 @@ Private pumping As Boolean
 Private stopping As Boolean
 Private ready As Boolean
 Private notifySaved As Boolean
+#If UNIT_TEST = 1 Then
+Public CharacterSaveTestFailCardCapture As Boolean
+Public CharacterSaveTestFailCardEnqueue As Boolean
+#End If
 
 Public Sub InitializeCharacterSaves(ByVal connectionString As String)
     Dim i As Long
@@ -27,6 +32,7 @@ Public Sub InitializeCharacterSaves(ByVal connectionString As String)
     Set sessions = New Scripting.Dictionary
     Set sessionCharacters = New Scripting.Dictionary
     Set queues = New Scripting.Dictionary
+    Set accountCardSaves = New Scripting.Dictionary
     Set retired = New Scripting.Dictionary
     Set finalized = New Scripting.Dictionary
     stopping = False
@@ -55,6 +61,7 @@ Public Function ReserveCharacterSaveSession(ByRef User As t_User, ByRef reason A
     End If
     If sessions.Exists(key) Then
         ReserveCharacterSaveSession = (User.SaveSession <> 0 And User.SaveSession = sessions(key))
+        If ReserveCharacterSaveSession Then reason = vbNullString
         Exit Function
     End If
     If stopping Then Exit Function
@@ -67,6 +74,7 @@ Public Function ReserveCharacterSaveSession(ByRef User As t_User, ByRef reason A
     Call sessions.Add(key, sequence)
     Call sessionCharacters.Add(CStr(sequence), key)
     Call queues.Add(key, New Collection)
+    reason = vbNullString
     ReserveCharacterSaveSession = True
 End Function
 
@@ -78,6 +86,40 @@ Public Function CharacterHasUnfinishedSave(ByVal characterId As Long) As Boolean
     For Each job In jobs
         If job.Result <> CharacterSaveSucceeded Then CharacterHasUnfinishedSave = True: Exit Function
     Next job
+End Function
+
+' Retain before capture, not just after enqueue: a failed snapshot still owes account data.
+Public Sub RetainAccountCardSave(ByVal job As clsCharacterSave)
+    Dim key As String, jobs As Collection, existing As clsCharacterSave
+    key = CStr(job.CardAccountId)
+    If Not accountCardSaves.Exists(key) Then Call accountCardSaves.Add(key, New Collection)
+    Set jobs = accountCardSaves(key)
+    For Each existing In jobs
+        If existing Is job Then Exit Sub
+    Next existing
+    Call jobs.Add(job)
+End Sub
+
+' Release this exact completed snapshot only; neither callbacks nor slot reuse decrement a counter.
+Public Sub ReleaseAccountCardSave(ByVal job As clsCharacterSave)
+    If job.CardAccountId = 0 Or job.Result <> CharacterSaveSucceeded Then Exit Sub
+    Dim key As String, jobs As Collection, i As Long
+    key = CStr(job.CardAccountId)
+    If Not accountCardSaves.Exists(key) Then Exit Sub
+    Set jobs = accountCardSaves(key)
+    For i = jobs.Count To 1 Step -1
+        If jobs(i) Is job Then Call jobs.Remove(i)
+    Next i
+    If jobs.Count = 0 Then Call accountCardSaves.Remove(key)
+End Sub
+
+Public Function CanLoadAccountCollectibleCards(ByVal accountId As Long, ByRef reason As String) As Boolean
+    CanLoadAccountCollectibleCards = True
+    If Not IsFeatureEnabled("collectible_cards") Then Exit Function
+    If accountCardSaves Is Nothing Then Exit Function
+    If Not accountCardSaves.Exists(CStr(accountId)) Then Exit Function
+    reason = "La coleccion de cartas de la cuenta tiene un guardado pendiente o fallido. Intenta de nuevo; si persiste, contacta al administrador."
+    CanLoadAccountCollectibleCards = False
 End Function
 
 Public Sub ReleaseCharacterSaveSession(ByRef User As t_User)
@@ -120,6 +162,12 @@ Public Function CanCaptureCharacterSave(ByRef User As t_User, ByVal finalSave As
 End Function
 
 Public Sub EnqueueCharacterSave(ByVal job As clsCharacterSave)
+    #If UNIT_TEST = 1 Then
+        If job.CardAccountId <> 0 And CharacterSaveTestFailCardEnqueue Then
+            CharacterSaveTestFailCardEnqueue = False
+            Call Err.Raise(5, , "Injected card save enqueue failure")
+        End If
+    #End If
     Dim key As String, jobs As Collection
     key = CStr(job.CharacterId)
     If Not sessions.Exists(key) Then Call Err.Raise(5, , "Missing save reservation")

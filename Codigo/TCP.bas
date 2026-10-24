@@ -278,6 +278,12 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal head As Integer, _
                         ByVal Hogar As e_City) As Boolean
     On Error GoTo ConnectNewUser_Err
+    Dim cardSaveReason As String
+    If Not CanLoadAccountCollectibleCards(UserList(UserIndex).AccountID, cardSaveReason) Then
+        Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, cardSaveReason)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
     With UserList(UserIndex)
         Dim LoopC As Long
         If .SaveSession <> 0 And Not .flags.UserLogged Then
