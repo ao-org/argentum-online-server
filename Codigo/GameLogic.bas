@@ -1474,6 +1474,10 @@ End Function
 
 Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
     With UserList(UserIndex)
+        If .SaveResetEpoch = &H7FFFFFFF Then
+            Call LogDatabaseError("Character reset sequence exhausted char=" & .Id)
+            Exit Sub
+        End If
         .flags.Muerto = False
         .flags.Escondido = 0
         .flags.Casado = 0
@@ -1552,10 +1556,9 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
         Call WriteUpdateUserStats(UserIndex)
         Call WriteUpdateHungerAndThirst(UserIndex)
         Call UpdateUserInv(True, UserIndex, 0)
-        Call Execute("update user set is_reset = 1 where id = ?;", .Id)
-        Call Execute("update quest set quest_id = 0, npcs = 0, npcstarget = 0 where user_id = ?;", .Id)
-        Call Execute("delete from quest_done where user_id = ?;", .Id)
+        .SaveResetEpoch = .SaveResetEpoch + 1
         Call ResetQuestStats(UserIndex)
+        Call SaveCharacterDB(UserIndex)
         Call WarpUserChar(UserIndex, .pos.Map, .pos.x, .pos.y, True)
     End With
     'Call WarpUserChar(UserIndex, 1, 55, 45, True)

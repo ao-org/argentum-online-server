@@ -72,7 +72,6 @@ Public Sub MaybeRunUserAutoSave()
 
                 If elapsedSinceLastSave > IntervaloGuardarUsuarios Then
                     Call SaveChangesInUser(UserIndex)
-                    .Counters.LastSave = nowRaw
                     UserGuardados = UserGuardados + 1
                     If UserGuardados > NumUsers Then Exit For
                     If TicksElapsed(PerformanceTimer, GetTickCountRaw()) > AutoSaveLoopTimeLimitMs Then
@@ -91,7 +90,7 @@ Public Sub MaybeRunUserAutoSave()
 
     Call LogPerformance("Auto-save summary - total users: " & LastUser & _
                         " | logged: " & totalLoggedUsers & _
-                        " | saved: " & UserGuardados & _
+                        " | save requests: " & UserGuardados & _
                         " | not saved (interval not elapsed): " & unsavedUsersDueToShortInterval & _
                         " | not saved (time limit reached): " & unsavedUsersDueToTimeLimit & _
                         " | elapsed ms: " & totalElapsedTime)

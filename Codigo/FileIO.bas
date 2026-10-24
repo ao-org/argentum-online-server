@@ -2759,17 +2759,9 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         Call UserDisconnected(UserIndex)
     End If
     Call SaveCharacterDB(UserIndex, Logout)
-    If Logout Then
-        Call RemoveTokenDatabase(UserIndex)
-    End If
-    UserList(UserIndex).Counters.LastSave = GetTickCountRaw()
     Exit Sub
 SaveUser_Err:
     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
-End Sub
-
-Public Sub RemoveTokenDatabase(ByVal UserIndex As Integer)
-    Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
 
 Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)
@@ -2781,13 +2773,13 @@ Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_tok
     #End If
 End Sub
 
-Sub SaveNewUser(ByVal UserIndex As Integer)
+Function SaveNewUser(ByVal UserIndex As Integer) As Boolean
     On Error GoTo SaveNewUser_Err
-    Call SaveNewCharacterDB(UserIndex)
-    Exit Sub
+    SaveNewUser = SaveNewCharacterDB(UserIndex)
+    Exit Function
 SaveNewUser_Err:
     Call TraceError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
-End Sub
+End Function
 
 Function Status(ByVal UserIndex As Integer) As e_Facciones
     On Error GoTo Status_Err

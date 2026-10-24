@@ -278,8 +278,19 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
                         ByVal head As Integer, _
                         ByVal Hogar As e_City) As Boolean
     On Error GoTo ConnectNewUser_Err
+    Dim cardSaveReason As String
+    If Not CanLoadAccountCollectibleCards(UserList(UserIndex).AccountID, cardSaveReason) Then
+        Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, cardSaveReason)
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
     With UserList(UserIndex)
         Dim LoopC As Long
+        If .SaveSession <> 0 And Not .flags.UserLogged Then
+            Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "El personaje tiene un guardado pendiente. Intenta mas tarde.")
+            Call CloseSocket(UserIndex)
+            Exit Function
+        End If
         If .flags.UserLogged Then
             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .ConnectionDetails.IP)
             Call CloseSocketSL(UserIndex)
@@ -386,12 +397,26 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
             .pos.y = Cities(e_City.cUllathorpe).y
         End If
         UltimoChar = UCase$(name)
-        Call SaveNewUser(UserIndex)
+        If Not CharacterSaveCapacityAvailable() Then
+            Call WriteShowMessageBox(UserIndex, MSG_DYNAMIC_MESSAGE_BOX, "No hay capacidad de guardado disponible. Intenta mas tarde.")
+            Call CloseSocket(UserIndex)
+            Exit Function
+        End If
+        If Not SaveNewUser(UserIndex) Then
+            Call WriteShowMessageBox(UserIndex, MSG_NO_SE_PUEDE_CARGAR_EL_PERSONAJE, vbNullString)
+            Call CloseSocket(UserIndex)
+            Exit Function
+        End If
         ConnectNewUser = True
-        #If PYMMO = 1 Then
-            Call ConnectUser(UserIndex, name, True)
-        #ElseIf PYMMO = 0 Then
-            Call ConnectUser(UserIndex, name, False)
+        ' The retained creation save completes before ConnectUser loads its child rows.
+        #If LOGIN_STRESS_TEST = 1 Then
+            If .AccountID = -9999 Then
+                #If PYMMO = 1 Then
+                    Call ConnectUser(UserIndex, name, True)
+                #Else
+                    Call ConnectUser(UserIndex, name, False)
+                #End If
+            End If
         #End If
     End With
     Exit Function
@@ -1115,6 +1140,11 @@ End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSlot_Err
+    Call ReleaseCharacterSaveSession(UserList(UserIndex))
+    UserList(UserIndex).SaveSession = 0
+    UserList(UserIndex).SaveResetEpoch = 0
+    UserList(UserIndex).SavedResetEpoch = 0
+    UserList(UserIndex).SavePublicationPrice = 0
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     Call RemoveMagicLightOrb(UserIndex)

@@ -27,10 +27,6 @@ Attribute VB_Name = "Database"
 '
 Public Const DatabaseFileName = "Database.db"
 
-' Bank save prepared command cache (one per async connection)
-Private BankSaveCmdInit As Boolean
-Private BankSaveCmd()   As ADODB.Command
-
 ' Opens the async ADO connection pool used by non-blocking Execute operations.
 ' These are real ADODB connections (Connection_async), not VB6-managed worker threads/queues.
 ' Execute dispatches work to this pool with adAsyncExecute so the caller can avoid blocking.
@@ -53,6 +49,7 @@ Public Sub Database_Connect_Async()
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
+    Call InitializeCharacterSaves(ConnectionID)
     Exit Sub
 Database_Connect_AsyncErr:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
@@ -174,76 +171,6 @@ Execute_Err:
 End Function
 
 
-Public Sub PreparePreparedCommands()
-    On Error GoTo PreparePreparedCommandsErr
-
-    If BankSaveCmdInit Then Exit Sub
-
-    Dim connIdx As Byte
-    Dim slot    As Long
-    ReDim BankSaveCmd(1 To MAX_ASYNC)
-
-    For connIdx = 1 To MAX_ASYNC
-        Set BankSaveCmd(connIdx) = New ADODB.Command
-        Set BankSaveCmd(connIdx).ActiveConnection = Connection_async(connIdx)
-        BankSaveCmd(connIdx).CommandType = adCmdText
-        BankSaveCmd(connIdx).CommandText = QUERY_SAVE_BANCOINV
-        BankSaveCmd(connIdx).Prepared = True
-
-        For slot = 1 To MAX_BANCOINVENTORY_SLOTS
-            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
-            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
-            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
-            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adInteger, adParamInput)
-            BankSaveCmd(connIdx).Parameters.Append BankSaveCmd(connIdx).CreateParameter(, adLongVarChar, adParamInput, 2048)
-        Next slot
-    Next connIdx
-
-    BankSaveCmdInit = True
-    Exit Sub
-
-PreparePreparedCommandsErr:
-    BankSaveCmdInit = False
-    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - PreparePreparedCommands")
-End Sub
-
-Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
-    On Error GoTo ExecutePreparedBankSaveErr
-
-    If Not BankSaveCmdInit Then
-        ExecutePreparedBankSave = Execute(QUERY_SAVE_BANCOINV, Params)
-        Exit Function
-    End If
-
-    Dim connIdx As Byte
-    Dim i       As Long
-    Dim cmd     As ADODB.Command
-
-    connIdx = Current_async
-    Set cmd = BankSaveCmd(connIdx)
-
-    If cmd.ActiveConnection Is Nothing Then
-        Set cmd.ActiveConnection = Connection_async(connIdx)
-    End If
-
-    For i = 0 To UBound(Params)
-        cmd.Parameters(i).Value = Params(i)
-    Next i
-
-    Call cmd.Execute(, , adAsyncExecute)
-
-    Current_async = Current_async + 1
-    If Current_async = MAX_ASYNC Then
-        Current_async = 1
-    End If
-
-    ExecutePreparedBankSave = True
-    Exit Function
-
-ExecutePreparedBankSaveErr:
-    ExecutePreparedBankSave = False
-    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - ExecutePreparedBankSave")
-End Function
 
 ' Blocking stored-procedure interface.
 ' Like Query, this uses the main synchronous Connection and waits for DB/provider completion.
@@ -285,7 +212,7 @@ Execute_Err:
     End If
 End Function
 
-Private Function CreateParameter(ByVal value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
+Public Function CreateParameter(ByVal value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
     Set CreateParameter = New ADODB.Parameter
     CreateParameter.Direction = Direction
     Select Case VarType(value)

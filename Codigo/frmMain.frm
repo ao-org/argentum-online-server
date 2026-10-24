@@ -849,6 +849,7 @@ End Sub
 
 Private Sub Command10_Click()
     On Error GoTo Command10_Click_Err
+    Call OfferCharacterSaveRecovery()
     Call GuardarUsuarios
     Exit Sub
 Command10_Click_Err:
@@ -1162,7 +1163,8 @@ Form_QueryUnload_Err:
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    Call CerrarServidor
+    Call CerrarServidor()
+    Cancel = True ' Pending/failed snapshots keep the process and its recovery state alive.
 End Sub
 
 Private Sub HoraFantasia_Timer()
