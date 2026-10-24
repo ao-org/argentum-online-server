@@ -16,6 +16,115 @@ Private TorchLastRoute As Long
 Private TorchLastRecipient As Integer
 Private TorchOrder As String
 
+Private CapturingArmor As Boolean
+Private ArmorPacketCount As Long
+Private ArmorLastMessage As Long
+
+Public Function CaptureArmorPacket() As Boolean
+    If Not CapturingArmor Then Exit Function
+    Dim Writer As Network.Writer, bytes() As Byte
+    Set Writer = Protocol_Writes.GetWriterBuffer()
+    Call Writer.GetData(bytes)
+    Call Writer.Clear()
+    ArmorPacketCount = ArmorPacketCount + 1
+    If CLng(bytes(0)) + CLng(bytes(1)) * 256& = ServerPacketID.eLocaleMsg Then
+        ArmorLastMessage = CLng(bytes(2)) + CLng(bytes(3)) * 256&
+    End If
+    CaptureArmorPacket = True
+End Function
+
+' Use the real equip routine; capture all sends so rejected swaps cannot publish
+' an unequip, body/aura change or inventory update before the rejection message.
+Private Function TestFactionArmorReplacement(ByVal Mode As Long, ByVal Chaos As Boolean) As Boolean
+    On Error GoTo TestError
+    Dim u As Integer, i As Long, saved As Boolean, targetSlot As Byte
+    Dim oldUser As t_User, emptyUser As t_User
+    Dim oldArmor As t_ObjData, oldFactionArmor As t_ObjData, oldSkin As t_ObjData, blankObject As t_ObjData
+    Dim oldSafe As Byte, oldTrigger As e_Trigger
+    For i = UBound(UserList) To 2 Step -1
+        If Not UserList(i).flags.UserLogged And Not UserList(i).ConnectionDetails.ConnIDValida Then
+            u = i: Exit For
+        End If
+    Next i
+    If u = 0 Then Exit Function
+    oldUser = UserList(u): oldArmor = ObjData(1): oldFactionArmor = ObjData(2): oldSkin = ObjData(3)
+    oldSafe = MapInfo(1).Seguro: oldTrigger = MapData(50, 50, 1).trigger
+    saved = True
+    UserList(u) = emptyUser
+    ObjData(1) = blankObject: ObjData(2) = blankObject: ObjData(3) = blankObject
+    ObjData(1).ObjNum = 1: ObjData(1).OBJType = e_OBJType.otArmor: ObjData(1).RopajeHumano = 100
+    ObjData(2).ObjNum = 2: ObjData(2).OBJType = e_OBJType.otArmor: ObjData(2).RopajeHumano = 101
+    If Chaos Then ObjData(2).Caos = 1 Else ObjData(2).Real = 1
+    MapInfo(1).Seguro = 0: MapData(50, 50, 1).trigger = 0
+    With UserList(u)
+        .pos.Map = 1: .pos.x = 50: .pos.y = 50
+        .Char.charindex = 301: .raza = e_Raza.Humano
+        ' Bypass unrelated faction/rank/class eligibility, not the armor stat gate.
+        .flags.Privilegios = e_PlayerType.Dios: .CurrentInventorySlots = 20
+        .Stats.MaxHp = 100: .Stats.MinHp = 100
+        .Stats.MaxMAN = 100: .Stats.MinMAN = 100
+        .Stats.MaxAGU = 100: .Stats.MinAGU = 100
+        .Stats.MaxHam = 100: .Stats.MinHam = 100
+        .invent.Object(1).ObjIndex = 1: .invent.Object(1).amount = 1: .invent.Object(1).Equipped = 1
+        .invent.Object(2).ObjIndex = 2: .invent.Object(2).amount = 1
+        .invent.EquippedArmorObjIndex = 1: .invent.EquippedArmorSlot = 1
+        .Char.body = 100: .Char.Body_Aura = "123": .flags.Desnudo = 0
+        If Mode < 4 Then
+            ' A skin tied to the old armor must survive a rejected replacement too.
+            ObjData(3).OBJType = e_OBJType.otSkinsArmours
+            ObjData(3).RequiereObjeto = 1: ObjData(3).RopajeHumano = 102
+            .Invent_Skins.ObjIndexArmourEquipped = 3: .Invent_Skins.SlotArmourEquipped = 1
+            .Invent_Skins.Object(1).ObjIndex = 3: .Invent_Skins.Object(1).Equipped = True
+            .Char.body = 102
+        End If
+        Select Case Mode
+            Case 0: .Stats.MinHp = 99
+            Case 1: .Stats.MinMAN = 99
+            Case 2: .Stats.MinAGU = 99
+            Case 3: .Stats.MinHam = 99
+            Case 5: .Stats.MinHp = 99: MapInfo(1).Seguro = 1
+            Case 6: .Stats.MinHp = 99: MapData(50, 50, 1).trigger = e_Trigger.ZonaSegura
+            Case 7: .Stats.MinHp = 99 ' Login restoration bypasses the stat gate.
+            Case 8: .Stats.MinHp = 99: ObjData(2).Real = 0: ObjData(2).Caos = 0
+            Case 9
+                .Stats.MinHp = 99
+                ObjData(1).Real = ObjData(2).Real: ObjData(1).Caos = ObjData(2).Caos
+        End Select
+    End With
+    targetSlot = 2
+    If Mode = 9 Then targetSlot = 1
+    CapturingArmor = True: ArmorPacketCount = 0: ArmorLastMessage = 0
+    Call EquiparInvItem(u, targetSlot, Mode = 7)
+    With UserList(u)
+        If Mode < 4 Then
+            If .invent.EquippedArmorObjIndex <> 1 Or .invent.EquippedArmorSlot <> 1 Then GoTo Cleanup
+            If .invent.Object(1).Equipped <> 1 Or .invent.Object(2).Equipped <> 0 Then GoTo Cleanup
+            If .Char.body <> 102 Or .Char.Body_Aura <> "123" Or .flags.Desnudo <> 0 Then GoTo Cleanup
+            If .Invent_Skins.ObjIndexArmourEquipped <> 3 Or .Invent_Skins.SlotArmourEquipped <> 1 Then GoTo Cleanup
+            If Not .Invent_Skins.Object(1).Equipped Then GoTo Cleanup
+            If ArmorPacketCount <> 1 Or ArmorLastMessage <> MSG_SOLO_PUEDES_EQUIPAR_OBJETO_SI_TUS_ESTADISTICAS_ESTAN Then GoTo Cleanup
+        ElseIf Mode = 9 Then
+            If .invent.EquippedArmorObjIndex <> 0 Or .invent.Object(1).Equipped <> 0 Then GoTo Cleanup
+        Else
+            If .invent.EquippedArmorObjIndex <> 2 Or .invent.EquippedArmorSlot <> 2 Then GoTo Cleanup
+            If .invent.Object(1).Equipped <> 0 Or .invent.Object(2).Equipped <> 1 Then GoTo Cleanup
+            If .Char.body <> 101 Or .flags.Desnudo <> 0 Then GoTo Cleanup
+        End If
+    End With
+    TestFactionArmorReplacement = True
+Cleanup:
+    CapturingArmor = False
+    If saved Then
+        UserList(u) = oldUser
+        ObjData(1) = oldArmor: ObjData(2) = oldFactionArmor: ObjData(3) = oldSkin
+        MapInfo(1).Seguro = oldSafe: MapData(50, 50, 1).trigger = oldTrigger
+    End If
+    Exit Function
+TestError:
+    Debug.Print "Faction armor test " & CStr(Mode) & ": " & CStr(Err.Number) & " " & Err.Description
+    Resume Cleanup
+End Function
+
 Public Function CaptureTorchPacket(ByVal Route As Long, ByVal Recipient As Integer) As Boolean
     If Not CapturingTorch Then Exit Function
     Dim Writer As Network.Writer, bytes() As Byte, packet As Long
@@ -205,6 +314,16 @@ End Function
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
 Public Function test_suite_general() As Boolean
+    Dim faction As Integer, armorCase As Integer, armorCases As Variant
+    armorCases = Array("low HP preserves armor and skin", "low mana preserves armor and skin", _
+        "low water preserves armor and skin", "low hunger preserves armor and skin", _
+        "full stats allow replacement", "safe map allows replacement", "safe trigger allows replacement", _
+        "login restores armor", "ordinary armor allows low stats", "explicit unequip allows low stats")
+    For faction = 0 To 1
+        For armorCase = 0 To 9
+            Call UnitTesting.RunTest("faction armor " & CStr(faction) & " " & armorCases(armorCase), TestFactionArmorReplacement(armorCase, faction = 1))
+        Next armorCase
+    Next faction
     Call UnitTesting.RunTest("torch preserves equipped shield", TestTorchEquipment(0))
     Call UnitTesting.RunTest("shield preserves equipped torch", TestTorchEquipment(1))
     Call UnitTesting.RunTest("torch replacement preserves shield", TestTorchEquipment(2))
