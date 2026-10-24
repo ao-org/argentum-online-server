@@ -5555,6 +5555,9 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
         Dim username As String
         Dim mensaje  As String
         Dim tUser    As t_UserReference
+        Dim targetLoggedIn As Boolean
+        Dim targetConnected As Boolean
+        Dim storedReply As String
         username = reader.ReadString8()
         mensaje = reader.ReadString8()
         If EsGM(UserIndex) Then
@@ -5563,20 +5566,39 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, MSG_UTILICE_MENSAJEINFORMACION_NICK_MENSAJE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
             Else
                 tUser = NameIndex(username)
+                targetLoggedIn = False
+                targetConnected = False
                 If IsValidUserRef(tUser) Then
-                    'Msg1187= Mensaje recibido de ¬1
-                    Call WriteLocaleMsg(tUser.ArrayIndex, MSG_MESSAGE_RECEIVED, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, GetUserDisplayName(UserIndex))
-                    Call WriteConsoleMsg(tUser.ArrayIndex, mensaje, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_DONADOR)
-                    'Msg2169=¬1 respondió tu consulta: ¬2
-                    Call WriteShowMessageBox(tUser.ArrayIndex, MSG_QUESTION_ANSWERED, GetUserDisplayName(UserIndex) & "¬" & mensaje)
+                    targetLoggedIn = UserList(tUser.ArrayIndex).flags.UserLogged
+                    targetConnected = targetLoggedIn And UserList(tUser.ArrayIndex).ConnectionDetails.ConnIDValida
+                End If
+                If Not PersonajeExiste(username) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_EXISTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Else
-                    If PersonajeExiste(username) Then
-                        Call SetMessageInfoDatabase(username, "Mensaje recibido de " & GetUserDisplayName(UserIndex) & " [Game Master]: " & vbNewLine & mensaje & vbNewLine)
+                    storedReply = UserMod.GM_REPLY_MESSAGE_PREFIX & GetUserDisplayName(UserIndex) & Chr$(172) & mensaje & vbNewLine
+
+                    ' Persist first even when the user appears connected.  A recently closed
+                    ' socket can remain referenced briefly, and an in-memory-only reply would
+                    ' otherwise disappear before the next login.
+                    If SetMessageInfoDatabase(username, storedReply) Then
+                        ' Keep the logged-in copy synchronized even after its connection
+                        ' becomes invalid. The delayed disconnect save writes this field
+                        ' back to the database and must not overwrite the new reply.
+                        If targetLoggedIn Then
+                            UserList(tUser.ArrayIndex).MENSAJEINFORMACION = UserMod.LimitGmReplyHistory(UserList(tUser.ArrayIndex).MENSAJEINFORMACION & storedReply)
+                        End If
+
+                        If targetConnected Then
+                            'Msg2169=¬1 respondió tu consulta: ¬2
+                            Call WriteShowMessageBox(tUser.ArrayIndex, MSG_QUESTION_ANSWERED, GetUserDisplayName(UserIndex) & "¬" & mensaje)
+                        End If
+                        'Msg1188= Mensaje enviado a ¬1
+                        Call WriteLocaleMsg(UserIndex, MSG_MESSAGE_SENT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, username)
+                        Call LogGM(GetUserRealName(UserIndex), "Envió mensaje como GM a " & username & ": " & mensaje)
+                    Else
+                        Call WriteShowMessageBox(UserIndex, MSG_HA_OCURRIDO_UN_ERROR_INTERNO_EN_EL_SERVIDOR_ESTAMOS_TRATANDO_DE_RESOLVERLO, vbNullString)
                     End If
                 End If
-                'Msg1188= Mensaje enviado a ¬1
-                Call WriteLocaleMsg(UserIndex, MSG_MESSAGE_SENT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, username)
-                Call LogGM(GetUserRealName(UserIndex), "Envió mensaje como GM a " & username & ": " & mensaje)
             End If
         End If
     End With

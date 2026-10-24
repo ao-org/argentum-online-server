@@ -26,8 +26,62 @@ Attribute VB_Name = "UserMod"
 '
 '
 Option Explicit
+Public Const GM_REPLY_MESSAGE_PREFIX As String = "[GM_REPLY]"
+Public Const GM_REPLY_HISTORY_LIMIT As Long = 20
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
+
+Public Function LimitGmReplyHistory(ByVal MessageInfo As String) As String
+    On Error GoTo LimitGmReplyHistory_Err
+    If LenB(MessageInfo) = 0 Then Exit Function
+
+    Dim Lines() As String
+    Dim i As Long
+    Dim replyCount As Long
+    Dim repliesToSkip As Long
+    Lines = Split(MessageInfo, vbNewLine)
+
+    For i = 0 To UBound(Lines)
+        If Left$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX)) = GM_REPLY_MESSAGE_PREFIX Then
+            replyCount = replyCount + 1
+        End If
+    Next i
+
+    If replyCount > GM_REPLY_HISTORY_LIMIT Then
+        repliesToSkip = replyCount - GM_REPLY_HISTORY_LIMIT
+    End If
+
+    For i = 0 To UBound(Lines)
+        If LenB(Lines(i)) > 0 Then
+            If Left$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX)) = GM_REPLY_MESSAGE_PREFIX And repliesToSkip > 0 Then
+                repliesToSkip = repliesToSkip - 1
+            Else
+                LimitGmReplyHistory = LimitGmReplyHistory & Lines(i) & vbNewLine
+            End If
+        End If
+    Next i
+    Exit Function
+LimitGmReplyHistory_Err:
+    Call TraceError(Err.Number, Err.Description, "UserMod.LimitGmReplyHistory", Erl)
+    LimitGmReplyHistory = MessageInfo
+End Function
+
+Public Function ExtractGmReplyHistory(ByVal MessageInfo As String) As String
+    On Error GoTo ExtractGmReplyHistory_Err
+    If LenB(MessageInfo) = 0 Then Exit Function
+
+    Dim Lines() As String
+    Dim i As Long
+    Lines = Split(LimitGmReplyHistory(MessageInfo), vbNewLine)
+    For i = 0 To UBound(Lines)
+        If Left$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX)) = GM_REPLY_MESSAGE_PREFIX Then
+            ExtractGmReplyHistory = ExtractGmReplyHistory & Lines(i) & vbNewLine
+        End If
+    Next i
+    Exit Function
+ExtractGmReplyHistory_Err:
+    Call TraceError(Err.Number, Err.Description, "UserMod.ExtractGmReplyHistory", Erl)
+End Function
 
 Public Function IsUserAdmin(ByVal UserIndex As Integer) As Boolean
     IsUserAdmin = False
@@ -296,6 +350,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef name As S
 
 Dim n                           As Integer
 Dim tStr                        As String
+Dim previousMessageInfo         As String
 
     On Error GoTo Complete_ConnectUser_Err
     
@@ -747,13 +802,30 @@ Dim tStr                        As String
         Call NotifyConnectionToFaction(UserIndex)
         If LenB(.MENSAJEINFORMACION) > 0 Then
             Dim Lines() As String
+            Dim messagePayload As String
+            Dim messageSeparator As Long
+            previousMessageInfo = .MENSAJEINFORMACION
+            .MENSAJEINFORMACION = LimitGmReplyHistory(.MENSAJEINFORMACION)
             Lines = Split(.MENSAJEINFORMACION, vbNewLine)
             For i = 0 To UBound(Lines)
                 If LenB(Lines(i)) > 0 Then
-                    Call WriteConsoleMsg(UserIndex, Lines(i), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_DONADOR)
+                    If Left$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX)) = GM_REPLY_MESSAGE_PREFIX Then
+                        messagePayload = Mid$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX) + 1)
+                        messageSeparator = InStr(1, messagePayload, Chr$(172), vbBinaryCompare)
+                        If messageSeparator > 1 Then
+                            Call WriteShowMessageBox(UserIndex, MSG_QUESTION_ANSWERED, Left$(messagePayload, messageSeparator - 1) & Chr$(172) & Mid$(messagePayload, messageSeparator + 1))
+                        Else
+                            Call WriteConsoleMsg(UserIndex, messagePayload, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_DONADOR)
+                        End If
+                    Else
+                        Call WriteConsoleMsg(UserIndex, Lines(i), e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_DONADOR)
+                    End If
                 End If
             Next
-            .MENSAJEINFORMACION = vbNullString
+            .MENSAJEINFORMACION = ExtractGmReplyHistory(.MENSAJEINFORMACION)
+            If .MENSAJEINFORMACION <> previousMessageInfo Then
+                Call ReplaceMessageInfoDatabase(.name, .MENSAJEINFORMACION)
+            End If
         End If
         If EventoActivo Then
             Call WriteLocaleMsg(UserIndex, MSG_TIEMPO_RESTANTE_MINUTO_1625, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos, PublicidadEvento & "¬" & TiempoRestanteEvento) 'Msg1625=¬1. Tiempo restante: ¬2 minuto(s).
