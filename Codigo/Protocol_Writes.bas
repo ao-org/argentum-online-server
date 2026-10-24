@@ -1877,6 +1877,28 @@ WriteAlquimistaObjects_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlquimistaObjects", Erl)
 End Sub
 
+Public Sub WriteNpcCraftingObjects(ByVal UserIndex As Integer, ByVal CraftingType As Byte)
+    On Error GoTo WriteNpcCraftingObjects_Err
+    Call Writer.WriteInt16(ServerPacketID.eAlquimistaObj)
+    If Not Crafteos.Exists(CraftingType) Then
+        Call Writer.WriteInt16(0)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+    End If
+    Dim Recipes As Dictionary
+    Set Recipes = Crafteos.Item(CraftingType)
+    Call Writer.WriteInt16(Recipes.Count)
+    Dim Recipe As clsCrafteo
+    For Each Recipe In Recipes.Items
+        Call Writer.WriteInt16(Recipe.Resultado)
+    Next Recipe
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteNpcCraftingObjects_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcCraftingObjects", Erl)
+End Sub
+
 Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
     On Error GoTo WriteSastreObjects_Err
     Dim i              As Long

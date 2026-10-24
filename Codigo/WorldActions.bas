@@ -457,7 +457,8 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 UserList(UserIndex).flags.Crafteando = NpcList(NpcIndex).Craftea
-                Call WriteOpenCrafting(UserIndex, NpcList(NpcIndex).Craftea)
+                Call WriteNpcCraftingObjects(UserIndex, NpcList(NpcIndex).Craftea)
+                Call WriteShowAlquimiaForm(UserIndex)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Transporter Then
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 If Not EnsureUserNotTrading(UserIndex) Then Exit Sub

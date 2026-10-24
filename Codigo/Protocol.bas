@@ -2910,6 +2910,10 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
     Dim Item As Integer
     Item = reader.ReadInt16()
     If Item < 1 Then Exit Sub
+    If UserList(UserIndex).flags.Crafteando > 0 Then
+        Call DoNpcCraftItem(UserIndex, Item)
+        Exit Sub
+    End If
     Call AlquimistaConstruirItem(UserIndex, Item)
     Exit Sub
 HandleCraftAlquimia_Err:
