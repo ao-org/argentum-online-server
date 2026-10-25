@@ -2885,6 +2885,7 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
     On Error GoTo HandleCraftCarpenter_Err
+    If reader.GetAvailable() <> 6 Then Exit Sub
     Dim Item As Integer
     Item = reader.ReadInt16()
     Dim Cantidad As Long
@@ -2900,10 +2901,18 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
 
     If Cantidad < 0 Or Cantidad > 10000 Then Exit Sub
     If Item < LBound(ObjData) Or Item > UBound(ObjData) Then Exit Sub
+    If Not CanUseCraftingInventory(UserIndex) Then Exit Sub
 
     ' Validate the complete batch before starting.  This prevents a large order
     ' from running until the first missing-material tick.
-    If Not CarpinteroTieneMateriales(UserIndex, Item, Cantidad) Then Exit Sub
+    ' The legacy TieneObjetos count is Integer; full batch costs may exceed it.
+    Dim stagedInventory As t_Inventario
+    stagedInventory = UserList(UserIndex).invent
+    If Not TryConsumeCraftingMaterials(stagedInventory, UserList(UserIndex).CurrentInventorySlots, ObjData(Item), e_JobsTypes.Carpenter, Cantidad) Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MATERIALES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+        Exit Sub
+    End If
 
     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
     UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
@@ -2918,6 +2927,7 @@ End Sub
 
 Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
     On Error GoTo HandleCraftAlquimia_Err
+    If reader.GetAvailable() <> 6 Then Exit Sub
     Dim Item As Integer
     Item = reader.ReadInt16()
     Dim Cantidad As Long
@@ -2950,6 +2960,19 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 #If UNIT_TEST = 1 Then
+Public Sub CraftingTestRequest(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Alchemy As Boolean)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    If Alchemy Then
+        Call HandleCraftAlquimia(UserIndex)
+    Else
+        Call HandleCraftCarpenter(UserIndex)
+    End If
+    Set reader = savedReader
+End Sub
+
 Public Sub TrapTestUseItem(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Keyboard As Boolean)
     Dim savedReader As Network.reader
     Set savedReader = reader

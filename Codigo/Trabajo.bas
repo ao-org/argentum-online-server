@@ -439,7 +439,8 @@ Private Function HasCraftingMaterial(ByRef inventory As t_Inventario, ByVal slot
     For slot = 1 To slotCount
         With inventory.Object(slot)
             If .ObjIndex = materialId And .ElementalTags = e_ElementalTags.Normal Then
-                If .amount <= 0 Or .Equipped <> 0 Then Exit Function
+                ' Reusable tools may be equipped; they are never removed.
+                If .amount <= 0 Then Exit Function
                 available = available + .amount
                 If available >= required Then
                     HasCraftingMaterial = True
@@ -454,6 +455,26 @@ HasCraftingMaterial_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.HasCraftingMaterial", Erl)
 End Function
 
+Private Function StageGenericCraftingMaterials(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByRef recipe As t_ObjData, ByVal quantity As Long, ByRef hasCost As Boolean) As Boolean
+    Dim materialSlot As Integer
+    With recipe
+        If .GenericMaterialCount > MAX_GENERIC_CRAFTING_MATERIALS Then Exit Function
+        For materialSlot = 1 To .GenericMaterialCount
+            If .GenericMaterialObjIndex(materialSlot) < 1 Or .GenericMaterialAmount(materialSlot) < 1 Then Exit Function
+            If .GenericMaterialConsumed(materialSlot) Then
+                If Not StageCraftingMaterial(inventory, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot), quantity, hasCost) Then Exit Function
+            End If
+        Next materialSlot
+        ' Check reusable requirements against what remains, independent of recipe order.
+        For materialSlot = 1 To .GenericMaterialCount
+            If Not .GenericMaterialConsumed(materialSlot) Then
+                If Not HasCraftingMaterial(inventory, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot)) Then Exit Function
+            End If
+        Next materialSlot
+    End With
+    StageGenericCraftingMaterials = True
+End Function
+
 ' Commit once, after every ingredient succeeds. Failure leaves inventory untouched.
 Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByRef recipe As t_ObjData, ByVal job As e_JobsTypes, ByVal quantity As Long) As Boolean
     On Error GoTo TryConsumeCraftingMaterials_Err
@@ -464,16 +485,8 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
     With recipe
         Select Case job
             Case e_JobsTypes.Blacksmith
-                Dim blacksmithMaterialSlot As Integer
                 If .GenericMaterialCount > 0 Then
-                    For blacksmithMaterialSlot = 1 To .GenericMaterialCount
-                        If .GenericMaterialObjIndex(blacksmithMaterialSlot) < 1 Or .GenericMaterialAmount(blacksmithMaterialSlot) < 1 Then Exit Function
-                        If .GenericMaterialConsumed(blacksmithMaterialSlot) Then
-                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(blacksmithMaterialSlot), .GenericMaterialAmount(blacksmithMaterialSlot), quantity, hasCost) Then Exit Function
-                        Else
-                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(blacksmithMaterialSlot), .GenericMaterialAmount(blacksmithMaterialSlot)) Then Exit Function
-                        End If
-                    Next blacksmithMaterialSlot
+                    If Not StageGenericCraftingMaterials(staged, slotCount, recipe, quantity, hasCost) Then Exit Function
                 Else
                     If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeHierro, .LingH, quantity, hasCost) Then Exit Function
                     If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDePlata, .LingP, quantity, hasCost) Then Exit Function
@@ -486,32 +499,16 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                     If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WindEssence, .WindEssence, quantity, hasCost) Then Exit Function
                 End If
             Case e_JobsTypes.Carpenter
-                Dim carpenterMaterialSlot As Integer
                 If .GenericMaterialCount > 0 Then
-                    For carpenterMaterialSlot = 1 To .GenericMaterialCount
-                        If .GenericMaterialObjIndex(carpenterMaterialSlot) < 1 Or .GenericMaterialAmount(carpenterMaterialSlot) < 1 Then Exit Function
-                        If .GenericMaterialConsumed(carpenterMaterialSlot) Then
-                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(carpenterMaterialSlot), .GenericMaterialAmount(carpenterMaterialSlot), quantity, hasCost) Then Exit Function
-                        Else
-                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(carpenterMaterialSlot), .GenericMaterialAmount(carpenterMaterialSlot)) Then Exit Function
-                        End If
-                    Next carpenterMaterialSlot
+                    If Not StageGenericCraftingMaterials(staged, slotCount, recipe, quantity, hasCost) Then Exit Function
                 Else
                     If Not StageCraftingMaterial(staged, slotCount, Wood, .Madera, quantity, hasCost) Then Exit Function
                     If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
                     If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
                 End If
             Case e_JobsTypes.Alchemist
-                Dim materialSlot As Integer
                 If .GenericMaterialCount > 0 Then
-                    For materialSlot = 1 To .GenericMaterialCount
-                        If .GenericMaterialObjIndex(materialSlot) < 1 Or .GenericMaterialAmount(materialSlot) < 1 Then Exit Function
-                        If .GenericMaterialConsumed(materialSlot) Then
-                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot), quantity, hasCost) Then Exit Function
-                        Else
-                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot)) Then Exit Function
-                        End If
-                    Next materialSlot
+                    If Not StageGenericCraftingMaterials(staged, slotCount, recipe, quantity, hasCost) Then Exit Function
                 Else
                     If Not HasCraftingMaterial(staged, slotCount, Mortero, .Mortero) Then Exit Function
                     If Not StageCraftingMaterial(staged, slotCount, FrascoAlq, .FrascoAlq, quantity, hasCost) Then Exit Function
@@ -525,16 +522,8 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                     If Not StageCraftingMaterial(staged, slotCount, SemillasProsperas, .SemillasProsperas, quantity, hasCost) Then Exit Function
                 End If
             Case e_JobsTypes.Tailor
-                Dim tailorMaterialSlot As Integer
                 If .GenericMaterialCount > 0 Then
-                    For tailorMaterialSlot = 1 To .GenericMaterialCount
-                        If .GenericMaterialObjIndex(tailorMaterialSlot) < 1 Or .GenericMaterialAmount(tailorMaterialSlot) < 1 Then Exit Function
-                        If .GenericMaterialConsumed(tailorMaterialSlot) Then
-                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(tailorMaterialSlot), .GenericMaterialAmount(tailorMaterialSlot), quantity, hasCost) Then Exit Function
-                        Else
-                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(tailorMaterialSlot), .GenericMaterialAmount(tailorMaterialSlot)) Then Exit Function
-                        End If
-                    Next tailorMaterialSlot
+                    If Not StageGenericCraftingMaterials(staged, slotCount, recipe, quantity, hasCost) Then Exit Function
                 Else
                     If Not StageCraftingMaterial(staged, slotCount, PieldeLobo, .PielLobo, quantity, hasCost) Then Exit Function
                     If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPardo, .PielOsoPardo, quantity, hasCost) Then Exit Function
@@ -1151,6 +1140,8 @@ End Function
 Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, Optional ByVal requestedAmount As Long = 1)
     On Error GoTo AlquimistaConstruirItem_Err
     If requestedAmount < 1 Or requestedAmount > 10000 Then Exit Sub
+    If Not CanUseCraftingInventory(UserIndex) Then Exit Sub
+    If Not IntervaloPermiteTrabajarConstruir(UserIndex, False) Then Exit Sub
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
         'Msg2129=¡No tengo energía!
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
@@ -1189,6 +1180,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
         If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Alchemist) Then Exit Sub
+        Call IntervaloPermiteTrabajarConstruir(UserIndex)
         Dim successBasisPoints As Integer, craftedAmount As Long
         successBasisPoints = CalculateAlchemySuccessBasisPoints(UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia), ObjData(ItemIndex).SkPociones)
         craftedAmount = CalculateAlchemyBatchResult(requestedAmount, successBasisPoints)

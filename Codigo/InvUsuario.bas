@@ -2020,6 +2020,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     Case 3     ' Herramientas de Alquimia - Tijeras
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Alquimia)
                     Case 4     ' Herramientas de Alquimia - Olla
+                        Call ReturnCraftingItems(UserIndex)
                         .flags.Crafteando = 0
                         Call EnivarObjConstruiblesAlquimia(UserIndex)
                         Call WriteShowAlquimiaForm(UserIndex)

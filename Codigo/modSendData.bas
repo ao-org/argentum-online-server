@@ -145,6 +145,7 @@ End Sub
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False, Optional ByRef Queued As Boolean = False, Optional ByVal RequireQueueConfirmation As Boolean = False)
     Queued = False
     #If UNIT_TEST = 1 Then
+        If Unit_Crafting.CapturePacket() Then Exit Sub
         If Unit_NpcCrossMapPursuit.CaptureAdjacentPacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_NpcBow.CapturePacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_InventoryDestruction.CapturePacket(sndRoute, sndIndex) Then Exit Sub
