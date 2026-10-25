@@ -455,9 +455,9 @@ Private Sub HandleNpcInteractionByType(ByVal UserIndex As Integer, ByVal NpcInde
                 Call WriteUpdateLobbyList(UserIndex)
             ElseIf NpcList(NpcIndex).Craftea > 0 Then
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
+                If Not CanUseCraftingInventory(UserIndex) Then Exit Sub
                 If Not EnsureNpcWithinDistance(UserIndex, NpcIndex, 3, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
-                UserList(UserIndex).flags.Crafteando = NpcList(NpcIndex).Craftea
-                Call WriteOpenCrafting(UserIndex, NpcList(NpcIndex).Craftea)
+                Call OpenNpcCrafting(UserIndex, NpcList(NpcIndex).Craftea)
             ElseIf NpcList(NpcIndex).npcType = e_NPCType.Transporter Then
                 If Not EnsureUserAliveForNpcInteraction(UserIndex, e_FontTypeNames.FONTTYPE_INFO) Then Exit Sub
                 If Not EnsureUserNotTrading(UserIndex) Then Exit Sub
@@ -521,6 +521,9 @@ Private Function TryHandleObjectAtOffset(ByVal UserIndex As Integer, ByVal Map A
     Select Case ObjData(MapData(x, y, Map).ObjInfo.ObjIndex).OBJType
         Case e_OBJType.otDoors 'Es una puerta
             Call HandleDoorAction(Map, x, y, UserIndex)
+            TryHandleObjectAtOffset = True
+        Case e_OBJType.otAnvil
+            Call HandleAnvilAction(Map, x, y, UserIndex)
             TryHandleObjectAtOffset = True
     End Select
 End Function

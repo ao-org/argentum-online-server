@@ -45,6 +45,7 @@ Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
 Public Const MSG_INSUFICIENT_PATREON_CREDITS                As Integer = 2176
 Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
 Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
+Public Const MSG_NO_TIENES_SUFICIENTES_MATERIALES          As Integer = 206
 
 Public Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
 Public Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093
@@ -1498,3 +1499,9 @@ Public Const MSG_NO_PODES_CONSUMIR_MAS_CARTAS As Integer = 2292
 
 Public Const MSG_LIGHT_ORB_CLASS As Integer = 2295
 Public Const MSG_LIGHT_ORB_POSITION As Integer = 2296
+
+' Alchemy plant gathering.
+Public Const MSG_NO_RECOLECTAR_PLANTAS_ZONA_SEGURA As Integer = 2298
+Public Const MSG_PLANTA_SIN_FLORES As Integer = 2299
+Public Const MSG_NO_HAY_PLANTA_RECOLECTABLE As Integer = 2300
+Public Const MSG_NO_RECOLECTAR_PLANTA_DESDE_ALLI As Integer = 2301

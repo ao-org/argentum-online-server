@@ -402,6 +402,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowBlacksmithForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowBlacksmithForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -417,6 +418,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowCarpenterForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowCarpenterForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -427,6 +429,7 @@ End Sub
 
 Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowAlquimiaForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowAlquimiaForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -437,6 +440,7 @@ End Sub
 
 Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowSastreForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowSastreForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -1857,9 +1861,14 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
     Dim count          As Integer
     ReDim validIndexes(1 To UBound(ObjAlquimista()))
     Call Writer.WriteInt16(ServerPacketID.eAlquimistaObj)
+    If UserList(UserIndex).clase <> e_Class.Trabajador Then
+        Call Writer.WriteInt16(0)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+    End If
     For i = 1 To UBound(ObjAlquimista())
         ' Can the user create this object? If so add it to the list....
-        If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
+        If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) Then
             count = count + 1
             validIndexes(count) = i
         End If
@@ -1875,6 +1884,32 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 WriteAlquimistaObjects_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlquimistaObjects", Erl)
+End Sub
+
+Public Sub WriteNpcCraftingObjects(ByVal UserIndex As Integer, ByVal CraftingType As Byte)
+    On Error GoTo WriteNpcCraftingObjects_Err
+    Call Writer.WriteInt16(ServerPacketID.eAlquimistaObj)
+    If Not Crafteos.Exists(CraftingType) Then
+        Call Writer.WriteInt16(0)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+    End If
+    Dim Recipes As Dictionary
+    Set Recipes = Crafteos.Item(CraftingType)
+    ' A negative count marks an NPC commission catalogue for the modern client.
+    ' Personal Alchemy keeps its positive count and learned-recipe requirement.
+    Call Writer.WriteInt16(-Recipes.Count)
+    Dim Recipe As clsCrafteo
+    Dim RecipeValue As Variant
+    For Each RecipeValue In Recipes.Items
+        Set Recipe = RecipeValue
+        Call Writer.WriteInt16(Recipe.Resultado)
+    Next RecipeValue
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteNpcCraftingObjects_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcCraftingObjects", Erl)
 End Sub
 
 Public Sub WriteSastreObjects(ByVal UserIndex As Integer)

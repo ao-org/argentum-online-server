@@ -1243,6 +1243,47 @@ LoadObjSastre_Err:
     Call TraceError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
 End Sub
 
+' Keep malformed generic costs from becoming a cheaper truncated or legacy recipe.
+Private Function ReadCraftingInteger(ByVal text As String, ByVal minimum As Long, ByVal maximum As Long, ByRef result As Long) As Boolean
+    On Error GoTo InvalidValue
+    If Not IsNumeric(text) Then Exit Function
+    Dim number As Double
+    number = CDbl(text)
+    If number < minimum Or number > maximum Or number <> Fix(number) Then Exit Function
+    result = CLng(number)
+    ReadCraftingInteger = True
+    Exit Function
+InvalidValue:
+End Function
+
+Public Sub LoadGenericCraftingRecipe(ByRef recipe As t_ObjData, ByVal ini As clsIniManager, ByVal section As String)
+    On Error GoTo InvalidRecipe
+    Dim slot As Integer, count As Long, value As Long, countText As String
+    recipe.GenericMaterialCount = 0
+    For slot = 1 To MAX_GENERIC_CRAFTING_MATERIALS
+        recipe.GenericMaterialObjIndex(slot) = 0
+        recipe.GenericMaterialAmount(slot) = 0
+        recipe.GenericMaterialConsumed(slot) = False
+    Next slot
+    countText = Trim$(ini.GetValue(section, "MaterialCount", "0"))
+    If Len(countText) = 0 Then countText = "0"
+    If Not ReadCraftingInteger(countText, 0, MAX_GENERIC_CRAFTING_MATERIALS, count) Then GoTo InvalidRecipe
+    For slot = 1 To count
+        If Not ReadCraftingInteger(ini.GetValue(section, "Material" & slot), 1, UBound(ObjData), value) Then GoTo InvalidRecipe
+        recipe.GenericMaterialObjIndex(slot) = value
+        If Not ReadCraftingInteger(ini.GetValue(section, "Cantidad" & slot), 1, 32767, value) Then GoTo InvalidRecipe
+        recipe.GenericMaterialAmount(slot) = value
+        If Not ReadCraftingInteger(ini.GetValue(section, "Consumir" & slot, "1"), 0, 1, value) Then GoTo InvalidRecipe
+        recipe.GenericMaterialConsumed(slot) = (value = 1)
+    Next slot
+    recipe.GenericMaterialCount = count
+    Exit Sub
+InvalidRecipe:
+    ' Out-of-range count is rejected before indexing and never falls back to legacy costs.
+    recipe.GenericMaterialCount = MAX_GENERIC_CRAFTING_MATERIALS + 1
+    Call LogError("Invalid generic crafting recipe: " & section)
+End Sub
+
 Sub LoadOBJData()
     '###################################################
     '#               ATENCION PELIGRO                  #
@@ -1309,6 +1350,7 @@ Sub LoadOBJData()
             .WindEssence = val(Leer.GetValue(ObjKey, "WindEssence"))
             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
+            .RecursoObj = val(Leer.GetValue(ObjKey, "RecursoObj"))
             .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
             .Cooldown = val(Leer.GetValue(ObjKey, "CD"))
             .cdType = val(Leer.GetValue(ObjKey, "CDType"))
@@ -1533,6 +1575,10 @@ Sub LoadOBJData()
                 Case e_OBJType.otParchment, e_OBJType.otSkinsSpells
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
             End Select
+
+            ' Generic crafting recipes apply to every craftable object type.
+            Call LoadGenericCraftingRecipe(ObjData(Object), Leer, ObjKey)
+
             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
             .MagicPenetration = val(Leer.GetValue(ObjKey, "MagicPenetration"))
