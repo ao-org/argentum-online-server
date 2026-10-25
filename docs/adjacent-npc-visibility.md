@@ -102,6 +102,18 @@ backpack, FX and FXLoops zero. The previous argument order incorrectly put helme
 and cart into FX and FXLoops. Area introduction and refresh both delegate to this
 same production creation path; player creation is unchanged.
 
+The live follow-up exposed a second equipment loss in `ChangeNPCChar`: its full
+appearance replacement sent zero weapon/shield/helmet/cart. NPC269 (Guardia de
+Entradas) has body 578, head 42, weapon 68, shield 16, heading 3 (South), and movement
+10 (`GuardiaPersigueNpc`). At its origin without a target, `AI_GuardiaPersigueNpc`
+unconditionally sends `ChangeNPCChar(..., SOUTH)`, even when already facing South.
+No turn or movement is required. `AnimacionIdle` also calls the same function with
+the existing heading whenever idle changes; `AttackFromPos` is another caller of
+that idle path, but is not NPC269's configured AI. The corrected change packet
+retains authoritative equipment, with backpack/FX/FXLoops still zero. Caller body
+arguments, stored-body behavior and `ToNPCAliveArea` dead-viewer filtering are
+unchanged. This follow-up changes no packet IDs, fields or lengths.
+
 This extends packet 215 in place and is **not mixed-version compatible**: older
 HOO expects 32 bytes and cannot consume the appended fields, while new HOO cannot
 decode old upserts. Update the server and matching HOO together during a controlled
@@ -133,8 +145,17 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
   `PYMMO=1`. Each build used `VB6.exe /make /d
   DEBUGGING=<0|1>:PYMMO=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1 /out <log> Server.VBP`,
   with DEBUGGING matching UNIT_TEST, and a fresh executable was verified.
-- The full 43-suite run passed **670/670** under each PYMMO configuration, using
+- The full 43-suite run passed **673/673** under each PYMMO configuration, using
   an isolated source copy, loopback server and disposable SQLite fixture.
+- The follow-up adds three production-path regression groups: stationary South
+  idle transitions, NPC269's actual `NpcAI` origin/no-target path repeated with
+  unchanged South heading, and caller-body/current-equipment refresh semantics.
+  Captured CharacterChange packets retain equipment and zero FX, and match the
+  adjacent snapshot. Restoring only the old zero-equipment call in the isolated
+  copy produced exactly these three failures (670 passed); restoring the fix
+  passed all 673 in both configurations. Separate old-writer reports were kept.
+  Final production builds also passed for both PYMMO values; no primary server
+  executable was replaced or launched.
 - Ten new production-path groups compare normal creation and adjacent equipment
   with distinct nonzero IDs and no FX; definition/name/description refreshes;
   showName hiding/revealing and empty labels; accented UTF-8, two-/three-byte

@@ -708,7 +708,9 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal body As Integer, ByVal head A
             .Char.head = head
             .Char.Heading = Heading
             If .Char.charindex > 0 Then
-                Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
+                ' CharacterChange replaces equipment even for same-heading/idle refreshes.
+                Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, _
+                        .Char.CartAnim, 0, 0, 0, .Char.CascoAnim, .flags.NPCIdle, False))
             End If
         End If
     End With

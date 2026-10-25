@@ -10,6 +10,8 @@ Private adjacentReaderBytes() As Byte
 Private adjacentAccepted As Collection
 Private adjacentFailAttempt As Long
 Private adjacentCaptureError As String
+Private adjacentExpectedRoute As SendTarget
+Private adjacentExpectedRecipient As Integer
 Private adjacentTick As Long
 Private adjacentNpc As Integer
 
@@ -26,7 +28,7 @@ Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndInd
     Call adjacentPackets.Add(packet)
     Queued = adjacentPackets.Count <> adjacentFailAttempt
     Call adjacentAccepted.Add(Queued)
-    If sndRoute <> ToIndex Or sndIndex <> 1 Then adjacentCaptureError = "unexpected recipient or route"
+    If sndRoute <> adjacentExpectedRoute Or sndIndex <> adjacentExpectedRecipient Then adjacentCaptureError = "unexpected recipient or route"
     Exit Function
 Failed:
     adjacentCaptureError = CStr(Err.Number) & ": " & Err.Description
@@ -70,6 +72,9 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentCase(group + 29, CStr(names(group)))
     Next group
+    Call RunAdjacentCase(39, "stationary South idle changes preserve equipment")
+    Call RunAdjacentCase(40, "entrance guard AI same-heading refresh preserves equipment")
+    Call RunAdjacentCase(41, "character change preserves body semantics and current equipment")
     names = Split("exact connection and length|wrong connection|partial enqueue|oversized enqueue|late callback|nested probe preserves outer|same connection closes|other connection closes|duplicate callback", "|")
     For group = 0 To UBound(names)
         Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
@@ -86,11 +91,13 @@ Private Sub AdjacentExpect(ByVal condition As Boolean, ByVal description As Stri
     If Not condition Then Err.Raise vbObjectError + 183, "Adjacent NPC regression", description
 End Sub
 
-Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0)
+Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0, Optional ByVal expectedRoute As SendTarget = ToIndex, Optional ByVal expectedRecipient As Integer = 1)
     Set adjacentPackets = New Collection
     Set adjacentAccepted = New Collection
     adjacentFailAttempt = failAttempt
     adjacentCaptureError = vbNullString
+    adjacentExpectedRoute = expectedRoute
+    adjacentExpectedRecipient = expectedRecipient
 End Sub
 
 Private Function AdjacentPacketReader(ByVal index As Long, ByVal packetId As Integer, ByVal length As Long) As Network.reader
@@ -412,6 +419,8 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(adjacentPackets.Count = 0, "no stale removal replay on new map")
         Case 29 To 38
             Call CheckAdjacentAppearanceCase(group)
+        Case 39 To 41
+            Call CheckNpcAppearanceChangeCase(group)
     End Select
 End Sub
 
@@ -469,6 +478,76 @@ Private Sub ExpectNormalAppearance(ByVal expectedText As String)
         Call AdjacentExpect(reader.ReadInt16() = .Numero And reader.GetAvailable() = 0, "normal definition and complete payload")
     End With
     Call ClearAdjacentCapture()
+End Sub
+
+Private Sub ExpectNpcAppearanceChange(ByVal expectedBody As Integer)
+    Dim reader As Network.reader
+    Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one alive-area character change, no extra FX")
+    Set reader = AdjacentPacketReader(1, ServerPacketID.eCharacterChange, 24)
+    With NpcList(adjacentNpc)
+        Call AdjacentExpect(reader.ReadInt16() = .Char.charindex, "change keeps character index")
+        Call AdjacentExpect(reader.ReadInt8() = Abs(CInt(.flags.NPCIdle)), "change idle flag and not navigating")
+        Call AdjacentExpect(reader.ReadInt16() = expectedBody And reader.ReadInt16() = .Char.head, "change body argument and authoritative head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "change authoritative heading")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "change retains weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "change retains helmet/cart")
+        Call AdjacentExpect(reader.ReadInt16() = 0, "change has no NPC backpack")
+        Call AdjacentExpect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "change equipment does not become FX/loops")
+    End With
+    Call AdjacentExpect(reader.GetAvailable() = 0, "complete character change payload")
+End Sub
+
+Private Sub CheckNpcAppearanceChangeCase(ByVal group As Long)
+    Dim iteration As Long, originalBody As Integer
+    With NpcList(adjacentNpc)
+        .Char.body = 257: .Char.head = 514: .Char.WeaponAnim = 771: .Char.ShieldAnim = 1028
+        .Char.CascoAnim = 1285: .Char.CartAnim = 1542: .Char.Heading = e_Heading.SOUTH
+        .flags.NPCIdle = False
+        If group = 40 Then
+            ' NPC269 in Recursos/Dat/npcs.dat: fixed-origin guard, already South.
+            .Numero = 269: .npcType = e_NPCType.GuardiaNpc: .Movement = e_TipoAI.GuardiaPersigueNpc
+            .Char.body = 578: .Char.head = 42: .Char.WeaponAnim = 68: .Char.ShieldAnim = 16
+            .Char.CascoAnim = 0: .Char.CartAnim = 0: .Orig = .pos
+        End If
+        originalBody = .Char.body
+        Call ExpectNormalAppearance(vbNullString)
+        Call TickAdjacent()
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+        For iteration = 1 To 2
+            Call ClearAdjacentCapture(0, ToNPCAliveArea, adjacentNpc)
+            Select Case group
+                Case 39
+                    Call AnimacionIdle(adjacentNpc, iteration = 1)
+                Case 40
+                    Call NpcAI(adjacentNpc)
+                Case 41
+                    If iteration = 2 Then
+                        .Char.WeaponAnim = 0: .Char.ShieldAnim = 0: .Char.CascoAnim = 0: .Char.CartAnim = 0
+                    End If
+                    ' The caller's body override is sent, not stored into the NPC.
+                    Call ChangeNPCChar(adjacentNpc, 0, 2056, e_Heading.SOUTH)
+            End Select
+            Call ExpectNpcAppearanceChange(IIf(group = 41, 0, originalBody))
+            Call AdjacentExpect(.Char.body = originalBody, "change does not mutate stored body")
+            Call AdjacentExpect(.Char.Heading = e_Heading.SOUTH And .pos.Map = 35 And .pos.x = 50 And .pos.y = 90, "same South heading and stationary tile")
+            If group = 39 Then Call AdjacentExpect(.flags.NPCIdle = (iteration = 1), "idle changes both directions")
+            If group = 40 Then Call AdjacentExpect(Not IsValidNpcRef(.TargetNPC), "guard remains at origin without a target")
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            If group = 40 Then
+                Call AdjacentExpect(adjacentPackets.Count = 0, "same-heading guard refresh leaves adjacent state unchanged")
+            Else
+                Call AdjacentExpect(adjacentPackets.Count = 1, "changed idle/head/equipment reaches adjacent view")
+                Call ExpectAdjacentAppearance(1, vbNullString, 35)
+            End If
+        Next iteration
+        ' A fresh adjacent scene must still agree after the active-map refreshes.
+        Call InvalidateAdjacentNpcViewer(1)
+        Call ClearAdjacentCapture()
+        Call TickAdjacent()
+        Call AdjacentExpect(adjacentPackets.Count = 2, "new scene reset then current appearance")
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+    End With
 End Sub
 
 Private Sub CheckAdjacentAppearanceCase(ByVal group As Long)
