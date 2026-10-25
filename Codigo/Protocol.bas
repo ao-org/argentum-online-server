@@ -2889,16 +2889,27 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
     Item = reader.ReadInt16()
     Dim Cantidad As Long
     Cantidad = reader.ReadInt32()
-    If Item = 0 Then Exit Sub
-    'Valido que haya puesto una cantidad > 0
-    If Cantidad > 0 Then
-        UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-        UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
-        UserList(UserIndex).Trabajo.Cantidad = Cantidad
-        UserList(UserIndex).Trabajo.Item = Item
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-    Else
+
+    ' A zero quantity is the explicit cancellation command sent by the client.
+    If Cantidad = 0 Then
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+        Exit Sub
     End If
+
+    If Item = 0 Then Exit Sub
+
+    If Cantidad < 0 Or Cantidad > 10000 Then Exit Sub
+    If Item < LBound(ObjData) Or Item > UBound(ObjData) Then Exit Sub
+
+    ' Validate the complete batch before starting.  This prevents a large order
+    ' from running until the first missing-material tick.
+    If Not CarpinteroTieneMateriales(UserIndex, Item, Cantidad) Then Exit Sub
+
+    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+    UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
+    UserList(UserIndex).Trabajo.Cantidad = Cantidad
+    UserList(UserIndex).Trabajo.Item = Item
+    Call WriteMacroTrabajoToggle(UserIndex, True)
     '106         Call CarpinteroConstruirItem(UserIndex, Item, Cantidad)
     Exit Sub
 HandleCraftCarpenter_Err:
