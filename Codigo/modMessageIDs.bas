@@ -45,6 +45,7 @@ Public Const MSG_MAP_REQUIRES_PATREON                       As Integer = 776
 Public Const MSG_INSUFICIENT_PATREON_CREDITS                As Integer = 2176
 Public Const MSG_TILE_REQUIRES_PATREON                      As Integer = 776
 Public Const MSG_PICKUP_UNAVAILABLE                         As Integer = 261
+Public Const MSG_NO_TIENES_SUFICIENTES_MATERIALES          As Integer = 206
 
 Public Const MSG_CLIENT_UPDATE_REQUIRED                        As Integer = 2092
 Public Const MSG_INVALID_SESSION_TOKEN                         As Integer = 2093

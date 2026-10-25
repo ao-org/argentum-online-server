@@ -16,6 +16,7 @@ Public Function test_suite_crafting() As Boolean
     Call UnitTesting.RunTest("craft cannot reuse consumed materials", test_craft_repeated_request())
     Call UnitTesting.RunTest("craft tagged and locked stacks do not pay normal costs", test_craft_ineligible_stacks())
     Call UnitTesting.RunTest("craft carpentry multiplies the full batch cost", test_craft_batch_quantity())
+    Call UnitTesting.RunTest("craft generic carpentry supports batches and reusable tools", test_craft_generic_carpentry_materials())
     Call UnitTesting.RunTest("craft empty negative and invalid recipes fail closed", test_craft_invalid_recipe())
     Call UnitTesting.RunTest("craft excessive quantity cannot overflow costs", test_craft_quantity_overflow())
     Call UnitTesting.RunTest("craft corrupt material stacks fail without mutation", test_craft_corrupt_stack())
@@ -178,6 +179,30 @@ Private Function test_craft_batch_quantity() As Boolean
 test_craft_batch_quantity_Err:
     test_craft_batch_quantity = False
     Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_batch_quantity", Erl)
+End Function
+
+Private Function test_craft_generic_carpentry_materials() As Boolean
+    On Error GoTo test_craft_generic_carpentry_materials_Err
+    Dim inventory As t_Inventario, original As t_Inventario, recipe As t_ObjData
+    recipe.GenericMaterialCount = 2
+    recipe.GenericMaterialObjIndex(1) = Wood
+    recipe.GenericMaterialAmount(1) = 3
+    recipe.GenericMaterialConsumed(1) = True
+    recipe.GenericMaterialObjIndex(2) = Mortero
+    recipe.GenericMaterialAmount(2) = 1
+    recipe.GenericMaterialConsumed(2) = False
+    Call CraftStack(inventory, 1, Wood, 6)
+    original = inventory
+    If TryConsumeCraftingMaterials(inventory, 1, recipe, e_JobsTypes.Carpenter, 2) Then Exit Function
+    If Not SameCraftInventory(inventory, original) Then Exit Function
+    Call CraftStack(inventory, 2, Mortero, 1)
+    If Not TryConsumeCraftingMaterials(inventory, 2, recipe, e_JobsTypes.Carpenter, 2) Then Exit Function
+    If inventory.NroItems <> 1 Then Exit Function
+    test_craft_generic_carpentry_materials = (inventory.Object(2).ObjIndex = Mortero And inventory.Object(2).amount = 1)
+    Exit Function
+test_craft_generic_carpentry_materials_Err:
+    test_craft_generic_carpentry_materials = False
+    Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_generic_carpentry_materials", Erl)
 End Function
 
 Private Function test_craft_invalid_recipe() As Boolean

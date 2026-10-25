@@ -474,9 +474,21 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                 If Not StageCraftingMaterial(staged, slotCount, e_Minerales.EarthEssence, .EarthEssence, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WindEssence, .WindEssence, quantity, hasCost) Then Exit Function
             Case e_JobsTypes.Carpenter
-                If Not StageCraftingMaterial(staged, slotCount, Wood, .Madera, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
+                Dim carpenterMaterialSlot As Integer
+                If .GenericMaterialCount > 0 Then
+                    For carpenterMaterialSlot = 1 To .GenericMaterialCount
+                        If .GenericMaterialObjIndex(carpenterMaterialSlot) < 1 Or .GenericMaterialAmount(carpenterMaterialSlot) < 1 Then Exit Function
+                        If .GenericMaterialConsumed(carpenterMaterialSlot) Then
+                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(carpenterMaterialSlot), .GenericMaterialAmount(carpenterMaterialSlot), quantity, hasCost) Then Exit Function
+                        Else
+                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(carpenterMaterialSlot), .GenericMaterialAmount(carpenterMaterialSlot)) Then Exit Function
+                        End If
+                    Next carpenterMaterialSlot
+                Else
+                    If Not StageCraftingMaterial(staged, slotCount, Wood, .Madera, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
+                End If
             Case e_JobsTypes.Alchemist
                 Dim materialSlot As Integer
                 If .GenericMaterialCount > 0 Then
@@ -550,6 +562,17 @@ End Function
 
 Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal Cantidad As Long) As Boolean
     On Error GoTo CarpinteroTieneMateriales_Err
+    If ObjData(ItemIndex).GenericMaterialCount > 0 Then
+        Dim stagedInventory As t_Inventario
+        stagedInventory = UserList(UserIndex).invent
+        If Not TryConsumeCraftingMaterials(stagedInventory, UserList(UserIndex).CurrentInventorySlots, ObjData(ItemIndex), e_JobsTypes.Carpenter, Cantidad) Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MATERIALES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
+        CarpinteroTieneMateriales = True
+        Exit Function
+    End If
     If ObjData(ItemIndex).Madera > 0 Then
         If Not TieneObjetos(Wood, ObjData(ItemIndex).Madera * Cantidad, UserIndex) Then
             ' Msg609=No tenés suficiente madera.
@@ -2214,11 +2237,19 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
                 tmpExp = tmpExp + ComputeWorkingExp(.Blodium, SvrConfig.GetValue("BlodiumForgingExp"), Item.Amount)
             End If
         Case e_JobsTypes.Carpenter
-            If .Madera > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.Madera, SvrConfig.GetValue("WoodCarpentryExp"), Item.Amount)
-            End If
-            If .MaderaElfica > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.MaderaElfica, SvrConfig.GetValue("ElvenWoodCarpentryExp"), Item.Amount)
+            If .GenericMaterialCount > 0 Then
+                For materialSlot = 1 To .GenericMaterialCount
+                    If .GenericMaterialConsumed(materialSlot) Then
+                        tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("WoodCarpentryExp"), Item.Amount)
+                    End If
+                Next materialSlot
+            Else
+                If .Madera > 0 Then
+                    tmpExp = tmpExp + ComputeWorkingExp(.Madera, SvrConfig.GetValue("WoodCarpentryExp"), Item.Amount)
+                End If
+                If .MaderaElfica > 0 Then
+                    tmpExp = tmpExp + ComputeWorkingExp(.MaderaElfica, SvrConfig.GetValue("ElvenWoodCarpentryExp"), Item.Amount)
+                End If
             End If
         Case e_JobsTypes.Fisherman
             If .Power >= 2 Then
