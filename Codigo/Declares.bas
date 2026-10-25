@@ -2314,6 +2314,7 @@ Public Type t_ObjData
     WindEssence As Integer
     VidaUtil As Integer
     TiempoRegenerar As Integer
+    RecursoObj As Integer       ' Objeto entregado por un nodo recolectable
     CuantoAumento As Single ' Cuanto aumenta el atributo.
     QueAtributo As Byte     ' Que attributo sube (Agilidad, Fuerza, etc)
     incinera As Byte

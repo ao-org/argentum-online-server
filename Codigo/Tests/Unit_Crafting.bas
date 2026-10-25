@@ -19,7 +19,8 @@ Public Function test_suite_crafting() As Boolean
     Call UnitTesting.RunTest("craft empty negative and invalid recipes fail closed", test_craft_invalid_recipe())
     Call UnitTesting.RunTest("craft excessive quantity cannot overflow costs", test_craft_quantity_overflow())
     Call UnitTesting.RunTest("craft corrupt material stacks fail without mutation", test_craft_corrupt_stack())
-    Call UnitTesting.RunTest("craft all profession material fields are deducted", test_craft_profession_materials())
+    Call UnitTesting.RunTest("craft all profession consumables are deducted", test_craft_profession_materials())
+    Call UnitTesting.RunTest("alchemy requires and preserves reusable mortar", test_craft_reusable_mortar())
     test_suite_crafting = True
 End Function
 
@@ -238,6 +239,27 @@ test_craft_corrupt_stack_Err:
     Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_corrupt_stack", Erl)
 End Function
 
+Private Function test_craft_reusable_mortar() As Boolean
+    On Error GoTo test_craft_reusable_mortar_Err
+    Dim inventory As t_Inventario, original As t_Inventario, recipe As t_ObjData
+    recipe.Mortero = 1
+    recipe.FrascoAlq = 1
+    recipe.FlorRoja = 2
+    Call CraftStack(inventory, 1, FrascoAlq, 1)
+    Call CraftStack(inventory, 2, FlorRoja, 2)
+    original = inventory
+    If TryConsumeCraftingMaterials(inventory, 2, recipe, e_JobsTypes.Alchemist, 1) Then Exit Function
+    If Not SameCraftInventory(inventory, original) Then Exit Function
+    Call CraftStack(inventory, 3, Mortero, 1)
+    If Not TryConsumeCraftingMaterials(inventory, 3, recipe, e_JobsTypes.Alchemist, 1) Then Exit Function
+    If inventory.NroItems <> 1 Then Exit Function
+    test_craft_reusable_mortar = (inventory.Object(3).ObjIndex = Mortero And inventory.Object(3).amount = 1)
+    Exit Function
+test_craft_reusable_mortar_Err:
+    test_craft_reusable_mortar = False
+    Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_reusable_mortar", Erl)
+End Function
+
 Private Function test_craft_profession_materials() As Boolean
     On Error GoTo test_craft_profession_materials_Err
     Dim inventory As t_Inventario, emptyInventory As t_Inventario, recipe As t_ObjData
@@ -267,7 +289,9 @@ Private Function test_craft_profession_materials() As Boolean
     Call CraftStack(inventory, 9, FlorRoja, 1)
     Call CraftStack(inventory, 10, SemillasProsperas, 1)
     If Not TryConsumeCraftingMaterials(inventory, 10, recipe, e_JobsTypes.Alchemist, 1) Then Exit Function
-    If Not SameCraftInventory(inventory, emptyInventory) Then Exit Function
+    If inventory.NroItems <> 1 Then Exit Function
+    If inventory.Object(1).ObjIndex <> Mortero Or inventory.Object(1).amount <> 1 Then Exit Function
+    inventory = emptyInventory
     recipe.PielLobo = 1: recipe.PielOsoPardo = 1: recipe.PielOsoPolaR = 1
     recipe.PielLoboNegro = 1: recipe.PielTigre = 1: recipe.PielTigreBengala = 1
     Call CraftStack(inventory, 1, PieldeLobo, 1)

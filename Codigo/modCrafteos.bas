@@ -162,7 +162,7 @@ Private Sub ConsumeNpcCraftingMaterials(ByVal UserIndex As Integer, ByRef Recipe
             If Recipe.Items(i + Required) <> ItemIndex Then Exit Do
             Required = Required + 1
         Loop
-        Call QuitarObjetos(ItemIndex, Required, UserIndex)
+        If ItemIndex <> Mortero Then Call QuitarObjetos(ItemIndex, Required, UserIndex)
         i = i + Required
     Loop
     Exit Sub

@@ -3187,12 +3187,26 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
-                            Call WriteLocaleMsg(UserIndex, MSG_PROHIBIDO_CORTAR_RAICES_CIUDADES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_RECOLECTAR_PLANTAS_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                        DummyInt = MapData(x, y, .pos.Map).ObjInfo.ObjIndex
+                        If DummyInt <= 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+                        If ObjData(DummyInt).OBJType <> e_OBJType.otPlants Or ObjData(DummyInt).RecursoObj <= 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+                        Call ActualizarRecurso(.pos.Map, x, y)
                         If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_ARBOL_PUEDE_ENTREGAR_MAS_RAICES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_PLANTA_SIN_FLORES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
@@ -3208,13 +3222,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
                             If .pos.x = x And .pos.y = y Then
                                 ' Msg713=No podés quitar raices allí.
-                                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI_713, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_RECOLECTAR_PLANTA_DESDE_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
+                            Call RecolectarPlantaAlquimia(UserIndex, x, y)
                         Else
                             ' Msg604=No podés quitar raices allí.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If

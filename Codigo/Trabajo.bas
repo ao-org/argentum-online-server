@@ -426,6 +426,34 @@ StageCraftingMaterial_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.StageCraftingMaterial", Erl)
 End Function
 
+' Validate a reusable crafting requirement without changing the staged inventory.
+Private Function HasCraftingMaterial(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByVal materialId As Integer, ByVal required As Integer) As Boolean
+    On Error GoTo HasCraftingMaterial_Err
+    If required < 0 Then Exit Function
+    If required = 0 Then
+        HasCraftingMaterial = True
+        Exit Function
+    End If
+
+    Dim available As Long, slot As Integer
+    For slot = 1 To slotCount
+        With inventory.Object(slot)
+            If .ObjIndex = materialId And .ElementalTags = e_ElementalTags.Normal Then
+                If .amount <= 0 Or .Equipped <> 0 Then Exit Function
+                available = available + .amount
+                If available >= required Then
+                    HasCraftingMaterial = True
+                    Exit Function
+                End If
+            End If
+        End With
+    Next slot
+    Exit Function
+
+HasCraftingMaterial_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.HasCraftingMaterial", Erl)
+End Function
+
 ' Commit once, after every ingredient succeeds. Failure leaves inventory untouched.
 Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByRef recipe As t_ObjData, ByVal job As e_JobsTypes, ByVal quantity As Long) As Boolean
     On Error GoTo TryConsumeCraftingMaterials_Err
@@ -450,7 +478,7 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                 If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
             Case e_JobsTypes.Alchemist
-                If Not StageCraftingMaterial(staged, slotCount, Mortero, .Mortero, quantity, hasCost) Then Exit Function
+                If Not HasCraftingMaterial(staged, slotCount, Mortero, .Mortero) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, FrascoAlq, .FrascoAlq, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, HongoDeLuz, .HongoDeLuz, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, Esporas, .Esporas, quantity, hasCost) Then Exit Function
@@ -1730,6 +1758,48 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal y A
     Exit Sub
 ActualizarRecurso_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
+End Sub
+
+Public Sub RecolectarPlantaAlquimia(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
+    On Error GoTo RecolectarPlantaAlquimia_Err
+
+    Dim nodoObjIndex    As Integer
+    Dim recursoObjIndex As Integer
+    Dim recurso         As t_Obj
+
+    With UserList(UserIndex)
+        nodoObjIndex = MapData(x, y, .pos.Map).ObjInfo.ObjIndex
+        If nodoObjIndex <= 0 Then Exit Sub
+        If ObjData(nodoObjIndex).OBJType <> e_OBJType.otPlants Then Exit Sub
+
+        recursoObjIndex = ObjData(nodoObjIndex).RecursoObj
+        If recursoObjIndex <= 0 Or recursoObjIndex > NumObjDatas Then Exit Sub
+
+        Call ActualizarRecurso(.pos.Map, x, y)
+        If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
+            Call WriteLocaleMsg(UserIndex, MSG_PLANTA_SIN_FLORES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Exit Sub
+        End If
+
+        recurso.ObjIndex = recursoObjIndex
+        recurso.amount = 1
+
+        MapData(x, y, .pos.Map).ObjInfo.amount = MapData(x, y, .pos.Map).ObjInfo.amount - recurso.amount
+        MapData(x, y, .pos.Map).ObjInfo.data = GetTickCountRaw()
+
+        If Not MeterItemEnInventario(UserIndex, recurso) Then
+            Call TirarItemAlPiso(.pos, recurso)
+        End If
+
+        Call WriteTextCharDrop(UserIndex, "+1", .Char.charindex, vbWhite)
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(recursoObjIndex).GrhIndex))
+        Call SubirSkill(UserIndex, e_Skill.Alquimia)
+        Call UpdateUserInv(True, UserIndex, 0)
+    End With
+    Exit Sub
+
+RecolectarPlantaAlquimia_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.RecolectarPlantaAlquimia", Erl)
 End Sub
 
 Function ModDomar(ByVal clase As e_Class) As Integer
