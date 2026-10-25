@@ -525,12 +525,24 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                     If Not StageCraftingMaterial(staged, slotCount, SemillasProsperas, .SemillasProsperas, quantity, hasCost) Then Exit Function
                 End If
             Case e_JobsTypes.Tailor
-                If Not StageCraftingMaterial(staged, slotCount, PieldeLobo, .PielLobo, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPardo, .PielOsoPardo, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPolar, .PielOsoPolaR, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PielLoboNegro, .PielLoboNegro, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PielTigre, .PielTigre, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, PielTigreBengala, .PielTigreBengala, quantity, hasCost) Then Exit Function
+                Dim tailorMaterialSlot As Integer
+                If .GenericMaterialCount > 0 Then
+                    For tailorMaterialSlot = 1 To .GenericMaterialCount
+                        If .GenericMaterialObjIndex(tailorMaterialSlot) < 1 Or .GenericMaterialAmount(tailorMaterialSlot) < 1 Then Exit Function
+                        If .GenericMaterialConsumed(tailorMaterialSlot) Then
+                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(tailorMaterialSlot), .GenericMaterialAmount(tailorMaterialSlot), quantity, hasCost) Then Exit Function
+                        Else
+                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(tailorMaterialSlot), .GenericMaterialAmount(tailorMaterialSlot)) Then Exit Function
+                        End If
+                    Next tailorMaterialSlot
+                Else
+                    If Not StageCraftingMaterial(staged, slotCount, PieldeLobo, .PielLobo, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPardo, .PielOsoPardo, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPolar, .PielOsoPolaR, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PielLoboNegro, .PielLoboNegro, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PielTigre, .PielTigre, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, PielTigreBengala, .PielTigreBengala, quantity, hasCost) Then Exit Function
+                End If
             Case Else
                 Exit Function
         End Select
@@ -718,6 +730,17 @@ End Function
 
 Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     On Error GoTo SastreTieneMateriales_Err
+    If ObjData(ItemIndex).GenericMaterialCount > 0 Then
+        Dim stagedInventory As t_Inventario
+        stagedInventory = UserList(UserIndex).invent
+        If Not TryConsumeCraftingMaterials(stagedInventory, UserList(UserIndex).CurrentInventorySlots, ObjData(ItemIndex), e_JobsTypes.Tailor, 1) Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MATERIALES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
+        SastreTieneMateriales = True
+        Exit Function
+    End If
     If ObjData(ItemIndex).PielLobo > 0 Then
         If Not TieneObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex) Then
             ' Msg633=No tenés suficientes pieles de lobo.
@@ -2296,23 +2319,34 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
                 If .SemillasProsperas > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.SemillasProsperas, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
         Case e_JobsTypes.Tailor
-            If .PielLobo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLobo, SvrConfig.GetValue("WolfPeltExp"), Item.Amount)
-            End If
-            If .PielOsoPardo > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo, SvrConfig.GetValue("BearPeltExp"), Item.Amount)
-            End If
-            If .PielOsoPolar > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolaR, SvrConfig.GetValue("PolarBearPeltExp"), Item.Amount)
-            End If
-            If .PielLoboNegro > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("BlackWolfPeltExp"), Item.Amount)
-            End If
-            If .PielTigre > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TigerPeltExp"), Item.Amount)
-            End If
-            If .PielTigreBengala > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("BengalTigerPeltExp"), Item.Amount)
+            If .GenericMaterialCount > 0 Then
+                For materialSlot = 1 To .GenericMaterialCount
+                    If .GenericMaterialConsumed(materialSlot) Then
+                        Select Case .GenericMaterialObjIndex(materialSlot)
+                            Case PieldeLobo
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("WolfPeltExp"), Item.Amount)
+                            Case PieldeOsoPardo
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("BearPeltExp"), Item.Amount)
+                            Case PieldeOsoPolar
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("PolarBearPeltExp"), Item.Amount)
+                            Case PielLoboNegro
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("BlackWolfPeltExp"), Item.Amount)
+                            Case PielTigre
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("TigerPeltExp"), Item.Amount)
+                            Case PielTigreBengala
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("BengalTigerPeltExp"), Item.Amount)
+                            Case Else
+                                tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("ElseExp"), Item.Amount)
+                        End Select
+                    End If
+                Next materialSlot
+            Else
+                If .PielLobo > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielLobo, SvrConfig.GetValue("WolfPeltExp"), Item.Amount)
+                If .PielOsoPardo > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPardo, SvrConfig.GetValue("BearPeltExp"), Item.Amount)
+                If .PielOsoPolar > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielOsoPolaR, SvrConfig.GetValue("PolarBearPeltExp"), Item.Amount)
+                If .PielLoboNegro > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielLoboNegro, SvrConfig.GetValue("BlackWolfPeltExp"), Item.Amount)
+                If .PielTigre > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielTigre, SvrConfig.GetValue("TigerPeltExp"), Item.Amount)
+                If .PielTigreBengala > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.PielTigreBengala, SvrConfig.GetValue("BengalTigerPeltExp"), Item.Amount)
             End If
         Case Else
             tmpExp = SvrConfig.GetValue("ElseExp")
