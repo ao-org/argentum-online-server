@@ -9,6 +9,7 @@ Public Const ADJACENT_NPC_RADIUS_Y As Integer = 18
 Public Const ADJACENT_NPC_LIMIT As Integer = 128
 Private Const UPDATE_INTERVAL_MS As Long = 100
 Private Const FAILURE_LOG_INTERVAL_MS As Long = 10000
+Private Const MAX_PACKET_BYTES As Long = 65535
 Private mLastUpdate As Long
 Private mLastFailureLog As Long
 Private mFailureLogged As Boolean
@@ -211,7 +212,8 @@ Private Function VisualFingerprint(ByVal npcIndex As Integer) As String
     With NpcList(npcIndex)
         VisualFingerprint = CStr(.VersionId) & "|" & .pos.Map & "|" & .pos.x & "|" & .pos.y & "|" & _
             .Char.body & "|" & .Char.head & "|" & .Char.Heading & "|" & .Char.WeaponAnim & "|" & _
-            .Char.ShieldAnim & "|" & .Char.CascoAnim & "|" & .Char.CartAnim & "|" & .Char.speeding & "|" & .flags.NPCIdle
+            .Char.ShieldAnim & "|" & .Char.CascoAnim & "|" & .Char.CartAnim & "|" & .Char.speeding & "|" & .flags.NPCIdle & "|" & _
+            .Numero & "|" & GetNpcDisplayName(npcIndex)
     End With
 End Function
 
@@ -267,7 +269,11 @@ Private Function SendUpsert(ByVal userIndex As Integer, ByVal epoch As Long, ByV
         Call writer.WriteInt16(.Char.CartAnim)
         Call writer.WriteReal32(.Char.speeding)
         Call writer.WriteBool(.flags.NPCIdle)
+        Call writer.WriteInt16(.Numero)
+        Call writer.WriteString8(GetNpcDisplayName(npcIndex))
     End With
+    ' String8 is UTF-8 with a varuint byte count; the transport frame is UInt16.
+    If writer.GetOffset() > MAX_PACKET_BYTES Then Err.Raise vbObjectError + 184, "Adjacent NPC upsert", "Display text exceeds the transport frame limit"
     Call modSendData.SendData(ToIndex, userIndex, , False, SendUpsert, True)
     If Not SendUpsert Then Call ReportSendFailure(userIndex, "upsert")
     Exit Function

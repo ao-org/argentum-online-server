@@ -6,9 +6,12 @@ Private Const TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_
 Private Const ADJACENT_TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35],""edges"":[[34,35,0,-80],[35,34,0,80]]}"
 Private adjacentCaptureActive As Boolean
 Private adjacentPackets As Collection
+Private adjacentReaderBytes() As Byte
 Private adjacentAccepted As Collection
 Private adjacentFailAttempt As Long
 Private adjacentCaptureError As String
+Private adjacentExpectedRoute As SendTarget
+Private adjacentExpectedRecipient As Integer
 Private adjacentTick As Long
 Private adjacentNpc As Integer
 
@@ -25,7 +28,7 @@ Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndInd
     Call adjacentPackets.Add(packet)
     Queued = adjacentPackets.Count <> adjacentFailAttempt
     Call adjacentAccepted.Add(Queued)
-    If sndRoute <> ToIndex Or sndIndex <> 1 Then adjacentCaptureError = "unexpected recipient or route"
+    If sndRoute <> adjacentExpectedRoute Or sndIndex <> adjacentExpectedRecipient Then adjacentCaptureError = "unexpected recipient or route"
     Exit Function
 Failed:
     adjacentCaptureError = CStr(Err.Number) & ": " & Err.Description
@@ -65,6 +68,13 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentCase(group + 1, CStr(names(group)))
     Next group
+    names = Split("normal and adjacent visual parity|definition refresh|runtime name refresh|runtime description refresh|showName hide and reveal|empty display text|UTF-8 varuint boundary|maximum display text|oversized text recovery|failed display refresh retry", "|")
+    For group = 0 To UBound(names)
+        Call RunAdjacentCase(group + 29, CStr(names(group)))
+    Next group
+    Call RunAdjacentCase(39, "stationary South idle changes preserve equipment")
+    Call RunAdjacentCase(40, "entrance guard AI same-heading refresh preserves equipment")
+    Call RunAdjacentCase(41, "character change preserves body semantics and current equipment")
     names = Split("exact connection and length|wrong connection|partial enqueue|oversized enqueue|late callback|nested probe preserves outer|same connection closes|other connection closes|duplicate callback", "|")
     For group = 0 To UBound(names)
         Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
@@ -81,18 +91,21 @@ Private Sub AdjacentExpect(ByVal condition As Boolean, ByVal description As Stri
     If Not condition Then Err.Raise vbObjectError + 183, "Adjacent NPC regression", description
 End Sub
 
-Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0)
+Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0, Optional ByVal expectedRoute As SendTarget = ToIndex, Optional ByVal expectedRecipient As Integer = 1)
     Set adjacentPackets = New Collection
     Set adjacentAccepted = New Collection
     adjacentFailAttempt = failAttempt
     adjacentCaptureError = vbNullString
+    adjacentExpectedRoute = expectedRoute
+    adjacentExpectedRecipient = expectedRecipient
 End Sub
 
 Private Function AdjacentPacketReader(ByVal index As Long, ByVal packetId As Integer, ByVal length As Long) As Network.reader
-    Dim bytes() As Byte, reader As New Network.reader
-    bytes = adjacentPackets(index)
-    Call AdjacentExpect(UBound(bytes) - LBound(bytes) + 1 = length, "exact wire length")
-    Call reader.SetData(bytes)
+    Dim reader As New Network.reader
+    ' Aurora readers borrow their input; retain bytes after this helper returns.
+    adjacentReaderBytes = adjacentPackets(index)
+    Call AdjacentExpect(UBound(adjacentReaderBytes) - LBound(adjacentReaderBytes) + 1 = length, "exact wire length")
+    Call reader.SetData(adjacentReaderBytes)
     Call AdjacentExpect(reader.ReadInt16() = packetId, "packet order/ID")
     Set AdjacentPacketReader = reader
 End Function
@@ -100,7 +113,7 @@ End Function
 Private Sub ExpectAdjacentActor(ByVal index As Long, ByVal packetId As Integer, ByVal npcIndex As Integer, ByVal version As Integer, ByVal accepted As Boolean)
     Dim reader As Network.reader, length As Long
     length = 10
-    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = 32
+    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = 35
     Set reader = AdjacentPacketReader(index, packetId, length)
     Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "current epoch")
     Call AdjacentExpect(reader.ReadInt16() = npcIndex, "exact NPC index")
@@ -147,7 +160,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "reset epoch")
             Call AdjacentExpect(reader.ReadInt16() = 34, "viewer map")
             Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
-            Set reader = AdjacentPacketReader(2, ServerPacketID.eAdjacentNpcUpsert, 32)
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eAdjacentNpcUpsert, 35)
             Call reader.ReadInt32(): Call reader.ReadInt16(): Call reader.ReadInt16()
             Call AdjacentExpect(reader.ReadInt16() = 35, "source map")
             Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source position")
@@ -156,6 +169,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt16() = 524 And reader.ReadInt16() = 781, "weapon/shield widths")
             Call AdjacentExpect(reader.ReadInt16() = 1038 And reader.ReadInt16() = 1295, "helmet/cart widths")
             Call AdjacentExpect(reader.ReadReal32() = 1 And reader.ReadBool(), "speed and idle")
+            Call AdjacentExpect(reader.ReadInt16() = 1543 And reader.ReadString8() = vbNullString, "definition and empty display text")
             Call AdjacentExpect(reader.GetAvailable() = 0, "complete payload consumed")
             #If PYMMO = 1 Then
                 Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 214 And ServerPacketID.eAdjacentNpcUpsert = 215 And ServerPacketID.eAdjacentNpcRemove = 216, "HOO literal packet IDs")
@@ -165,6 +179,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             bytes = adjacentPackets(2)
             Call AdjacentExpect(bytes(10) = 35 And bytes(11) = 0 And bytes(16) = 11 And bytes(17) = 1, "little endian fields")
             Call AdjacentExpect(bytes(27) = 0 And bytes(28) = 0 And bytes(29) = 128 And bytes(30) = 63 And bytes(31) = 1, "Single and Boolean representation")
+            Call AdjacentExpect(bytes(32) = 7 And bytes(33) = 6 And bytes(34) = 0, "definition little endian and empty String8 prefix")
             Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And IsAdjacentNpcObserved(adjacentNpc), "accepted cache and AI observation")
             Call ClearAdjacentCapture
             Call TickAdjacent
@@ -402,7 +417,230 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call ClearAdjacentCapture
             Call TickAdjacent
             Call AdjacentExpect(adjacentPackets.Count = 0, "no stale removal replay on new map")
+        Case 29 To 38
+            Call CheckAdjacentAppearanceCase(group)
+        Case 39 To 41
+            Call CheckNpcAppearanceChangeCase(group)
     End Select
+End Sub
+
+Private Sub ExpectAdjacentAppearance(ByVal packetIndex As Long, ByVal expectedText As String, ByVal expectedLength As Long)
+    Dim reader As Network.reader
+    Set reader = AdjacentPacketReader(packetIndex, ServerPacketID.eAdjacentNpcUpsert, expectedLength)
+    With NpcList(adjacentNpc)
+        Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "appearance scene")
+        Call AdjacentExpect(reader.ReadInt16() = adjacentNpc And reader.ReadInt16() = .VersionId, "appearance lifetime")
+        Call AdjacentExpect(reader.ReadInt16() = .pos.Map, "appearance source map")
+        Call AdjacentExpect(reader.ReadInt8() = .pos.x And reader.ReadInt8() = .pos.y, "appearance source tile")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.body And reader.ReadInt16() = .Char.head, "appearance body/head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "appearance heading")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "appearance weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "appearance helmet/cart")
+        Call AdjacentExpect(reader.ReadReal32() = .Char.speeding And reader.ReadBool() = .flags.NPCIdle, "appearance speed/idle")
+        Call AdjacentExpect(reader.ReadInt16() = .Numero, "definition is not NPC slot, character index or lifetime")
+        Call AdjacentExpect(reader.ReadString8() = expectedText, "authorized runtime display text")
+    End With
+    Call AdjacentExpect(reader.GetAvailable() = 0, "no unparsed adjacent appearance bytes")
+End Sub
+
+Private Sub ExpectNormalAppearance(ByVal expectedText As String)
+    Dim bytes() As Byte, reader As New Network.reader, i As Long
+    Call ClearAdjacentCapture()
+    With NpcList(adjacentNpc)
+        ' Exercise the same production creation/refresh used by ModAreas and taming.
+        Call MakeNPCChar(False, 1, adjacentNpc, .pos.Map, .pos.x, .pos.y)
+        Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one normal create, no unintended effect packet")
+        bytes = adjacentPackets(1)
+        Call reader.SetData(bytes)
+        Call AdjacentExpect(reader.ReadInt16() = ServerPacketID.eCharacterCreate, "normal create packet")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.charindex, "normal character index")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.body And reader.ReadInt16() = .Char.head, "normal body/head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "normal heading")
+        Call AdjacentExpect(reader.ReadInt8() = .pos.x And reader.ReadInt8() = .pos.y, "normal tile")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "normal weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "normal helmet/cart argument mapping")
+        Call AdjacentExpect(reader.ReadInt16() = 0, "NPC backpack remains absent")
+        Call AdjacentExpect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "equipment must not become FX or FXLoops")
+        Call AdjacentExpect(reader.ReadString8() = expectedText, "normal authorized runtime text")
+        Call reader.ReadInt8(): Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt8() = 0, "no character particle")
+        For i = 1 To 7
+            Call reader.ReadString8()
+        Next i
+        Call AdjacentExpect(reader.ReadReal32() = .Char.speeding And reader.ReadInt8() = 1, "normal speed/NPC kind")
+        Call reader.ReadInt8(): Call reader.ReadInt16(): Call reader.ReadInt16(): Call reader.ReadInt8()
+        For i = 1 To 4
+            Call reader.ReadInt32()
+        Next i
+        Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt8() = Abs(CInt(.flags.NPCIdle)), "normal idle flag")
+        Call reader.ReadInt8(): Call reader.ReadInt8(): Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt16() = .Numero And reader.GetAvailable() = 0, "normal definition and complete payload")
+    End With
+    Call ClearAdjacentCapture()
+End Sub
+
+Private Sub ExpectNpcAppearanceChange(ByVal expectedBody As Integer)
+    Dim reader As Network.reader
+    Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one alive-area character change, no extra FX")
+    Set reader = AdjacentPacketReader(1, ServerPacketID.eCharacterChange, 24)
+    With NpcList(adjacentNpc)
+        Call AdjacentExpect(reader.ReadInt16() = .Char.charindex, "change keeps character index")
+        Call AdjacentExpect(reader.ReadInt8() = Abs(CInt(.flags.NPCIdle)), "change idle flag and not navigating")
+        Call AdjacentExpect(reader.ReadInt16() = expectedBody And reader.ReadInt16() = .Char.head, "change body argument and authoritative head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "change authoritative heading")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "change retains weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "change retains helmet/cart")
+        Call AdjacentExpect(reader.ReadInt16() = 0, "change has no NPC backpack")
+        Call AdjacentExpect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "change equipment does not become FX/loops")
+    End With
+    Call AdjacentExpect(reader.GetAvailable() = 0, "complete character change payload")
+End Sub
+
+Private Sub CheckNpcAppearanceChangeCase(ByVal group As Long)
+    Dim iteration As Long, originalBody As Integer
+    With NpcList(adjacentNpc)
+        .Char.body = 257: .Char.head = 514: .Char.WeaponAnim = 771: .Char.ShieldAnim = 1028
+        .Char.CascoAnim = 1285: .Char.CartAnim = 1542: .Char.Heading = e_Heading.SOUTH
+        .flags.NPCIdle = False
+        If group = 40 Then
+            ' NPC269 in Recursos/Dat/npcs.dat: fixed-origin guard, already South.
+            .Numero = 269: .npcType = e_NPCType.GuardiaNpc: .Movement = e_TipoAI.GuardiaPersigueNpc
+            .Char.body = 578: .Char.head = 42: .Char.WeaponAnim = 68: .Char.ShieldAnim = 16
+            .Char.CascoAnim = 0: .Char.CartAnim = 0: .Orig = .pos
+        End If
+        originalBody = .Char.body
+        Call ExpectNormalAppearance(vbNullString)
+        Call TickAdjacent()
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+        For iteration = 1 To 2
+            Call ClearAdjacentCapture(0, ToNPCAliveArea, adjacentNpc)
+            Select Case group
+                Case 39
+                    Call AnimacionIdle(adjacentNpc, iteration = 1)
+                Case 40
+                    Call NpcAI(adjacentNpc)
+                Case 41
+                    If iteration = 2 Then
+                        .Char.WeaponAnim = 0: .Char.ShieldAnim = 0: .Char.CascoAnim = 0: .Char.CartAnim = 0
+                    End If
+                    ' The caller's body override is sent, not stored into the NPC.
+                    Call ChangeNPCChar(adjacentNpc, 0, 2056, e_Heading.SOUTH)
+            End Select
+            Call ExpectNpcAppearanceChange(IIf(group = 41, 0, originalBody))
+            Call AdjacentExpect(.Char.body = originalBody, "change does not mutate stored body")
+            Call AdjacentExpect(.Char.Heading = e_Heading.SOUTH And .pos.Map = 35 And .pos.x = 50 And .pos.y = 90, "same South heading and stationary tile")
+            If group = 39 Then Call AdjacentExpect(.flags.NPCIdle = (iteration = 1), "idle changes both directions")
+            If group = 40 Then Call AdjacentExpect(Not IsValidNpcRef(.TargetNPC), "guard remains at origin without a target")
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            If group = 40 Then
+                Call AdjacentExpect(adjacentPackets.Count = 0, "same-heading guard refresh leaves adjacent state unchanged")
+            Else
+                Call AdjacentExpect(adjacentPackets.Count = 1, "changed idle/head/equipment reaches adjacent view")
+                Call ExpectAdjacentAppearance(1, vbNullString, 35)
+            End If
+        Next iteration
+        ' A fresh adjacent scene must still agree after the active-map refreshes.
+        Call InvalidateAdjacentNpcViewer(1)
+        Call ClearAdjacentCapture()
+        Call TickAdjacent()
+        Call AdjacentExpect(adjacentPackets.Count = 2, "new scene reset then current appearance")
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+    End With
+End Sub
+
+Private Sub CheckAdjacentAppearanceCase(ByVal group As Long)
+    Dim expectedText As String, bytes() As Byte
+    With NpcList(adjacentNpc)
+        Select Case group
+            Case 29
+                .Char.body = 257: .Char.head = 514: .Char.WeaponAnim = 771: .Char.ShieldAnim = 1028
+                .Char.CascoAnim = 1285: .Char.CartAnim = 1542: .Char.Heading = e_Heading.SOUTH
+                .Char.speeding = 1.25: .flags.NPCIdle = True
+                .showName = 1: .name = "Centinela Núñez": .SubName = "<Guardián de Ullathorpe>"
+                expectedText = "Centinela Núñez<Guardián de Ullathorpe>"
+                Call ExpectNormalAppearance(expectedText)
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 2, "normal create then adjacent snapshot")
+                Call ExpectAdjacentAppearance(2, expectedText, 77)
+                bytes = adjacentPackets(2)
+                Call UnitTesting.Progress("adjacent appearance production upsert: " & AO20CryptoSysWrapper.ByteArrayToHex(bytes))
+                Call AdjacentExpect(bytes(34) = 42 And bytes(46) = &HC3 And bytes(47) = &HBA, "UTF-8 accented name, not ANSI")
+            Case 30 To 32
+                .showName = 1: .name = "Guard": .SubName = "<South>"
+                Call TickAdjacent(): Call ClearAdjacentCapture()
+                Select Case group
+                    Case 30: .Numero = 2049
+                    Case 31: .name = "Watch"
+                    Case 32: .SubName = "<North>"
+                End Select
+                expectedText = .name & .SubName
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "stationary definition/name/description change sends upsert")
+                Call ExpectAdjacentAppearance(1, expectedText, 35 + Len(expectedText))
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "accepted display change is silent next sample")
+            Case 33
+                .showName = 1: .name = "Guard": .SubName = "<South>"
+                Call TickAdjacent(): Call ClearAdjacentCapture()
+                .showName = 0
+                Call ExpectNormalAppearance(vbNullString)
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "hide label without removing NPC")
+                Call ExpectAdjacentAppearance(1, vbNullString, 35)
+                Call ClearAdjacentCapture()
+                .name = "Watch": .SubName = "<North>"
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "hidden text changes do not leak")
+                .showName = 2
+                Call ExpectNormalAppearance("Watch<North>")
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "showName greater than zero reveals label without movement")
+                Call ExpectAdjacentAppearance(1, "Watch<North>", 47)
+            Case 34
+                .showName = 1: .name = vbNullString: .SubName = vbNullString
+                Call ExpectNormalAppearance(vbNullString)
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, vbNullString, 35)
+            Case 35
+                .showName = 1: .name = String$(126, "x") & "ñ"
+                Call ExpectNormalAppearance(.name)
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, .name, 164)
+                bytes = adjacentPackets(2)
+                Call AdjacentExpect(bytes(34) = &H80 And bytes(35) = 1, "128 UTF-8 bytes use two prefix bytes")
+                Call AdjacentExpect(bytes(162) = &HC3 And bytes(163) = &HB1, "accented ending roundtrips")
+            Case 36
+                .showName = 1: .name = String$(65496, "x") & "ñ"
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, .name, 65535)
+                bytes = adjacentPackets(2)
+                Call AdjacentExpect(bytes(34) = &HDA And bytes(35) = &HFF And bytes(36) = 3, "65498 UTF-8 bytes use three prefix bytes")
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "maximum-length label is stable")
+            Case 37
+                .showName = 1: .name = String$(65499, "x")
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "oversized upsert not sent or cached after reset")
+                .name = "Guard"
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 1, "corrected label retries without another reset")
+                Call ExpectAdjacentAppearance(1, "Guard", 40)
+            Case 38
+                .showName = 1: .name = "Guard"
+                Call TickAdjacent(): Call ClearAdjacentCapture(1)
+                .SubName = "<New>"
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And Not CBool(adjacentAccepted(1)), "display refresh enqueue fails")
+                Call ExpectAdjacentAppearance(1, "Guard<New>", 45)
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And CBool(adjacentAccepted(1)), "unchanged failed display refresh retried")
+                Call ExpectAdjacentAppearance(1, "Guard<New>", 45)
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "accepted display retry converges")
+        End Select
+    End With
 End Sub
 
 Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
@@ -448,6 +686,7 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
     With NpcList(adjacentNpc)
         .flags.NPCActive = True
         .VersionId = 3
+        .Numero = 1543
         .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
         .pos.Map = 35: .pos.x = 50: .pos.y = 90
         .npcType = e_NPCType.Comun
@@ -698,6 +937,7 @@ Private Sub RunAdjacentTwoHopCase(ByVal group As Long, ByVal name As String)
     NpcList(adjacentNpc) = emptyNpc
     With NpcList(adjacentNpc)
         .flags.NPCActive = True: .VersionId = 3: .npcType = e_NPCType.Comun
+        .Numero = 1543
         .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
     End With
     Call InitializeAuxiliaryBuffer: Call ClearAdjacentCapture
