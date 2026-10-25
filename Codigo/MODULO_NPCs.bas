@@ -549,6 +549,17 @@ CrearNPC_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
 End Function
 
+Public Function GetNpcDisplayName(ByVal NpcIndex As Integer) As String
+    On Error GoTo GetNpcDisplayName_Err
+    ' Both active and adjacent views must use the runtime, server-authorized text.
+    With NpcList(NpcIndex)
+        If .showName > 0 Then GetNpcDisplayName = .name & .SubName
+    End With
+    Exit Function
+GetNpcDisplayName_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.GetNpcDisplayName", Erl)
+End Function
+
 Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
     On Error GoTo MakeNPCChar_Err
     With NpcList(NpcIndex)
@@ -562,7 +573,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
         Dim Simbolo As Byte
         Dim GG      As String
         Dim tmpByte As Byte
-        GG = IIf(.showName > 0, .name & .SubName, vbNullString)
+        GG = GetNpcDisplayName(NpcIndex)
         If Not toMap Then
             Dim HayFinalizada As Boolean
             Dim HayDisponible As Boolean
@@ -648,8 +659,8 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             Else
                 body = .Char.body
             End If
-                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, _
-                        .Char.CartAnim, 0, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
+                Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, 0, 0, _
+                        0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
                         .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero, queued)
             If queued Then Call NpcBowCharacterCreated(sndIndex, NpcIndex, body)
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then

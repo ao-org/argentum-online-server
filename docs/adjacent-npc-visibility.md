@@ -72,12 +72,52 @@ IDs below are for PYMMO=1. VB6's existing conditional PYMMO=0 ordinal shift rema
 | ID | Name | Fields after the Int16 packet ID | Payload including ID |
 |---|---|---|---|
 | 214 | AdjacentNpcReset | Int32 scene generation, Int16 viewer logical map | 8 bytes |
-| 215 | AdjacentNpcUpsert | Int32 generation; Int16 NPC index, version, source map; UInt8 x,y; Int16 body,head; UInt8 heading; Int16 weapon,shield,helmet,cart; Float32 speed; Boolean idle | 32 bytes |
+| 215 | AdjacentNpcUpsert | Int32 generation; Int16 NPC index, version, source map; UInt8 x,y; Int16 body,head; UInt8 heading; Int16 weapon,shield,helmet,cart; Float32 speed; Boolean idle; Int16 NPC definition number; String8 authorized display text | 34 + varuint length-prefix bytes + UTF-8 text bytes |
 | 216 | AdjacentNpcRemove | Int32 generation; Int16 NPC index,version | 10 bytes |
 
-Upsert is a complete visual snapshot, serving creation and changed position/appearance/speed/idle state. There are no names, health bars or transient combat effects in this phase. Coordinates remain 1..100 in the source map; signed render offsets come from HOO's existing prepared map placements.
+Upsert is a complete visual snapshot, serving creation and changed
+position/appearance/speed/idle/definition/display-text state. Coordinates remain
+1..100 in the source map; signed render offsets come from HOO's existing prepared
+map placements, including diagonal maps. Health bars and transient combat effects
+remain outside adjacent replication.
+
+The original first 32 bytes are unchanged. The definition number is
+`NpcList(index).Numero` at offsets 32-33, not the live NPC slot, character index or
+lifetime version. String8 starts at offset 34: Aurora writes the UTF-8 byte length
+as an unsigned 7-bit continuation varint, then the exact UTF-8 bytes with no NUL
+terminator. Empty text is one zero byte (35-byte total packet). The existing
+UInt16 transport payload limit is 65,535 bytes, so the maximum adjacent display
+text is 65,498 UTF-8 bytes with a three-byte prefix. Oversized snapshots fail before
+enqueue, clear the shared writer, and do not advance the accepted-state cache;
+correcting the runtime text allows the next sample to retry. Errors use the
+existing rate-limited logging. Text is never silently truncated.
+
+`GetNpcDisplayName` is shared with normal `MakeNPCChar`: `showName > 0` sends
+the runtime `.name & .SubName` without changing delimiters or substituting static
+catalogue text; otherwise it sends empty text. Hidden text changes do not cause
+updates until labels are enabled. The client must use its normal label parser and
+visual metadata/body-selection rules with the source map's terrain. Normal NPC
+creation now maps cart to `.Char.CartAnim` and helmet to `.Char.CascoAnim`, with
+backpack, FX and FXLoops zero. The previous argument order incorrectly put helmet
+and cart into FX and FXLoops. Area introduction and refresh both delegate to this
+same production creation path; player creation is unchanged.
+
+This extends packet 215 in place and is **not mixed-version compatible**: older
+HOO expects 32 bytes and cannot consume the appended fields, while new HOO cannot
+decode old upserts. Update the server and matching HOO together during a controlled
+release that prevents mismatched clients from connecting. Neither arbitrary
+client-first nor server-first rollout with mixed sessions is safe. Packets 214 and
+216 and unrelated inventory/bow IDs are unchanged. No capability or generator is
+involved. This work does not authorize deployment.
 
 Scene generation is assigned by the server when a viewer session/map subscription is created. WriteChangeMap invalidates the subscription even for a reload of the same logical map. HOO clears adjacent state during map replacement and session reset and accepts updates only for its current generation. The server tracks user VersionId to detect slot reuse. NPC identity uses NpcIndex plus the existing VersionId; ordered transport and subscription resets bound its lifetime. It is not a globally unique persistent identity. Generation/version wrap under extreme churn needs additional Phase 2 coverage.
+
+NPC versions increment on release through 0..32761 and then wrap to zero. Hidden
+or out-of-interest NPCs can legitimately reappear with the same lifetime; a client
+must not permanently tombstone that version merely because a removal arrived.
+The ordered reliable stream, scene generation and accepted old-lifetime removal
+before replacement remain the lifecycle guarantees; the packet carries no
+per-update sequence number for arbitrary reordering within one scene.
 
 Full snapshots interpolate a single-tile move using existing character speed timing; multi-tile gaps, source-map changes and new NPC identities snap. A one-tile explicit translation is currently indistinguishable from walking. Polling can omit lifetimes shorter than 100 ms and produce up to one sampling interval of handoff delay; seamless movement across maps is Phase 2 work.
 
@@ -86,6 +126,31 @@ Full snapshots interpolate a single-tile move using existing character speed tim
 Decoded events flow through GameEventHandler into WorldState's separate AdjacentNpcScene. Its records never enter active-map occupancy or interaction state. The existing character scene list adds render-only entries with source-map pointers and signed placement offsets. Terrain ownership does not filter NPCs; records are deduplicated by NPC identity and lifecycle, and duplicate views render each NPC only once. Painter rows use composite coordinates. Roof visibility uses the source map and rendering uses a camera shifted by the map placement. The frame controller submits character texture demand, including all headings, through the existing streamer. Render-only flags suppress authoritative targeting effects and transient character-index effects.
 
 ## Validation
+
+### Appearance and labels (2026-10-25)
+
+- Native Windows VB6 production and test builds passed for both `PYMMO=0` and
+  `PYMMO=1`. Each build used `VB6.exe /make /d
+  DEBUGGING=<0|1>:PYMMO=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1 /out <log> Server.VBP`,
+  with DEBUGGING matching UNIT_TEST, and a fresh executable was verified.
+- The full 43-suite run passed **670/670** under each PYMMO configuration, using
+  an isolated source copy, loopback server and disposable SQLite fixture.
+- Ten new production-path groups compare normal creation and adjacent equipment
+  with distinct nonzero IDs and no FX; definition/name/description refreshes;
+  showName hiding/revealing and empty labels; accented UTF-8, two-/three-byte
+  String8 prefixes and the full 65,535-byte packet; oversize recovery; and failed
+  text-update retry. Existing visibility, two-hop, removal and lifecycle tests
+  remain green. The test reader now retains its borrowed input after returning
+  from the helper, fixing an invalid-buffer lifetime exposed by the large packet.
+- The production-captured Spanish upsert is logged as hex in `test_progress.txt`
+  for independent client fixture verification. VB6 source encoding/CRLF and
+  `git diff --check` were checked. User-local project settings were preserved.
+- No matching HOO/server live rendering session was performed in this server
+  pass. Ullathorpe boundary crossings, moving/stopping/idle visuals and water-NPC
+  acceptance remain pending; client rendering validation belongs to the linked
+  HOO change.
+
+### Earlier Phase 1 checks
 
 - Ten focused C++ tests pass in a standalone Linux GoogleTest build using production scene, packet decoder, WorldState and WorldMap sources.
 - Changed C++ implementation translation units pass GCC C++20 syntax checks, including world rendering, event handling and the frame controller.
@@ -131,8 +196,18 @@ Use matching draft builds at a verified direct seam, for example map 34/35 (offs
    visible record, including staff/owner viewers and dead viewers near revivers.
 9. Observe the Nix guard from map 78, enter map 80 and return. Each new scene must
    receive that guard again, once, at the appropriate composed placement.
+10. With matching appearance/label builds, observe the same guards south of
+    Ullathorpe on the active map and across the seam in both directions. Compare
+    body, head, weapon, shield, helmet, cart, name and description; there must be
+    no equipment-triggered FX. Wait through idle changes and observe a moving NPC
+    stop without another update. Repeat crossings and reconnect to check for
+    missing/duplicate sprites or labels. Check a water-specific NPC on its source
+    map and from a diagonal prepared view where suitable test data exists.
 
-Later phases cover seamless handoffs, richer movement semantics, coverage beyond two edges, viewport/zoom guarantees, complete visual parity and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.
+These appearance checks require a real matching client/server development session.
+Serialized packet regressions alone do not establish visual acceptance.
+
+Later phases cover seamless handoffs, richer movement semantics, coverage beyond two edges, viewport/zoom guarantees and measured server/network load. Do not deploy this Phase 1 draft as a completed production feature.
 
 ## Topology deployment checklist
 
