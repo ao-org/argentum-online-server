@@ -106,6 +106,9 @@ Public Sub LogThis(nErrNo As Long, sLogMsg As String, eventType As LogEventTypeC
         Call AddLogToCircularBuffer(sLogMsg)
     End If
     Call ReportEvent(hEvent, eventType, 0, 20, 0, 1, Len(sLogMsg), nErrNo & " - " & sLogMsg, 0)
+#If UNIT_TEST = 1 Then
+    Call Unit_NpcCrossMapPursuit.ObserveDiagnosticLog(sLogMsg, eventType)
+#End If
 End Sub
 
 Public Sub LogearEventoDeSubasta(s As String)

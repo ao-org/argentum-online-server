@@ -14,6 +14,145 @@ Private adjacentExpectedRoute As SendTarget
 Private adjacentExpectedRecipient As Integer
 Private adjacentTick As Long
 Private adjacentNpc As Integer
+Private diagnosticsCapture As Boolean
+Private diagnosticsCount As Long
+Private diagnosticsOverflow As Boolean
+Private diagnosticsText(1 To 32) As String
+Private diagnosticsSeverity(1 To 32) As LogEventTypeConstants
+
+' Observe only while these tests run; LogThis still writes the real Windows event.
+Public Sub ObserveDiagnosticLog(ByVal text As String, ByVal severity As LogEventTypeConstants)
+    If Not diagnosticsCapture Then Exit Sub
+    If diagnosticsCount = UBound(diagnosticsText) Then
+        diagnosticsOverflow = True
+        Exit Sub
+    End If
+    diagnosticsCount = diagnosticsCount + 1
+    diagnosticsText(diagnosticsCount) = Left$(text, 512)
+    diagnosticsSeverity(diagnosticsCount) = severity
+End Sub
+
+Private Sub ClearDiagnosticLogs()
+    diagnosticsCount = 0
+    diagnosticsOverflow = False
+End Sub
+
+Private Sub ExpectDiagnosticLog(ByVal fragment As String, ByVal expectedCount As Long, Optional ByVal severity As LogEventTypeConstants = vbLogEventTypeInformation)
+    Dim i As Long, found As Long
+    For i = 1 To diagnosticsCount
+        If InStr(1, diagnosticsText(i), fragment, vbBinaryCompare) > 0 Then
+            found = found + 1
+            Call AdjacentExpect(diagnosticsSeverity(i) = severity, "diagnostic severity: " & fragment)
+        End If
+    Next i
+    Call AdjacentExpect(Not diagnosticsOverflow And found = expectedCount, "diagnostic count: " & fragment)
+End Sub
+
+Private Sub LoadDiagnosticsSetting(Optional ByVal value As String = vbNullString)
+    Dim source As New clsIniManager
+    Call source.ChangeValue("AI", "NPCCrossMapAllowSafeMaps", "0")
+    If value <> vbNullString Then Call source.ChangeValue("AI", "NPCCrossMapDiagnostics", value)
+    Set SvrConfig = New ServerConfig
+    Call AdjacentExpect(SvrConfig.LoadSettings(vbNullString, source) = 0, "load diagnostic fixture settings")
+    Call source.ChangeValue("AI", "NPCCrossMapDiagnostics", "1")
+    ' Changing the source after loading must not change the cached setting.
+    Call AdjacentExpect(NpcCrossMapDiagnosticsEnabled() = (value = "1"), "cached diagnostic setting")
+End Sub
+
+Private Sub CheckDiagnosticsCase(ByVal group As Long)
+    Dim i As Long, expectedCount As Long
+    LastNPC = adjacentNpc
+    Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
+    Call AdjacentExpect(LoadAdjacentTopologyJson(ADJACENT_TEST_TOPOLOGY, False), "diagnostic fixture after feature reload")
+    With NpcList(adjacentNpc)
+        .Char.charindex = 0
+        .Orig = .pos
+        .Hostile = 1
+        .Movement = e_TipoAI.MueveAlAzar
+    End With
+    diagnosticsCapture = True
+    Call ClearDiagnosticLogs()
+    Select Case group
+        Case 42
+            Set SvrConfig = Nothing
+            Call AdjacentExpect(Not NpcCrossMapDiagnosticsEnabled(), "missing configuration is off")
+            Call LoadDiagnosticsSetting()
+            Call LoadDiagnosticsSetting("0")
+            Call LoadDiagnosticsSetting("1")
+            Call LoadDiagnosticsSetting("not-a-number")
+            Call LoadDiagnosticsSetting("1")
+            Call LoadDiagnosticsSetting("0")
+        Case 43
+            For i = 0 To 2
+                expectedCount = 0
+                If i = 1 Then expectedCount = 1
+                Call LoadDiagnosticsSetting(CStr(expectedCount))
+                UserList(1).flags.Muerto = 0
+                Call ClearDiagnosticLogs()
+                Call RetainNpcPursuitForSpatialTransition(1, 35, 34)
+                Call ExpectDiagnosticLog("matchingTargets=0 sourceMapTargets=0 retained=0", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = expectedCount, "zero-retention logging gate")
+
+                With MapData(50, 90, 35).TileExit
+                    .Map = 34: .x = 50: .y = 10
+                End With
+                Call SetUserRef(NpcList(adjacentNpc).TargetUser, 1)
+                Call ClearDiagnosticLogs()
+                Call RetainNpcPursuitForSpatialTransition(1, 35, 34)
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteChase And NpcList(adjacentNpc).CrossMapRoute.NextMap = 34, "retained chase unchanged by diagnostics")
+                Call ExpectDiagnosticLog("chase retained fromMap=35 targetMap=34", expectedCount)
+                Call ExpectDiagnosticLog("spatial exit selected fromMap=35 exit=(50,90) toMap=34 destination=(50,10)", expectedCount)
+                Call ExpectDiagnosticLog("matchingTargets=1 sourceMapTargets=1 retained=1", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = 3 * expectedCount, "retained logging gate")
+
+                UserList(1).flags.Muerto = 1
+                Call ClearDiagnosticLogs()
+                Call AdjacentExpect(Not HandleNpcCrossMapRoute(adjacentNpc), "cancel at origin does not move")
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteNone And Not IsValidUserRef(NpcList(adjacentNpc).TargetUser), "cancellation state identical off/on/off")
+                Call ExpectDiagnosticLog("chase cancelled reason=target no longer attackable alreadyOnOriginMap=35", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = expectedCount, "cancellation logging gate")
+
+                UserList(1).flags.Muerto = 0
+                MapData(50, 90, 35).TileExit.Map = 0
+                Call SetUserRef(NpcList(adjacentNpc).TargetUser, 1)
+                NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteChase
+                Call ClearDiagnosticLogs()
+                Call AdjacentExpect(Not HandleNpcCrossMapRoute(adjacentNpc), "missing exit rejects route")
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteNone And Not IsValidUserRef(NpcList(adjacentNpc).TargetUser), "rejection state independent of diagnostics")
+                Call ExpectDiagnosticLog("route rejected reason=no-valid-spatial-exit", expectedCount)
+                Call ExpectDiagnosticLog("chase cancelled reason=no allowed chase route", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = 2 * expectedCount, "rejection logging gate")
+            Next i
+        Case 44
+            Call LoadDiagnosticsSetting("0")
+            ' The real route error handler must remain visible; no valid NPC is touched.
+            LastNPC = UBound(NpcList) + 1
+            Call HandleNpcCrossMapRoute(LastNPC)
+            LastNPC = adjacentNpc
+            Call ExpectDiagnosticLog("Component: modNpcCrossMapPursuit.HandleNpcCrossMapRoute", 1, vbLogEventTypeError)
+            Call ExpectDiagnosticLog("Error number: 9", 1, vbLogEventTypeError)
+        Case 45
+            Call LoadDiagnosticsSetting("0")
+            Call ClearAdjacentCapture(0, ToNPCArea, adjacentNpc)
+            For i = 1 To 2
+                Call ClearDiagnosticLogs()
+                With NpcList(adjacentNpc)
+                    .Orig.Map = 33 + i: .Orig.x = 50: .Orig.y = 50
+                    .CrossMapRoute.Mode = eNpcCrossMapRouteReturnHome
+                    If i = 1 Then
+                        Call AdjacentExpect(HandleNpcCrossMapRoute(adjacentNpc), "missing return exit uses fallback")
+                        Call ExpectDiagnosticLog("return route unavailable; warping home", 1)
+                    Else
+                        .CrossMapRoute.PathFailures = 2
+                        Call RecordNpcCrossMapPathFailure(adjacentNpc)
+                        Call ExpectDiagnosticLog("return path failed; warping home", 1)
+                    End If
+                    Call AdjacentExpect(.pos.Map = .Orig.Map And .pos.x = 50 And .pos.y = 50 And .CrossMapRoute.Mode = eNpcCrossMapRouteNone, "fallback really warps home and resets route")
+                End With
+                Call AdjacentExpect(diagnosticsCount = 1, "only unconditional Info fallback logged")
+            Next i
+    End Select
+End Sub
 
 Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByRef Queued As Boolean) As Boolean
     If Not adjacentCaptureActive Then Exit Function
@@ -75,6 +214,10 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     Call RunAdjacentCase(39, "stationary South idle changes preserve equipment")
     Call RunAdjacentCase(40, "entrance guard AI same-heading refresh preserves equipment")
     Call RunAdjacentCase(41, "character change preserves body semantics and current equipment")
+    Call RunAdjacentCase(42, "diagnostics cached configuration defaults and reload")
+    Call RunAdjacentCase(43, "diagnostics retention rejection cancellation off-on-off")
+    Call RunAdjacentCase(44, "diagnostics off preserves route error reporting")
+    Call RunAdjacentCase(45, "diagnostics off preserves both warp-home fallback logs")
     names = Split("exact connection and length|wrong connection|partial enqueue|oversized enqueue|late callback|nested probe preserves outer|same connection closes|other connection closes|duplicate callback", "|")
     For group = 0 To UBound(names)
         Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
@@ -421,6 +564,8 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call CheckAdjacentAppearanceCase(group)
         Case 39 To 41
             Call CheckNpcAppearanceChangeCase(group)
+        Case 42 To 45
+            Call CheckDiagnosticsCase(group)
     End Select
 End Sub
 
@@ -649,8 +794,15 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
     Dim oldMap34 As t_MapInfo, oldMap35 As t_MapInfo, emptyTile As t_MapBlock
     Dim tiles34(1 To 100, 1 To 100) As t_MapBlock, tiles35(1 To 100, 1 To 100) As t_MapBlock
     Dim oldLastUser As Integer, x As Integer, y As Integer, saved As Boolean, passed As Boolean, failure As String
+    Dim oldConfig As ServerConfig, oldToggle As Boolean, oldLastNpc As Integer
+    Dim oldNumChars As Integer, oldLastChar As Integer, oldEntries34 As Integer, oldEntries35 As Integer
     Call AdjacentExpect(NumMaps >= 35 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized test world")
     adjacentNpc = UBound(NpcList) - 1
+    If group >= 42 Then adjacentNpc = 1
+    Set oldConfig = SvrConfig
+    oldToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE): oldLastNpc = LastNPC
+    oldNumChars = NumChars: oldLastChar = LastChar
+    oldEntries34 = ConnGroups(34).CountEntrys: oldEntries35 = ConnGroups(35).CountEntrys
     oldUser = UserList(1): oldNpc = NpcList(adjacentNpc): oldSecond = NpcList(adjacentNpc + 1)
     oldLastUser = LastUser
     oldMap34 = MapInfo(34): oldMap35 = MapInfo(35)
@@ -661,6 +813,9 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
         Next x
     Next y
     saved = True
+    If group >= 42 Then
+        ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0
+    End If
     Call AdjacentNpcTestResetState
     Call AdjacentExpect(LoadAdjacentTopologyJson(ADJACENT_TEST_TOPOLOGY, False), "fixture topology")
     For y = 1 To 100
@@ -704,9 +859,17 @@ Failed:
     Resume Cleanup
 Cleanup:
     On Error GoTo 0
+    diagnosticsCapture = False
     adjacentCaptureActive = False
     Call AdjacentNpcTestResetState
     If saved Then
+        If group >= 42 Then
+            If NpcList(adjacentNpc).Char.charindex > 0 Then CharList(NpcList(adjacentNpc).Char.charindex) = 0
+            Set SvrConfig = oldConfig
+            Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, oldToggle)
+            LastNPC = oldLastNpc: NumChars = oldNumChars: LastChar = oldLastChar
+            ConnGroups(34).CountEntrys = oldEntries34: ConnGroups(35).CountEntrys = oldEntries35
+        End If
         UserList(1) = oldUser: NpcList(adjacentNpc) = oldNpc: NpcList(adjacentNpc + 1) = oldSecond
         LastUser = oldLastUser
         MapInfo(34) = oldMap34: MapInfo(35) = oldMap35
