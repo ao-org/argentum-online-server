@@ -25,6 +25,7 @@ Public Function test_suite_crafting() As Boolean
     Call UnitTesting.RunTest("craft corrupt material stacks fail without mutation", test_craft_corrupt_stack())
     Call UnitTesting.RunTest("craft all profession consumables are deducted", test_craft_profession_materials())
     Call UnitTesting.RunTest("alchemy requires and preserves reusable mortar", test_craft_reusable_mortar())
+    Call UnitTesting.RunTest("object data hot reload preserves generic recipes", test_obj_data_hot_reload())
     test_suite_crafting = True
 End Function
 
@@ -570,6 +571,25 @@ Private Function test_sort_ascending_property() As Boolean
     Exit Function
 Err_Handler:
     test_sort_ascending_property = False
+End Function
+
+Private Function test_obj_data_hot_reload() As Boolean
+    On Error GoTo test_obj_data_hot_reload_Err
+
+    Call LoadOBJData
+
+    If ObjData(163).GenericMaterialCount <> 1 Then Exit Function
+    If ObjData(163).GenericMaterialObjIndex(1) <> 58 Then Exit Function
+    If ObjData(3578).GenericMaterialCount <> 1 Then Exit Function
+    If ObjData(3578).GenericMaterialObjIndex(1) <> 414 Then Exit Function
+    If ObjData(6755).GenericMaterialCount <> 3 Then Exit Function
+    If ObjData(6755).GenericMaterialObjIndex(1) <> 4997 Then Exit Function
+
+    test_obj_data_hot_reload = True
+    Exit Function
+test_obj_data_hot_reload_Err:
+    test_obj_data_hot_reload = False
+    Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_obj_data_hot_reload", Erl)
 End Function
 
 #End If
