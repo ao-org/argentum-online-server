@@ -9,6 +9,7 @@ Public Function test_suite_crafting() As Boolean
     Call UnitTesting.RunTest("test_get_recipe_key", test_get_recipe_key())
     Call UnitTesting.RunTest("test_sort_then_key_confluence", test_sort_then_key_confluence())
     Call UnitTesting.RunTest("test_sort_ascending_property", test_sort_ascending_property())
+    Call UnitTesting.RunTest("craft loaded recipes support every object type", test_loaded_generic_recipes())
     Call UnitTesting.RunTest("craft missing materials leaves inventory unchanged", test_craft_missing_materials())
     Call UnitTesting.RunTest("craft insufficient materials leaves inventory unchanged", test_craft_insufficient_materials())
     Call UnitTesting.RunTest("craft later ingredient failure rolls back all deductions", test_craft_later_material_missing())
@@ -59,6 +60,40 @@ Private Function SameCraftInventory(ByRef first As t_Inventario, ByRef second As
 SameCraftInventory_Err:
     SameCraftInventory = False
     Call TraceError(Err.Number, Err.Description, "Unit_Crafting.SameCraftInventory", Erl)
+End Function
+
+Private Function test_loaded_generic_recipes() As Boolean
+    On Error GoTo test_loaded_generic_recipes_Err
+
+    ' Carpentry output: wooden spoon.
+    If ObjData(163).GenericMaterialCount <> 1 Then Exit Function
+    If ObjData(163).GenericMaterialObjIndex(1) <> 58 Then Exit Function
+    If ObjData(163).GenericMaterialAmount(1) <> 3 Then Exit Function
+    If Not ObjData(163).GenericMaterialConsumed(1) Then Exit Function
+
+    ' Tailoring output: worked cloth.
+    If ObjData(3578).GenericMaterialCount <> 1 Then Exit Function
+    If ObjData(3578).GenericMaterialObjIndex(1) <> 414 Then Exit Function
+    If ObjData(3578).GenericMaterialAmount(1) <> 1 Then Exit Function
+    If Not ObjData(3578).GenericMaterialConsumed(1) Then Exit Function
+
+    ' Alchemy output: superior life potion with a reusable mortar.
+    If ObjData(6755).GenericMaterialCount <> 3 Then Exit Function
+    If ObjData(6755).GenericMaterialObjIndex(1) <> 4997 Then Exit Function
+    If ObjData(6755).GenericMaterialAmount(1) <> 1 Then Exit Function
+    If ObjData(6755).GenericMaterialConsumed(1) Then Exit Function
+    If ObjData(6755).GenericMaterialObjIndex(2) <> 3075 Then Exit Function
+    If ObjData(6755).GenericMaterialAmount(2) <> 1 Then Exit Function
+    If Not ObjData(6755).GenericMaterialConsumed(2) Then Exit Function
+    If ObjData(6755).GenericMaterialObjIndex(3) <> 4316 Then Exit Function
+    If ObjData(6755).GenericMaterialAmount(3) <> 2 Then Exit Function
+    If Not ObjData(6755).GenericMaterialConsumed(3) Then Exit Function
+
+    test_loaded_generic_recipes = True
+    Exit Function
+test_loaded_generic_recipes_Err:
+    test_loaded_generic_recipes = False
+    Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_loaded_generic_recipes", Erl)
 End Function
 
 Private Function test_craft_missing_materials() As Boolean

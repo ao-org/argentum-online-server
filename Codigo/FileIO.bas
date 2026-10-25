@@ -1418,12 +1418,6 @@ Sub LoadOBJData()
                     .FlorOceano = val(Leer.GetValue(ObjKey, "FlorOceano"))
                     .FlorRoja = val(Leer.GetValue(ObjKey, "FlorRoja"))
                     .SemillasProsperas = val(Leer.GetValue(ObjKey, "SemillasProsperas"))
-                    .GenericMaterialCount = Clamp(val(Leer.GetValue(ObjKey, "MaterialCount")), 0, MAX_GENERIC_CRAFTING_MATERIALS)
-                    For materialSlot = 1 To .GenericMaterialCount
-                        .GenericMaterialObjIndex(materialSlot) = val(Leer.GetValue(ObjKey, "Material" & materialSlot))
-                        .GenericMaterialAmount(materialSlot) = val(Leer.GetValue(ObjKey, "Cantidad" & materialSlot))
-                        .GenericMaterialConsumed(materialSlot) = val(Leer.GetValue(ObjKey, "Consumir" & materialSlot, "1")) <> 0
-                    Next materialSlot
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats
@@ -1541,6 +1535,15 @@ Sub LoadOBJData()
                 Case e_OBJType.otParchment, e_OBJType.otSkinsSpells
                     .RequiereObjeto = val(Leer.GetValue(ObjKey, "RequiereObjeto"))
             End Select
+
+            ' Generic crafting recipes apply to every craftable object type.
+            .GenericMaterialCount = Clamp(val(Leer.GetValue(ObjKey, "MaterialCount")), 0, MAX_GENERIC_CRAFTING_MATERIALS)
+            For materialSlot = 1 To .GenericMaterialCount
+                .GenericMaterialObjIndex(materialSlot) = val(Leer.GetValue(ObjKey, "Material" & materialSlot))
+                .GenericMaterialAmount(materialSlot) = val(Leer.GetValue(ObjKey, "Cantidad" & materialSlot))
+                .GenericMaterialConsumed(materialSlot) = val(Leer.GetValue(ObjKey, "Consumir" & materialSlot, "1")) <> 0
+            Next materialSlot
+
             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
             .MagicPenetration = val(Leer.GetValue(ObjKey, "MagicPenetration"))
