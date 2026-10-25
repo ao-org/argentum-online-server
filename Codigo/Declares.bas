@@ -2244,6 +2244,8 @@ Public Enum e_AnvilType
     BlodiumAnvil = 2
 End Enum
 
+Public Const MAX_GENERIC_CRAFTING_MATERIALS As Byte = 10
+
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte
@@ -2399,6 +2401,10 @@ Public Type t_ObjData
     FlorOceano As Integer
     FlorRoja As Integer
     SemillasProsperas As Integer
+    GenericMaterialCount As Byte
+    GenericMaterialObjIndex(1 To MAX_GENERIC_CRAFTING_MATERIALS) As Integer
+    GenericMaterialAmount(1 To MAX_GENERIC_CRAFTING_MATERIALS) As Integer
+    GenericMaterialConsumed(1 To MAX_GENERIC_CRAFTING_MATERIALS) As Boolean
     SkPociones As Byte
     PielLobo As Integer
     PielOsoPardo As Integer

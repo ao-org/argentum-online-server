@@ -131,19 +131,22 @@ FindCraftingRecipe_Err:
     Call TraceError(Err.Number, Err.Description, "modCrafteos.FindCraftingRecipe", Erl)
 End Function
 
-Private Function HasNpcCraftingMaterials(ByVal UserIndex As Integer, ByRef Recipe As clsCrafteo) As Boolean
+Private Function HasNpcCraftingMaterials(ByVal UserIndex As Integer, ByRef Recipe As clsCrafteo, ByVal quantity As Long) As Boolean
     On Error GoTo HasNpcCraftingMaterials_Err
-    Dim ItemIndex As Integer, Required As Integer, i As Integer
+    If quantity < 1 Or quantity > 10000 Then Exit Function
+    Dim ItemIndex As Integer, RequiredPerItem As Long, RequiredTotal As Long, i As Integer
     i = 1
     Do While i <= Recipe.Tamaño
         ItemIndex = Recipe.Items(i)
-        Required = 1
-        Do While i + Required <= Recipe.Tamaño
-            If Recipe.Items(i + Required) <> ItemIndex Then Exit Do
-            Required = Required + 1
+        RequiredPerItem = 1
+        Do While i + RequiredPerItem <= Recipe.Tamaño
+            If Recipe.Items(i + RequiredPerItem) <> ItemIndex Then Exit Do
+            RequiredPerItem = RequiredPerItem + 1
         Loop
-        If ItemIndex <= 0 Or Not TieneObjetos(ItemIndex, Required, UserIndex) Then Exit Function
-        i = i + Required
+        RequiredTotal = RequiredPerItem
+        If ItemIndex <> Mortero Then RequiredTotal = RequiredPerItem * quantity
+        If ItemIndex <= 0 Or Not TieneObjetos(ItemIndex, RequiredTotal, UserIndex) Then Exit Function
+        i = i + RequiredPerItem
     Loop
     HasNpcCraftingMaterials = True
     Exit Function
@@ -151,28 +154,33 @@ HasNpcCraftingMaterials_Err:
     Call TraceError(Err.Number, Err.Description, "modCrafteos.HasNpcCraftingMaterials", Erl)
 End Function
 
-Private Sub ConsumeNpcCraftingMaterials(ByVal UserIndex As Integer, ByRef Recipe As clsCrafteo)
+Private Sub ConsumeNpcCraftingMaterials(ByVal UserIndex As Integer, ByRef Recipe As clsCrafteo, ByVal quantity As Long)
     On Error GoTo ConsumeNpcCraftingMaterials_Err
-    Dim ItemIndex As Integer, Required As Integer, i As Integer
+    Dim ItemIndex As Integer, RequiredPerItem As Long, RequiredTotal As Long, i As Integer
     i = 1
     Do While i <= Recipe.Tamaño
         ItemIndex = Recipe.Items(i)
-        Required = 1
-        Do While i + Required <= Recipe.Tamaño
-            If Recipe.Items(i + Required) <> ItemIndex Then Exit Do
-            Required = Required + 1
+        RequiredPerItem = 1
+        Do While i + RequiredPerItem <= Recipe.Tamaño
+            If Recipe.Items(i + RequiredPerItem) <> ItemIndex Then Exit Do
+            RequiredPerItem = RequiredPerItem + 1
         Loop
-        If ItemIndex <> Mortero Then Call QuitarObjetos(ItemIndex, Required, UserIndex)
-        i = i + Required
+        If ItemIndex <> Mortero Then
+            RequiredTotal = RequiredPerItem * quantity
+            Call QuitarObjetos(ItemIndex, RequiredTotal, UserIndex)
+        End If
+        i = i + RequiredPerItem
     Loop
     Exit Sub
 ConsumeNpcCraftingMaterials_Err:
     Call TraceError(Err.Number, Err.Description, "modCrafteos.ConsumeNpcCraftingMaterials", Erl)
 End Sub
 
-Public Sub DoNpcCraftItem(ByVal UserIndex As Integer, ByVal ResultObjIndex As Integer)
+Public Sub DoNpcCraftItem(ByVal UserIndex As Integer, ByVal ResultObjIndex As Integer, Optional ByVal requestedAmount As Long = 1)
     On Error GoTo DoNpcCraftItem_Err
+    If requestedAmount < 1 Or requestedAmount > 10000 Then Exit Sub
     With UserList(UserIndex)
+        If .clase = e_Class.Trabajador Then Exit Sub
         If .flags.Crafteando = 0 Then Exit Sub
         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         Dim NpcIndex As Integer
@@ -183,16 +191,24 @@ Public Sub DoNpcCraftItem(ByVal UserIndex As Integer, ByVal ResultObjIndex As In
         Dim Recipe As clsCrafteo
         Set Recipe = FindCraftingRecipe(.flags.Crafteando, ResultObjIndex)
         If Recipe Is Nothing Then Exit Sub
-        If Recipe.precio > .Stats.GLD Then
+        Dim totalPrice As Long
+        totalPrice = CLng(Recipe.precio) * requestedAmount
+        If totalPrice > .Stats.GLD Then
             Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_ORO_SUFICIENTE, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
             Exit Sub
         End If
-        If Not HasNpcCraftingMaterials(UserIndex, Recipe) Then Exit Sub
-        Call ConsumeNpcCraftingMaterials(UserIndex, Recipe)
-        If RandomNumber(1, 100) <= Recipe.Probabilidad Then
+        Dim RequestedObject As t_Obj
+        RequestedObject.ObjIndex = Recipe.Resultado
+        RequestedObject.amount = requestedAmount
+        RequestedObject.ElementalTags = ObjData(Recipe.Resultado).ElementalTags
+        If Not ConsumeCraftingMaterials(UserIndex, RequestedObject, e_JobsTypes.Alchemist) Then Exit Sub
+        Dim successBasisPoints As Integer, craftedAmount As Long
+        successBasisPoints = RandomNumber(7000, 7500)
+        craftedAmount = CalculateAlchemyBatchResult(requestedAmount, successBasisPoints)
+        If craftedAmount > 0 Then
             Dim CraftedObject As t_Obj
             CraftedObject.ObjIndex = Recipe.Resultado
-            CraftedObject.amount = 1
+            CraftedObject.amount = craftedAmount
             CraftedObject.ElementalTags = ObjData(Recipe.Resultado).ElementalTags
             If Not MeterItemEnInventario(UserIndex, CraftedObject) Then
                 Call TirarItemAlPiso(.pos, CraftedObject)
@@ -201,8 +217,8 @@ Public Sub DoNpcCraftItem(ByVal UserIndex As Integer, ByVal ResultObjIndex As In
         Else
             Call WriteLocaleMsg(UserIndex, MSG_COMBINACION_HA_FALLADO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
         End If
-        If Recipe.precio > 0 Then
-            .Stats.GLD = .Stats.GLD - Recipe.precio
+        If totalPrice > 0 Then
+            .Stats.GLD = .Stats.GLD - totalPrice
             Call WriteUpdateGold(UserIndex)
         End If
         Call UpdateUserInv(True, UserIndex, 0)

@@ -1279,6 +1279,7 @@ Sub LoadOBJData()
     Dim str     As String, Field() As String
     Dim Crafteo As clsCrafteo
     Dim NFT     As Boolean
+    Dim materialSlot As Integer
     'Llena la lista
     For Object = 1 To NumObjDatas
         With ObjData(Object)
@@ -1417,6 +1418,12 @@ Sub LoadOBJData()
                     .FlorOceano = val(Leer.GetValue(ObjKey, "FlorOceano"))
                     .FlorRoja = val(Leer.GetValue(ObjKey, "FlorRoja"))
                     .SemillasProsperas = val(Leer.GetValue(ObjKey, "SemillasProsperas"))
+                    .GenericMaterialCount = Clamp(val(Leer.GetValue(ObjKey, "MaterialCount")), 0, MAX_GENERIC_CRAFTING_MATERIALS)
+                    For materialSlot = 1 To .GenericMaterialCount
+                        .GenericMaterialObjIndex(materialSlot) = val(Leer.GetValue(ObjKey, "Material" & materialSlot))
+                        .GenericMaterialAmount(materialSlot) = val(Leer.GetValue(ObjKey, "Cantidad" & materialSlot))
+                        .GenericMaterialConsumed(materialSlot) = val(Leer.GetValue(ObjKey, "Consumir" & materialSlot, "1")) <> 0
+                    Next materialSlot
                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                 Case e_OBJType.otShips, e_OBJType.otSkinsBoats

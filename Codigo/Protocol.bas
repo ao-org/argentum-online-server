@@ -2909,12 +2909,15 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
     On Error GoTo HandleCraftAlquimia_Err
     Dim Item As Integer
     Item = reader.ReadInt16()
+    Dim Cantidad As Long
+    Cantidad = reader.ReadInt32()
     If Item < 1 Then Exit Sub
+    If Cantidad < 1 Or Cantidad > 10000 Then Exit Sub
     If UserList(UserIndex).flags.Crafteando > 0 Then
-        Call DoNpcCraftItem(UserIndex, Item)
+        Call DoNpcCraftItem(UserIndex, Item, Cantidad)
         Exit Sub
     End If
-    Call AlquimistaConstruirItem(UserIndex, Item)
+    Call AlquimistaConstruirItem(UserIndex, Item, Cantidad)
     Exit Sub
 HandleCraftAlquimia_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)

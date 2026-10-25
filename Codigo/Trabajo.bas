@@ -458,7 +458,7 @@ End Function
 Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByVal slotCount As Integer, ByRef recipe As t_ObjData, ByVal job As e_JobsTypes, ByVal quantity As Long) As Boolean
     On Error GoTo TryConsumeCraftingMaterials_Err
     If slotCount < 1 Or slotCount > UBound(inventory.Object) Or quantity <= 0 Then Exit Function
-    If job <> e_JobsTypes.Carpenter And quantity <> 1 Then Exit Function
+    If job <> e_JobsTypes.Carpenter And job <> e_JobsTypes.Alchemist And quantity <> 1 Then Exit Function
     Dim staged As t_Inventario, hasCost As Boolean, slot As Integer
     staged = inventory
     With recipe
@@ -478,16 +478,28 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
                 If Not StageCraftingMaterial(staged, slotCount, ElvenWood, .MaderaElfica, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, PinoWood, .MaderaPino, quantity, hasCost) Then Exit Function
             Case e_JobsTypes.Alchemist
-                If Not HasCraftingMaterial(staged, slotCount, Mortero, .Mortero) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, FrascoAlq, .FrascoAlq, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, HongoDeLuz, .HongoDeLuz, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, Esporas, .Esporas, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, Tuna, .Tuna, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, Cala, .Cala, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, ColaDeZorro, .ColaDeZorro, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, FlorOceano, .FlorOceano, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, FlorRoja, .FlorRoja, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, SemillasProsperas, .SemillasProsperas, quantity, hasCost) Then Exit Function
+                Dim materialSlot As Integer
+                If .GenericMaterialCount > 0 Then
+                    For materialSlot = 1 To .GenericMaterialCount
+                        If .GenericMaterialObjIndex(materialSlot) < 1 Or .GenericMaterialAmount(materialSlot) < 1 Then Exit Function
+                        If .GenericMaterialConsumed(materialSlot) Then
+                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot), quantity, hasCost) Then Exit Function
+                        Else
+                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(materialSlot), .GenericMaterialAmount(materialSlot)) Then Exit Function
+                        End If
+                    Next materialSlot
+                Else
+                    If Not HasCraftingMaterial(staged, slotCount, Mortero, .Mortero) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, FrascoAlq, .FrascoAlq, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, HongoDeLuz, .HongoDeLuz, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, Esporas, .Esporas, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, Tuna, .Tuna, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, Cala, .Cala, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, ColaDeZorro, .ColaDeZorro, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, FlorOceano, .FlorOceano, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, FlorRoja, .FlorRoja, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, SemillasProsperas, .SemillasProsperas, quantity, hasCost) Then Exit Function
+                End If
             Case e_JobsTypes.Tailor
                 If Not StageCraftingMaterial(staged, slotCount, PieldeLobo, .PielLobo, quantity, hasCost) Then Exit Function
                 If Not StageCraftingMaterial(staged, slotCount, PieldeOsoPardo, .PielOsoPardo, quantity, hasCost) Then Exit Function
@@ -512,7 +524,7 @@ TryConsumeCraftingMaterials_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.TryConsumeCraftingMaterials", Erl)
 End Function
 
-Private Function ConsumeCraftingMaterials(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal job As e_JobsTypes) As Boolean
+Public Function ConsumeCraftingMaterials(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal job As e_JobsTypes) As Boolean
     On Error GoTo ConsumeCraftingMaterials_Err
     If UserIndex < LBound(UserList) Or UserIndex > UBound(UserList) Then Exit Function
     If Item.ObjIndex < LBound(ObjData) Or Item.ObjIndex > UBound(ObjData) Then Exit Function
@@ -1026,8 +1038,50 @@ CarpinteroConstruirItem_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
 End Sub
 
-Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Function CalculateAlchemySuccessBasisPoints(ByVal skillValue As Byte, ByVal requiredSkill As Byte) As Integer
+    On Error GoTo CalculateAlchemySuccessBasisPoints_Err
+    Const MIN_SUCCESS_AT_REQUIREMENT As Long = 9000
+    Const MAX_SUCCESS_AT_REQUIREMENT As Long = 9200
+    Const MIN_SUCCESS_AT_CAP As Long = 9700
+    Const MAX_SUCCESS_AT_CAP As Long = 9800
+    Const MAX_ALCHEMY_SKILL As Long = 100
+    Dim minimumSuccess As Long, maximumSuccess As Long, skillProgress As Long
+    If skillValue < requiredSkill Then Exit Function
+    If skillValue >= MAX_ALCHEMY_SKILL Or requiredSkill >= MAX_ALCHEMY_SKILL Then
+        minimumSuccess = MIN_SUCCESS_AT_CAP
+        maximumSuccess = MAX_SUCCESS_AT_CAP
+    Else
+        skillProgress = skillValue - requiredSkill
+        minimumSuccess = MIN_SUCCESS_AT_REQUIREMENT + (skillProgress * (MIN_SUCCESS_AT_CAP - MIN_SUCCESS_AT_REQUIREMENT)) \ (MAX_ALCHEMY_SKILL - requiredSkill)
+        maximumSuccess = MAX_SUCCESS_AT_REQUIREMENT + (skillProgress * (MAX_SUCCESS_AT_CAP - MAX_SUCCESS_AT_REQUIREMENT)) \ (MAX_ALCHEMY_SKILL - requiredSkill)
+    End If
+    CalculateAlchemySuccessBasisPoints = RandomNumber(minimumSuccess, maximumSuccess)
+    Exit Function
+CalculateAlchemySuccessBasisPoints_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.CalculateAlchemySuccessBasisPoints", Erl)
+End Function
+
+Public Function CalculateAlchemyBatchResult(ByVal requestedAmount As Long, ByVal successBasisPoints As Integer) As Long
+    On Error GoTo CalculateAlchemyBatchResult_Err
+    Const BASIS_POINTS As Long = 10000
+    If requestedAmount < 1 Or requestedAmount > 10000 Then Exit Function
+    If successBasisPoints < 0 Or successBasisPoints > BASIS_POINTS Then Exit Function
+    Dim scaledResult As Long, guaranteedResult As Long, remainder As Long
+    scaledResult = requestedAmount * CLng(successBasisPoints)
+    guaranteedResult = scaledResult \ BASIS_POINTS
+    remainder = scaledResult Mod BASIS_POINTS
+    If remainder > 0 Then
+        If RandomNumber(1, BASIS_POINTS) <= remainder Then guaranteedResult = guaranteedResult + 1
+    End If
+    CalculateAlchemyBatchResult = guaranteedResult
+    Exit Function
+CalculateAlchemyBatchResult_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.CalculateAlchemyBatchResult", Erl)
+End Function
+
+Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, Optional ByVal requestedAmount As Long = 1)
     On Error GoTo AlquimistaConstruirItem_Err
+    If requestedAmount < 1 Or requestedAmount > 10000 Then Exit Sub
     If Not UserList(UserIndex).Stats.MinSta > 0 Then
         'Msg2129=¡No tengo energía!
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
@@ -1058,20 +1112,30 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
     End If
     ' === [ Main Logic ] ===
-    If AlquimistaTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And PuedeConstruirAlquimista( _
+    If UserList(UserIndex).clase <> e_Class.Trabajador Then Exit Sub
+    If UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones And PuedeConstruirAlquimista( _
             ItemIndex) And ObjData(ToolIndex).OBJType = e_OBJType.otWorkingTools And ObjData(ToolIndex).Subtipo = 4 And KnowsCraftingRecipe(UserIndex, ItemIndex) Then
         Dim MiObj As t_Obj
-        MiObj.amount = 1
+        MiObj.amount = requestedAmount
         MiObj.ObjIndex = ItemIndex
         MiObj.ElementalTags = ObjData(ItemIndex).ElementalTags
         If Not ConsumeCraftingMaterials(UserIndex, MiObj, e_JobsTypes.Alchemist) Then Exit Sub
+        Dim successBasisPoints As Integer, craftedAmount As Long
+        successBasisPoints = CalculateAlchemySuccessBasisPoints(UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia), ObjData(ItemIndex).SkPociones)
+        craftedAmount = CalculateAlchemyBatchResult(requestedAmount, successBasisPoints)
+        MiObj.amount = craftedAmount
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
         Call WriteUpdateSta(UserIndex)
         ' AGREGAR FX
         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-        If Not MeterItemEnInventario(UserIndex, MiObj) Then
-            Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
+        If craftedAmount > 0 Then
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+                Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
+            End If
+            Call WriteLocaleMsg(UserIndex, MSG_COMBINACION_HA_SIDO_EXITOSA, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
+        Else
+            Call WriteLocaleMsg(UserIndex, MSG_COMBINACION_HA_FALLADO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_SUBASTA)
         End If
         Call SubirSkill(UserIndex, e_Skill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
@@ -2127,6 +2191,7 @@ End Function
 Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, ByVal JobType As Byte)
     On Error GoTo GiveExpWhileWorking_Err:
     Dim tmpExp As Long
+    Dim materialSlot As Integer
     With ObjData(Item.ObjIndex)
     Select Case JobType
         Case e_JobsTypes.Miner
@@ -2161,26 +2226,20 @@ Public Sub GiveExpWhileWorking(ByVal UserIndex As Integer, ByRef Item As t_Obj, 
                 tmpExp = ComputeWorkingExp(1, SvrConfig.GetValue("FishingExp"), 1)
             End If
         Case e_JobsTypes.Alchemist
-            If .FlorRoja > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.FlorRoja, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .FlorOceano > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.FlorOceano, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .ColaDeZorro > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.ColaDeZorro, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .Tuna > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.Tuna, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .HongoDeLuz > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.HongoDeLuz, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .Cala > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
-            End If
-            If .SemillasProsperas > 0 Then
-                tmpExp = tmpExp + ComputeWorkingExp(.SemillasProsperas, SvrConfig.GetValue("MixingExp"), Item.Amount)
+            If .GenericMaterialCount > 0 Then
+                For materialSlot = 1 To .GenericMaterialCount
+                    If .GenericMaterialConsumed(materialSlot) Then
+                        tmpExp = tmpExp + ComputeWorkingExp(.GenericMaterialAmount(materialSlot), SvrConfig.GetValue("MixingExp"), Item.Amount)
+                    End If
+                Next materialSlot
+            Else
+                If .FlorRoja > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.FlorRoja, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .FlorOceano > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.FlorOceano, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .ColaDeZorro > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.ColaDeZorro, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .Tuna > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.Tuna, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .HongoDeLuz > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.HongoDeLuz, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .Cala > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.Cala, SvrConfig.GetValue("MixingExp"), Item.Amount)
+                If .SemillasProsperas > 0 Then tmpExp = tmpExp + ComputeWorkingExp(.SemillasProsperas, SvrConfig.GetValue("MixingExp"), Item.Amount)
             End If
         Case e_JobsTypes.Tailor
             If .PielLobo > 0 Then

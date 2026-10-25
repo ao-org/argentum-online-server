@@ -1857,9 +1857,14 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
     Dim count          As Integer
     ReDim validIndexes(1 To UBound(ObjAlquimista()))
     Call Writer.WriteInt16(ServerPacketID.eAlquimistaObj)
+    If UserList(UserIndex).clase <> e_Class.Trabajador Then
+        Call Writer.WriteInt16(0)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+    End If
     For i = 1 To UBound(ObjAlquimista())
         ' Can the user create this object? If so add it to the list....
-        If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
+        If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) Then
             count = count + 1
             validIndexes(count) = i
         End If
@@ -1887,7 +1892,9 @@ Public Sub WriteNpcCraftingObjects(ByVal UserIndex As Integer, ByVal CraftingTyp
     End If
     Dim Recipes As Dictionary
     Set Recipes = Crafteos.Item(CraftingType)
-    Call Writer.WriteInt16(Recipes.Count)
+    ' A negative count marks an NPC commission catalogue for the modern client.
+    ' Personal Alchemy keeps its positive count and learned-recipe requirement.
+    Call Writer.WriteInt16(-Recipes.Count)
     Dim Recipe As clsCrafteo
     Dim RecipeValue As Variant
     For Each RecipeValue In Recipes.Items
