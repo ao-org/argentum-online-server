@@ -52,8 +52,10 @@ Public Function test_suite_crafting() As Boolean
     names = Array("commission batch", "dead", "NPC trade", "player trade", "stunned", "resting", _
         "cooldown", "price bounds", "legacy crafting window", "NPC window escrow", "personal batch pacing", _
         "malformed packets", "carpentry cancellation", "pot returns escrow", "large legacy carpentry batch", _
-        "commission cannot use legacy execution")
-    For scenario = 1 To 16
+        "commission cannot use legacy execution", "close commission restores walking", _
+        "blacksmith replaces commission", "carpenter replaces commission", "alchemy replaces commission", _
+        "tailor replaces commission", "empty commission owns session", "close legacy combination")
+    For scenario = 1 To 23
         Call UnitTesting.RunTest("craft request: " & names(scenario - 1), test_crafting_request(scenario))
     Next scenario
     test_suite_crafting = (UnitTesting.GetFailedTests() = failuresBefore)
@@ -372,13 +374,13 @@ Private Function test_craft_reusable_mortar() As Boolean
     recipe.Mortero = 1
     recipe.FrascoAlq = 1
     recipe.FlorRoja = 2
-    Call CraftStack(inventory, 1, FrascoAlq, 1)
-    Call CraftStack(inventory, 2, FlorRoja, 2)
+    Call CraftStack(inventory, 1, FrascoAlq, 100)
+    Call CraftStack(inventory, 2, FlorRoja, 200)
     original = inventory
-    If TryConsumeCraftingMaterials(inventory, 2, recipe, e_JobsTypes.Alchemist, 1) Then Exit Function
+    If TryConsumeCraftingMaterials(inventory, 2, recipe, e_JobsTypes.Alchemist, 100) Then Exit Function
     If Not SameCraftInventory(inventory, original) Then Exit Function
     Call CraftStack(inventory, 3, Mortero, 1)
-    If Not TryConsumeCraftingMaterials(inventory, 3, recipe, e_JobsTypes.Alchemist, 1) Then Exit Function
+    If Not TryConsumeCraftingMaterials(inventory, 3, recipe, e_JobsTypes.Alchemist, 100) Then Exit Function
     If inventory.NroItems <> 1 Then Exit Function
     test_craft_reusable_mortar = (inventory.Object(3).ObjIndex = Mortero And inventory.Object(3).amount = 1)
     Exit Function
@@ -720,6 +722,9 @@ Private Function test_crafting_request(ByVal scenario As Integer) As Boolean
     Dim emptyUser As t_User, emptyObject As t_ObjData
     Dim savedRecipes As Dictionary, recipes As New Dictionary, recipe As New clsCrafteo
     Dim savedAlchemy() As Integer, savedInterval As Long, fixtureReady As Boolean
+    Dim savedOrigin As t_MapBlock, savedDestination As t_MapBlock, emptyTile As t_MapBlock
+    Dim savedMapUsers As Integer, movementFixture As Boolean
+    Dim wire As New Network.writer, bytes() As Byte, packet As Variant
     user = UBound(UserList): npc = UBound(NpcList)
     ReDim savedUsers(1 To 1): ReDim savedObjects(1 To 3)
     savedUsers(1) = UserList(user): savedNpc = NpcList(npc)
@@ -815,7 +820,9 @@ Private Function test_crafting_request(ByVal scenario As Integer) As Boolean
             Call Expect(UserList(user).invent.Object(1).amount = 23, "escrow and catalyst returned before mode switch")
             Call Expect(UserList(user).CraftInventory(1) = 0 And UserList(user).CraftCatalyst.amount = 0, "escrow cleared exactly once")
             Call Expect(PacketIdAt(packets.Count - 1) = ServerPacketID.eAlquimistaObj, "NPC catalogue precedes window")
-            Call Expect(PacketIdAt(packets.Count) = ServerPacketID.eShowAlquimiaForm, "NPC alchemy window")
+            Call Expect(PacketIdAt(packets.Count) = ServerPacketID.eOpenCrafting, "explicit NPC window ownership")
+            packet = packets(packets.Count)
+            Call Expect(UBound(packet) = 2 And packet(2) = NPC_ALCHEMY_CRAFTING_TYPE, "existing open packet type byte")
         Case 11
             UserList(user).clase = e_Class.Trabajador
             UserList(user).flags.Crafteando = 0
@@ -866,11 +873,71 @@ Private Function test_crafting_request(ByVal scenario As Integer) As Boolean
             Call Expect(UserList(user).Stats.GLD = 1000 And UserList(user).invent.Object(1).amount = 20, "legacy execution cannot bypass commission costs or validation")
             Call recipes.Add(GetRecipeKey(UserList(user).CraftInventory), recipe)
             Call Expect(CheckCraftingResult(user) Is Nothing, "commission does not expose a legacy crafting result")
+        Case 17
+            savedOrigin = MapData(50, 50, 1): savedDestination = MapData(51, 50, 1)
+            savedMapUsers = MapInfo(1).NumUsers
+            movementFixture = True
+            MapData(50, 50, 1) = emptyTile: MapData(51, 50, 1) = emptyTile
+            MapData(50, 50, 1).UserIndex = user
+            MapInfo(1).NumUsers = 1
+            ' Both fixture tiles are in the same 12-tile area cell.
+            UserList(user).AreasInfo.AreaID = (51 \ 12 + 1) * (50 \ 12 + 1)
+            UserList(user).flags.Privilegios = e_PlayerType.Admin
+            Call wire.WriteInt16(ClientPacketID.eWalk)
+            Call wire.WriteInt8(e_Heading.EAST)
+            Call wire.WriteInt32(1)
+            Call wire.GetData(bytes): Call wire.Clear
+            Call Protocol.CraftingTestLifecyclePacket(user, bytes)
+            Call Expect(UserList(user).pos.x = 50, "open commission blocks walk")
+            UserList(user).CraftInventory(1) = 1
+            Call wire.WriteInt16(ClientPacketID.eCloseCrafting)
+            Call wire.GetData(bytes): Call wire.Clear
+            Call Expect(UBound(bytes) = 1 And bytes(0) = &H18 And bytes(1) = 1, "close wire is packet 280 only")
+            Call Protocol.CraftingTestLifecyclePacket(user, bytes)
+            Call Protocol.CraftingTestLifecyclePacket(user, bytes)
+            Call Expect(UserList(user).flags.Crafteando = 0, "production close clears movement lock")
+            Call Expect(UserList(user).invent.Object(1).amount = 21, "duplicate close returns escrow only once")
+            Call wire.WriteInt16(ClientPacketID.eWalk)
+            Call wire.WriteInt8(e_Heading.EAST)
+            Call wire.WriteInt32(2)
+            Call wire.GetData(bytes): Call wire.Clear
+            Call Protocol.CraftingTestLifecyclePacket(user, bytes)
+            Call Expect(UserList(user).pos.x = 51 And UserList(user).pos.y = 50, "walking resumes after close")
+        Case 18 To 21
+            UserList(user).CraftInventory(1) = 1
+            Select Case scenario
+                Case 18: Call WriteShowBlacksmithForm(user)
+                Case 19: Call WriteShowCarpenterForm(user)
+                Case 20: Call WriteShowAlquimiaForm(user)
+                Case 21: Call WriteShowSastreForm(user)
+            End Select
+            Call Expect(UserList(user).flags.Crafteando = 0, "personal replacement releases NPC lock")
+            Call Expect(UserList(user).CraftInventory(1) = 0 And UserList(user).invent.Object(1).amount = 21, "replacement returns escrow")
+            Call OpenNpcCrafting(user, NPC_ALCHEMY_CRAFTING_TYPE)
+            Call Expect(UserList(user).flags.Crafteando = NPC_ALCHEMY_CRAFTING_TYPE, "new NPC session remains active")
+        Case 22
+            Call recipes.RemoveAll
+            Call OpenNpcCrafting(user, NPC_ALCHEMY_CRAFTING_TYPE)
+            Call Expect(packets.Count = 2 And PacketIdAt(1) = ServerPacketID.eAlquimistaObj, "empty catalogue precedes open")
+            packet = packets(2)
+            Call Expect(packet(0) = 168 And packet(1) = 0 And packet(2) = 2 And UBound(packet) = 2, "empty catalogue still has explicit NPC ownership")
+            Call Expect(UserList(user).flags.Crafteando = 2, "empty commission session active")
+        Case 23
+            Call OpenNpcCrafting(user, 1)
+            UserList(user).CraftInventory(1) = 1
+            Call wire.WriteInt16(ClientPacketID.eCloseCrafting)
+            Call wire.GetData(bytes): Call wire.Clear
+            Call Protocol.CraftingTestLifecyclePacket(user, bytes)
+            Call Expect(UserList(user).flags.Crafteando = 0 And UserList(user).invent.Object(1).amount = 21, "legacy combination close unchanged")
     End Select
     test_crafting_request = True
 Cleanup:
     capturing = False
     Set packets = Nothing
+    If movementFixture Then
+        MapData(50, 50, 1) = savedOrigin: MapData(51, 50, 1) = savedDestination
+        MapInfo(1).NumUsers = savedMapUsers
+    End If
     If fixtureReady Then
         UserList(user) = savedUsers(1)
         NpcList(npc) = savedNpc

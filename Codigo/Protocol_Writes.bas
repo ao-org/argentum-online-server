@@ -402,6 +402,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowBlacksmithForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowBlacksmithForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -417,6 +418,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowCarpenterForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowCarpenterForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -427,6 +429,7 @@ End Sub
 
 Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowAlquimiaForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowAlquimiaForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -437,6 +440,7 @@ End Sub
 
 Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
     On Error GoTo WriteShowSastreForm_Err
+    Call CloseNpcCrafting(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eShowSastreForm)
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub

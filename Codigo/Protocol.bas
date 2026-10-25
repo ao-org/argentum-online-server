@@ -2960,6 +2960,18 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 #If UNIT_TEST = 1 Then
+Public Sub CraftingTestLifecyclePacket(ByVal UserIndex As Integer, ByRef Payload() As Byte)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    Select Case reader.ReadInt16()
+        Case ClientPacketID.eCloseCrafting: Call HandleCloseCrafting(UserIndex)
+        Case ClientPacketID.eWalk: Call HandleWalk(UserIndex)
+    End Select
+    Set reader = savedReader
+End Sub
+
 Public Sub CraftingTestRequest(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Alchemy As Boolean)
     Dim savedReader As Network.reader
     Set savedReader = reader
@@ -8181,9 +8193,7 @@ End Sub
 
 Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    If UserList(UserIndex).flags.Crafteando = 0 Then Exit Sub
-    Call ReturnCraftingItems(UserIndex)
-    UserList(UserIndex).flags.Crafteando = 0
+    Call CloseNpcCrafting(UserIndex)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)

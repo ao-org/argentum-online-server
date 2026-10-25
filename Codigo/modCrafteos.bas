@@ -115,10 +115,14 @@ Public Sub OpenNpcCrafting(ByVal UserIndex As Integer, ByVal CraftingType As Byt
     UserList(UserIndex).flags.Crafteando = CraftingType
     If CraftingType = NPC_ALCHEMY_CRAFTING_TYPE Then
         Call WriteNpcCraftingObjects(UserIndex, CraftingType)
-        Call WriteShowAlquimiaForm(UserIndex)
-    Else
-        Call WriteOpenCrafting(UserIndex, CraftingType)
     End If
+    Call WriteOpenCrafting(UserIndex, CraftingType)
+End Sub
+
+Public Sub CloseNpcCrafting(ByVal UserIndex As Integer)
+    If UserList(UserIndex).flags.Crafteando = 0 Then Exit Sub
+    Call ReturnCraftingItems(UserIndex)
+    UserList(UserIndex).flags.Crafteando = 0
 End Sub
 
 Public Function CheckCraftingResult(ByVal UserIndex As Integer) As clsCrafteo
