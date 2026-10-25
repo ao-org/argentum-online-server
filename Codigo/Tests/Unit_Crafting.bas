@@ -17,6 +17,7 @@ Public Function test_suite_crafting() As Boolean
     Call UnitTesting.RunTest("craft tagged and locked stacks do not pay normal costs", test_craft_ineligible_stacks())
     Call UnitTesting.RunTest("craft carpentry multiplies the full batch cost", test_craft_batch_quantity())
     Call UnitTesting.RunTest("craft generic carpentry supports batches and reusable tools", test_craft_generic_carpentry_materials())
+    Call UnitTesting.RunTest("craft generic blacksmith materials override legacy costs", test_craft_generic_blacksmith_materials())
     Call UnitTesting.RunTest("craft empty negative and invalid recipes fail closed", test_craft_invalid_recipe())
     Call UnitTesting.RunTest("craft excessive quantity cannot overflow costs", test_craft_quantity_overflow())
     Call UnitTesting.RunTest("craft corrupt material stacks fail without mutation", test_craft_corrupt_stack())
@@ -226,6 +227,28 @@ Private Function test_craft_invalid_recipe() As Boolean
 test_craft_invalid_recipe_Err:
     test_craft_invalid_recipe = False
     Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_invalid_recipe", Erl)
+End Function
+
+Private Function test_craft_generic_blacksmith_materials() As Boolean
+    On Error GoTo test_craft_generic_blacksmith_materials_Err
+    Dim inventory As t_Inventario, recipe As t_ObjData
+    recipe.LingH = 99
+    recipe.GenericMaterialCount = 2
+    recipe.GenericMaterialObjIndex(1) = e_Minerales.LingoteDeHierro
+    recipe.GenericMaterialAmount(1) = 3
+    recipe.GenericMaterialConsumed(1) = True
+    recipe.GenericMaterialObjIndex(2) = Mortero
+    recipe.GenericMaterialAmount(2) = 1
+    recipe.GenericMaterialConsumed(2) = False
+    Call CraftStack(inventory, 1, e_Minerales.LingoteDeHierro, 3)
+    Call CraftStack(inventory, 2, Mortero, 1)
+    If Not TryConsumeCraftingMaterials(inventory, 2, recipe, e_JobsTypes.Blacksmith, 1) Then Exit Function
+    If inventory.NroItems <> 1 Then Exit Function
+    test_craft_generic_blacksmith_materials = (inventory.Object(2).ObjIndex = Mortero And inventory.Object(2).amount = 1)
+    Exit Function
+test_craft_generic_blacksmith_materials_Err:
+    test_craft_generic_blacksmith_materials = False
+    Call TraceError(Err.Number, Err.Description, "Unit_Crafting.test_craft_generic_blacksmith_materials", Erl)
 End Function
 
 Private Function test_craft_quantity_overflow() As Boolean

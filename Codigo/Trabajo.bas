@@ -464,15 +464,27 @@ Public Function TryConsumeCraftingMaterials(ByRef inventory As t_Inventario, ByV
     With recipe
         Select Case job
             Case e_JobsTypes.Blacksmith
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeHierro, .LingH, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDePlata, .LingP, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeOro, .LingO, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Coal, .Coal, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Blodium, .Blodium, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.FireEssence, .FireEssence, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WaterEssence, .WaterEssence, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.EarthEssence, .EarthEssence, quantity, hasCost) Then Exit Function
-                If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WindEssence, .WindEssence, quantity, hasCost) Then Exit Function
+                Dim blacksmithMaterialSlot As Integer
+                If .GenericMaterialCount > 0 Then
+                    For blacksmithMaterialSlot = 1 To .GenericMaterialCount
+                        If .GenericMaterialObjIndex(blacksmithMaterialSlot) < 1 Or .GenericMaterialAmount(blacksmithMaterialSlot) < 1 Then Exit Function
+                        If .GenericMaterialConsumed(blacksmithMaterialSlot) Then
+                            If Not StageCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(blacksmithMaterialSlot), .GenericMaterialAmount(blacksmithMaterialSlot), quantity, hasCost) Then Exit Function
+                        Else
+                            If Not HasCraftingMaterial(staged, slotCount, .GenericMaterialObjIndex(blacksmithMaterialSlot), .GenericMaterialAmount(blacksmithMaterialSlot)) Then Exit Function
+                        End If
+                    Next blacksmithMaterialSlot
+                Else
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeHierro, .LingH, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDePlata, .LingP, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.LingoteDeOro, .LingO, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Coal, .Coal, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.Blodium, .Blodium, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.FireEssence, .FireEssence, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WaterEssence, .WaterEssence, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.EarthEssence, .EarthEssence, quantity, hasCost) Then Exit Function
+                    If Not StageCraftingMaterial(staged, slotCount, e_Minerales.WindEssence, .WindEssence, quantity, hasCost) Then Exit Function
+                End If
             Case e_JobsTypes.Carpenter
                 Dim carpenterMaterialSlot As Integer
                 If .GenericMaterialCount > 0 Then
@@ -768,6 +780,17 @@ End Function
 
 Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
     On Error GoTo HerreroTieneMateriales_Err
+    If ObjData(ItemIndex).GenericMaterialCount > 0 Then
+        Dim stagedInventory As t_Inventario
+        stagedInventory = UserList(UserIndex).invent
+        If Not TryConsumeCraftingMaterials(stagedInventory, UserList(UserIndex).CurrentInventorySlots, ObjData(ItemIndex), e_JobsTypes.Blacksmith, 1) Then
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MATERIALES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
+        End If
+        HerreroTieneMateriales = True
+        Exit Function
+    End If
     If ObjData(ItemIndex).LingH > 0 Then
         If Not TieneObjetos(e_Minerales.LingoteDeHierro, ObjData(ItemIndex).LingH, UserIndex) Then
             ' Msg639=No tenés suficientes lingotes de hierro.

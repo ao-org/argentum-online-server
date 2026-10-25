@@ -523,6 +523,9 @@ Private Function TryHandleObjectAtOffset(ByVal UserIndex As Integer, ByVal Map A
         Case e_OBJType.otDoors 'Es una puerta
             Call HandleDoorAction(Map, x, y, UserIndex)
             TryHandleObjectAtOffset = True
+        Case e_OBJType.otAnvil
+            Call HandleAnvilAction(Map, x, y, UserIndex)
+            TryHandleObjectAtOffset = True
     End Select
 End Function
 Sub HandleAnvilAction(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal UserIndex As Integer)
