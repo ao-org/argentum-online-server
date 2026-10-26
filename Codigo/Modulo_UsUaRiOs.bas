@@ -31,6 +31,10 @@ Public Const GM_REPLY_HISTORY_LIMIT As Long = 20
 Private UserNameCache     As New Dictionary
 Private AvailableUserSlot As t_IndexHeap
 
+Public Function NormalizeGmReplyUserName(ByVal username As String) As String
+    NormalizeGmReplyUserName = Replace(username, "+", " ")
+End Function
+
 Public Function LimitGmReplyHistory(ByVal MessageInfo As String) As String
     On Error GoTo LimitGmReplyHistory_Err
     If LenB(MessageInfo) = 0 Then Exit Function

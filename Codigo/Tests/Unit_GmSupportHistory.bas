@@ -8,6 +8,7 @@ Public Function test_suite_gm_support_history() As Boolean
     Call UnitTesting.RunTest("GM support history preserves pending ordinary messages", test_preserves_ordinary_messages())
     Call UnitTesting.RunTest("GM support history extraction excludes ordinary messages", test_extracts_only_replies())
     Call UnitTesting.RunTest("Character saves do not overwrite GM reply history", test_character_save_preserves_replies())
+    Call UnitTesting.RunTest("GM support normalizes plus-separated names", test_normalizes_plus_separated_names())
     test_suite_gm_support_history = True
     Exit Function
 test_suite_gm_support_history_Err:
@@ -52,6 +53,12 @@ Private Function test_character_save_preserves_replies() As Boolean
     test_character_save_preserves_replies = _
         InStr(1, QUERY_UPDATE_MAINPJ, "message_info", vbTextCompare) = 0 And _
         InStr(1, QUERY_UPDATE_MAINPJ_LOGOUT, "message_info", vbTextCompare) = 0
+End Function
+
+Private Function test_normalizes_plus_separated_names() As Boolean
+    test_normalizes_plus_separated_names = _
+        UserMod.NormalizeGmReplyUserName("John+Doe") = "John Doe" And _
+        UserMod.NormalizeGmReplyUserName("John Doe") = "John Doe"
 End Function
 
 #End If

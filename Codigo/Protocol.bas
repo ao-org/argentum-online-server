@@ -5626,7 +5626,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
         Dim targetLoggedIn As Boolean
         Dim targetConnected As Boolean
         Dim storedReply As String
-        username = reader.ReadString8()
+        username = UserMod.NormalizeGmReplyUserName(reader.ReadString8())
         mensaje = reader.ReadString8()
         If EsGM(UserIndex) Then
             If LenB(username) = 0 Or LenB(mensaje) = 0 Then
