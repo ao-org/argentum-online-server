@@ -662,6 +662,13 @@ Private Sub CheckRespawnCase(ByVal group As Long)
         Case Else
             Call AdjacentExpect(adjacentPackets.Count = 0, "ineligible viewer or placement suppressed")
     End Select
+    ' Unrelated sessions have served their notification-cost assertion. End them
+    ' before the global tick, whose normal resets are outside this one-viewer capture.
+    If group = 58 Then
+        For extra = 2 To 65
+            UserList(extra).flags.UserLogged = False
+        Next extra
+    End If
     Call ClearAdjacentCapture()
     Call TickAdjacent()
     ' An eventual successful retry is appearance only, never the missed effect.
