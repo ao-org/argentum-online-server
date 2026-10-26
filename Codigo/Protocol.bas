@@ -8612,29 +8612,38 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     Select Case skill
         Case e_Skill.Pescar
             If Not CanUserFish(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Talar
             If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
             If Not CanUserExtractWood(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Mineria
             If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
             If Not CanUserExtractMinerals(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Smelting
             If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case Else
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
     End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)
+    Call WriteMacroTrabajoToggle(UserIndex, True)
     Exit Function
 HandleStartAutomatedAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)
