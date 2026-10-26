@@ -226,6 +226,7 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentTwoHopCase(group + 1, CStr(names(group)))
     Next group
+    Call TestNpcRespawnEffects()
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = UnitTesting.GetFailedTests() = failuresBefore
 End Function
@@ -564,9 +565,118 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call CheckAdjacentAppearanceCase(group)
         Case 39 To 41
             Call CheckNpcAppearanceChangeCase(group)
+        Case 46 To 67
+            Call CheckRespawnCase(group)
         Case 42 To 45
             Call CheckDiagnosticsCase(group)
     End Select
+End Sub
+
+Public Sub TestNpcRespawnEffects()
+    Call UnitTesting.RunTest("respawn queue retains death provenance and excludes initial spawn", TestNpcRespawnQueueProvenance())
+    Dim group As Long
+    For group = 46 To 67
+        Call RunAdjacentCase(group, "respawn " & CStr(group))
+    Next group
+End Sub
+
+Private Sub CheckRespawnCase(ByVal group As Long)
+    Dim reader As Network.reader, extra As Integer, x As Integer, y As Integer
+    Select Case group
+        Case 58, 59: UserList(1).pos.y = 80
+        Case 61
+            Call AdjacentExpect(LoadAdjacentTopologyJson("{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,36],""edges"":[[34,36,200,200],[36,34,-200,-200],[36,35,-200,-280],[35,36,200,280]]}", False), "two-hop non-cardinal topology")
+        Case 62
+            Call AdjacentExpect(LoadAdjacentTopologyJson("{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,36],""edges"":[[34,35,0,-80],[35,34,0,80],[34,36,200,200],[36,34,-200,-200],[36,35,-199,-280],[35,36,199,280]]}", False), "ambiguous placement topology")
+        Case 63: MapInfo(35).MapResource = 135
+        Case 64: MapInfo(34).MapResource = 134
+        Case 65: Call ClearAdjacentCapture(3)
+        Case 66
+            Call AddAdjacentSecondNpc()
+            Call ClearAdjacentCapture(3)
+        Case 67
+            For extra = 1 To ADJACENT_NPC_LIMIT
+                x = 26 + ((extra - 1) Mod 16): y = 73 + ((extra - 1) \ 16)
+                NpcList(adjacentNpc - extra) = NpcList(adjacentNpc)
+                NpcList(adjacentNpc - extra).pos.x = x: NpcList(adjacentNpc - extra).pos.y = y
+                NpcList(adjacentNpc - extra).Char.charindex = 400 + extra
+                MapData(x, y, 35).NpcIndex = adjacentNpc - extra
+            Next extra
+        Case 47: NpcList(adjacentNpc).flags.invisible = 1
+        Case 48: UserList(1).flags.Muerto = 1
+        Case 49: UserList(1).pos.y = 80
+        Case 50: NpcList(adjacentNpc).MaestroUser.ArrayIndex = 1
+        Case 51: MapData(50, 90, 35).NpcIndex = 0
+        Case 52: Call ClearAdjacentCapture(2)
+        Case 53
+            UserList(1).pos.Map = 35: UserList(1).pos.y = 90
+        Case 54
+            UserList(1).flags.Muerto = 1: MapInfo(34).Seguro = 1
+        Case 55
+            UserList(1).flags.Muerto = 1: NpcList(adjacentNpc).npcType = e_NPCType.Revividor
+        Case 56
+            Call TickAdjacent()
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ordinary visibility never emits respawn")
+            Exit Sub
+        Case 57
+            Call ClearAdjacentCapture(1)
+    End Select
+    ' Exercise the production map connection index, including same-map relocation.
+    ConnGroups(UserList(1).pos.Map).CountEntrys = 1
+    ConnGroups(UserList(1).pos.Map).UserEntrys(1) = 1
+    Call NotifyNpcRespawn(adjacentNpc)
+    If group = 53 Then
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 0, "same-map appearance needs no adjacent collection")
+    ElseIf group = 46 Or group = 52 Or group = 54 Or group = 55 Or group = 57 Or group = 60 Or group = 61 Or group >= 65 Then
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 1, "one collection per eligible viewer")
+        Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1, "source tiles scanned once")
+    Else
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 0 And AdjacentNpcTestScanCount(35) = 0, "no collection for irrelevant viewer")
+    End If
+    If group = 58 Then Call AdjacentExpect(AdjacentNpcTestRespawnViewerVisits() = 1, "64 unrelated connections are not visited")
+    Select Case group
+        Case 46, 54, 55, 60, 61
+            Call AdjacentExpect(adjacentPackets.Count = 3, "reset upsert respawn ordering")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(3, ServerPacketID.eNpcRespawnEffect, 20)
+            Call AdjacentExpect(reader.ReadInt32() > 0, "one-shot sequence")
+            Call AdjacentExpect(reader.ReadInt16() = 34 And reader.ReadInt16() = 35, "viewer and source maps")
+            Call AdjacentExpect(reader.ReadInt16() = adjacentNpc And reader.ReadInt16() = 3, "NPC lifetime")
+            Call AdjacentExpect(reader.ReadInt16() = 123 And reader.ReadInt16() = 1543, "character and definition")
+            Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source tile")
+        Case 65
+            Call AdjacentExpect(adjacentPackets.Count = 3 And Not CBool(adjacentAccepted(3)), "effect enqueue failed after accepted appearance")
+        Case 66
+            Call AdjacentExpect(adjacentPackets.Count = 4 And Not CBool(adjacentAccepted(3)), "partial appearance prefix accepted")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(4, ServerPacketID.eNpcRespawnEffect, 20)
+        Case 53
+            Call AdjacentExpect(adjacentPackets.Count = 2, "active create then effect")
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eNpcRespawnEffect, 20)
+        Case 52
+            Call AdjacentExpect(adjacentPackets.Count = 2, "failed upsert suppresses effect")
+        Case 57
+            Call AdjacentExpect(adjacentPackets.Count = 1, "failed reset suppresses effect")
+        Case Else
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ineligible viewer or placement suppressed")
+    End Select
+    ' Unrelated sessions have served their notification-cost assertion. End them
+    ' before the global tick, whose normal resets are outside this one-viewer capture.
+    If group = 58 Then
+        For extra = 2 To 65
+            UserList(extra).flags.UserLogged = False
+        Next extra
+    End If
+    Call ClearAdjacentCapture()
+    Call TickAdjacent()
+    ' An eventual successful retry is appearance only, never the missed effect.
+    Dim i As Long, bytes() As Byte
+    For i = 1 To adjacentPackets.Count
+        bytes = adjacentPackets(i)
+        Call AdjacentExpect(CLng(bytes(0)) + 256& * bytes(1) <> ServerPacketID.eNpcRespawnEffect, "no delayed effect")
+    Next i
 End Sub
 
 Private Sub ExpectAdjacentAppearance(ByVal packetIndex As Long, ByVal expectedText As String, ByVal expectedLength As Long)
@@ -796,9 +906,12 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
     Dim oldLastUser As Integer, x As Integer, y As Integer, saved As Boolean, passed As Boolean, failure As String
     Dim oldConfig As ServerConfig, oldToggle As Boolean, oldLastNpc As Integer
     Dim oldNumChars As Integer, oldLastChar As Integer, oldEntries34 As Integer, oldEntries35 As Integer
+    Dim oldGroup34 As t_ConnGroup, oldGroup35 As t_ConnGroup, oldGroup36 As t_ConnGroup, oldGroup1 As t_ConnGroup
+    Dim oldResource36 As Integer, oldUserUpper As Long, extra As Integer
+    Dim extraUsers(2 To 65) As t_User, extraNpcs(1 To ADJACENT_NPC_LIMIT) As t_Npc
     Call AdjacentExpect(NumMaps >= 35 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized test world")
     adjacentNpc = UBound(NpcList) - 1
-    If group >= 42 Then adjacentNpc = 1
+    If group >= 42 And group <= 45 Then adjacentNpc = 1
     Set oldConfig = SvrConfig
     oldToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE): oldLastNpc = LastNPC
     oldNumChars = NumChars: oldLastChar = LastChar
@@ -812,8 +925,33 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
             tiles35(x, y) = MapData(x, y, 35)
         Next x
     Next y
+    If group >= 46 Then
+        oldGroup34 = ConnGroups(34): oldGroup35 = ConnGroups(35): oldGroup36 = ConnGroups(36)
+        oldResource36 = MapInfo(36).MapResource
+        If group = 58 Then
+            oldGroup1 = ConnGroups(1): oldUserUpper = UBound(UserList)
+            For extra = 2 To 65
+                If extra <= oldUserUpper Then extraUsers(extra) = UserList(extra)
+            Next extra
+        End If
+        If group = 67 Then
+            For extra = 1 To ADJACENT_NPC_LIMIT
+                extraNpcs(extra) = NpcList(adjacentNpc - extra)
+            Next extra
+        End If
+    End If
     saved = True
-    If group >= 42 Then
+    If group >= 46 Then
+        ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0: ConnGroups(36).CountEntrys = 0
+        ReDim ConnGroups(34).UserEntrys(1 To 1): ReDim ConnGroups(35).UserEntrys(1 To 1)
+        MapInfo(36).MapResource = 36
+        If group = 58 Then
+            If oldUserUpper < 65 Then ReDim Preserve UserList(1 To 65)
+            ReDim ConnGroups(1).UserEntrys(1 To 64)
+            ConnGroups(1).CountEntrys = 64
+        End If
+    End If
+    If group >= 42 And group <= 45 Then
         ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0
     End If
     Call AdjacentNpcTestResetState
@@ -836,6 +974,13 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
         .ConnectionDetails.ConnID = 42
         .pos.Map = 34: .pos.x = 50: .pos.y = 11
     End With
+    If group = 58 Then
+        LastUser = 65
+        For extra = 2 To 65
+            UserList(extra) = UserList(1): UserList(extra).pos.Map = 1
+            ConnGroups(1).UserEntrys(extra - 1) = extra
+        Next extra
+    End If
     NpcList(adjacentNpc) = emptyNpc
     NpcList(adjacentNpc + 1) = emptyNpc
     With NpcList(adjacentNpc)
@@ -863,7 +1008,23 @@ Cleanup:
     adjacentCaptureActive = False
     Call AdjacentNpcTestResetState
     If saved Then
-        If group >= 42 Then
+        If group >= 46 Then
+            ConnGroups(34) = oldGroup34: ConnGroups(35) = oldGroup35: ConnGroups(36) = oldGroup36
+            MapInfo(36).MapResource = oldResource36
+            If group = 58 Then
+                ConnGroups(1) = oldGroup1
+                For extra = 2 To 65
+                    If extra <= oldUserUpper Then UserList(extra) = extraUsers(extra)
+                Next extra
+                If oldUserUpper < 65 Then ReDim Preserve UserList(1 To oldUserUpper)
+            End If
+            If group = 67 Then
+                For extra = 1 To ADJACENT_NPC_LIMIT
+                    NpcList(adjacentNpc - extra) = extraNpcs(extra)
+                Next extra
+            End If
+        End If
+        If group >= 42 And group <= 45 Then
             If NpcList(adjacentNpc).Char.charindex > 0 Then CharList(NpcList(adjacentNpc).Char.charindex) = 0
             Set SvrConfig = oldConfig
             Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, oldToggle)
@@ -883,6 +1044,7 @@ Cleanup:
     If passed Then
         Call UnitTesting.RunTest("adjacent stream " & name, True)
     Else
+        Call UnitTesting.Progress("adjacent stream " & name & " FAILED: " & failure)
         Call UnitTesting.RunTestError("adjacent stream " & name, failure)
     End If
 End Sub
