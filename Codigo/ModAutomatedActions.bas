@@ -118,6 +118,7 @@ End Function
 
 Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
     If Not ValidResourceAtPos(UserIndex, ResourceType, TargetX, TargetY) Then
+        Call NotifyInvalidResourceTarget(UserIndex, ResourceType, TargetX, TargetY)
         Exit Function
     End If
     If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
@@ -126,3 +127,28 @@ Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal Resourc
     End If
     CanUserExtractResource = True
 End Function
+
+Private Sub NotifyInvalidResourceTarget(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer)
+    Dim TargetObjectIndex As Integer
+    TargetObjectIndex = MapData(TargetX, TargetY, UserList(UserIndex).pos.Map).ObjInfo.ObjIndex
+
+    If TargetObjectIndex > 0 Then
+        Select Case ObjData(TargetObjectIndex).OBJType
+            Case e_OBJType.otPlants
+                Call WriteLocaleMsg(UserIndex, MSG_HERRAMIENTA_INCORRECTA_USA_TIJERAS_ALQUIMIA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            Case e_OBJType.otTrees
+                Call WriteLocaleMsg(UserIndex, MSG_HERRAMIENTA_INCORRECTA_USA_HACHA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            Case e_OBJType.otOreDeposit
+                Call WriteLocaleMsg(UserIndex, MSG_HERRAMIENTA_INCORRECTA_USA_PICO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+        End Select
+    End If
+
+    If ResourceType = e_OBJType.otTrees Then
+        Call WriteLocaleMsg(UserIndex, MSG_SELECCIONA_ARBOL_PARA_TALAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+    ElseIf ResourceType = e_OBJType.otOreDeposit Then
+        Call WriteLocaleMsg(UserIndex, MSG_SELECCIONA_YACIMIENTO_PARA_MINAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+    End If
+End Sub
