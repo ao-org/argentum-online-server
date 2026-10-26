@@ -127,6 +127,8 @@ Server base: `add6a089335de6c9575c8b39e0d1ebc4dc6b31d7`.
   source/data were not changed by this feature.
 - Windows CTest: 6/8 passed, including three GL smoke checks. The unit aggregate
   and topology check fail for the assertions above.
+- Linux Release client and unit-test binaries built successfully; the same 45
+  focused tests passed. Full Linux CTest was not rerun.
 - Both localization JSON catalogs passed strict validation; git diff checks passed.
 - Windows graphics client launched and remained running. This is startup
   verification, not visual or live-respawn signoff.
