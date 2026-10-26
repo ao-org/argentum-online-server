@@ -1037,6 +1037,7 @@ Cleanup:
     If passed Then
         Call UnitTesting.RunTest("adjacent stream " & name, True)
     Else
+        Call UnitTesting.Progress("adjacent stream " & name & " FAILED: " & failure)
         Call UnitTesting.RunTestError("adjacent stream " & name, failure)
     End If
 End Sub
