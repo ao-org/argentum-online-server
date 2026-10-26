@@ -14,6 +14,7 @@ Private Const FLAG_NAV As Long = 2
 Private Const FLAG_AURAS As Long = 32
 Private Const FLAG_SNAP As Long = 64
 Private Const FLAG_CLAN As Long = 128
+Private Const HANDOFF_REPLACEMENT As Long = 7
 Private Enum e_HandoffStage
     HANDOFF_FRESH = 0
     HANDOFF_BLANK = 1
@@ -503,9 +504,11 @@ Public Function PrepareAdjacentPlayerHandoff(ByVal viewer As Integer, ByVal subj
             If value(5) = HANDOFF_CANCEL Or Not HandoffIsCurrent(viewer, subject, value) Then
                 visibilityHandled = True
                 PrepareAdjacentPlayerHandoff = False
+                ' Only this explicit create request may replace obsolete work.
+                ' Keep the old accepted owner intact until its removal succeeds.
+                value(HANDOFF_REPLACEMENT) = NewHandoffRequest(viewer, subject)
                 If Not CancelHandoff(viewer, subject, pending, value) Then Exit Function
-                PrepareAdjacentPlayerHandoff = True
-                visibilityHandled = False
+                If Not pending.Exists(actor) Then Exit Function
             End If
         End If
     End If
@@ -577,10 +580,10 @@ Failed:
 End Function
 
 Private Function DeferCreate(ByVal viewer As Integer, ByVal subject As Integer) As Boolean
-    Dim pending As Scripting.Dictionary, session As Variant, key As String
+    Dim pending As Scripting.Dictionary, request As Variant, key As String
     key = CStr(viewer)
-    session = Identity(subject)
-    If IsEmpty(session) Then Exit Function
+    request = NewHandoffRequest(viewer, subject)
+    If IsEmpty(request) Then Exit Function
     If Not mPending.Exists(key) Then
         Set pending = New Scripting.Dictionary
         Call mPending.Add(key, pending)
@@ -594,8 +597,17 @@ Private Function DeferCreate(ByVal viewer As Integer, ByVal subject As Integer) 
         Call ReportFailure("handoff capacity exhausted")
         Exit Function
     End If
-    pending(CStr(subject)) = Array(session(0), session(1), UserList(subject).pos.Map, UserList(subject).Char.charindex, ViewerSignature(viewer), HANDOFF_FRESH, -1&)
+    pending(CStr(subject)) = request
     DeferCreate = True
+End Function
+
+Private Function NewHandoffRequest(ByVal viewer As Integer, ByVal subject As Integer) As Variant
+    Dim session As Variant, request As Variant
+    If Not ReadyUser(viewer) Or Not ReadyUser(subject) Then Exit Function
+    session = Identity(subject)
+    If IsEmpty(session) Then Exit Function
+    request = Array(session(0), session(1), UserList(subject).pos.Map, UserList(subject).Char.charindex, ViewerSignature(viewer), HANDOFF_FRESH, -1&, Empty)
+    If HandoffIsCurrent(viewer, subject, request) Then NewHandoffRequest = request
 End Function
 
 Private Function SendHandoffBlank(ByVal viewer As Integer, ByVal subject As Integer) As Boolean
@@ -656,6 +668,13 @@ Private Function CancelHandoff(ByVal viewer As Integer, ByVal subject As Integer
     pending(CStr(subject)) = value
     If Not RemoveHandoffRecord(viewer, subject, value) Then Exit Function
     Call pending.Remove(CStr(subject))
+    ' At most one explicitly requested successor shares this bounded entry.
+    ' A retry of cleanup alone must never discover a new occupant of the slot.
+    Dim replacement As Variant
+    replacement = value(HANDOFF_REPLACEMENT)
+    If Not IsEmpty(replacement) Then
+        If HandoffIsCurrent(viewer, subject, replacement) Then pending(CStr(subject)) = replacement
+    End If
     CancelHandoff = True
 End Function
 
@@ -735,12 +754,15 @@ Private Sub RetryHandoffs(ByVal viewer As Integer)
     For Each key In pending.Keys
         subject = CInt(key): value = pending(key): valid = False
         valid = value(5) <> HANDOFF_CANCEL And HandoffIsCurrent(viewer, subject, value)
+        If Not valid Then
+            If CancelHandoff(viewer, subject, pending, value) Then
+                If pending.Exists(key) Then valid = HandoffIsCurrent(viewer, subject, pending(key))
+            End If
+        End If
         If valid Then
             ' Normal-map admission is checked by the shared create hook. Hidden
             ' ordinary PCs need normal records for collision and later reveal.
             Call MakeUserChar(False, viewer, subject, UserList(subject).pos.Map, UserList(subject).pos.x, UserList(subject).pos.y, 0)
-        Else
-            Call CancelHandoff(viewer, subject, pending, value)
         End If
     Next key
 End Sub

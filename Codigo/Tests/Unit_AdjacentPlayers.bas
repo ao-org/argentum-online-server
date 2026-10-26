@@ -596,7 +596,7 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Sample()
                 Call Expect(packets.Count = 0, "reverse handoff settled")
             #End If
-        Case 63 To 76
+        Case 63 To 90
             #If PYMMO = 1 Then
                 Call CheckDeferredCase(id)
             #End If
@@ -833,15 +833,237 @@ Private Sub CheckDeferredCase(ByVal id As Long)
             Call Expect(AdjacentPlayerTestPendingCount(1) = 0 And AdjacentPlayerTestCount(1) = 1, "restored handoffs release capacity")
         Case 76
             Call BeginDeferred(True, 3)
+            Call WriteHex(2, "adjacent-player-replacement-old-blank.hex")
             Call ResetAdjacentPlayerSlot(2)
             UserList(2).Char.charindex = 3: CharList(3) = 2
-            Call ClearCapture()
+            Call ClearCapture(1)
             Call AdjacentPlayerTestNotifyUser(1, 2)
-            Call Expect(packets.Count = 4 And PacketIdAt(1) = eCharacterRemove And PacketIdAt(2) = eCharacterCreate, "obsolete cleanup then ordinary replacement")
-            Call ExpectTorchClear(3)
-            Call ExpectVisibility(4, True)
-            Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "stale cancellation does not suppress normal hide")
+            Call Expect(packets.Count = 1 And Not accepted(1), "replacement waits for rejected obsolete cleanup")
+            Call Sample()
+            Call Expect(packets.Count = 5, "rejected cleanup retains requested replacement without another notification")
+            Set reader = PacketReader(1, eCharacterRemove)
+            Call Expect(reader.ReadInt16() = 2, "retire exact old index before replacement")
+            Call ExpectBlank(2)
+            Call ExpectVisibility(3, True)
+            Set reader = PacketReader(4, eCharacterCreate)
+            Call Expect(reader.ReadInt16() = 3, "replacement uses newly requested character index")
+            Call ExpectTorchClear(5)
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 0 And AdjacentPlayerTestCount(1) = 0, "replacement completed without adjacent duplicate")
+            Call WriteHex(1, "adjacent-player-replacement-remove.hex")
+            Call WriteHex(2, "adjacent-player-replacement-blank.hex")
+            Call WriteHex(3, "adjacent-player-replacement-hide.hex")
+            Call WriteHex(4, "adjacent-player-replacement-full.hex")
+            Call WriteHex(5, "adjacent-player-replacement-torch.hex")
+            Call Sample()
+            Call Expect(packets.Count = 0, "completed replacement is not repeated")
+            UserList(2).flags.invisible = 0
+            Call ClearCapture()
+            Call WriteSetInvisible(1, 2, False)
+            Call ExpectVisibility(1, False)
+            Call WriteHex(1, "adjacent-player-replacement-reveal.hex")
+            Call Sample()
+            Call Expect(packets.Count = 0, "replacement stationary reveal needs no create")
+        Case 77 To 90
+            Call CheckReplacementCase(id)
     End Select
+End Sub
+
+Private Sub BeginReplacement(Optional ByVal hidden As Boolean = False)
+    Call BeginDeferred(True, 3)
+    UserList(2).Char.charindex = 3: CharList(3) = 2
+    UserList(2).flags.invisible = Abs(CInt(hidden))
+    Call ClearCapture(1)
+    Call AdjacentPlayerTestNotifyUser(1, 2)
+    Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove And Not accepted(1), "replacement cleanup rejected")
+    Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "cleanup and replacement share one bounded entry")
+End Sub
+
+Private Sub ExpectReplacementCreate(ByVal index As Long, ByVal charindex As Integer)
+    Dim reader As Network.reader
+    Set reader = PacketReader(index, eCharacterCreate)
+    Call Expect(reader.ReadInt16() = charindex And reader.ReadInt16() = UserList(2).Char.body, "current replacement index and appearance")
+End Sub
+
+Private Sub CheckReplacementCase(ByVal id As Long)
+    Dim i As Long, scenario As Long, reader As Network.reader
+    Select Case id
+        Case 77
+            Call BeginReplacement()
+            Call Sample()
+            Call Expect(packets.Count = 3 And PacketIdAt(1) = eCharacterRemove, "same-session index replacement ordered")
+            Call ExpectReplacementCreate(2, 3)
+            Call ExpectTorchClear(3)
+        Case 78
+            Call BeginDeferred(True, 3)
+            Call ResetAdjacentPlayerSlot(2)
+            Call ClearCapture(1)
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Sample()
+            Call Expect(packets.Count = 5 And PacketIdAt(1) = eCharacterRemove, "reused session with same index removed before recreated")
+            Call ExpectBlank(2)
+            Call ExpectVisibility(3, True)
+            Call ExpectReplacementCreate(4, 2)
+        Case 79
+            Call BeginReplacement()
+            For i = 1 To 3
+                Call Sample(1)
+                Set reader = PacketReader(1, eCharacterRemove)
+                Call Expect(packets.Count = 1 And reader.ReadInt16() = 2 And Not accepted(1), "repeated rejection retains exact old index only")
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "no timeout or extra pending entry")
+            Next i
+            Call Sample()
+            Call Expect(packets.Count = 3, "replacement resumes after repeated rejection")
+            Call ExpectReplacementCreate(2, 3)
+        Case 80
+            Call BeginReplacement()
+            Call Sample(2)
+            Call Expect(packets.Count = 2 And accepted(1) And Not accepted(2), "cleanup accepted but replacement full failed")
+            Call ExpectReplacementCreate(2, 3)
+            Call Sample()
+            Call Expect(packets.Count = 2, "accepted removal is not repeated")
+            Call ExpectReplacementCreate(1, 3)
+            Call ExpectTorchClear(2)
+        Case 81, 82
+            Call BeginReplacement(True)
+            If id = 81 Then
+                Call Sample(3)
+                Call Expect(packets.Count = 3 And accepted(2) And Not accepted(3), "replacement blank accepted; hide failed")
+                Call Sample(1)
+                Call Expect(packets.Count = 1 And Not accepted(1), "only replacement hide retried")
+                Call ExpectVisibility(1, True)
+                Call Sample()
+                Call Expect(packets.Count = 3, "replacement hide/full/torch recovery")
+                Call ExpectVisibility(1, True)
+                Call ExpectReplacementCreate(2, 3)
+            Else
+                Call Sample(4)
+                Call Expect(packets.Count = 4 And accepted(3) And Not accepted(4), "replacement hide accepted; full failed")
+                Call Sample(1)
+                Call Expect(packets.Count = 1 And Not accepted(1), "only replacement full retried")
+                Call ExpectReplacementCreate(1, 3)
+                Call Sample()
+                Call Expect(packets.Count = 2, "replacement full/torch recovery")
+                Call ExpectReplacementCreate(1, 3)
+            End If
+        Case 83
+            Call BeginReplacement()
+            For i = 1 To 2
+                Call ClearCapture(1)
+                Call AdjacentPlayerTestNotifyUser(1, 2)
+                Call Expect(packets.Count = 1 And Not accepted(1) And AdjacentPlayerTestPendingCount(1) = 1, "duplicate requested replacement is idempotent")
+            Next i
+            UserList(2).Char.charindex = 4: CharList(4) = 2: CharList(3) = 0
+            Call ClearCapture(1)
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Set reader = PacketReader(1, eCharacterRemove)
+            Call Expect(reader.ReadInt16() = 2, "superseding request never overwrites old cleanup index")
+            UserList(2).Char.body = 30
+            Call Sample()
+            Call Expect(packets.Count = 3, "only latest explicit replacement is created")
+            Call ExpectReplacementCreate(2, 4)
+        Case 84
+            For scenario = 1 To 5
+                Call Fixture()
+                Call BeginReplacement()
+                Select Case scenario
+                    Case 1: UserList(2).ConnectionDetails.ConnIDValida = False
+                    Case 2: Call ResetAdjacentPlayerSlot(2)
+                    Case 3: UserList(2).Char.charindex = 4: CharList(4) = 2
+                    Case 4: UserList(2).pos.Map = 35: UserList(2).flags.invisible = 1
+                    Case 5: UserList(2).AreasInfo.AreaPerteneceX = 2
+                End Select
+                Call Sample()
+                Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove, "obsolete replacement only cleans old accepted record")
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "obsolete replacement discarded")
+                Call Sample()
+                Call Expect(packets.Count = 0, "no unsolicited current-slot creation")
+            Next scenario
+        Case 85
+            For scenario = 1 To 2
+                Call Fixture()
+                Call BeginReplacement()
+                Call ClearCapture()
+                If scenario = 1 Then
+                    Call PutUser(3, 34, 50, 12)
+                    UserList(3).Char.charindex = 2: CharList(2) = 3: CharList(3) = 2
+                    Call MakeUserChar(False, 1, 3, 34, 50, 12)
+                Else
+                    Call WriteCharacterCreate(1, 10, 20, e_Heading.SOUTH, 2, 50, 12, 30, 40, 60, 70, 0, 0, 50, "npc", 1, 1, 0, _
+                        "", "", "", "", "", "", "", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                End If
+                Call Sample()
+                Call Expect(packets.Count = 2 And PacketIdAt(1) = eCharacterCreate, "new accepted PC or NPC old-index owner is not removed")
+                Call ExpectReplacementCreate(1, 3)
+            Next scenario
+        Case 86
+            Call BeginDeferred(True, 3)
+            Call ResetAdjacentPlayerSlot(2)
+            UserList(2).Char.charindex = 3: CharList(3) = 2
+            Call Sample(1)
+            Call Sample()
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove, "cleanup-only entry has no implicit replacement")
+        Case 87
+            For scenario = 1 To 3
+                Call Fixture()
+                Call BeginReplacement()
+                Select Case scenario
+                    Case 1: Call ResetAdjacentPlayerSlot(1)
+                    Case 2: UserList(1).VersionId = UserList(1).VersionId + 1
+                    Case 3: UserList(1).pos.Map = 35
+                End Select
+                Call Sample()
+                Call Expect(PacketIdAt(1) = eAdjacentPlayerReset And AdjacentPlayerTestPendingCount(1) = 0, "viewer reset discards cleanup and replacement")
+                For i = 1 To packets.Count
+                    Call Expect(PacketIdAt(i) <> eCharacterCreate And PacketIdAt(i) <> eCharacterRemove, "old world requests cannot mutate replacement viewer")
+                Next i
+            Next scenario
+        Case 88
+            For i = 3 To 130
+                Call PutUser(CInt(i), 35, 50, 90)
+            Next i
+            Call Sample()
+            For i = 2 To 129
+                UserList(i).pos.Map = 34: UserList(i).pos.y = 12: UserList(i).flags.invisible = 1
+                Call ClearCapture(3)
+                Call MakeUserChar(False, 1, CInt(i), 34, 50, 12)
+                Call ResetAdjacentPlayerSlot(CInt(i))
+                Call ClearCapture(1)
+                Call AdjacentPlayerTestNotifyUser(1, CInt(i))
+                Call Expect(AdjacentPlayerTestPendingCount(1) = i - 1, "replacement shares original bounded reservation")
+            Next i
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 128, "replacement capacity unchanged")
+            Call Sample(1)
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "other replacements commit independently")
+            Call Sample()
+            Call Expect(packets.Count = 5 And AdjacentPlayerTestPendingCount(1) = 0, "only final replacement retries")
+        Case 89
+            Call BeginReplacement()
+            UserList(1).flags.Muerto = 1
+            Call Sample()
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove And AdjacentPlayerTestPendingCount(1) = 1, "replacement revalidates normal admission after cleanup")
+            Call Sample()
+            Call Expect(packets.Count = 0 And AdjacentPlayerTestPendingCount(1) = 1, "denied replacement retains bounded recovery")
+            UserList(1).flags.Muerto = 0
+            Call Sample()
+            Call Expect(packets.Count = 4, "restored replacement admission bootstraps current visibility")
+            Call ExpectBlank(1)
+            Call ExpectVisibility(2, False)
+            Call ExpectReplacementCreate(3, 3)
+        Case 90
+            Call BeginDeferred(True, 3)
+            UserList(2).Char.charindex = 3: CharList(3) = 2: UserList(2).flags.invisible = 0
+            Call ClearCapture(2)
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Expect(packets.Count = 2 And accepted(1) And Not accepted(2), "immediate cleanup success still retains failed replacement")
+            Call Sample()
+            Call Expect(packets.Count = 2, "failed replacement retries without new notification")
+            Call ExpectReplacementCreate(1, 3)
+    End Select
+    Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "replacement work resolved")
+    Call Sample()
+    For i = 1 To packets.Count
+        Call Expect(PacketIdAt(i) <> eCharacterCreate And PacketIdAt(i) <> eCharacterRemove, "no repeated completed replacement or cleanup")
+    Next i
 End Sub
 
 Public Function TestSuite() As Boolean
@@ -879,7 +1101,7 @@ Public Function TestSuite() As Boolean
     saved = True
     Call InitializeAuxiliaryBuffer()
     capturing = True
-    For id = 1 To 76
+    For id = 1 To 90
         Call RunCase(id)
     Next id
     TestSuite = UnitTesting.GetFailedTests() = before

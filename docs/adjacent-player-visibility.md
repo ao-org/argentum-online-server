@@ -152,6 +152,21 @@ the pending session, subject, map and old character index against the accepted
 normal-owner ledger, so it cannot remove a newer owner of a reused index.
 Viewer disconnect/map reset discards the old world without subject cleanup.
 
+If a real MakeUserChar request is blocked behind obsolete cleanup, that entry
+also retains one separate replacement request. The old accepted identity/index
+continues owning cleanup; the replacement captures its own viewer/subject
+lifetimes, map and character index. It does not replace the old removal target.
+Repeated notifications retain one request; a newer explicit request supersedes
+only that request, never cleanup. Both share the existing 128-entry reservation.
+
+After removal is accepted, retry promotes only a still-current saved request,
+rechecking connection/session, character ownership, map, loaded area and normal
+admission. Appearance and hidden state are rebuilt from current authorized data.
+Failed replacement creation retains its own remaining stages, including the
+blank/hide/full path. No additional notification or movement is required.
+Cleanup-only work never creates the current occupant of a reused slot. Obsolete
+replacements are discarded, and viewer teardown discards both responsibilities.
+
 For the reverse handoff, accepted normal creates are tracked per viewer, keyed
 by the bounded normal character-index namespace, with the actual
 user/session/map/character index. A failed legacy remove can leave multiple
@@ -180,9 +195,18 @@ normal torch clear (17), and stationary reveal (7). These are existing individua
 frames, never concatenated packet payloads. The fixture uses viewer map 34 at
 50,11 and character 2 at 50,12, scene epoch 1 and subject session 2.
 
+Case 76 additionally captures `adjacent-player-replacement-{old-blank,remove,
+blank,hide,full,torch,reveal}.hex`. This exercises the real NotifyUser path with
+rejected obsolete cleanup, then resumes without another notification: remove
+normal index 2, create hidden replacement index 3, then stationary reveal.
+Cases 77-90 cover same-session index changes, session reuse, repeated failures,
+independently accepted stages, repeated/superseding notifications, obsolete
+requests, reused old-index ownership, cleanup-only cancellation, viewer reset,
+the 128-entry cap and temporary admission denial.
+
 Native Windows validation: all four configurations compiled successfully;
-both U1 runs passed **753/753 tests across 44 suites** (677 baseline checks plus
-76 adjacent-player cases). P0 conditionally skips P1-only lifecycle/handoff hooks
+both U1 runs passed **767/767 tests across 44 suites** (677 baseline checks plus
+90 adjacent-player cases). P0 conditionally skips P1-only lifecycle/handoff hooks
 and verifies the disabled production stream. U1 executables ran in isolated,
 loopback-only fixtures with empty test databases. U0 executables were compiled,
 not launched. Fresh output timestamps were checked; the primary executable and
@@ -193,9 +217,15 @@ with ordinary invisibility and Oculto, further blank/visibility/full failures,
 stationary reveal, changed visibility before a failed full refresh, permitted
 admin-only parity with NotifyUser, temporary admission denial/recovery, obsolete
 subject cleanup, reused-index ownership, viewer reset, and the 128-entry bound.
-Restoring the old `Representation` cancellation gate in an isolated negative
-control compiled but failed **9 tests (744/753 passed)**, including case 46.
-The fixed source was restored before the final passing four-build matrix.
+For the earlier hide/reveal fix, restoring the old `Representation` gate in an
+isolated negative control compiled but failed **9 tests (744/753 passed)**,
+including case 46.
+For replacement recovery, case 76 was first extended against reviewed server
+`e625140cdd5474b98b187511e44867212c95273f`, before changing production code.
+That native negative control compiled but failed only case 76: **752/753**,
+with `rejected cleanup retains requested replacement without another notification`.
+The final fixed source passed the four-build matrix above. Seven actual native
+writer captures feed HOO's replacement-event/collision/generation regressions.
 
 ### Compiler Matrix
 
@@ -234,6 +264,10 @@ Manual integration checklist:
 - Cross both directions, warp one tile, logout/reconnect, reuse a user slot,
   and change viewer maps. Verify there is never an active/adjacent duplicate.
 - Inject reset/upsert/remove/normal-create failures and verify ordered recovery.
+- After an accepted blank, change the subject session/index and notify the
+  viewer. Reject obsolete cleanup repeatedly, then accept it without another
+  notification. Verify only the requested replacement appears, no old collision
+  remains, hidden recovery/reveal is correct, and completed stages stay silent.
 - Fail a hidden handoff's blank/hide/full sends, interleave appearance changes,
   then reveal without moving. Verify no premature rendering, light, duplicate,
   or lost collision record; obsolete partial records must eventually be removed.
