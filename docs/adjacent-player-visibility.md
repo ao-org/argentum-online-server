@@ -125,6 +125,16 @@ lifetime/map, exact subject session/map/character index, live CharList ownership
 area overlap, and current normal admission. Unrelated normal-create failures do not
 enter this retry queue. Admission, movement, and gameplay are not deferred.
 
+`CheckUpdateNeededUser` publishes its existing position-derived area masks before
+the notification scan. `AgregarUser` clears those masks on entry, and ordinary
+cell crossings otherwise leave the previous masks in place during NotifyUser.
+Publishing them after notifications could reject a valid handoff before it was
+retained, losing normal creation even with no queue failure. The scan bounds,
+receive radii and recipients are unchanged; bow pruning and AreaChanged still
+precede notifications, and AreaID remains the final completion marker. Handoff
+area validation is not weakened or bypassed for zero masks. PYMMO=0 retains its
+existing normal stream and smaller receive radius.
+
 Same-map retries use normal `NotifyUser` admission, not adjacent render
 eligibility. Ordinary `invisible` or `Oculto` players still need a normal record
 for collision and a later stationary reveal. `AdminInvisible` is solely an
@@ -204,10 +214,25 @@ independently accepted stages, repeated/superseding notifications, obsolete
 requests, reused old-index ownership, cleanup-only cancellation, viewer reset,
 the 128-entry cap and temporary admission denial.
 
+Cases 91-104 exercise map entry through MakeUserChar(True), AgregarUser,
+CheckUpdateNeededUser and NotifyUser using real initialized area tables and map
+membership. They cover entry without another movement/notification, rejected
+remove/create and hidden stages, stationary reveal, a replacement requested
+while entry clears masks and old cleanup is pending, subject and viewer area
+crossings with stale previous masks, and obsolete/disconnected/reused identities.
+The fixture clears unrelated map objects, not area validation; AgregarUser itself
+resets and rebuilds the masks. Case 91 also checks the normal PYMMO=0 entry path.
+
+Before the production edit, case 91 ran against reviewed server
+`6e7de301a25013ff70dc2f795bd9b36707ea0014`. Native compilation passed, but only
+that new case failed: **767/768 across 44 suites**, with
+`real map entry removes adjacent and creates normal without another notification`.
+
 Native Windows validation: all four configurations compiled successfully;
-both U1 runs passed **767/767 tests across 44 suites** (677 baseline checks plus
-90 adjacent-player cases). P0 conditionally skips P1-only lifecycle/handoff hooks
-and verifies the disabled production stream. U1 executables ran in isolated,
+both U1 runs passed **781/781 tests across 44 suites** (677 baseline checks plus
+104 adjacent-player cases): P1 took 2306.15 ms and P0 took 2124.49 ms. P0
+conditionally skips P1-only lifecycle/handoff cases, executes the new normal
+entry regression, and verifies the disabled production stream. U1 executables ran in isolated,
 loopback-only fixtures with empty test databases. U0 executables were compiled,
 not launched. Fresh output timestamps were checked; the primary executable and
 production data were untouched.
@@ -226,6 +251,11 @@ That native negative control compiled but failed only case 76: **752/753**,
 with `rejected cleanup retains requested replacement without another notification`.
 The final fixed source passed the four-build matrix above. Seven actual native
 writer captures feed HOO's replacement-event/collision/generation regressions.
+For the map-entry correction, HOO code and fixtures are unchanged; its previous
+test results were not rerun. Native negative-control and final matrix logs are
+archived locally under `%TEMP%\npc-cross-map-diagnostics-validation\adjacent-player-map-entry-negative-control`,
+with the final matrix in `final`. This is automated runtime validation, not a
+two-client gameplay check. CP1252/CRLF and `git diff --check` passed.
 
 ### Compiler Matrix
 
@@ -263,6 +293,10 @@ Manual integration checklist:
   without moving. Unauthorized subjects must reveal neither name nor location.
 - Cross both directions, warp one tile, logout/reconnect, reuse a user slot,
   and change viewer maps. Verify there is never an active/adjacent duplicate.
+- Keep the viewer stationary while an adjacent subject enters its map, then
+  stop moving. Verify normal creation immediately, both without failures and
+  with rejected removal/create. Repeat hidden, reveal while stationary, and
+  cross ordinary area boundaries with either the subject or viewer moving.
 - Inject reset/upsert/remove/normal-create failures and verify ordered recovery.
 - After an accepted blank, change the subject session/index and notify the
   viewer. Reject obsolete cleanup repeatedly, then accept it without another

@@ -600,7 +600,198 @@ Private Sub CheckCase(ByVal id As Long)
             #If PYMMO = 1 Then
                 Call CheckDeferredCase(id)
             #End If
+        Case 91 To 104
+            Call CheckAreaEntryCase(id)
     End Select
+End Sub
+
+Private Sub BeginAreaEntry()
+    Dim map As Variant, x As Long, y As Long, emptyTile As t_MapBlock
+    ' Use the real area tables initialized by map loading. Remove unrelated world
+    ' objects from these restored fixture maps before exercising the full scan.
+    For Each map In Array(34, 35, 78, 80)
+        For x = 1 To 100
+            For y = 1 To 100
+                MapData(x, y, map) = emptyTile
+            Next y
+        Next x
+    Next map
+    MapData(UserList(1).pos.x, UserList(1).pos.y, 34).UserIndex = 1
+    MapData(UserList(2).pos.x, UserList(2).pos.y, 35).UserIndex = 2
+    Call AgregarUser(1, 34)
+    Call AgregarUser(2, 35)
+    Call Expect(UserList(1).AreasInfo.AreaPerteneceX = 2 ^ (UserList(1).pos.x \ 12) And UserList(1).AreasInfo.AreaPerteneceY = 2 ^ (UserList(1).pos.y \ 12), "real stationary viewer area initialized")
+    #If PYMMO = 1 Then
+        Call Sample()
+        Call Expect(AdjacentPlayerTestCount(1) = 1, "subject accepted in adjacent scene before entry")
+    #End If
+    Call ClearCapture()
+End Sub
+
+Private Sub CheckAreaEntryCase(ByVal id As Long)
+    Dim i As Long, firstCreate As Long, reader As Network.reader
+    If id = 91 Then
+        Call BeginAreaEntry()
+        Call EnterSubjectMap(34, 50, 12)
+        #If PYMMO = 1 Then
+            Call Expect(packets.Count = 3, "real map entry removes adjacent and creates normal without another notification")
+            Call Expect(PacketIdAt(1) = eAdjacentPlayerRemove And accepted(1), "entry retires adjacent first")
+            firstCreate = 2
+        #Else
+            Call Expect(packets.Count = 2, "P0 normal entry unchanged, no adjacent packets")
+            firstCreate = 1
+        #End If
+        Call ExpectReplacementCreate(firstCreate, 2)
+        Call Expect(accepted(firstCreate), "normal entry accepted")
+        Call ExpectTorchClear(firstCreate + 1)
+        Call Expect(AdjacentPlayerTestCount(1) = 0 And AdjacentPlayerTestPendingCount(1) = 0, "entry settles handoff immediately")
+        #If PYMMO = 1 Then
+            Call Sample()
+            Call Expect(packets.Count = 0, "stationary entry has no duplicate create")
+        #End If
+        Exit Sub
+    End If
+    #If PYMMO = 1 Then
+        Select Case id
+            Case 92, 93
+                Call BeginAreaEntry()
+                Call ClearCapture(id - 91)
+                Call EnterSubjectMap(34, 50, 12)
+                Call Expect(packets.Count = id - 91 And Not accepted(packets.Count), "real entry queue failure")
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "real entry retains failed stage")
+                Call Sample(1)
+                Call Expect(Not accepted(1) And AdjacentPlayerTestPendingCount(1) = 1, "further queue rejection retains creation")
+                If id = 92 Then
+                    ' The normal scene diff can accept the removal after the
+                    ' handoff retry rejected it; creation waits until next tick.
+                    Call Expect(packets.Count = 2 And PacketIdAt(1) = eAdjacentPlayerRemove And PacketIdAt(2) = eAdjacentPlayerRemove And accepted(2), "scene diff retires only adjacent visual")
+                    Call Expect(AdjacentPlayerTestCount(1) = 0, "accepted removal updates cache independently")
+                Else
+                    Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterCreate, "only failed normal create retried")
+                End If
+                Call Sample()
+                firstCreate = 1
+                Call Expect(packets.Count = firstCreate + 1, "only outstanding entry packets retried")
+                Call ExpectReplacementCreate(firstCreate, 2)
+                Call ExpectTorchClear(firstCreate + 1)
+            Case 94, 95
+                Call BeginAreaEntry()
+                If id = 94 Then UserList(2).flags.invisible = 1 Else UserList(2).flags.Oculto = 1
+                Call ClearCapture(id - 91)
+                Call EnterSubjectMap(34, 50, 12)
+                Call Expect(packets.Count = id - 91 And Not accepted(packets.Count), "hidden entry stage rejected")
+                Call Expect(PacketIdAt(1) = eAdjacentPlayerRemove And accepted(1), "hidden entry remove first")
+                Call ExpectBlank(2)
+                Call Sample()
+                firstCreate = 1
+                If id = 94 Then
+                    Call ExpectVisibility(1, True)
+                    firstCreate = 2
+                End If
+                Call Expect(packets.Count = firstCreate + 1, "hidden entry resumes remaining stages")
+                Call ExpectReplacementCreate(firstCreate, 2)
+                Call ExpectTorchClear(firstCreate + 1)
+                UserList(2).flags.invisible = 0: UserList(2).flags.Oculto = 0
+                Call ClearCapture()
+                Call WriteSetInvisible(1, 2, False)
+                Call Expect(packets.Count = 1, "stationary reveal updates existing record")
+                Call ExpectVisibility(1, False)
+            Case 96
+                Call BeginAreaEntry()
+                UserList(2).flags.invisible = 1
+                Call ClearCapture(3)
+                Call EnterSubjectMap(34, 50, 12)
+                Call ExpectBlank(2)
+                Call ResetAdjacentPlayerSlot(2)
+                UserList(2).Char.charindex = 3: CharList(3) = 2: CharList(2) = 0
+                Call ClearCapture(1)
+                Call EnterSubjectMap(34, 50, 12)
+                Call Expect(packets.Count = 1 And Not accepted(1), "real entry replacement waits for old cleanup")
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "old cleanup and replacement bounded together")
+                Call Sample()
+                Call Expect(packets.Count = 5, "replacement survives zeroed map entry masks")
+                Set reader = PacketReader(1, eCharacterRemove)
+                Call Expect(reader.ReadInt16() = 2, "cleanup keeps old accepted index")
+                Call ExpectBlank(2)
+                Call ExpectVisibility(3, True)
+                Call ExpectReplacementCreate(4, 3)
+                Call ExpectTorchClear(5)
+            Case 97
+                UserList(1).pos.y = 28
+                Call BeginAreaEntry()
+                Call EnterSubjectMap(34, 50, 72)
+                Call Expect(packets.Count = 0 And AdjacentPlayerTestPendingCount(1) = 0, "outside loaded area has no normal entry")
+                Call Expect((UserList(1).AreasInfo.AreaReciveY And UserList(2).AreasInfo.AreaPerteneceY) = 0, "previous subject cell is outside viewer")
+                MapData(50, 72, 34).UserIndex = 0
+                UserList(2).pos.y = 71: MapData(50, 71, 34).UserIndex = 2
+                Call CheckUpdateNeededUser(2, e_Heading.NORTH, 0)
+                Call Expect(packets.Count = 3 And PacketIdAt(1) = eAdjacentPlayerRemove, "new subject cell published before strip notification")
+                Call ExpectReplacementCreate(2, 2)
+                Call ExpectTorchClear(3)
+            Case 98
+                UserList(1).pos.y = 23
+                Call BeginAreaEntry()
+                Call EnterSubjectMap(34, 50, 60)
+                Call Expect(packets.Count = 0 And AdjacentPlayerTestPendingCount(1) = 0, "subject beyond previous receive area")
+                Call Expect((UserList(1).AreasInfo.AreaReciveY And UserList(2).AreasInfo.AreaPerteneceY) = 0, "previous viewer mask excludes new strip")
+                MapData(50, 23, 34).UserIndex = 0
+                UserList(1).pos.y = 24: MapData(50, 24, 34).UserIndex = 1
+                Call CheckUpdateNeededUser(1, e_Heading.SOUTH, 0)
+                Call Expect(packets.Count = 4 And PacketIdAt(1) = eAreaChanged And PacketIdAt(2) = eAdjacentPlayerRemove, "area changed precedes new receive-strip handoff")
+                Call ExpectReplacementCreate(3, 2)
+                Call ExpectTorchClear(4)
+            Case 99 To 101, 103, 104
+                Call BeginAreaEntry()
+                Call ClearCapture(1)
+                Call EnterSubjectMap(34, 50, 12)
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "real entry pending before invalidation")
+                Select Case id
+                    Case 99
+                        Call EnterSubjectMap(34, 50, 90)
+                        Call Expect((UserList(1).AreasInfo.AreaReciveY And UserList(2).AreasInfo.AreaPerteneceY) = 0, "genuinely outside rebuilt area")
+                    Case 100
+                        UserList(2).ConnectionDetails.ConnIDValida = False
+                    Case 101
+                        Call ResetAdjacentPlayerSlot(2)
+                    Case 103
+                        UserList(2).Char.charindex = 3: CharList(3) = 2: CharList(2) = 0
+                    Case 104
+                        UserList(1).ConnectionDetails.ConnID = 99
+                End Select
+                Call Sample()
+                For i = 1 To packets.Count
+                    Call Expect(PacketIdAt(i) <> eCharacterCreate, "obsolete entry cannot create a new occupant")
+                Next i
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "obsolete entry discarded")
+                Exit Sub
+            Case 102
+                Call BeginAreaEntry()
+                UserList(2).flags.invisible = 1
+                Call ClearCapture(3)
+                Call EnterSubjectMap(34, 50, 12)
+                Call ExpectBlank(2)
+                UserList(2).Char.charindex = 3: CharList(3) = 2: CharList(2) = 0
+                Call ClearCapture()
+                Call WriteCharacterCreate(1, 10, 20, e_Heading.SOUTH, 2, 50, 12, 30, 40, 60, 70, 0, 0, 50, "npc", 1, 1, 0, _
+                    "", "", "", "", "", "", "", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                Call Expect(accepted(1), "new NPC owner accepted at old index")
+                Call Sample()
+                Call Expect(packets.Count = 0, "obsolete entry cannot erase newer accepted NPC or invent replacement")
+        End Select
+        Call Expect(AdjacentPlayerTestCount(1) = 0 And AdjacentPlayerTestPendingCount(1) = 0, "real area handoff settled")
+        Call Sample()
+        Call Expect(packets.Count = 0, "no repeated creation after completed area handoff")
+    #End If
+End Sub
+
+Private Sub EnterSubjectMap(ByVal map As Integer, ByVal x As Byte, ByVal y As Byte)
+    With UserList(2)
+        Call QuitarUser(2, .pos.Map)
+        MapData(.pos.x, .pos.y, .pos.Map).UserIndex = 0
+        .pos.Map = map: .pos.x = x: .pos.y = y
+    End With
+    ' Same map-entry boundary used by WarpUserChar; AgregarUser clears all masks.
+    Call MakeUserChar(True, map, 2, map, x, y)
 End Sub
 
 Private Sub ExpectBlank(ByVal index As Long)
@@ -1101,7 +1292,7 @@ Public Function TestSuite() As Boolean
     saved = True
     Call InitializeAuxiliaryBuffer()
     capturing = True
-    For id = 1 To 90
+    For id = 1 To 104
         Call RunCase(id)
     Next id
     TestSuite = UnitTesting.GetFailedTests() = before

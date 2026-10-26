@@ -198,6 +198,14 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
         'Esto es para ke el cliente elimine lo "fuera de area..."
         Call PruneNpcBowUser(UserIndex)
         Call WriteAreaChanged(UserIndex, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y)
+        ' Notifications validate both users against the current area. AgregarUser
+        ' clears these masks, and ordinary movement leaves the previous cell here.
+        TempInt = .pos.x \ AREA_DIM
+        .AreasInfo.AreaReciveX = AreasReciveX(TempInt)
+        .AreasInfo.AreaPerteneceX = 2 ^ TempInt
+        TempInt = .pos.y \ AREA_DIM
+        .AreasInfo.AreaReciveY = AreasReciveY(TempInt)
+        .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         'Actualizamos!!!
         For x = MinX To MaxX
             For y = MinY To MaxY
@@ -236,13 +244,6 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
                 End If
             Next y
         Next x
-        'Precalculados :P
-        TempInt = .pos.x \ AREA_DIM
-        .AreasInfo.AreaReciveX = AreasReciveX(TempInt)
-        .AreasInfo.AreaPerteneceX = 2 ^ TempInt
-        TempInt = .pos.y \ AREA_DIM
-        .AreasInfo.AreaReciveY = AreasReciveY(TempInt)
-        .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         .AreasInfo.AreaID = AreasInfo(.pos.x, .pos.y)
     End With
     Call ResumeNpcBowAfterArea(UserIndex)
