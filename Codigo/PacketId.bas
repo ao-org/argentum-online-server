@@ -254,6 +254,7 @@ Public Enum ServerPacketID
     eAdjacentPlayerReset
     eAdjacentPlayerUpsert
     eAdjacentPlayerRemove
+    eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
     eMaxPacket
     [PacketCount]
 End Enum

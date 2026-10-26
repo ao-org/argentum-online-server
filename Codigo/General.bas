@@ -503,6 +503,12 @@ Sub Main()
     #End If
 
     #If UNIT_TEST = 1 Then
+        If LCase$(Trim$(Command$)) = "--test-npc-respawn" Then
+            Call Unit_NpcBow.InitializeTestWorld()
+            Call Unit_NpcCrossMapPursuit.TestNpcRespawnEffects()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
         If LCase$(Trim$(Command$)) = "--test-npc-bow" Then
             Call Unit_NpcBow.InitializeTestWorld()
             Call Unit_NpcBow.test_suite_npc_bow()
