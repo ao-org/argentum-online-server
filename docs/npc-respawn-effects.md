@@ -39,6 +39,14 @@ cosmetic notifications cease until a server restart. It is not a gameplay identi
 Same-map recipients must be in the existing loaded-area bounds. A normal
 recipient-specific CharacterCreate refresh is queued before the notification,
 preserving appearance and dead-viewer rules and providing an ordering barrier.
+Candidate recipients are read from the source and valid two-hop maps' connection
+groups, not the global connected-user list. The topology loader guarantees exact
+reciprocal transforms; source-to-viewer placements are inverted for the cheap
+viewer-to-source interest check, including diagonals and wide signed offsets.
+Only eligible viewers inside that rectangle collect NPCs, once per notification.
+The ordinary refresh and notification share accepted-prefix publication of that
+same snapshot. Unrelated maps and out-of-range viewers do not scan tiles.
+
 Adjacent recipients are selected by the existing bounded two-hop visibility
 collector, including its 128-NPC limit, resource-instance restrictions, invisible
 NPC exclusion and unsafe-map dead-viewer rules. The current reset/upsert must
@@ -139,3 +147,21 @@ Server base: `add6a089335de6c9575c8b39e0d1ebc4dc6b31d7`.
   environment. Production notification call-site guards were audited separately.
 - macOS compilation, multiplayer integration, the manual visual matrix and
   measured simultaneous-respawn frame-time validation remain outstanding.
+
+## Respawn visibility review correction
+
+The original direct-notification test path used `mScans` before initialization.
+CI at `ec9db736` reported five suite-37 failures. Scan dictionaries now initialize
+lazily at collection, while each visibility tick/notification explicitly resets
+its instrumentation counters. Production dictionaries initialize through the same
+helper for either entry path; instrumentation remains UNIT_TEST-only.
+
+The existing thirteen cases remain, with ten additional counter-based cases for
+unrelated connected users, out-of-interest viewers, one-collection delivery,
+non-cardinal two-hop transforms, ambiguous placements, instance exclusions, failed
+notification enqueue, accepted partial prefixes and the 128-NPC cap. Fixtures now
+register their users in map connection groups and restore all affected state.
+No pre-tick, relaxed packet counts, packet layout or client changes are used.
+
+Local native VB6 validation remains unavailable (compiler path checked again).
+The existing PR validator is the native build/full-suite validation source.
