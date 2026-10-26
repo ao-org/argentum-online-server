@@ -9,6 +9,7 @@ Public Function test_suite_gm_support_history() As Boolean
     Call UnitTesting.RunTest("GM support history extraction excludes ordinary messages", test_extracts_only_replies())
     Call UnitTesting.RunTest("Character saves do not overwrite GM reply history", test_character_save_preserves_replies())
     Call UnitTesting.RunTest("GM support normalizes plus-separated names", test_normalizes_plus_separated_names())
+    Call UnitTesting.RunTest("GM support preserves multiline replies", test_multiline_reply_round_trip())
     test_suite_gm_support_history = True
     Exit Function
 test_suite_gm_support_history_Err:
@@ -59,6 +60,20 @@ Private Function test_normalizes_plus_separated_names() As Boolean
     test_normalizes_plus_separated_names = _
         UserMod.NormalizeGmReplyUserName("John+Doe") = "John Doe" And _
         UserMod.NormalizeGmReplyUserName("John Doe") = "John Doe"
+End Function
+
+Private Function test_multiline_reply_round_trip() As Boolean
+    Dim originalText  As String
+    Dim encodedText   As String
+    Dim storedHistory As String
+    originalText = "first line %0A" & vbNewLine & "second line 100%"
+    encodedText = UserMod.EncodeGmReplyMessage(originalText)
+    storedHistory = UserMod.GM_REPLY_MESSAGE_PREFIX & "GM" & Chr$(172) & encodedText & vbNewLine
+    test_multiline_reply_round_trip = _
+        InStr(1, encodedText, vbCr, vbBinaryCompare) = 0 And _
+        InStr(1, encodedText, vbLf, vbBinaryCompare) = 0 And _
+        UserMod.DecodeGmReplyMessage(encodedText) = originalText And _
+        UserMod.ExtractGmReplyHistory(storedHistory) = storedHistory
 End Function
 
 #End If

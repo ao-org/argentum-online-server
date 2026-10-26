@@ -5643,7 +5643,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                 If Not PersonajeExiste(username) Then
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PERSONAJE_EXISTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                 Else
-                    storedReply = UserMod.GM_REPLY_MESSAGE_PREFIX & GetUserDisplayName(UserIndex) & Chr$(172) & mensaje & vbNewLine
+                    storedReply = UserMod.GM_REPLY_MESSAGE_PREFIX & GetUserDisplayName(UserIndex) & Chr$(172) & UserMod.EncodeGmReplyMessage(mensaje) & vbNewLine
 
                     ' Persist first even when the user appears connected.  A recently closed
                     ' socket can remain referenced briefly, and an in-memory-only reply would

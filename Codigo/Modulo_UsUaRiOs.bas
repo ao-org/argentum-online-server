@@ -35,6 +35,20 @@ Public Function NormalizeGmReplyUserName(ByVal username As String) As String
     NormalizeGmReplyUserName = Replace(username, "+", " ")
 End Function
 
+Public Function EncodeGmReplyMessage(ByVal replyText As String) As String
+    Dim encodedText As String
+    encodedText = Replace(replyText, "%", "%25")
+    encodedText = Replace(encodedText, vbCrLf, "%0A")
+    encodedText = Replace(encodedText, vbCr, "%0A")
+    EncodeGmReplyMessage = Replace(encodedText, vbLf, "%0A")
+End Function
+
+Public Function DecodeGmReplyMessage(ByVal replyText As String) As String
+    Dim decodedText As String
+    decodedText = Replace(replyText, "%0A", vbNewLine)
+    DecodeGmReplyMessage = Replace(decodedText, "%25", "%")
+End Function
+
 Public Function LimitGmReplyHistory(ByVal MessageInfo As String) As String
     On Error GoTo LimitGmReplyHistory_Err
     If LenB(MessageInfo) = 0 Then Exit Function
@@ -817,7 +831,7 @@ Dim previousMessageInfo         As String
                         messagePayload = Mid$(Lines(i), Len(GM_REPLY_MESSAGE_PREFIX) + 1)
                         messageSeparator = InStr(1, messagePayload, Chr$(172), vbBinaryCompare)
                         If messageSeparator > 1 Then
-                            Call WriteShowMessageBox(UserIndex, MSG_QUESTION_ANSWERED, Left$(messagePayload, messageSeparator - 1) & Chr$(172) & Mid$(messagePayload, messageSeparator + 1))
+                            Call WriteShowMessageBox(UserIndex, MSG_QUESTION_ANSWERED, Left$(messagePayload, messageSeparator - 1) & Chr$(172) & DecodeGmReplyMessage(Mid$(messagePayload, messageSeparator + 1)))
                         Else
                             Call WriteConsoleMsg(UserIndex, messagePayload, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_DONADOR)
                         End If
