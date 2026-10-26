@@ -1188,6 +1188,9 @@ UnitTest_ReportError:
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call UpdateAdjacentNpcVisibility(GlobalFrameTime)
+        #If PYMMO = 1 Then
+            Call UpdateAdjacentPlayerVisibility(GlobalFrameTime)
+        #End If
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState

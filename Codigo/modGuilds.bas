@@ -1024,6 +1024,13 @@ NivelDeClan_Err:
     Call TraceError(Err.Number, Err.Description, "modGuilds.NivelDeClan", Erl)
 End Function
 
+#If UNIT_TEST = 1 Then
+Public Function SwapTestGuild(ByVal index As Integer, ByVal replacement As clsClan) As clsClan
+    Set SwapTestGuild = guilds(index)
+    Set guilds(index) = replacement
+End Function
+#End If
+
 Public Function Alineacion(ByVal GuildIndex As Integer) As Byte
     On Error GoTo Alineacion_Err
     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
