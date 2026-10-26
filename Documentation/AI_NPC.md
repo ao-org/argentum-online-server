@@ -21,17 +21,63 @@ When an NPC receives damage from its current target we register a short-lived st
 All temporal behaviours—strafe windows, orbit reevaluations, and path cooldowns—share the same wrap-safe helpers (`AddMod32`, `TickAfter`). `EnsureNpcOrbitDirection` and `FlipNpcOrbitDirection` store `OrbitDirection` and `OrbitReevaluateAt` on `t_NpcPathFindingInfo`, making orbit changes deterministic even once the millisecond counter wraps after ~49.7 days of uptime.
 
 ### 5. Configurable Parameters
-Every new timing and weighting constant is tunable from the `[AI]` section of `Server.ini`, with defaults defined in `Consts.bas` and surfaced through `ServerConfig.cls`. Operators can tailor combat pacing and difficulty by tweaking these knobs.
+Every new timing and weighting constant is tunable from the `[AI]` section of `Configuracion.ini`, with defaults defined in `Consts.bas` and surfaced through `ServerConfig.cls`. Operators can tailor combat pacing and difficulty by tweaking these knobs.
 
 | Setting | Default | Description |
 | --- | --- | --- |
 | `NPC_PATHFINDING_NOISE` | `0.75` | Adds subtle randomness to pathfinding so multiple NPCs do not pick identical corridors. |
 | `NPCCrossMapAllowSafeMaps` | `1` | Allows hostile NPC cross-map pursuit routes to enter or pass through safe maps. Set to `0` to stop pursuit at those boundaries. Requires `npc-cross-map-pursuit` to be enabled. |
+| `NPCCrossMapDiagnostics` | `0` | Opt-in routine pursuit diagnostics, read from `[AI]` in `Configuracion.ini`. Does not enable or disable pursuit. Missing key means off. |
 | `NPC_ORBIT_REEVALUATE_MS` | `1800` | Minimum duration before an NPC can flip its orbit direction. |
 | `PATH_RECOMPUTE_COOLDOWN_MS` | `250` | Minimum delay between A* recomputations once a path exists. |
 | `NPC_ORBIT_TANGENT_WEIGHT` | `0.35` | Balance between backward and sideways motion when orbiting a target. |
 | `NPC_RETREAT_DISTANCE_BUFFER` | `0.75` | Buffer distance that triggers a slide instead of pure retreat. |
 | `NPC_STRAFE_DURATION_MS` | `900` | Lifespan of the reactive strafe after receiving damage. |
+
+### Cross-map pursuit diagnostics
+
+Routine pursuit messages are disabled by default, independently of the
+`npc-cross-map-pursuit` gameplay feature toggle. To enable them temporarily, set
+the following in the active **Configuracion.ini**, not Server.ini:
+
+```ini
+[AI]
+NPCCrossMapDiagnostics=1
+```
+
+Use the server window's **Recargar configuracion.ini** button to apply it through
+`LoadMainConfigFile`, or restart the server. A successful reload is sufficient;
+no restart is required. Editing the file alone has no effect until reload/startup.
+The existing reload also reloads events/invasions; avoid using it during an
+active invasion, as described in the external-configuration documentation.
+When using `/config-dir`, edit that directory's managed Configuracion.ini (see
+[External configuration](ExternalConfiguration.md)). To disable diagnostics,
+set the value to `0` or remove the key, then reload or restart again. Missing
+configuration leaves these diagnostics off; existing production configuration
+does not need to be changed. The setting is cached in `ServerConfig`, with no
+file access or configuration parsing during pursuit processing.
+
+This gates transition checks, retention scans (including zero-target scans),
+retained targets, selected/crossed exits, expected route rejections and ordinary
+chase cancellations. When enabled, existing NPC index/lifetime, user, map, exit,
+target and reason details remain available. String formatting is guarded at the
+call sites. Pursuit, targeting, routing, return-home and visibility behavior do
+not depend on this diagnostic setting.
+
+Exception handlers still call `TraceError` unconditionally. The two forced
+return-home fallbacks, `return route unavailable; warping home` and
+`return path failed; warping home`, also remain visible regardless of the setting:
+they record an exceptional recovery rather than an ordinary cancellation, and
+can help diagnose missing routes or repeated path failures. Their existing
+informational severity is preserved, not promoted or downgraded.
+
+`Logging.LogInfoServidor` continues emitting `vbLogEventTypeInformation` through
+Windows Event Log source `Argentum20`, event ID 20. `TraceError` emits
+`vbLogEventTypeError`. This change does not alter global logging or unrelated
+events. No monitoring trigger/export configuration is checked into this
+repository, so the rule behind the reported Warning/PROBLEM alert remains
+**unverified**. An alert label alone does not establish the source event's
+severity; do not broadly exclude all `NPC cross-map` messages in monitoring.
 
 ### 6. Structural and Initialization Changes
 `t_NpcPathFindingInfo` now stores `StrafeOffset`, `StrafeExpiresAt`, `OrbitDirection`, `OrbitReevaluateAt`, and `NextPathRecomputeAt`. These fields are reset inside `ResetNpcMainInfo` and `OpenNPC`, eliminating the risk of leaking movement state between instances. Consolidating AI constants into `Consts.bas` and `ServerConfig.cls` keeps configuration handling in one place.

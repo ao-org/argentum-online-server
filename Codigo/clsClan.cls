@@ -466,6 +466,12 @@ Public Function GetNivelDeClan() As Integer
     GetNivelDeClan = p_GuildLevel
 End Function
 
+#If UNIT_TEST = 1 Then
+Public Sub SetTestLevel(ByVal level As Byte)
+    p_GuildLevel = level
+End Sub
+#End If
+
 Public Function GetStoredClanLevel() As Byte
     On Error GoTo GetNivelDeClan_Err
     Dim RS As ADODB.Recordset

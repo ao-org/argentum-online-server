@@ -2885,20 +2885,40 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
     On Error GoTo HandleCraftCarpenter_Err
+    If reader.GetAvailable() <> 6 Then Exit Sub
     Dim Item As Integer
     Item = reader.ReadInt16()
     Dim Cantidad As Long
     Cantidad = reader.ReadInt32()
-    If Item = 0 Then Exit Sub
-    'Valido que haya puesto una cantidad > 0
-    If Cantidad > 0 Then
-        UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-        UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
-        UserList(UserIndex).Trabajo.Cantidad = Cantidad
-        UserList(UserIndex).Trabajo.Item = Item
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-    Else
+
+    ' A zero quantity is the explicit cancellation command sent by the client.
+    If Cantidad = 0 Then
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+        Exit Sub
     End If
+
+    If Item = 0 Then Exit Sub
+
+    If Cantidad < 0 Or Cantidad > 10000 Then Exit Sub
+    If Item < LBound(ObjData) Or Item > UBound(ObjData) Then Exit Sub
+    If Not CanUseCraftingInventory(UserIndex) Then Exit Sub
+
+    ' Validate the complete batch before starting.  This prevents a large order
+    ' from running until the first missing-material tick.
+    ' The legacy TieneObjetos count is Integer; full batch costs may exceed it.
+    Dim stagedInventory As t_Inventario
+    stagedInventory = UserList(UserIndex).invent
+    If Not TryConsumeCraftingMaterials(stagedInventory, UserList(UserIndex).CurrentInventorySlots, ObjData(Item), e_JobsTypes.Carpenter, Cantidad) Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTES_MATERIALES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+        Exit Sub
+    End If
+
+    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+    UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
+    UserList(UserIndex).Trabajo.Cantidad = Cantidad
+    UserList(UserIndex).Trabajo.Item = Item
+    Call WriteMacroTrabajoToggle(UserIndex, True)
     '106         Call CarpinteroConstruirItem(UserIndex, Item, Cantidad)
     Exit Sub
 HandleCraftCarpenter_Err:
@@ -2907,10 +2927,18 @@ End Sub
 
 Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
     On Error GoTo HandleCraftAlquimia_Err
+    If reader.GetAvailable() <> 6 Then Exit Sub
     Dim Item As Integer
     Item = reader.ReadInt16()
+    Dim Cantidad As Long
+    Cantidad = reader.ReadInt32()
     If Item < 1 Then Exit Sub
-    Call AlquimistaConstruirItem(UserIndex, Item)
+    If Cantidad < 1 Or Cantidad > 10000 Then Exit Sub
+    If UserList(UserIndex).flags.Crafteando > 0 Then
+        Call DoNpcCraftItem(UserIndex, Item, Cantidad)
+        Exit Sub
+    End If
+    Call AlquimistaConstruirItem(UserIndex, Item, Cantidad)
     Exit Sub
 HandleCraftAlquimia_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
@@ -2932,6 +2960,31 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 #If UNIT_TEST = 1 Then
+Public Sub CraftingTestLifecyclePacket(ByVal UserIndex As Integer, ByRef Payload() As Byte)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    Select Case reader.ReadInt16()
+        Case ClientPacketID.eCloseCrafting: Call HandleCloseCrafting(UserIndex)
+        Case ClientPacketID.eWalk: Call HandleWalk(UserIndex)
+    End Select
+    Set reader = savedReader
+End Sub
+
+Public Sub CraftingTestRequest(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Alchemy As Boolean)
+    Dim savedReader As Network.reader
+    Set savedReader = reader
+    Set reader = New Network.reader
+    Call reader.SetData(Payload)
+    If Alchemy Then
+        Call HandleCraftAlquimia(UserIndex)
+    Else
+        Call HandleCraftCarpenter(UserIndex)
+    End If
+    Set reader = savedReader
+End Sub
+
 Public Sub TrapTestUseItem(ByVal UserIndex As Integer, ByRef Payload() As Byte, ByVal Keyboard As Boolean)
     Dim savedReader As Network.reader
     Set savedReader = reader
@@ -3183,12 +3236,26 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
-                            Call WriteLocaleMsg(UserIndex, MSG_PROHIBIDO_CORTAR_RAICES_CIUDADES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_RECOLECTAR_PLANTAS_ZONA_SEGURA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                        DummyInt = MapData(x, y, .pos.Map).ObjInfo.ObjIndex
+                        If DummyInt <= 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+                        If ObjData(DummyInt).OBJType <> e_OBJType.otPlants Or ObjData(DummyInt).RecursoObj <= 0 Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+                        Call ActualizarRecurso(.pos.Map, x, y)
                         If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_ARBOL_PUEDE_ENTREGAR_MAS_RAICES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_PLANTA_SIN_FLORES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
@@ -3204,13 +3271,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
                             If .pos.x = x And .pos.y = y Then
                                 ' Msg713=No podés quitar raices allí.
-                                Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI_713, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                                Call WriteLocaleMsg(UserIndex, MSG_NO_RECOLECTAR_PLANTA_DESDE_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
                             End If
+                            Call RecolectarPlantaAlquimia(UserIndex, x, y)
                         Else
                             ' Msg604=No podés quitar raices allí.
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_QUITAR_RAICES_ALLI, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                            Call WriteLocaleMsg(UserIndex, MSG_NO_HAY_PLANTA_RECOLECTABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                         End If
@@ -8147,9 +8215,7 @@ End Sub
 
 Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    If UserList(UserIndex).flags.Crafteando = 0 Then Exit Sub
-    Call ReturnCraftingItems(UserIndex)
-    UserList(UserIndex).flags.Crafteando = 0
+    Call CloseNpcCrafting(UserIndex)
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)
@@ -8568,29 +8634,38 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     Select Case skill
         Case e_Skill.Pescar
             If Not CanUserFish(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Talar
             If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
             If Not CanUserExtractWood(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Mineria
             If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
             If Not CanUserExtractMinerals(UserIndex, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Smelting
             If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
+                Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case Else
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Function
     End Select
     Call StartAutomatedAction(x, y, skill, UserIndex)
+    Call WriteMacroTrabajoToggle(UserIndex, True)
     Exit Function
 HandleStartAutomatedAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartAutomatedAction", Erl)

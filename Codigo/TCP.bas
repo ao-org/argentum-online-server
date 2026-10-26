@@ -1115,6 +1115,9 @@ End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSlot_Err
+    #If PYMMO = 1 Then
+        Call ResetAdjacentPlayerSlot(UserIndex)
+    #End If
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     Call RemoveMagicLightOrb(UserIndex)

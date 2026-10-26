@@ -145,13 +145,18 @@ End Sub
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal ValidateInvi As Boolean = False, Optional ByRef Queued As Boolean = False, Optional ByVal RequireQueueConfirmation As Boolean = False)
     Queued = False
     #If UNIT_TEST = 1 Then
+        If Unit_AdjacentPlayers.CapturePacket(sndRoute, sndIndex, Queued) Then Exit Sub
+        If Unit_Crafting.CapturePacket() Then Exit Sub
         If Unit_NpcCrossMapPursuit.CaptureAdjacentPacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_NpcBow.CapturePacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_InventoryDestruction.CapturePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureAttributePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureTorchPacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureArmorPacket() Then Exit Sub
-        If CaptureMagicLightOrbPacket() Then Exit Sub
+        If CaptureMagicLightOrbPacket() Then
+            Queued = True
+            Exit Sub
+        End If
         If UnitTesting.CaptureTamingPacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_Traps.CapturePacket(sndRoute, sndIndex) Then Exit Sub
     #End If

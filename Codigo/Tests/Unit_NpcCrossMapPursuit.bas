@@ -6,11 +6,153 @@ Private Const TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_
 Private Const ADJACENT_TEST_TOPOLOGY As String = "{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35],""edges"":[[34,35,0,-80],[35,34,0,80]]}"
 Private adjacentCaptureActive As Boolean
 Private adjacentPackets As Collection
+Private adjacentReaderBytes() As Byte
 Private adjacentAccepted As Collection
 Private adjacentFailAttempt As Long
 Private adjacentCaptureError As String
+Private adjacentExpectedRoute As SendTarget
+Private adjacentExpectedRecipient As Integer
 Private adjacentTick As Long
 Private adjacentNpc As Integer
+Private diagnosticsCapture As Boolean
+Private diagnosticsCount As Long
+Private diagnosticsOverflow As Boolean
+Private diagnosticsText(1 To 32) As String
+Private diagnosticsSeverity(1 To 32) As LogEventTypeConstants
+
+' Observe only while these tests run; LogThis still writes the real Windows event.
+Public Sub ObserveDiagnosticLog(ByVal text As String, ByVal severity As LogEventTypeConstants)
+    If Not diagnosticsCapture Then Exit Sub
+    If diagnosticsCount = UBound(diagnosticsText) Then
+        diagnosticsOverflow = True
+        Exit Sub
+    End If
+    diagnosticsCount = diagnosticsCount + 1
+    diagnosticsText(diagnosticsCount) = Left$(text, 512)
+    diagnosticsSeverity(diagnosticsCount) = severity
+End Sub
+
+Private Sub ClearDiagnosticLogs()
+    diagnosticsCount = 0
+    diagnosticsOverflow = False
+End Sub
+
+Private Sub ExpectDiagnosticLog(ByVal fragment As String, ByVal expectedCount As Long, Optional ByVal severity As LogEventTypeConstants = vbLogEventTypeInformation)
+    Dim i As Long, found As Long
+    For i = 1 To diagnosticsCount
+        If InStr(1, diagnosticsText(i), fragment, vbBinaryCompare) > 0 Then
+            found = found + 1
+            Call AdjacentExpect(diagnosticsSeverity(i) = severity, "diagnostic severity: " & fragment)
+        End If
+    Next i
+    Call AdjacentExpect(Not diagnosticsOverflow And found = expectedCount, "diagnostic count: " & fragment)
+End Sub
+
+Private Sub LoadDiagnosticsSetting(Optional ByVal value As String = vbNullString)
+    Dim source As New clsIniManager
+    Call source.ChangeValue("AI", "NPCCrossMapAllowSafeMaps", "0")
+    If value <> vbNullString Then Call source.ChangeValue("AI", "NPCCrossMapDiagnostics", value)
+    Set SvrConfig = New ServerConfig
+    Call AdjacentExpect(SvrConfig.LoadSettings(vbNullString, source) = 0, "load diagnostic fixture settings")
+    Call source.ChangeValue("AI", "NPCCrossMapDiagnostics", "1")
+    ' Changing the source after loading must not change the cached setting.
+    Call AdjacentExpect(NpcCrossMapDiagnosticsEnabled() = (value = "1"), "cached diagnostic setting")
+End Sub
+
+Private Sub CheckDiagnosticsCase(ByVal group As Long)
+    Dim i As Long, expectedCount As Long
+    LastNPC = adjacentNpc
+    Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, True)
+    Call AdjacentExpect(LoadAdjacentTopologyJson(ADJACENT_TEST_TOPOLOGY, False), "diagnostic fixture after feature reload")
+    With NpcList(adjacentNpc)
+        .Char.charindex = 0
+        .Orig = .pos
+        .Hostile = 1
+        .Movement = e_TipoAI.MueveAlAzar
+    End With
+    diagnosticsCapture = True
+    Call ClearDiagnosticLogs()
+    Select Case group
+        Case 42
+            Set SvrConfig = Nothing
+            Call AdjacentExpect(Not NpcCrossMapDiagnosticsEnabled(), "missing configuration is off")
+            Call LoadDiagnosticsSetting()
+            Call LoadDiagnosticsSetting("0")
+            Call LoadDiagnosticsSetting("1")
+            Call LoadDiagnosticsSetting("not-a-number")
+            Call LoadDiagnosticsSetting("1")
+            Call LoadDiagnosticsSetting("0")
+        Case 43
+            For i = 0 To 2
+                expectedCount = 0
+                If i = 1 Then expectedCount = 1
+                Call LoadDiagnosticsSetting(CStr(expectedCount))
+                UserList(1).flags.Muerto = 0
+                Call ClearDiagnosticLogs()
+                Call RetainNpcPursuitForSpatialTransition(1, 35, 34)
+                Call ExpectDiagnosticLog("matchingTargets=0 sourceMapTargets=0 retained=0", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = expectedCount, "zero-retention logging gate")
+
+                With MapData(50, 90, 35).TileExit
+                    .Map = 34: .x = 50: .y = 10
+                End With
+                Call SetUserRef(NpcList(adjacentNpc).TargetUser, 1)
+                Call ClearDiagnosticLogs()
+                Call RetainNpcPursuitForSpatialTransition(1, 35, 34)
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteChase And NpcList(adjacentNpc).CrossMapRoute.NextMap = 34, "retained chase unchanged by diagnostics")
+                Call ExpectDiagnosticLog("chase retained fromMap=35 targetMap=34", expectedCount)
+                Call ExpectDiagnosticLog("spatial exit selected fromMap=35 exit=(50,90) toMap=34 destination=(50,10)", expectedCount)
+                Call ExpectDiagnosticLog("matchingTargets=1 sourceMapTargets=1 retained=1", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = 3 * expectedCount, "retained logging gate")
+
+                UserList(1).flags.Muerto = 1
+                Call ClearDiagnosticLogs()
+                Call AdjacentExpect(Not HandleNpcCrossMapRoute(adjacentNpc), "cancel at origin does not move")
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteNone And Not IsValidUserRef(NpcList(adjacentNpc).TargetUser), "cancellation state identical off/on/off")
+                Call ExpectDiagnosticLog("chase cancelled reason=target no longer attackable alreadyOnOriginMap=35", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = expectedCount, "cancellation logging gate")
+
+                UserList(1).flags.Muerto = 0
+                MapData(50, 90, 35).TileExit.Map = 0
+                Call SetUserRef(NpcList(adjacentNpc).TargetUser, 1)
+                NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteChase
+                Call ClearDiagnosticLogs()
+                Call AdjacentExpect(Not HandleNpcCrossMapRoute(adjacentNpc), "missing exit rejects route")
+                Call AdjacentExpect(NpcList(adjacentNpc).CrossMapRoute.Mode = eNpcCrossMapRouteNone And Not IsValidUserRef(NpcList(adjacentNpc).TargetUser), "rejection state independent of diagnostics")
+                Call ExpectDiagnosticLog("route rejected reason=no-valid-spatial-exit", expectedCount)
+                Call ExpectDiagnosticLog("chase cancelled reason=no allowed chase route", expectedCount)
+                Call AdjacentExpect(diagnosticsCount = 2 * expectedCount, "rejection logging gate")
+            Next i
+        Case 44
+            Call LoadDiagnosticsSetting("0")
+            ' The real route error handler must remain visible; no valid NPC is touched.
+            LastNPC = UBound(NpcList) + 1
+            Call HandleNpcCrossMapRoute(LastNPC)
+            LastNPC = adjacentNpc
+            Call ExpectDiagnosticLog("Component: modNpcCrossMapPursuit.HandleNpcCrossMapRoute", 1, vbLogEventTypeError)
+            Call ExpectDiagnosticLog("Error number: 9", 1, vbLogEventTypeError)
+        Case 45
+            Call LoadDiagnosticsSetting("0")
+            Call ClearAdjacentCapture(0, ToNPCArea, adjacentNpc)
+            For i = 1 To 2
+                Call ClearDiagnosticLogs()
+                With NpcList(adjacentNpc)
+                    .Orig.Map = 33 + i: .Orig.x = 50: .Orig.y = 50
+                    .CrossMapRoute.Mode = eNpcCrossMapRouteReturnHome
+                    If i = 1 Then
+                        Call AdjacentExpect(HandleNpcCrossMapRoute(adjacentNpc), "missing return exit uses fallback")
+                        Call ExpectDiagnosticLog("return route unavailable; warping home", 1)
+                    Else
+                        .CrossMapRoute.PathFailures = 2
+                        Call RecordNpcCrossMapPathFailure(adjacentNpc)
+                        Call ExpectDiagnosticLog("return path failed; warping home", 1)
+                    End If
+                    Call AdjacentExpect(.pos.Map = .Orig.Map And .pos.x = 50 And .pos.y = 50 And .CrossMapRoute.Mode = eNpcCrossMapRouteNone, "fallback really warps home and resets route")
+                End With
+                Call AdjacentExpect(diagnosticsCount = 1, "only unconditional Info fallback logged")
+            Next i
+    End Select
+End Sub
 
 Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByRef Queued As Boolean) As Boolean
     If Not adjacentCaptureActive Then Exit Function
@@ -25,7 +167,7 @@ Public Function CaptureAdjacentPacket(ByVal sndRoute As SendTarget, ByVal sndInd
     Call adjacentPackets.Add(packet)
     Queued = adjacentPackets.Count <> adjacentFailAttempt
     Call adjacentAccepted.Add(Queued)
-    If sndRoute <> ToIndex Or sndIndex <> 1 Then adjacentCaptureError = "unexpected recipient or route"
+    If sndRoute <> adjacentExpectedRoute Or sndIndex <> adjacentExpectedRecipient Then adjacentCaptureError = "unexpected recipient or route"
     Exit Function
 Failed:
     adjacentCaptureError = CStr(Err.Number) & ": " & Err.Description
@@ -65,6 +207,17 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentCase(group + 1, CStr(names(group)))
     Next group
+    names = Split("normal and adjacent visual parity|definition refresh|runtime name refresh|runtime description refresh|showName hide and reveal|empty display text|UTF-8 varuint boundary|maximum display text|oversized text recovery|failed display refresh retry", "|")
+    For group = 0 To UBound(names)
+        Call RunAdjacentCase(group + 29, CStr(names(group)))
+    Next group
+    Call RunAdjacentCase(39, "stationary South idle changes preserve equipment")
+    Call RunAdjacentCase(40, "entrance guard AI same-heading refresh preserves equipment")
+    Call RunAdjacentCase(41, "character change preserves body semantics and current equipment")
+    Call RunAdjacentCase(42, "diagnostics cached configuration defaults and reload")
+    Call RunAdjacentCase(43, "diagnostics retention rejection cancellation off-on-off")
+    Call RunAdjacentCase(44, "diagnostics off preserves route error reporting")
+    Call RunAdjacentCase(45, "diagnostics off preserves both warp-home fallback logs")
     names = Split("exact connection and length|wrong connection|partial enqueue|oversized enqueue|late callback|nested probe preserves outer|same connection closes|other connection closes|duplicate callback", "|")
     For group = 0 To UBound(names)
         Call UnitTesting.RunTest("adjacent queue " & CStr(names(group)), modNetwork.TestQueueAcceptanceProbe(CInt(group + 1)))
@@ -73,6 +226,7 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentTwoHopCase(group + 1, CStr(names(group)))
     Next group
+    Call TestNpcRespawnEffects()
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = UnitTesting.GetFailedTests() = failuresBefore
 End Function
@@ -81,18 +235,21 @@ Private Sub AdjacentExpect(ByVal condition As Boolean, ByVal description As Stri
     If Not condition Then Err.Raise vbObjectError + 183, "Adjacent NPC regression", description
 End Sub
 
-Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0)
+Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0, Optional ByVal expectedRoute As SendTarget = ToIndex, Optional ByVal expectedRecipient As Integer = 1)
     Set adjacentPackets = New Collection
     Set adjacentAccepted = New Collection
     adjacentFailAttempt = failAttempt
     adjacentCaptureError = vbNullString
+    adjacentExpectedRoute = expectedRoute
+    adjacentExpectedRecipient = expectedRecipient
 End Sub
 
 Private Function AdjacentPacketReader(ByVal index As Long, ByVal packetId As Integer, ByVal length As Long) As Network.reader
-    Dim bytes() As Byte, reader As New Network.reader
-    bytes = adjacentPackets(index)
-    Call AdjacentExpect(UBound(bytes) - LBound(bytes) + 1 = length, "exact wire length")
-    Call reader.SetData(bytes)
+    Dim reader As New Network.reader
+    ' Aurora readers borrow their input; retain bytes after this helper returns.
+    adjacentReaderBytes = adjacentPackets(index)
+    Call AdjacentExpect(UBound(adjacentReaderBytes) - LBound(adjacentReaderBytes) + 1 = length, "exact wire length")
+    Call reader.SetData(adjacentReaderBytes)
     Call AdjacentExpect(reader.ReadInt16() = packetId, "packet order/ID")
     Set AdjacentPacketReader = reader
 End Function
@@ -100,7 +257,7 @@ End Function
 Private Sub ExpectAdjacentActor(ByVal index As Long, ByVal packetId As Integer, ByVal npcIndex As Integer, ByVal version As Integer, ByVal accepted As Boolean)
     Dim reader As Network.reader, length As Long
     length = 10
-    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = 32
+    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = 35
     Set reader = AdjacentPacketReader(index, packetId, length)
     Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "current epoch")
     Call AdjacentExpect(reader.ReadInt16() = npcIndex, "exact NPC index")
@@ -147,7 +304,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "reset epoch")
             Call AdjacentExpect(reader.ReadInt16() = 34, "viewer map")
             Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
-            Set reader = AdjacentPacketReader(2, ServerPacketID.eAdjacentNpcUpsert, 32)
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eAdjacentNpcUpsert, 35)
             Call reader.ReadInt32(): Call reader.ReadInt16(): Call reader.ReadInt16()
             Call AdjacentExpect(reader.ReadInt16() = 35, "source map")
             Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source position")
@@ -156,6 +313,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt16() = 524 And reader.ReadInt16() = 781, "weapon/shield widths")
             Call AdjacentExpect(reader.ReadInt16() = 1038 And reader.ReadInt16() = 1295, "helmet/cart widths")
             Call AdjacentExpect(reader.ReadReal32() = 1 And reader.ReadBool(), "speed and idle")
+            Call AdjacentExpect(reader.ReadInt16() = 1543 And reader.ReadString8() = vbNullString, "definition and empty display text")
             Call AdjacentExpect(reader.GetAvailable() = 0, "complete payload consumed")
             #If PYMMO = 1 Then
                 Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 214 And ServerPacketID.eAdjacentNpcUpsert = 215 And ServerPacketID.eAdjacentNpcRemove = 216, "HOO literal packet IDs")
@@ -165,6 +323,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             bytes = adjacentPackets(2)
             Call AdjacentExpect(bytes(10) = 35 And bytes(11) = 0 And bytes(16) = 11 And bytes(17) = 1, "little endian fields")
             Call AdjacentExpect(bytes(27) = 0 And bytes(28) = 0 And bytes(29) = 128 And bytes(30) = 63 And bytes(31) = 1, "Single and Boolean representation")
+            Call AdjacentExpect(bytes(32) = 7 And bytes(33) = 6 And bytes(34) = 0, "definition little endian and empty String8 prefix")
             Call AdjacentExpect(AdjacentNpcTestKnownCount(1) = 1 And IsAdjacentNpcObserved(adjacentNpc), "accepted cache and AI observation")
             Call ClearAdjacentCapture
             Call TickAdjacent
@@ -402,7 +561,341 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call ClearAdjacentCapture
             Call TickAdjacent
             Call AdjacentExpect(adjacentPackets.Count = 0, "no stale removal replay on new map")
+        Case 29 To 38
+            Call CheckAdjacentAppearanceCase(group)
+        Case 39 To 41
+            Call CheckNpcAppearanceChangeCase(group)
+        Case 46 To 67
+            Call CheckRespawnCase(group)
+        Case 42 To 45
+            Call CheckDiagnosticsCase(group)
     End Select
+End Sub
+
+Public Sub TestNpcRespawnEffects()
+    Call UnitTesting.RunTest("respawn queue retains death provenance and excludes initial spawn", TestNpcRespawnQueueProvenance())
+    Dim group As Long
+    For group = 46 To 67
+        Call RunAdjacentCase(group, "respawn " & CStr(group))
+    Next group
+End Sub
+
+Private Sub CheckRespawnCase(ByVal group As Long)
+    Dim reader As Network.reader, extra As Integer, x As Integer, y As Integer
+    Select Case group
+        Case 58, 59: UserList(1).pos.y = 80
+        Case 61
+            Call AdjacentExpect(LoadAdjacentTopologyJson("{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,36],""edges"":[[34,36,200,200],[36,34,-200,-200],[36,35,-200,-280],[35,36,200,280]]}", False), "two-hop non-cardinal topology")
+        Case 62
+            Call AdjacentExpect(LoadAdjacentTopologyJson("{""version"":1,""id_space"":""resource_map_id"",""maps"":[34,35,36],""edges"":[[34,35,0,-80],[35,34,0,80],[34,36,200,200],[36,34,-200,-200],[36,35,-199,-280],[35,36,199,280]]}", False), "ambiguous placement topology")
+        Case 63: MapInfo(35).MapResource = 135
+        Case 64: MapInfo(34).MapResource = 134
+        Case 65: Call ClearAdjacentCapture(3)
+        Case 66
+            Call AddAdjacentSecondNpc()
+            Call ClearAdjacentCapture(3)
+        Case 67
+            For extra = 1 To ADJACENT_NPC_LIMIT
+                x = 26 + ((extra - 1) Mod 16): y = 73 + ((extra - 1) \ 16)
+                NpcList(adjacentNpc - extra) = NpcList(adjacentNpc)
+                NpcList(adjacentNpc - extra).pos.x = x: NpcList(adjacentNpc - extra).pos.y = y
+                NpcList(adjacentNpc - extra).Char.charindex = 400 + extra
+                MapData(x, y, 35).NpcIndex = adjacentNpc - extra
+            Next extra
+        Case 47: NpcList(adjacentNpc).flags.invisible = 1
+        Case 48: UserList(1).flags.Muerto = 1
+        Case 49: UserList(1).pos.y = 80
+        Case 50: NpcList(adjacentNpc).MaestroUser.ArrayIndex = 1
+        Case 51: MapData(50, 90, 35).NpcIndex = 0
+        Case 52: Call ClearAdjacentCapture(2)
+        Case 53
+            UserList(1).pos.Map = 35: UserList(1).pos.y = 90
+        Case 54
+            UserList(1).flags.Muerto = 1: MapInfo(34).Seguro = 1
+        Case 55
+            UserList(1).flags.Muerto = 1: NpcList(adjacentNpc).npcType = e_NPCType.Revividor
+        Case 56
+            Call TickAdjacent()
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ordinary visibility never emits respawn")
+            Exit Sub
+        Case 57
+            Call ClearAdjacentCapture(1)
+    End Select
+    ' Exercise the production map connection index, including same-map relocation.
+    ConnGroups(UserList(1).pos.Map).CountEntrys = 1
+    ConnGroups(UserList(1).pos.Map).UserEntrys(1) = 1
+    Call NotifyNpcRespawn(adjacentNpc)
+    If group = 53 Then
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 0, "same-map appearance needs no adjacent collection")
+    ElseIf group = 46 Or group = 52 Or group = 54 Or group = 55 Or group = 57 Or group = 60 Or group = 61 Or group >= 65 Then
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 1, "one collection per eligible viewer")
+        Call AdjacentExpect(AdjacentNpcTestScanCount(35) = 1, "source tiles scanned once")
+    Else
+        Call AdjacentExpect(AdjacentNpcTestCollectionCount() = 0 And AdjacentNpcTestScanCount(35) = 0, "no collection for irrelevant viewer")
+    End If
+    If group = 58 Then Call AdjacentExpect(AdjacentNpcTestRespawnViewerVisits() = 1, "64 unrelated connections are not visited")
+    Select Case group
+        Case 46, 54, 55, 60, 61
+            Call AdjacentExpect(adjacentPackets.Count = 3, "reset upsert respawn ordering")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(3, ServerPacketID.eNpcRespawnEffect, 20)
+            Call AdjacentExpect(reader.ReadInt32() > 0, "one-shot sequence")
+            Call AdjacentExpect(reader.ReadInt16() = 34 And reader.ReadInt16() = 35, "viewer and source maps")
+            Call AdjacentExpect(reader.ReadInt16() = adjacentNpc And reader.ReadInt16() = 3, "NPC lifetime")
+            Call AdjacentExpect(reader.ReadInt16() = 123 And reader.ReadInt16() = 1543, "character and definition")
+            Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source tile")
+        Case 65
+            Call AdjacentExpect(adjacentPackets.Count = 3 And Not CBool(adjacentAccepted(3)), "effect enqueue failed after accepted appearance")
+        Case 66
+            Call AdjacentExpect(adjacentPackets.Count = 4 And Not CBool(adjacentAccepted(3)), "partial appearance prefix accepted")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(4, ServerPacketID.eNpcRespawnEffect, 20)
+        Case 53
+            Call AdjacentExpect(adjacentPackets.Count = 2, "active create then effect")
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eNpcRespawnEffect, 20)
+        Case 52
+            Call AdjacentExpect(adjacentPackets.Count = 2, "failed upsert suppresses effect")
+        Case 57
+            Call AdjacentExpect(adjacentPackets.Count = 1, "failed reset suppresses effect")
+        Case Else
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ineligible viewer or placement suppressed")
+    End Select
+    ' Unrelated sessions have served their notification-cost assertion. End them
+    ' before the global tick, whose normal resets are outside this one-viewer capture.
+    If group = 58 Then
+        For extra = 2 To 65
+            UserList(extra).flags.UserLogged = False
+        Next extra
+    End If
+    Call ClearAdjacentCapture()
+    Call TickAdjacent()
+    ' An eventual successful retry is appearance only, never the missed effect.
+    Dim i As Long, bytes() As Byte
+    For i = 1 To adjacentPackets.Count
+        bytes = adjacentPackets(i)
+        Call AdjacentExpect(CLng(bytes(0)) + 256& * bytes(1) <> ServerPacketID.eNpcRespawnEffect, "no delayed effect")
+    Next i
+End Sub
+
+Private Sub ExpectAdjacentAppearance(ByVal packetIndex As Long, ByVal expectedText As String, ByVal expectedLength As Long)
+    Dim reader As Network.reader
+    Set reader = AdjacentPacketReader(packetIndex, ServerPacketID.eAdjacentNpcUpsert, expectedLength)
+    With NpcList(adjacentNpc)
+        Call AdjacentExpect(reader.ReadInt32() = AdjacentNpcTestEpoch(1), "appearance scene")
+        Call AdjacentExpect(reader.ReadInt16() = adjacentNpc And reader.ReadInt16() = .VersionId, "appearance lifetime")
+        Call AdjacentExpect(reader.ReadInt16() = .pos.Map, "appearance source map")
+        Call AdjacentExpect(reader.ReadInt8() = .pos.x And reader.ReadInt8() = .pos.y, "appearance source tile")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.body And reader.ReadInt16() = .Char.head, "appearance body/head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "appearance heading")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "appearance weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "appearance helmet/cart")
+        Call AdjacentExpect(reader.ReadReal32() = .Char.speeding And reader.ReadBool() = .flags.NPCIdle, "appearance speed/idle")
+        Call AdjacentExpect(reader.ReadInt16() = .Numero, "definition is not NPC slot, character index or lifetime")
+        Call AdjacentExpect(reader.ReadString8() = expectedText, "authorized runtime display text")
+    End With
+    Call AdjacentExpect(reader.GetAvailable() = 0, "no unparsed adjacent appearance bytes")
+End Sub
+
+Private Sub ExpectNormalAppearance(ByVal expectedText As String)
+    Dim bytes() As Byte, reader As New Network.reader, i As Long
+    Call ClearAdjacentCapture()
+    With NpcList(adjacentNpc)
+        ' Exercise the same production creation/refresh used by ModAreas and taming.
+        Call MakeNPCChar(False, 1, adjacentNpc, .pos.Map, .pos.x, .pos.y)
+        Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one normal create, no unintended effect packet")
+        bytes = adjacentPackets(1)
+        Call reader.SetData(bytes)
+        Call AdjacentExpect(reader.ReadInt16() = ServerPacketID.eCharacterCreate, "normal create packet")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.charindex, "normal character index")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.body And reader.ReadInt16() = .Char.head, "normal body/head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "normal heading")
+        Call AdjacentExpect(reader.ReadInt8() = .pos.x And reader.ReadInt8() = .pos.y, "normal tile")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "normal weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "normal helmet/cart argument mapping")
+        Call AdjacentExpect(reader.ReadInt16() = 0, "NPC backpack remains absent")
+        Call AdjacentExpect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "equipment must not become FX or FXLoops")
+        Call AdjacentExpect(reader.ReadString8() = expectedText, "normal authorized runtime text")
+        Call reader.ReadInt8(): Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt8() = 0, "no character particle")
+        For i = 1 To 7
+            Call reader.ReadString8()
+        Next i
+        Call AdjacentExpect(reader.ReadReal32() = .Char.speeding And reader.ReadInt8() = 1, "normal speed/NPC kind")
+        Call reader.ReadInt8(): Call reader.ReadInt16(): Call reader.ReadInt16(): Call reader.ReadInt8()
+        For i = 1 To 4
+            Call reader.ReadInt32()
+        Next i
+        Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt8() = Abs(CInt(.flags.NPCIdle)), "normal idle flag")
+        Call reader.ReadInt8(): Call reader.ReadInt8(): Call reader.ReadInt8()
+        Call AdjacentExpect(reader.ReadInt16() = .Numero And reader.GetAvailable() = 0, "normal definition and complete payload")
+    End With
+    Call ClearAdjacentCapture()
+End Sub
+
+Private Sub ExpectNpcAppearanceChange(ByVal expectedBody As Integer)
+    Dim reader As Network.reader
+    Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one alive-area character change, no extra FX")
+    Set reader = AdjacentPacketReader(1, ServerPacketID.eCharacterChange, 24)
+    With NpcList(adjacentNpc)
+        Call AdjacentExpect(reader.ReadInt16() = .Char.charindex, "change keeps character index")
+        Call AdjacentExpect(reader.ReadInt8() = Abs(CInt(.flags.NPCIdle)), "change idle flag and not navigating")
+        Call AdjacentExpect(reader.ReadInt16() = expectedBody And reader.ReadInt16() = .Char.head, "change body argument and authoritative head")
+        Call AdjacentExpect(reader.ReadInt8() = .Char.Heading, "change authoritative heading")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.WeaponAnim And reader.ReadInt16() = .Char.ShieldAnim, "change retains weapon/shield")
+        Call AdjacentExpect(reader.ReadInt16() = .Char.CascoAnim And reader.ReadInt16() = .Char.CartAnim, "change retains helmet/cart")
+        Call AdjacentExpect(reader.ReadInt16() = 0, "change has no NPC backpack")
+        Call AdjacentExpect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "change equipment does not become FX/loops")
+    End With
+    Call AdjacentExpect(reader.GetAvailable() = 0, "complete character change payload")
+End Sub
+
+Private Sub CheckNpcAppearanceChangeCase(ByVal group As Long)
+    Dim iteration As Long, originalBody As Integer
+    With NpcList(adjacentNpc)
+        .Char.body = 257: .Char.head = 514: .Char.WeaponAnim = 771: .Char.ShieldAnim = 1028
+        .Char.CascoAnim = 1285: .Char.CartAnim = 1542: .Char.Heading = e_Heading.SOUTH
+        .flags.NPCIdle = False
+        If group = 40 Then
+            ' NPC269 in Recursos/Dat/npcs.dat: fixed-origin guard, already South.
+            .Numero = 269: .npcType = e_NPCType.GuardiaNpc: .Movement = e_TipoAI.GuardiaPersigueNpc
+            .Char.body = 578: .Char.head = 42: .Char.WeaponAnim = 68: .Char.ShieldAnim = 16
+            .Char.CascoAnim = 0: .Char.CartAnim = 0: .Orig = .pos
+        End If
+        originalBody = .Char.body
+        Call ExpectNormalAppearance(vbNullString)
+        Call TickAdjacent()
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+        For iteration = 1 To 2
+            Call ClearAdjacentCapture(0, ToNPCAliveArea, adjacentNpc)
+            Select Case group
+                Case 39
+                    Call AnimacionIdle(adjacentNpc, iteration = 1)
+                Case 40
+                    Call NpcAI(adjacentNpc)
+                Case 41
+                    If iteration = 2 Then
+                        .Char.WeaponAnim = 0: .Char.ShieldAnim = 0: .Char.CascoAnim = 0: .Char.CartAnim = 0
+                    End If
+                    ' The caller's body override is sent, not stored into the NPC.
+                    Call ChangeNPCChar(adjacentNpc, 0, 2056, e_Heading.SOUTH)
+            End Select
+            Call ExpectNpcAppearanceChange(IIf(group = 41, 0, originalBody))
+            Call AdjacentExpect(.Char.body = originalBody, "change does not mutate stored body")
+            Call AdjacentExpect(.Char.Heading = e_Heading.SOUTH And .pos.Map = 35 And .pos.x = 50 And .pos.y = 90, "same South heading and stationary tile")
+            If group = 39 Then Call AdjacentExpect(.flags.NPCIdle = (iteration = 1), "idle changes both directions")
+            If group = 40 Then Call AdjacentExpect(Not IsValidNpcRef(.TargetNPC), "guard remains at origin without a target")
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            If group = 40 Then
+                Call AdjacentExpect(adjacentPackets.Count = 0, "same-heading guard refresh leaves adjacent state unchanged")
+            Else
+                Call AdjacentExpect(adjacentPackets.Count = 1, "changed idle/head/equipment reaches adjacent view")
+                Call ExpectAdjacentAppearance(1, vbNullString, 35)
+            End If
+        Next iteration
+        ' A fresh adjacent scene must still agree after the active-map refreshes.
+        Call InvalidateAdjacentNpcViewer(1)
+        Call ClearAdjacentCapture()
+        Call TickAdjacent()
+        Call AdjacentExpect(adjacentPackets.Count = 2, "new scene reset then current appearance")
+        Call ExpectAdjacentAppearance(2, vbNullString, 35)
+    End With
+End Sub
+
+Private Sub CheckAdjacentAppearanceCase(ByVal group As Long)
+    Dim expectedText As String, bytes() As Byte
+    With NpcList(adjacentNpc)
+        Select Case group
+            Case 29
+                .Char.body = 257: .Char.head = 514: .Char.WeaponAnim = 771: .Char.ShieldAnim = 1028
+                .Char.CascoAnim = 1285: .Char.CartAnim = 1542: .Char.Heading = e_Heading.SOUTH
+                .Char.speeding = 1.25: .flags.NPCIdle = True
+                .showName = 1: .name = "Centinela Núñez": .SubName = "<Guardián de Ullathorpe>"
+                expectedText = "Centinela Núñez<Guardián de Ullathorpe>"
+                Call ExpectNormalAppearance(expectedText)
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 2, "normal create then adjacent snapshot")
+                Call ExpectAdjacentAppearance(2, expectedText, 77)
+                bytes = adjacentPackets(2)
+                Call UnitTesting.Progress("adjacent appearance production upsert: " & AO20CryptoSysWrapper.ByteArrayToHex(bytes))
+                Call AdjacentExpect(bytes(34) = 42 And bytes(46) = &HC3 And bytes(47) = &HBA, "UTF-8 accented name, not ANSI")
+            Case 30 To 32
+                .showName = 1: .name = "Guard": .SubName = "<South>"
+                Call TickAdjacent(): Call ClearAdjacentCapture()
+                Select Case group
+                    Case 30: .Numero = 2049
+                    Case 31: .name = "Watch"
+                    Case 32: .SubName = "<North>"
+                End Select
+                expectedText = .name & .SubName
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "stationary definition/name/description change sends upsert")
+                Call ExpectAdjacentAppearance(1, expectedText, 35 + Len(expectedText))
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "accepted display change is silent next sample")
+            Case 33
+                .showName = 1: .name = "Guard": .SubName = "<South>"
+                Call TickAdjacent(): Call ClearAdjacentCapture()
+                .showName = 0
+                Call ExpectNormalAppearance(vbNullString)
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "hide label without removing NPC")
+                Call ExpectAdjacentAppearance(1, vbNullString, 35)
+                Call ClearAdjacentCapture()
+                .name = "Watch": .SubName = "<North>"
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "hidden text changes do not leak")
+                .showName = 2
+                Call ExpectNormalAppearance("Watch<North>")
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1, "showName greater than zero reveals label without movement")
+                Call ExpectAdjacentAppearance(1, "Watch<North>", 47)
+            Case 34
+                .showName = 1: .name = vbNullString: .SubName = vbNullString
+                Call ExpectNormalAppearance(vbNullString)
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, vbNullString, 35)
+            Case 35
+                .showName = 1: .name = String$(126, "x") & "ñ"
+                Call ExpectNormalAppearance(.name)
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, .name, 164)
+                bytes = adjacentPackets(2)
+                Call AdjacentExpect(bytes(34) = &H80 And bytes(35) = 1, "128 UTF-8 bytes use two prefix bytes")
+                Call AdjacentExpect(bytes(162) = &HC3 And bytes(163) = &HB1, "accented ending roundtrips")
+            Case 36
+                .showName = 1: .name = String$(65496, "x") & "ñ"
+                Call TickAdjacent()
+                Call ExpectAdjacentAppearance(2, .name, 65535)
+                bytes = adjacentPackets(2)
+                Call AdjacentExpect(bytes(34) = &HDA And bytes(35) = &HFF And bytes(36) = 3, "65498 UTF-8 bytes use three prefix bytes")
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "maximum-length label is stable")
+            Case 37
+                .showName = 1: .name = String$(65499, "x")
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 0, "oversized upsert not sent or cached after reset")
+                .name = "Guard"
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And AdjacentNpcTestKnownCount(1) = 1, "corrected label retries without another reset")
+                Call ExpectAdjacentAppearance(1, "Guard", 40)
+            Case 38
+                .showName = 1: .name = "Guard"
+                Call TickAdjacent(): Call ClearAdjacentCapture(1)
+                .SubName = "<New>"
+                Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And Not CBool(adjacentAccepted(1)), "display refresh enqueue fails")
+                Call ExpectAdjacentAppearance(1, "Guard<New>", 45)
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 1 And CBool(adjacentAccepted(1)), "unchanged failed display refresh retried")
+                Call ExpectAdjacentAppearance(1, "Guard<New>", 45)
+                Call ClearAdjacentCapture(): Call TickAdjacent()
+                Call AdjacentExpect(adjacentPackets.Count = 0, "accepted display retry converges")
+        End Select
+    End With
 End Sub
 
 Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
@@ -411,8 +904,18 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
     Dim oldMap34 As t_MapInfo, oldMap35 As t_MapInfo, emptyTile As t_MapBlock
     Dim tiles34(1 To 100, 1 To 100) As t_MapBlock, tiles35(1 To 100, 1 To 100) As t_MapBlock
     Dim oldLastUser As Integer, x As Integer, y As Integer, saved As Boolean, passed As Boolean, failure As String
+    Dim oldConfig As ServerConfig, oldToggle As Boolean, oldLastNpc As Integer
+    Dim oldNumChars As Integer, oldLastChar As Integer, oldEntries34 As Integer, oldEntries35 As Integer
+    Dim oldGroup34 As t_ConnGroup, oldGroup35 As t_ConnGroup, oldGroup36 As t_ConnGroup, oldGroup1 As t_ConnGroup
+    Dim oldResource36 As Integer, oldUserUpper As Long, extra As Integer
+    Dim extraUsers(2 To 65) As t_User, extraNpcs(1 To ADJACENT_NPC_LIMIT) As t_Npc
     Call AdjacentExpect(NumMaps >= 35 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized test world")
     adjacentNpc = UBound(NpcList) - 1
+    If group >= 42 And group <= 45 Then adjacentNpc = 1
+    Set oldConfig = SvrConfig
+    oldToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE): oldLastNpc = LastNPC
+    oldNumChars = NumChars: oldLastChar = LastChar
+    oldEntries34 = ConnGroups(34).CountEntrys: oldEntries35 = ConnGroups(35).CountEntrys
     oldUser = UserList(1): oldNpc = NpcList(adjacentNpc): oldSecond = NpcList(adjacentNpc + 1)
     oldLastUser = LastUser
     oldMap34 = MapInfo(34): oldMap35 = MapInfo(35)
@@ -422,7 +925,35 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
             tiles35(x, y) = MapData(x, y, 35)
         Next x
     Next y
+    If group >= 46 Then
+        oldGroup34 = ConnGroups(34): oldGroup35 = ConnGroups(35): oldGroup36 = ConnGroups(36)
+        oldResource36 = MapInfo(36).MapResource
+        If group = 58 Then
+            oldGroup1 = ConnGroups(1): oldUserUpper = UBound(UserList)
+            For extra = 2 To 65
+                If extra <= oldUserUpper Then extraUsers(extra) = UserList(extra)
+            Next extra
+        End If
+        If group = 67 Then
+            For extra = 1 To ADJACENT_NPC_LIMIT
+                extraNpcs(extra) = NpcList(adjacentNpc - extra)
+            Next extra
+        End If
+    End If
     saved = True
+    If group >= 46 Then
+        ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0: ConnGroups(36).CountEntrys = 0
+        ReDim ConnGroups(34).UserEntrys(1 To 1): ReDim ConnGroups(35).UserEntrys(1 To 1)
+        MapInfo(36).MapResource = 36
+        If group = 58 Then
+            If oldUserUpper < 65 Then ReDim Preserve UserList(1 To 65)
+            ReDim ConnGroups(1).UserEntrys(1 To 64)
+            ConnGroups(1).CountEntrys = 64
+        End If
+    End If
+    If group >= 42 And group <= 45 Then
+        ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0
+    End If
     Call AdjacentNpcTestResetState
     Call AdjacentExpect(LoadAdjacentTopologyJson(ADJACENT_TEST_TOPOLOGY, False), "fixture topology")
     For y = 1 To 100
@@ -443,11 +974,19 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
         .ConnectionDetails.ConnID = 42
         .pos.Map = 34: .pos.x = 50: .pos.y = 11
     End With
+    If group = 58 Then
+        LastUser = 65
+        For extra = 2 To 65
+            UserList(extra) = UserList(1): UserList(extra).pos.Map = 1
+            ConnGroups(1).UserEntrys(extra - 1) = extra
+        Next extra
+    End If
     NpcList(adjacentNpc) = emptyNpc
     NpcList(adjacentNpc + 1) = emptyNpc
     With NpcList(adjacentNpc)
         .flags.NPCActive = True
         .VersionId = 3
+        .Numero = 1543
         .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
         .pos.Map = 35: .pos.x = 50: .pos.y = 90
         .npcType = e_NPCType.Comun
@@ -465,9 +1004,33 @@ Failed:
     Resume Cleanup
 Cleanup:
     On Error GoTo 0
+    diagnosticsCapture = False
     adjacentCaptureActive = False
     Call AdjacentNpcTestResetState
     If saved Then
+        If group >= 46 Then
+            ConnGroups(34) = oldGroup34: ConnGroups(35) = oldGroup35: ConnGroups(36) = oldGroup36
+            MapInfo(36).MapResource = oldResource36
+            If group = 58 Then
+                ConnGroups(1) = oldGroup1
+                For extra = 2 To 65
+                    If extra <= oldUserUpper Then UserList(extra) = extraUsers(extra)
+                Next extra
+                If oldUserUpper < 65 Then ReDim Preserve UserList(1 To oldUserUpper)
+            End If
+            If group = 67 Then
+                For extra = 1 To ADJACENT_NPC_LIMIT
+                    NpcList(adjacentNpc - extra) = extraNpcs(extra)
+                Next extra
+            End If
+        End If
+        If group >= 42 And group <= 45 Then
+            If NpcList(adjacentNpc).Char.charindex > 0 Then CharList(NpcList(adjacentNpc).Char.charindex) = 0
+            Set SvrConfig = oldConfig
+            Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, oldToggle)
+            LastNPC = oldLastNpc: NumChars = oldNumChars: LastChar = oldLastChar
+            ConnGroups(34).CountEntrys = oldEntries34: ConnGroups(35).CountEntrys = oldEntries35
+        End If
         UserList(1) = oldUser: NpcList(adjacentNpc) = oldNpc: NpcList(adjacentNpc + 1) = oldSecond
         LastUser = oldLastUser
         MapInfo(34) = oldMap34: MapInfo(35) = oldMap35
@@ -481,6 +1044,7 @@ Cleanup:
     If passed Then
         Call UnitTesting.RunTest("adjacent stream " & name, True)
     Else
+        Call UnitTesting.Progress("adjacent stream " & name & " FAILED: " & failure)
         Call UnitTesting.RunTestError("adjacent stream " & name, failure)
     End If
 End Sub
@@ -698,6 +1262,7 @@ Private Sub RunAdjacentTwoHopCase(ByVal group As Long, ByVal name As String)
     NpcList(adjacentNpc) = emptyNpc
     With NpcList(adjacentNpc)
         .flags.NPCActive = True: .VersionId = 3: .npcType = e_NPCType.Comun
+        .Numero = 1543
         .Char.charindex = 123: .Char.body = 10: .Char.Heading = e_Heading.NORTH: .Char.speeding = 1
     End With
     Call InitializeAuxiliaryBuffer: Call ClearAdjacentCapture
