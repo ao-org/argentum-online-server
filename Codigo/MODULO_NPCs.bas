@@ -32,6 +32,7 @@ Private Type t_NpcRespawnQueueEntry
     Active As Byte
     InformarRespawn As Byte
     IsInitialSpawn As Byte
+    ShowRespawnEffect As Boolean
     RespawnFlag As Byte
     RespawnSchedule As Byte
     NpcNumber As Integer
@@ -242,9 +243,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     End If
     'ReSpawn o no
     If TiempoRespw = 0 Then
-        Call ReSpawnNpc(MiNPC)
+        Call ReSpawnNpc(MiNPC, True)
     Else
-        Call QueueNpcRespawn(MiNPC, TiempoRespw)
+        Call QueueNpcRespawn(MiNPC, TiempoRespw, False, True)
     End If
     Exit Sub
 ErrHandler:
@@ -560,8 +561,9 @@ GetNpcDisplayName_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.GetNpcDisplayName", Erl)
 End Function
 
-Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
+Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByRef creationQueued As Boolean = False)
     On Error GoTo MakeNPCChar_Err
+    creationQueued = False
     With NpcList(NpcIndex)
         Dim charindex As Integer
         If .Char.charindex = 0 Then
@@ -662,6 +664,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, 0, 0, _
                         0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
                         .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero, queued)
+            creationQueued = queued
             If queued Then Call NpcBowCharacterCreated(sndIndex, NpcIndex, body)
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
                 Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
@@ -941,7 +944,8 @@ End Function
 
 Private Function QueueNpcRespawn(ByRef npc As t_Npc, _
                                  ByVal RespawnInterval As Long, _
-                                 Optional ByVal IsInitialSpawn As Boolean = False) As Boolean
+                                 Optional ByVal IsInitialSpawn As Boolean = False, _
+                                 Optional ByVal ShowRespawnEffect As Boolean = False) As Boolean
     On Error GoTo QueueNpcRespawn_Err
     Dim QueueIndex As Integer
     QueueIndex = ObtenerIndiceRespawn()
@@ -954,6 +958,7 @@ Private Function QueueNpcRespawn(ByRef npc As t_Npc, _
         .Active = 1
         .InformarRespawn = npc.InformarRespawn
         .RespawnFlag = npc.flags.Respawn
+        .ShowRespawnEffect = ShowRespawnEffect And Not IsInitialSpawn
         .IsInitialSpawn = 0
         If IsInitialSpawn Then
             .RespawnFlag = 0
@@ -986,13 +991,15 @@ DeferMappedNpcInitialSpawn_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.DeferMappedNpcInitialSpawn", Erl)
 End Function
 
-Sub ReSpawnNpc(MiNPC As t_Npc)
+Sub ReSpawnNpc(MiNPC As t_Npc, Optional ByVal ShowRespawnEffect As Boolean = False)
     On Error GoTo ReSpawnNpc_Err
     If MiNPC.flags.Respawn <> 0 Then Exit Sub
     If IsNpcRespawnAllowedNow(MiNPC.flags.RespawnSchedule) Then
-        Call CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
+        Dim spawned As Integer
+        spawned = CrearNPC(MiNPC.Numero, NpcRespawnMap(MiNPC), MiNPC.Orig)
+        If spawned > 0 And ShowRespawnEffect Then Call NotifyNpcRespawn(spawned)
     Else
-        Call QueueNpcRespawn(MiNPC, RespawnQueueRetryIntervalSeconds)
+        Call QueueNpcRespawn(MiNPC, RespawnQueueRetryIntervalSeconds, False, ShowRespawnEffect)
     End If
     Exit Sub
 ReSpawnNpc_Err:
@@ -1912,6 +1919,7 @@ Private Sub ClearRespawnQueueSlot(ByVal QueueIndex As Integer)
     With RespawnList(QueueIndex)
         .Active = 0
         .InformarRespawn = 0
+        .ShowRespawnEffect = False
         .IsInitialSpawn = 0
         .RespawnFlag = 0
         .RespawnSchedule = eNpcRespawnAnyTime
@@ -1943,7 +1951,10 @@ Private Function RespawnQueuedNpc(ByRef QueueEntry As t_NpcRespawnQueueEntry) As
     ElseIf QueueEntry.IsInitialSpawn <> 0 And Not IsNpcSpawnPositionAvailable(QueueEntry.Orig) Then
         RespawnQueuedNpc = False
     Else
-        RespawnQueuedNpc = (CrearNPC(QueueEntry.NpcNumber, QueueEntry.SpawnMap, QueueEntry.Orig, 0, QueueEntry.IsInitialSpawn <> 0) <> 0)
+        Dim spawned As Integer
+        spawned = CrearNPC(QueueEntry.NpcNumber, QueueEntry.SpawnMap, QueueEntry.Orig, 0, QueueEntry.IsInitialSpawn <> 0)
+        RespawnQueuedNpc = (spawned <> 0)
+        If spawned > 0 And QueueEntry.ShowRespawnEffect And QueueEntry.IsInitialSpawn = 0 Then Call NotifyNpcRespawn(spawned)
     End If
     Exit Function
 ErrHandler:
@@ -2647,3 +2658,31 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
 OnNpcKilledUpdateQuest_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Function TestNpcRespawnQueueProvenance() As Boolean
+    On Error GoTo TestNpcRespawnQueueProvenance_Err
+    Dim npc As t_Npc, slot As Integer, initial As Integer, visual As Integer
+    npc.Numero = 1: npc.Orig.Map = 34: npc.Orig.x = 50: npc.Orig.y = 50
+    For initial = 0 To 1
+        For visual = 0 To 1
+            slot = ObtenerIndiceRespawn()
+            If slot = 0 Then Exit Function
+            If Not QueueNpcRespawn(npc, 5, initial <> 0, visual <> 0) Then Exit Function
+            With RespawnList(slot)
+                If .ShowRespawnEffect <> (visual <> 0 And initial = 0) Then GoTo TestNpcRespawnQueueProvenance_Err
+                If .IsInitialSpawn <> initial Or .IntervaloRespawn <> 5 Then GoTo TestNpcRespawnQueueProvenance_Err
+                ' A disabled respawn completes the queue without any creation.
+                .RespawnFlag = 1
+                If Not RespawnQueuedNpc(RespawnList(slot)) Then GoTo TestNpcRespawnQueueProvenance_Err
+            End With
+            Call ReleaseRespawnQueueSlot(slot)
+            If RespawnList(slot).ShowRespawnEffect Then Exit Function
+        Next visual
+    Next initial
+    TestNpcRespawnQueueProvenance = True
+    Exit Function
+TestNpcRespawnQueueProvenance_Err:
+    If slot > 0 Then Call ReleaseRespawnQueueSlot(slot)
+End Function
+#End If

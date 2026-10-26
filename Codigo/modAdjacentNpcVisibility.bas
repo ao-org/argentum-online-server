@@ -14,6 +14,7 @@ Private mLastUpdate As Long
 Private mLastFailureLog As Long
 Private mFailureLogged As Boolean
 Private mGeneration As Long
+Private mRespawnSequence As Long
 Private mKnown As Scripting.Dictionary
 Private mSessions As Scripting.Dictionary
 Private mEpochs As Scripting.Dictionary
@@ -343,3 +344,81 @@ Public Function AdjacentNpcTestKnownVersion(ByVal userIndex As Integer, ByVal np
     If known.Exists(CStr(npcIndex)) Then AdjacentNpcTestKnownVersion = CInt(Split(CStr(known(CStr(npcIndex))), "|")(0))
 End Function
 #End If
+
+' Called only by successful death-respawn paths, never by visibility refreshes.
+' No retry queue: an unavailable viewer misses this cosmetic event permanently.
+Public Sub NotifyNpcRespawn(ByVal npcIndex As Integer)
+    On Error GoTo NotifyNpcRespawn_Err
+    If npcIndex <= 0 Or npcIndex > MaxNPCs Then Exit Sub
+    With NpcList(npcIndex)
+        If Not .flags.NPCActive Or .Char.charindex <= 0 Then Exit Sub
+        If .MaestroUser.ArrayIndex <> 0 Or .MaestroNPC.ArrayIndex <> 0 Then Exit Sub
+        If Not InMapBounds(.pos.Map, .pos.x, .pos.y) Then Exit Sub
+        If MapData(.pos.x, .pos.y, .pos.Map).NpcIndex <> npcIndex Then Exit Sub
+    End With
+    ' Never wrap and accidentally replay an older identity in a long-lived session.
+    If mRespawnSequence = &H7FFFFFFF Then Exit Sub
+    mRespawnSequence = mRespawnSequence + 1
+    Dim userIndex As Integer, queued As Boolean
+    Dim current As Scripting.Dictionary, previous As Scripting.Dictionary
+    Dim key As String, npcKey As String
+    Dim writer As Network.Writer
+    npcKey = CStr(npcIndex)
+    For userIndex = 1 To LastUser
+        If UserList(userIndex).flags.UserLogged And UserList(userIndex).ConnectionDetails.ConnIDValida Then
+            If CanViewerSeeAdjacentNpc(userIndex, npcIndex) Then
+                queued = False
+                If UserList(userIndex).pos.Map = NpcList(npcIndex).pos.Map Then
+                    If NpcBowInLoadedArea(userIndex, npcIndex) Then
+                        ' Reuse owner/dead-viewer appearance serialization; the accepted
+                        ' refresh is an ordering barrier, not an effect trigger itself.
+                        With NpcList(npcIndex)
+                            Call MakeNPCChar(False, userIndex, npcIndex, .pos.Map, .pos.x, .pos.y, queued)
+                        End With
+                    End If
+                Else
+                    Set current = New Scripting.Dictionary
+                    If CollectVisible(userIndex, current) Then
+                        If current.Exists(npcKey) Then
+                            ' Initializes the scene if needed and queues the current upsert.
+                            If mKnown Is Nothing Then
+                                Set mKnown = New Scripting.Dictionary
+                                Set mSessions = New Scripting.Dictionary
+                                Set mEpochs = New Scripting.Dictionary
+                                Set mObserved = New Scripting.Dictionary
+                            End If
+                            If Not mKnown Is Nothing Then
+                                Call RefreshViewer(userIndex)
+                                key = CStr(userIndex)
+                                If mKnown.Exists(key) Then
+                                    Set previous = mKnown(key)
+                                    If previous.Exists(npcKey) Then queued = (previous(npcKey) = current(npcKey))
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+                If queued Then
+                    Set writer = Protocol_Writes.GetWriterBuffer()
+                    Call writer.WriteInt16(ServerPacketID.eNpcRespawnEffect)
+                    Call writer.WriteInt32(mRespawnSequence)
+                    Call writer.WriteInt16(UserList(userIndex).pos.Map)
+                    With NpcList(npcIndex)
+                        Call writer.WriteInt16(.pos.Map)
+                        Call writer.WriteInt16(npcIndex)
+                        Call writer.WriteInt16(.VersionId)
+                        Call writer.WriteInt16(.Char.charindex)
+                        Call writer.WriteInt16(.Numero)
+                        Call writer.WriteInt8(.pos.x)
+                        Call writer.WriteInt8(.pos.y)
+                    End With
+                    Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
+                End If
+            End If
+        End If
+    Next userIndex
+    Exit Sub
+NotifyNpcRespawn_Err:
+    If Not writer Is Nothing Then Call writer.Clear()
+    Call TraceError(Err.Number, Err.Description, "modAdjacentNpcVisibility.NotifyNpcRespawn", Erl)
+End Sub

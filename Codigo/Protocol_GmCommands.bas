@@ -936,7 +936,7 @@ Public Sub HandleKillNPC(ByVal UserIndex As Integer)
             Dim auxNPC As t_Npc
             auxNPC = NpcList(tNPC)
             Call QuitarNPC(tNPC, eGMCommand)
-            Call ReSpawnNpc(auxNPC)
+            Call ReSpawnNpc(auxNPC, True)
         Else
             'Msg960= Debes hacer click sobre el NPC antes
             Call WriteLocaleMsg(UserIndex, MSG_DEBES_HACER_CLICK_SOBRE_NPC_ANTES, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)

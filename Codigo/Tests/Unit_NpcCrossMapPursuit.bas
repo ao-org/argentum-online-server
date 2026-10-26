@@ -226,6 +226,7 @@ Public Function test_suite_npc_cross_map_pursuit() As Boolean
     For group = 0 To UBound(names)
         Call RunAdjacentTwoHopCase(group + 1, CStr(names(group)))
     Next group
+    Call TestNpcRespawnEffects()
     Call LoadAdjacentTopology
     test_suite_npc_cross_map_pursuit = UnitTesting.GetFailedTests() = failuresBefore
 End Function
@@ -564,9 +565,74 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call CheckAdjacentAppearanceCase(group)
         Case 39 To 41
             Call CheckNpcAppearanceChangeCase(group)
+        Case 46 To 57
+            Call CheckRespawnCase(group)
         Case 42 To 45
             Call CheckDiagnosticsCase(group)
     End Select
+End Sub
+
+Public Sub TestNpcRespawnEffects()
+    Call UnitTesting.RunTest("respawn queue retains death provenance and excludes initial spawn", TestNpcRespawnQueueProvenance())
+    Dim group As Long
+    For group = 46 To 57
+        Call RunAdjacentCase(group, "respawn " & CStr(group))
+    Next group
+End Sub
+
+Private Sub CheckRespawnCase(ByVal group As Long)
+    Dim reader As Network.reader
+    Select Case group
+        Case 47: NpcList(adjacentNpc).flags.invisible = 1
+        Case 48: UserList(1).flags.Muerto = 1
+        Case 49: UserList(1).pos.y = 80
+        Case 50: NpcList(adjacentNpc).MaestroUser.ArrayIndex = 1
+        Case 51: MapData(50, 90, 35).NpcIndex = 0
+        Case 52: Call ClearAdjacentCapture(2)
+        Case 53
+            UserList(1).pos.Map = 35: UserList(1).pos.y = 90
+        Case 54
+            UserList(1).flags.Muerto = 1: MapInfo(34).Seguro = 1
+        Case 55
+            UserList(1).flags.Muerto = 1: NpcList(adjacentNpc).npcType = e_NPCType.Revividor
+        Case 56
+            Call TickAdjacent()
+            Call ClearAdjacentCapture()
+            Call TickAdjacent()
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ordinary visibility never emits respawn")
+            Exit Sub
+        Case 57
+            Call ClearAdjacentCapture(1)
+    End Select
+    Call NotifyNpcRespawn(adjacentNpc)
+    Select Case group
+        Case 46, 54, 55
+            Call AdjacentExpect(adjacentPackets.Count = 3, "reset upsert respawn ordering")
+            Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
+            Set reader = AdjacentPacketReader(3, ServerPacketID.eNpcRespawnEffect, 20)
+            Call AdjacentExpect(reader.ReadInt32() > 0, "one-shot sequence")
+            Call AdjacentExpect(reader.ReadInt16() = 34 And reader.ReadInt16() = 35, "viewer and source maps")
+            Call AdjacentExpect(reader.ReadInt16() = adjacentNpc And reader.ReadInt16() = 3, "NPC lifetime")
+            Call AdjacentExpect(reader.ReadInt16() = 123 And reader.ReadInt16() = 1543, "character and definition")
+            Call AdjacentExpect(reader.ReadInt8() = 50 And reader.ReadInt8() = 90, "source tile")
+        Case 53
+            Call AdjacentExpect(adjacentPackets.Count = 2, "active create then effect")
+            Set reader = AdjacentPacketReader(2, ServerPacketID.eNpcRespawnEffect, 20)
+        Case 52
+            Call AdjacentExpect(adjacentPackets.Count = 2, "failed upsert suppresses effect")
+        Case 57
+            Call AdjacentExpect(adjacentPackets.Count = 1, "failed reset suppresses effect")
+        Case Else
+            Call AdjacentExpect(adjacentPackets.Count = 0, "ineligible viewer or placement suppressed")
+    End Select
+    Call ClearAdjacentCapture()
+    Call TickAdjacent()
+    ' An eventual successful retry is appearance only, never the missed effect.
+    Dim i As Long, bytes() As Byte
+    For i = 1 To adjacentPackets.Count
+        bytes = adjacentPackets(i)
+        Call AdjacentExpect(CLng(bytes(0)) + 256& * bytes(1) <> ServerPacketID.eNpcRespawnEffect, "no delayed effect")
+    Next i
 End Sub
 
 Private Sub ExpectAdjacentAppearance(ByVal packetIndex As Long, ByVal expectedText As String, ByVal expectedLength As Long)
@@ -798,7 +864,7 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
     Dim oldNumChars As Integer, oldLastChar As Integer, oldEntries34 As Integer, oldEntries35 As Integer
     Call AdjacentExpect(NumMaps >= 35 And UBound(UserList) >= 1 And UBound(NpcList) >= 2, "initialized test world")
     adjacentNpc = UBound(NpcList) - 1
-    If group >= 42 Then adjacentNpc = 1
+    If group >= 42 And group <= 45 Then adjacentNpc = 1
     Set oldConfig = SvrConfig
     oldToggle = IsFeatureEnabled(NPC_CROSS_MAP_PURSUIT_FEATURE): oldLastNpc = LastNPC
     oldNumChars = NumChars: oldLastChar = LastChar
@@ -813,7 +879,7 @@ Private Sub RunAdjacentCase(ByVal group As Long, ByVal name As String)
         Next x
     Next y
     saved = True
-    If group >= 42 Then
+    If group >= 42 And group <= 45 Then
         ConnGroups(34).CountEntrys = 0: ConnGroups(35).CountEntrys = 0
     End If
     Call AdjacentNpcTestResetState
@@ -863,7 +929,7 @@ Cleanup:
     adjacentCaptureActive = False
     Call AdjacentNpcTestResetState
     If saved Then
-        If group >= 42 Then
+        If group >= 42 And group <= 45 Then
             If NpcList(adjacentNpc).Char.charindex > 0 Then CharList(NpcList(adjacentNpc).Char.charindex) = 0
             Set SvrConfig = oldConfig
             Call SetFeatureToggle(NPC_CROSS_MAP_PURSUIT_FEATURE, oldToggle)
