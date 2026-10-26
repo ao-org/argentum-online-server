@@ -251,6 +251,9 @@ Public Enum ServerPacketID
     eAdjacentNpcReset
     eAdjacentNpcUpsert
     eAdjacentNpcRemove
+    eAdjacentPlayerReset
+    eAdjacentPlayerUpsert
+    eAdjacentPlayerRemove
     eMaxPacket
     [PacketCount]
 End Enum

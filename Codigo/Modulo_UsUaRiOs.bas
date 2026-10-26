@@ -1004,12 +1004,15 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                  ByVal Map As Integer, _
                  ByVal x As Integer, _
                  ByVal y As Integer, _
-                 Optional ByVal appear As Byte = 0)
+                 Optional ByVal appear As Byte = 0, _
+                 Optional ByRef handoffVisibilityHandled As Boolean = False)
     On Error GoTo HayError
+    handoffVisibilityHandled = False
     Dim charindex As Integer
     Dim TempName  As String
     Dim displayName As String
     Dim aliasValue As String
+    Dim createQueued As Boolean
     If InMapBounds(Map, x, y) Then
         With UserList(UserIndex)
             'If needed make a new character in list
@@ -1027,6 +1030,9 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
             Dim klan       As String
             Dim clan_nivel As Byte
             If Not toMap Then
+                #If PYMMO = 1 Then
+                    If Not PrepareAdjacentPlayerHandoff(sndIndex, UserIndex, handoffVisibilityHandled) Then Exit Sub
+                #End If
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then
                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
@@ -1052,7 +1058,11 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         .Char.BackpackAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, _
                         .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, _
                         clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.CurrentTeam, _
-                        .flags.tiene_bandera)
+                        .flags.tiene_bandera, 0, createQueued)
+                #If PYMMO = 1 Then
+                    Call CompleteAdjacentPlayerCreate(sndIndex, UserIndex, createQueued)
+                    If Not createQueued Then Exit Sub
+                #End If
                 Call SendMagicLightOrbSnapshot(sndIndex, UserIndex)
                 Call SendEquippedTorchSnapshot(sndIndex, UserIndex)
             Else
@@ -2200,6 +2210,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
         OldMap = .pos.Map
         OldX = .pos.x
         OldY = .pos.y
+        #If PYMMO = 1 Then
+            Call RelocateAdjacentPlayer(UserIndex)
+        #End If
         Call EraseUserChar(UserIndex, True, FX)
         If OldMap <> Map Then
             Call WriteChangeMap(UserIndex, Map)
