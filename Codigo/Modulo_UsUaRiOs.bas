@@ -1004,8 +1004,10 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                  ByVal Map As Integer, _
                  ByVal x As Integer, _
                  ByVal y As Integer, _
-                 Optional ByVal appear As Byte = 0)
+                 Optional ByVal appear As Byte = 0, _
+                 Optional ByRef handoffVisibilityHandled As Boolean = False)
     On Error GoTo HayError
+    handoffVisibilityHandled = False
     Dim charindex As Integer
     Dim TempName  As String
     Dim displayName As String
@@ -1029,7 +1031,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
             Dim clan_nivel As Byte
             If Not toMap Then
                 #If PYMMO = 1 Then
-                    If Not PrepareAdjacentPlayerHandoff(sndIndex, UserIndex) Then Exit Sub
+                    If Not PrepareAdjacentPlayerHandoff(sndIndex, UserIndex, handoffVisibilityHandled) Then Exit Sub
                 #End If
                 displayName = GetUserDisplayNameOrReal(UserIndex)
                 If .showName Then

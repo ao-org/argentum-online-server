@@ -122,8 +122,35 @@ Adjacent-to-active handoff reserves a bounded retry before removal. The normal
 CharacterCreate is deferred if removal is rejected. If removal succeeds but
 the create fails, its retry remains reserved. Retries revalidate viewer
 lifetime/map, exact subject session/map/character index, live CharList ownership,
-area overlap, and current visibility. Unrelated normal-create failures do not
+area overlap, and current normal admission. Unrelated normal-create failures do not
 enter this retry queue. Admission, movement, and gameplay are not deferred.
+
+Same-map retries use normal `NotifyUser` admission, not adjacent render
+eligibility. Ordinary `invisible` or `Oculto` players still need a normal record
+for collision and a later stationary reveal. `AdminInvisible` is solely an
+admission gate, not an extra normal hidden-state flag. Temporary admission denial
+retains the bounded entry without a timeout; obsolete subject work is canceled.
+
+A hidden handoff uses three individually confirmed stages after the adjacent
+remove: a zero-appearance normal CharacterCreate, SetInvisible with the current
+normal hidden state, then the full MakeUserChar refresh. The blank retains the
+actual character index, position, status and privileges, but zeroes body, head,
+equipment, FX, FXLoops and particle, and empties its label and seven auras.
+This requires HOO's strict blank-PC guard: a matching create starts invisible,
+including when replacing a previously visible record. Interleaved ordinary
+CharacterChange packets therefore cannot expose a pending blank. A full refresh
+preserves the prior invisible flag. No packet layout or transport framing changes.
+
+Accepted stages are not replayed. If visibility changes before the full refresh
+is accepted, its new value must be accepted first. Visible handoffs keep the
+single-create path. NotifyUser suppresses its unconfirmed duplicate visibility
+send while this handoff owns that state. Existing post-create orb/torch snapshots
+remain unchanged. Temporary denial retires any accepted partial normal record
+before restarting the blank stage. Obsolete subjects similarly retain a
+cleanup-only entry until normal CharacterRemove is accepted. Cleanup matches
+the pending session, subject, map and old character index against the accepted
+normal-owner ledger, so it cannot remove a newer owner of a reused index.
+Viewer disconnect/map reset discards the old world without subject cleanup.
 
 For the reverse handoff, accepted normal creates are tracked per viewer, keyed
 by the bounded normal character-index namespace, with the actual
@@ -146,14 +173,29 @@ its production tick remains disabled. The suite preserves fixture users,
 maps, map membership, guild data, character ownership, and recent-login cache.
 Case 1 writes actual native-writer bytes to `adjacent-player-upsert.hex` in the
 disposable test runtime for independent HOO literal-fixture validation.
+Case 46 captures the accepted handoff sequence as six separate payloads named
+`adjacent-player-handoff-{remove,blank,hide,full,torch-clear,reveal}.hex`:
+adjacent remove (16 bytes), blank create (70), hide (7), full create (107),
+normal torch clear (17), and stationary reveal (7). These are existing individual
+frames, never concatenated packet payloads. The fixture uses viewer map 34 at
+50,11 and character 2 at 50,12, scene epoch 1 and subject session 2.
 
 Native Windows validation: all four configurations compiled successfully;
-both U1 runs passed **739/739 tests across 44 suites** (677 baseline checks plus
-62 new registered cases). P0 conditionally skips P1-only lifecycle/handoff hooks
+both U1 runs passed **753/753 tests across 44 suites** (677 baseline checks plus
+76 adjacent-player cases). P0 conditionally skips P1-only lifecycle/handoff hooks
 and verifies the disabled production stream. U1 executables ran in isolated,
 loopback-only fixtures with empty test databases. U0 executables were compiled,
 not launched. Fresh output timestamps were checked; the primary executable and
 production data were untouched.
+
+Deferred-handoff coverage includes both initial remove/create failures crossed
+with ordinary invisibility and Oculto, further blank/visibility/full failures,
+stationary reveal, changed visibility before a failed full refresh, permitted
+admin-only parity with NotifyUser, temporary admission denial/recovery, obsolete
+subject cleanup, reused-index ownership, viewer reset, and the 128-entry bound.
+Restoring the old `Representation` cancellation gate in an isolated negative
+control compiled but failed **9 tests (744/753 passed)**, including case 46.
+The fixed source was restored before the final passing four-build matrix.
 
 ### Compiler Matrix
 
@@ -192,5 +234,8 @@ Manual integration checklist:
 - Cross both directions, warp one tile, logout/reconnect, reuse a user slot,
   and change viewer maps. Verify there is never an active/adjacent duplicate.
 - Inject reset/upsert/remove/normal-create failures and verify ordered recovery.
+- Fail a hidden handoff's blank/hide/full sends, interleave appearance changes,
+  then reveal without moving. Verify no premature rendering, light, duplicate,
+  or lost collision record; obsolete partial records must eventually be removed.
 - Roll back only as a coordinated HOO/server deployment; P0 does not emit the
   stream, but is not a promise of compatibility with old HOO builds.

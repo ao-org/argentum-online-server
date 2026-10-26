@@ -253,6 +253,7 @@ End Sub
 
 Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As Integer)
     Dim sendChar As Boolean
+    Dim handoffVisibilityHandled As Boolean
     sendChar = True
     With UserList(UserNotificado)
         If UserList(UserIngresante).flags.AdminInvisible = 1 Then
@@ -265,13 +266,21 @@ Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As 
             sendChar = False
         End If
         If sendChar Then
-            Call MakeUserChar(False, UserNotificado, UserIngresante, UserList(UserIngresante).pos.Map, UserList(UserIngresante).pos.x, UserList(UserIngresante).pos.y, 0)
-            If UserList(UserIngresante).flags.invisible Or UserList(UserIngresante).flags.Oculto Then
-                Call WriteSetInvisible(UserNotificado, UserIngresante, True)
+            Call MakeUserChar(False, UserNotificado, UserIngresante, UserList(UserIngresante).pos.Map, UserList(UserIngresante).pos.x, UserList(UserIngresante).pos.y, 0, handoffVisibilityHandled)
+            If Not handoffVisibilityHandled Then
+                If UserList(UserIngresante).flags.invisible Or UserList(UserIngresante).flags.Oculto Then
+                    Call WriteSetInvisible(UserNotificado, UserIngresante, True)
+                End If
             End If
         End If
     End With
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub AdjacentPlayerTestNotifyUser(ByVal viewer As Integer, ByVal subject As Integer)
+    Call NotifyUser(viewer, subject)
+End Sub
+#End If
 
 Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal head As Byte)
     On Error GoTo CheckUpdateNeededNpc_Err

@@ -113,7 +113,7 @@ Private Sub Fixture()
     Call ClearCapture()
 End Sub
 
-Private Sub WriteHex(ByVal index As Long)
+Private Sub WriteHex(ByVal index As Long, Optional ByVal fileName As String = "adjacent-player-upsert.hex")
     Dim bytes() As Byte, i As Long, hexText As String, f As Integer
     bytes = packets(index)
     For i = LBound(bytes) To UBound(bytes)
@@ -121,7 +121,7 @@ Private Sub WriteHex(ByVal index As Long)
         hexText = hexText & Right$("0" & Hex$(bytes(i)), 2)
     Next i
     f = FreeFile()
-    Open App.Path & "\adjacent-player-upsert.hex" For Output As #f
+    Open App.Path & "\" & fileName For Output As #f
     Print #f, hexText
     Close #f
 End Sub
@@ -417,9 +417,29 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Sample()
                 If id = 44 Then
                     Call Expect(packets.Count >= 2 And PacketIdAt(1) = eAdjacentPlayerRemove And PacketIdAt(2) = eCharacterCreate, "retry remove before active create")
+                ElseIf id = 46 Then
+                    Call Expect(packets.Count = 5 And PacketIdAt(1) = eAdjacentPlayerRemove, "hidden ordinary PC keeps normal handoff")
+                    Call ExpectBlank(2)
+                    Call ExpectVisibility(3, True)
+                    Call Expect(PacketIdAt(4) = eCharacterCreate And AdjacentPlayerTestPendingCount(1) = 0, "hidden full create completes only after visibility")
+                    Call ExpectTorchClear(5)
+                    Call WriteHex(1, "adjacent-player-handoff-remove.hex")
+                    Call WriteHex(2, "adjacent-player-handoff-blank.hex")
+                    Call WriteHex(3, "adjacent-player-handoff-hide.hex")
+                    Call WriteHex(4, "adjacent-player-handoff-full.hex")
+                    Call WriteHex(5, "adjacent-player-handoff-torch-clear.hex")
+                    Call Sample()
+                    Call Expect(packets.Count = 0, "accepted hidden create is not repeated")
+                    UserList(2).flags.invisible = 0
+                    Call ClearCapture()
+                    Call WriteSetInvisible(1, 2, False)
+                    Call ExpectVisibility(1, False)
+                    Call WriteHex(1, "adjacent-player-handoff-reveal.hex")
+                    Call Sample()
+                    Call Expect(packets.Count = 0, "stationary reveal needs no recreate")
                 Else
                     For i = 1 To packets.Count
-                        Call Expect(PacketIdAt(i) <> eCharacterCreate, "stale session/hidden/out-of-area create discarded")
+                        Call Expect(PacketIdAt(i) <> eCharacterCreate, "stale session/out-of-area create discarded")
                     Next i
                 End If
             #End If
@@ -576,6 +596,251 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Sample()
                 Call Expect(packets.Count = 0, "reverse handoff settled")
             #End If
+        Case 63 To 76
+            #If PYMMO = 1 Then
+                Call CheckDeferredCase(id)
+            #End If
+    End Select
+End Sub
+
+Private Sub ExpectBlank(ByVal index As Long)
+    Dim reader As Network.reader, i As Long
+    Set reader = PacketReader(index, eCharacterCreate)
+    Call Expect(reader.ReadInt16() = UserList(2).Char.charindex, "blank actual index")
+    Call Expect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0, "blank body/head")
+    Call Expect(reader.ReadInt8() = UserList(2).Char.Heading And reader.ReadInt8() = 50 And reader.ReadInt8() = 12, "blank real heading/position")
+    For i = 1 To 7
+        Call Expect(reader.ReadInt16() = 0, "blank equipment/FX/FXLoops")
+    Next i
+    Call Expect(reader.ReadString8() = vbNullString, "blank empty label")
+    Call Expect(reader.ReadInt8() = UserList(2).Faccion.Status And reader.ReadInt8() = UserList(2).flags.Privilegios, "blank real status/privileges")
+    Call Expect(reader.ReadInt8() = 0, "blank particle")
+    For i = 1 To 7
+        Call Expect(reader.ReadString8() = vbNullString, "blank persistent auras")
+    Next i
+    Call Expect(reader.ReadReal32() = UserList(2).Char.speeding And reader.ReadInt8() = 0 And reader.ReadInt8() = 0, "blank normal PC")
+    Call Expect(reader.ReadInt16() = 0 And reader.ReadInt16() = 0 And reader.ReadInt8() = 0, "blank group/clan")
+    For i = 1 To 4
+        Call Expect(reader.ReadInt32() = 0, "blank stats")
+    Next i
+    For i = 1 To 5
+        Call Expect(reader.ReadInt8() = 0, "blank symbol/flags/type/team/flag")
+    Next i
+    Call Expect(reader.ReadInt16() = 0 And reader.GetAvailable() = 0, "single normal create frame")
+End Sub
+
+Private Sub ExpectVisibility(ByVal index As Long, ByVal hidden As Boolean)
+    Dim reader As Network.reader
+    Set reader = PacketReader(index, eSetInvisible)
+    Call Expect(reader.ReadInt16() = UserList(2).Char.charindex And reader.ReadBool() = hidden, "accepted visibility value")
+    Call Expect(reader.ReadInt8() = 50 And reader.ReadInt8() = 12 And reader.GetAvailable() = 0, "visibility position and frame boundary")
+End Sub
+
+Private Sub ExpectTorchClear(ByVal index As Long)
+    Dim bytes() As Byte
+    bytes = packets(index)
+    Call Expect(PacketIdAt(index) = eParticleFX And UBound(bytes) = 16, "normal torch snapshot retained")
+    Call Expect(CLng(bytes(4)) + CLng(bytes(5)) * 256& = EQUIPPED_TORCH_EFFECT And bytes(10) <> 0, "unequipped torch cleared")
+End Sub
+
+Private Sub BeginDeferred(ByVal hidden As Boolean, ByVal failedAttempt As Long)
+    Call Sample()
+    UserList(2).pos.Map = 34: UserList(2).pos.y = 12
+    UserList(2).flags.invisible = Abs(CInt(hidden))
+    Call ClearCapture(failedAttempt)
+    Call AdjacentPlayerTestNotifyUser(1, 2)
+    Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "failure retains handoff")
+End Sub
+
+Private Sub CheckDeferredCase(ByVal id As Long)
+    Dim i As Long, reader As Network.reader, failure As Long, hiddenKind As Long, firstBlank As Long
+    Select Case id
+        Case 63
+            Call BeginDeferred(True, 2)
+            Call Expect(packets.Count = 2 And Not accepted(2), "blank enqueue failure no visibility/full")
+            Call Sample(1)
+            Call Expect(packets.Count = 1, "retry only failed blank")
+            Call Sample()
+            Call Expect(packets.Count = 4, "blank/hidden/full recovery")
+            Call ExpectBlank(1)
+            Call ExpectVisibility(2, True)
+            Call ExpectTorchClear(4)
+        Case 64
+            For failure = 1 To 2
+                For hiddenKind = 1 To 2
+                    Call Fixture()
+                    Call BeginDeferred(False, failure)
+                    If hiddenKind = 1 Then
+                        UserList(2).flags.invisible = 1
+                    Else
+                        UserList(2).flags.Oculto = 1
+                    End If
+                    Call Sample()
+                    firstBlank = 1
+                    If failure = 1 Then
+                        Call Expect(PacketIdAt(1) = eAdjacentPlayerRemove, "failed remove accepted first")
+                        firstBlank = 2
+                    End If
+                    Call Expect(packets.Count = firstBlank + 3, "both initial failures and hiding flags use bootstrap")
+                    Call ExpectBlank(firstBlank)
+                    Call ExpectVisibility(firstBlank + 1, True)
+                    Call Expect(PacketIdAt(firstBlank + 2) = eCharacterCreate, "full create after hide")
+                    Call ExpectTorchClear(firstBlank + 3)
+                    Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "accepted handoff completed")
+                    UserList(2).flags.invisible = 0: UserList(2).flags.Oculto = 0
+                    Call ClearCapture()
+                    Call WriteSetInvisible(1, 2, False)
+                    Call Expect(packets.Count = 1, "stationary reveal only visibility")
+                    Call ExpectVisibility(1, False)
+                    Call Sample()
+                    Call Expect(packets.Count = 0, "stationary reveal after either initial failure is final")
+                Next hiddenKind
+            Next failure
+        Case 65
+            Call BeginDeferred(True, 3)
+            Call Expect(packets.Count = 3 And accepted(2) And Not accepted(3), "blank accepted; visibility failed; NotifyUser adds no unconfirmed hide")
+            Call Sample(1)
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eSetInvisible, "accepted blank not repeated")
+            Call Sample()
+            Call Expect(packets.Count = 3 And PacketIdAt(2) = eCharacterCreate, "visibility before full recovery")
+            Call ExpectVisibility(1, True)
+            Call ExpectTorchClear(3)
+        Case 66
+            Call BeginDeferred(True, 4)
+            Call Expect(packets.Count = 4 And accepted(3) And Not accepted(4), "visibility accepted; full failed")
+            Call Sample(1)
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterCreate, "only full retried")
+            Call Sample()
+            Call Expect(packets.Count = 2 And AdjacentPlayerTestPendingCount(1) = 0, "full accepted completes")
+            Call ExpectTorchClear(2)
+            Call Sample()
+            Call Expect(packets.Count = 0, "no repeated successful full creates")
+        Case 67, 68
+            Call BeginDeferred(True, 4)
+            UserList(2).flags.invisible = 0
+            Call Sample(1)
+            Call Expect(packets.Count = 1 And Not accepted(1), "failed false cannot be skipped")
+            Call ExpectVisibility(1, False)
+            If id = 67 Then
+                Call Sample()
+                Call Expect(packets.Count = 3 And PacketIdAt(2) = eCharacterCreate, "false before full when revealed")
+                Call ExpectVisibility(1, False)
+                Call ExpectTorchClear(3)
+            Else
+                Call Sample(2)
+                Call Expect(accepted(1) And Not accepted(2), "false accepted; full failed")
+                UserList(2).flags.invisible = 1
+                Call Sample(1)
+                Call Expect(packets.Count = 1 And Not accepted(1), "new true must be accepted before full")
+                Call ExpectVisibility(1, True)
+                Call Sample()
+                Call Expect(packets.Count = 3, "rehide/full recovery")
+                Call ExpectVisibility(1, True)
+                Call ExpectTorchClear(3)
+            End If
+        Case 69
+            Call BeginDeferred(True, 3)
+            Call ClearCapture(1)
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eSetInvisible, "normal NotifyUser also respects pending stage")
+            Call ClearCapture()
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Expect(packets.Count = 3 And PacketIdAt(2) = eCharacterCreate, "NotifyUser has no duplicate SetInvisible")
+            Call ExpectTorchClear(3)
+            Call Sample()
+            Call Expect(packets.Count = 0, "normal callback completed pending")
+        Case 70
+            Call BeginDeferred(False, 1)
+            UserList(1).flags.Muerto = 1
+            For i = 1 To 5
+                Call Sample()
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 1, "temporary dead admission denial retained")
+                If i > 1 Then Call Expect(packets.Count = 0, "no denied create or timeout")
+            Next i
+            UserList(1).flags.Muerto = 0
+            Call Sample()
+            Call Expect(packets.Count = 4, "restored admission rebuilds known state")
+            Call ExpectBlank(1)
+            Call ExpectVisibility(2, False)
+            Call ExpectTorchClear(4)
+        Case 71
+            Call BeginDeferred(True, 3)
+            UserList(2).flags.AdminInvisible = 1: UserList(2).flags.Privilegios = e_PlayerType.Admin
+            Call Sample(1)
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove And AdjacentPlayerTestPendingCount(1) = 1, "denied accepted blank cleanup failure retained")
+            UserList(2).flags.AdminInvisible = 0: UserList(2).flags.Privilegios = e_PlayerType.User
+            Call Sample()
+            Call Expect(packets.Count = 5 And PacketIdAt(1) = eCharacterRemove, "cleanup accepted before bootstrap restart")
+            Call ExpectBlank(2)
+            Call ExpectVisibility(3, True)
+            Call ExpectTorchClear(5)
+            Call Fixture()
+            UserList(1).flags.Privilegios = e_PlayerType.Admin
+            Call BeginDeferred(False, 2)
+            UserList(2).flags.AdminInvisible = 1: UserList(2).flags.Privilegios = e_PlayerType.Consejero
+            Call Sample()
+            Call Expect(packets.Count = 2 And PacketIdAt(1) = eCharacterCreate, "permitted admin-only target follows normal visible create")
+            Call ExpectTorchClear(2)
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "admin admission is not an ordinary hidden flag")
+            Call ClearCapture()
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Expect(packets.Count = 2 And PacketIdAt(1) = eCharacterCreate, "ordinary NotifyUser matches admin-only handoff")
+            Call ExpectTorchClear(2)
+        Case 72, 73
+            Call BeginDeferred(True, 3)
+            If id = 72 Then
+                Call ResetAdjacentPlayerSlot(2)
+            Else
+                UserList(2).Char.charindex = 3: CharList(3) = 2
+            End If
+            Call Sample(1)
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eCharacterRemove And AdjacentPlayerTestPendingCount(1) = 1, "obsolete accepted blank cleanup retained")
+            Call Sample()
+            Set reader = PacketReader(1, eCharacterRemove)
+            Call Expect(packets.Count = 1 And reader.ReadInt16() = 2 And AdjacentPlayerTestPendingCount(1) = 0, "only obsolete index retired; no stale create")
+        Case 74
+            Call BeginDeferred(True, 3)
+            Call PutUser(3, 34, 50, 12)
+            UserList(3).Char.charindex = 2: CharList(2) = 3
+            Call ClearCapture()
+            Call MakeUserChar(False, 1, 3, 34, 50, 12)
+            Call Sample()
+            Call Expect(packets.Count = 0 And AdjacentPlayerTestPendingCount(1) = 0, "cleanup cannot remove newer accepted owner")
+            Call Fixture()
+            Call BeginDeferred(True, 3)
+            Call ResetAdjacentPlayerSlot(1)
+            Call Sample()
+            Call Expect(packets.Count = 1 And PacketIdAt(1) = eAdjacentPlayerReset And AdjacentPlayerTestPendingCount(1) = 0, "viewer reset drops old world without cleanup")
+        Case 75
+            For i = 3 To 130
+                Call PutUser(CInt(i), 35, 50, 90)
+            Next i
+            Call Sample()
+            Call Expect(AdjacentPlayerTestCount(1) = 128, "cap fixture")
+            For i = 2 To 129
+                UserList(i).pos.Map = 34: UserList(i).pos.y = 12: UserList(i).flags.invisible = 1
+                Call ClearCapture(3)
+                Call MakeUserChar(False, 1, CInt(i), 34, 50, 12)
+            Next i
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 128, "bounded partial handoffs")
+            UserList(1).flags.Muerto = 1
+            For i = 1 To 3
+                Call Sample()
+                Call Expect(AdjacentPlayerTestPendingCount(1) = 128 And AdjacentPlayerTestCount(1) = 0, "denied handoffs reserve cap without timeout")
+            Next i
+            UserList(1).flags.Muerto = 0
+            Call Sample()
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 0 And AdjacentPlayerTestCount(1) = 1, "restored handoffs release capacity")
+        Case 76
+            Call BeginDeferred(True, 3)
+            Call ResetAdjacentPlayerSlot(2)
+            UserList(2).Char.charindex = 3: CharList(3) = 2
+            Call ClearCapture()
+            Call AdjacentPlayerTestNotifyUser(1, 2)
+            Call Expect(packets.Count = 4 And PacketIdAt(1) = eCharacterRemove And PacketIdAt(2) = eCharacterCreate, "obsolete cleanup then ordinary replacement")
+            Call ExpectTorchClear(3)
+            Call ExpectVisibility(4, True)
+            Call Expect(AdjacentPlayerTestPendingCount(1) = 0, "stale cancellation does not suppress normal hide")
     End Select
 End Sub
 
@@ -614,7 +879,7 @@ Public Function TestSuite() As Boolean
     saved = True
     Call InitializeAuxiliaryBuffer()
     capturing = True
-    For id = 1 To 62
+    For id = 1 To 76
         Call RunCase(id)
     Next id
     TestSuite = UnitTesting.GetFailedTests() = before

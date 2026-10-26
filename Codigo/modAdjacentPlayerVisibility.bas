@@ -14,6 +14,14 @@ Private Const FLAG_NAV As Long = 2
 Private Const FLAG_AURAS As Long = 32
 Private Const FLAG_SNAP As Long = 64
 Private Const FLAG_CLAN As Long = 128
+Private Enum e_HandoffStage
+    HANDOFF_FRESH = 0
+    HANDOFF_BLANK = 1
+    HANDOFF_VISIBILITY = 2
+    HANDOFF_FULL = 3
+    HANDOFF_CANCEL = 4
+    HANDOFF_RESTART = 5
+End Enum
 Private mLastUpdate As Long
 Private mLastLog As Long
 Private mLogged As Boolean
@@ -476,29 +484,92 @@ Failed:
     If Not writer Is Nothing Then Call writer.Clear()
 End Function
 
-Public Function PrepareAdjacentPlayerHandoff(ByVal viewer As Integer, ByVal subject As Integer) As Boolean
+Public Function PrepareAdjacentPlayerHandoff(ByVal viewer As Integer, ByVal subject As Integer, Optional ByRef visibilityHandled As Boolean = False) As Boolean
+    visibilityHandled = False
     PrepareAdjacentPlayerHandoff = True
     #If PYMMO = 0 Then
         Exit Function
     #End If
     On Error GoTo Failed
     Call EnsureState()
-    Dim known As Scripting.Dictionary, key As String
+    Dim known As Scripting.Dictionary, pending As Scripting.Dictionary, key As String, actor As String
+    Dim value As Variant, hidden As Boolean, queued As Boolean
     key = CStr(viewer)
-    If Not mKnown.Exists(key) Then Exit Function
-    Set known = mKnown(key)
-    If Not known.Exists(CStr(subject)) Then Exit Function
-    ' Reserve the bounded retry before removing the adjacent copy. Normal create
-    ' failures unrelated to this stream must not consume handoff capacity.
-    If Not DeferCreate(viewer, subject) Then
-        PrepareAdjacentPlayerHandoff = False
+    actor = CStr(subject)
+    If mPending.Exists(key) Then
+        Set pending = mPending(key)
+        If pending.Exists(actor) Then
+            value = pending(actor)
+            If value(5) = HANDOFF_CANCEL Or Not HandoffIsCurrent(viewer, subject, value) Then
+                visibilityHandled = True
+                PrepareAdjacentPlayerHandoff = False
+                If Not CancelHandoff(viewer, subject, pending, value) Then Exit Function
+                PrepareAdjacentPlayerHandoff = True
+                visibilityHandled = False
+            End If
+        End If
+    End If
+    If mKnown.Exists(key) Then
+        Set known = mKnown(key)
+        If known.Exists(actor) Then
+            ' Reserve before removing the adjacent copy, including on first failure.
+            visibilityHandled = True
+            PrepareAdjacentPlayerHandoff = False
+            If Not DeferCreate(viewer, subject) Then Exit Function
+            If Not SendRemove(viewer, CLng(mEpochs(key)), subject, known(actor)) Then Exit Function
+            Call known.Remove(actor)
+        End If
+    End If
+    If Not mPending.Exists(key) Then Exit Function
+    Set pending = mPending(key)
+    If Not pending.Exists(actor) Then Exit Function
+    visibilityHandled = True
+    PrepareAdjacentPlayerHandoff = False
+    value = pending(actor)
+    If Not HandoffIsCurrent(viewer, subject, value) Then
+        Call CancelHandoff(viewer, subject, pending, value)
         Exit Function
     End If
-    If SendRemove(viewer, CLng(mEpochs(key)), subject, known(CStr(subject))) Then
-        Call known.Remove(CStr(subject))
-    Else
-        PrepareAdjacentPlayerHandoff = False
+    If value(5) = HANDOFF_RESTART Then
+        If Not RemoveHandoffRecord(viewer, subject, value) Then Exit Function
+        value(5) = HANDOFF_BLANK: value(6) = -1&
+        pending(actor) = value
     End If
+    If Not Admitted(viewer, subject) Then
+        ' A legacy admin/death removal may have erased an accepted blank record.
+        ' Retire any record we still own before restarting; denied subjects must
+        ' not leave a collision-only ghost or lose their bounded retry entry.
+        value(5) = HANDOFF_RESTART: value(6) = -1&
+        pending(actor) = value
+        If RemoveHandoffRecord(viewer, subject, value) Then
+            value(5) = HANDOFF_BLANK
+            pending(actor) = value
+        End If
+        Exit Function
+    End If
+    With UserList(subject)
+        hidden = .flags.invisible <> 0 Or .flags.Oculto <> 0
+    End With
+    If value(5) = HANDOFF_FRESH And hidden Then value(5) = HANDOFF_BLANK
+    If value(5) = HANDOFF_BLANK Then
+        pending(actor) = value
+        If Not SendHandoffBlank(viewer, subject) Then Exit Function
+        value(5) = HANDOFF_VISIBILITY
+        pending(actor) = value
+    End If
+    If value(5) = HANDOFF_VISIBILITY Or (value(5) = HANDOFF_FULL And value(6) <> Abs(CLng(hidden))) Then
+        With UserList(subject)
+            Call modSendData.SendData(ToIndex, viewer, PrepareMessageSetInvisible(.Char.charindex, hidden, .pos.x, .pos.y), False, queued, True)
+        End With
+        If Not queued Then
+            Call ReportFailure("handoff visibility enqueue")
+            Exit Function
+        End If
+        value(5) = HANDOFF_FULL: value(6) = Abs(CLng(hidden))
+        pending(actor) = value
+    End If
+    ' MakeUserChar sends the full snapshot only after the required state is accepted.
+    PrepareAdjacentPlayerHandoff = True
     Exit Function
 Failed:
     PrepareAdjacentPlayerHandoff = False
@@ -515,12 +586,77 @@ Private Function DeferCreate(ByVal viewer As Integer, ByVal subject As Integer) 
         Call mPending.Add(key, pending)
     End If
     Set pending = mPending(key)
+    If pending.Exists(CStr(subject)) Then
+        DeferCreate = True
+        Exit Function
+    End If
     If pending.Count >= ADJACENT_PLAYER_LIMIT And Not pending.Exists(CStr(subject)) Then
         Call ReportFailure("handoff capacity exhausted")
         Exit Function
     End If
-    pending(CStr(subject)) = Array(session(0), session(1), UserList(subject).pos.Map, UserList(subject).Char.charindex, ViewerSignature(viewer))
+    pending(CStr(subject)) = Array(session(0), session(1), UserList(subject).pos.Map, UserList(subject).Char.charindex, ViewerSignature(viewer), HANDOFF_FRESH, -1&)
     DeferCreate = True
+End Function
+
+Private Function SendHandoffBlank(ByVal viewer As Integer, ByVal subject As Integer) As Boolean
+    On Error GoTo Failed
+    ' HOO treats this exact zero-appearance PC as initially invisible. Ordinary
+    ' CharacterChange traffic therefore cannot reveal it if SetInvisible fails.
+    With UserList(subject)
+        Call WriteCharacterCreate(viewer, 0, 0, .Char.Heading, .Char.charindex, .pos.x, .pos.y, 0, 0, 0, 0, 0, 0, 0, _
+            vbNullString, .Faccion.Status, .flags.Privilegios, 0, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, _
+            .Char.speeding, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, False, False, 0, 0, 0, 0, SendHandoffBlank)
+    End With
+    If Not SendHandoffBlank Then Call ReportFailure("handoff blank enqueue")
+    Exit Function
+Failed:
+    Call ReportFailure("handoff blank writer", Err.Number, Err.Description)
+    Call Protocol_Writes.GetWriterBuffer().Clear()
+End Function
+
+Private Function HandoffIsCurrent(ByVal viewer As Integer, ByVal subject As Integer, ByVal value As Variant) As Boolean
+    If Not ReadyUser(viewer) Or Not ReadyUser(subject) Then Exit Function
+    If Not SameIdentity(value, Identity(subject)) Or value(4) <> ViewerSignature(viewer) Then Exit Function
+    With UserList(subject)
+        If .pos.Map <> value(2) Or .pos.Map <> UserList(viewer).pos.Map Or .Char.charindex <> value(3) Then Exit Function
+        If (UserList(viewer).AreasInfo.AreaReciveX And .AreasInfo.AreaPerteneceX) = 0 Then Exit Function
+        If (UserList(viewer).AreasInfo.AreaReciveY And .AreasInfo.AreaPerteneceY) = 0 Then Exit Function
+    End With
+    HandoffIsCurrent = True
+End Function
+
+Private Function RemoveHandoffRecord(ByVal viewer As Integer, ByVal subject As Integer, ByVal value As Variant) As Boolean
+    On Error GoTo Failed
+    RemoveHandoffRecord = True
+    If Not mActive.Exists(CStr(viewer)) Then Exit Function
+    Dim active As Scripting.Dictionary, owner As Variant, key As String, queued As Boolean
+    Set active = mActive(CStr(viewer))
+    key = CStr(value(3))
+    If Not active.Exists(key) Then Exit Function
+    owner = active(key)
+    ' Reused normal indices belong to their last accepted create, not the old
+    ' pending user slot. Never remove a newer player/NPC occupying this index.
+    If Not SameIdentity(owner, value) Or owner(4) <> subject Or owner(2) <> value(2) Then Exit Function
+    RemoveHandoffRecord = False
+    Call modSendData.SendData(ToIndex, viewer, PrepareMessageCharacterRemove(4, CInt(value(3)), False, True), False, queued, True)
+    If Not queued Then
+        Call ReportFailure("handoff cleanup enqueue")
+        Exit Function
+    End If
+    Call active.Remove(key)
+    RemoveHandoffRecord = True
+    Exit Function
+Failed:
+    RemoveHandoffRecord = False
+    Call ReportFailure("handoff cleanup", Err.Number, Err.Description)
+End Function
+
+Private Function CancelHandoff(ByVal viewer As Integer, ByVal subject As Integer, ByVal pending As Scripting.Dictionary, ByVal value As Variant) As Boolean
+    value(5) = HANDOFF_CANCEL
+    pending(CStr(subject)) = value
+    If Not RemoveHandoffRecord(viewer, subject, value) Then Exit Function
+    Call pending.Remove(CStr(subject))
+    CancelHandoff = True
 End Function
 
 Public Sub CompleteAdjacentPlayerCreate(ByVal viewer As Integer, ByVal subject As Integer, ByVal queued As Boolean)
@@ -595,27 +731,16 @@ End Function
 Private Sub RetryHandoffs(ByVal viewer As Integer)
     If Not mPending.Exists(CStr(viewer)) Then Exit Sub
     Dim pending As Scripting.Dictionary, key As Variant, value As Variant, subject As Integer, valid As Boolean
-    Dim mode As Byte, flags As Long
     Set pending = mPending(CStr(viewer))
     For Each key In pending.Keys
         subject = CInt(key): value = pending(key): valid = False
-        If ReadyUser(subject) Then
-            If SameIdentity(value, Identity(subject)) And value(4) = ViewerSignature(viewer) Then
-                With UserList(subject)
-                    valid = .pos.Map = value(2) And .pos.Map = UserList(viewer).pos.Map And .Char.charindex = value(3) And .Char.charindex > 0
-                    valid = valid And (UserList(viewer).AreasInfo.AreaReciveX And .AreasInfo.AreaPerteneceX) <> 0
-                    valid = valid And (UserList(viewer).AreasInfo.AreaReciveY And .AreasInfo.AreaPerteneceY) <> 0
-                    If valid Then valid = Representation(viewer, subject, mode, flags)
-                End With
-            End If
-        End If
+        valid = value(5) <> HANDOFF_CANCEL And HandoffIsCurrent(viewer, subject, value)
         If valid Then
+            ' Normal-map admission is checked by the shared create hook. Hidden
+            ' ordinary PCs need normal records for collision and later reveal.
             Call MakeUserChar(False, viewer, subject, UserList(subject).pos.Map, UserList(subject).pos.x, UserList(subject).pos.y, 0)
-            If Not pending.Exists(key) Then
-                If UserList(subject).flags.invisible Or UserList(subject).flags.Oculto Then Call WriteSetInvisible(viewer, subject, True)
-            End If
         Else
-            Call pending.Remove(key)
+            Call CancelHandoff(viewer, subject, pending, value)
         End If
     Next key
 End Sub
@@ -644,6 +769,10 @@ End Sub
 
 Public Function AdjacentPlayerTestCount(ByVal viewer As Integer) As Long
     If mKnown.Exists(CStr(viewer)) Then AdjacentPlayerTestCount = mKnown(CStr(viewer)).Count
+End Function
+
+Public Function AdjacentPlayerTestPendingCount(ByVal viewer As Integer) As Long
+    If mPending.Exists(CStr(viewer)) Then AdjacentPlayerTestPendingCount = mPending(CStr(viewer)).Count
 End Function
 
 Public Function AdjacentPlayerTestValue(ByVal viewer As Integer, ByVal subject As Integer) As Variant
