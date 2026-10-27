@@ -1520,10 +1520,13 @@ Private Function test_checked_in_manifest() As Boolean
     If placements(1).Depth <> 1 Or placements(2).Depth <> 2 Then Exit Function
     If placements(2).MapId <> 143 Or placements(2).dx <> -74 Or placements(2).dy <> -80 Then Exit Function
     If Not TryGetAdjacentVisibilityPlacements(144, placements, count) Then Exit Function
-    If count <> 2 Then Exit Function
+    ' The reviewed 143-141 edge adds map 141 at depth two from map 144.
+    If count <> 3 Then Exit Function
     If placements(1).MapId <> 143 Or placements(1).dx <> 0 Or placements(1).dy <> -80 Then Exit Function
     If placements(1).Depth <> 1 Or placements(2).Depth <> 1 Then Exit Function
-    test_checked_in_manifest = (placements(2).MapId = 145 And placements(2).dx = 74 And placements(2).dy = 0)
+    If placements(2).MapId <> 145 Or placements(2).dx <> 74 Or placements(2).dy <> 0 Then Exit Function
+    If placements(3).MapId <> 141 Or placements(3).Depth <> 2 Then Exit Function
+    test_checked_in_manifest = (placements(3).dx = -74 And placements(3).dy = -80)
 End Function
 
 Private Function test_feature_toggle() As Boolean
