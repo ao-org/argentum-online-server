@@ -2,6 +2,15 @@ Attribute VB_Name = "Unit_General"
 Option Explicit
 #If UNIT_TEST = 1 Then
 
+' Capture at the transport boundary: spell application and recipient routing stay real.
+Private CapturingMinorInvisibility As Boolean
+Private MinorUsers(0 To 5) As Integer
+Private MinorMarkers(0 To 5) As Long
+Private MinorHides(0 To 5) As Long
+Private MinorSounds(0 To 5) As Long
+Private MinorPacketsValid As Boolean
+
+
 Private CapturingAttributes As Boolean
 Private AttributeRecipient As Integer
 Private AttributeRoutesValid As Boolean
@@ -313,6 +322,143 @@ End Function
 ' removal + uppercase), PonerPuntos (thousand-separator formatting),
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
+Public Function CaptureMinorInvisibilitySend(ByVal Recipient As Long, ByRef Buffer As Network.Writer) As Boolean
+    If Not CapturingMinorInvisibility Then Exit Function
+    CaptureMinorInvisibilitySend = True
+    Dim bytes() As Byte, packet As Long, i As Long
+    Call Buffer.GetData(bytes)
+    packet = CLng(bytes(0)) + CLng(bytes(1)) * 256&
+    For i = 0 To 5
+        If Recipient = MinorUsers(i) Then
+            Select Case packet
+                Case ServerPacketID.eCreateFX
+                    If UBound(bytes) <> 9 Then MinorPacketsValid = False: Exit Function
+                    If CLng(bytes(4)) + CLng(bytes(5)) * 256& <> e_GraphicEffects.MinorInvisibilityActivation Then MinorPacketsValid = False
+                    If MinorHides(i) <> 0 Or UserList(MinorUsers(0)).flags.invisible <> 0 Then MinorPacketsValid = False
+                    If CLng(bytes(2)) + CLng(bytes(3)) * 256& <> 301 Or bytes(8) <> 50 Or bytes(9) <> 50 Then MinorPacketsValid = False
+                    MinorMarkers(i) = MinorMarkers(i) + 1
+                Case ServerPacketID.eSetInvisible
+                    If UBound(bytes) <> 6 Then MinorPacketsValid = False: Exit Function
+                    If bytes(4) = 0 Or bytes(5) <> 50 Or bytes(6) <> 50 Then MinorPacketsValid = False
+                    MinorHides(i) = MinorHides(i) + 1
+                Case ServerPacketID.ePlayWave
+                    If CLng(bytes(2)) + CLng(bytes(3)) * 256& <> 16 Then MinorPacketsValid = False
+                    If MinorHides(i) <> 1 Then MinorPacketsValid = False
+                    MinorSounds(i) = MinorSounds(i) + 1
+            End Select
+            Exit Function
+        End If
+    Next i
+    MinorPacketsValid = False ' Fixture must not send to an unrelated live user.
+End Function
+
+Private Function TestMinorInvisibilityApplication(ByVal Mode As Integer) As Boolean
+    On Error GoTo TestError
+    Dim oldUsers(0 To 5) As t_User, emptyUser As t_User
+    Dim oldGroup1 As t_ConnGroup, oldGroup2 As t_ConnGroup
+    Dim oldMap As t_MapInfo, oldSpell As t_Hechizo, emptySpell As t_Hechizo
+    Dim i As Long, slot As Long, found As Long, h As Integer, saved As Boolean
+    Dim succeeded As Boolean, expectedSuccess As Boolean, expectedMarker As Boolean
+    For slot = UBound(UserList) To LBound(UserList) Step -1
+        If Not UserList(slot).flags.UserLogged And Not UserList(slot).ConnectionDetails.ConnIDValida Then
+            MinorUsers(found) = slot: found = found + 1
+            If found = 6 Then Exit For
+        End If
+    Next slot
+    If found <> 6 Then Exit Function
+    h = 24
+    If Mode = 2 Then h = 30
+    If Mode = 9 Then h = 154
+    If Mode = 10 Then h = 1
+    oldSpell = Hechizos(h): oldMap = MapInfo(1)
+    oldGroup1 = ConnGroups(1): oldGroup2 = ConnGroups(2)
+    For i = 0 To 5: oldUsers(i) = UserList(MinorUsers(i)): Next i
+    saved = True
+    MapInfo(1).Seguro = 0: MapInfo(1).SinInviOcul = False
+    ReDim ConnGroups(1).UserEntrys(1 To 5)
+    ConnGroups(1).CountEntrys = 5
+    ReDim ConnGroups(2).UserEntrys(1 To 1)
+    ConnGroups(2).CountEntrys = 1
+    For i = 0 To 5
+        UserList(MinorUsers(i)) = emptyUser
+        With UserList(MinorUsers(i))
+            .pos.Map = 1: .pos.x = 50: .pos.y = 50
+            .Char.charindex = 301 + i: .VersionId = 77
+            .flags.Privilegios = e_PlayerType.User
+            .flags.NoPalabrasMagicas = 1
+            .ConnectionDetails.ConnIDValida = True
+            .AreasInfo.AreaPerteneceX = 1: .AreasInfo.AreaPerteneceY = 1
+            .AreasInfo.AreaReciveX = 1: .AreasInfo.AreaReciveY = 1
+        End With
+        If i < 5 Then ConnGroups(1).UserEntrys(i + 1) = MinorUsers(i)
+        MinorMarkers(i) = 0: MinorHides(i) = 0: MinorSounds(i) = 0
+    Next i
+    UserList(MinorUsers(2)).flags.Muerto = 1 ' Unsafe-map dead observer.
+    UserList(MinorUsers(3)).AreasInfo.AreaReciveX = 2 ' Outside interest area.
+    UserList(MinorUsers(4)).ConnectionDetails.ConnIDValida = False
+    UserList(MinorUsers(5)).pos.Map = 2 ' Other map, even with matching area bits.
+    ConnGroups(2).UserEntrys(1) = MinorUsers(5)
+    Hechizos(h) = emptySpell
+    With Hechizos(h)
+        .Tipo = e_TipoHechizo.uEstado: .Effects = e_SpellEffects.Invisibility
+        .Target = e_TargetType.uUsuarios: .Duration = 15: .wav = 16
+        .ManaRequerido = 400: .StaRequerido = 150
+        If h = 30 Then .ManaRequerido = 275
+        If Mode = 10 Then .Effects = 0
+    End With
+    With UserList(MinorUsers(0))
+        .flags.Hechizo = 1: .Stats.UserHechizos(1) = h
+        Call SetUserRef(.flags.TargetUser, MinorUsers(0))
+        .Stats.MinMAN = 1000: .Stats.MinSta = 1000
+        .Stats.UserSkills(e_Skill.Magia) = MAXSKILLPOINTS
+        Select Case Mode
+            Case 3: .flags.Muerto = 1
+            Case 4: .flags.Montado = 1
+            Case 5: .Counters.Saliendo = 1
+            Case 6: .flags.invisible = 1
+            Case 7: .flags.Oculto = 1
+            Case 8: .flags.AdminInvisible = 1
+            Case 11: MapInfo(1).SinInviOcul = True
+            Case 12: MapInfo(1).Seguro = 1
+            Case 13: .flags.StatusMask = eTaunting
+        End Select
+    End With
+    expectedSuccess = Mode = 1 Or Mode = 2 Or Mode = 7 Or Mode = 8 Or Mode = 9 Or Mode = 12
+    expectedMarker = Mode = 1 Or Mode = 2 Or Mode = 12
+    MinorPacketsValid = True: CapturingMinorInvisibility = True
+    succeeded = modHechizos.HandleHechizoUsuario(MinorUsers(0), h)
+    CapturingMinorInvisibility = False
+    If succeeded <> expectedSuccess Or Not MinorPacketsValid Then GoTo Cleanup
+    For i = 0 To 5
+        If expectedMarker And (i < 2 Or (i = 2 And Mode = 12)) Then
+            If MinorMarkers(i) <> 1 Or MinorHides(i) <> 1 Or MinorSounds(i) <> 1 Then GoTo Cleanup
+        Else
+            If MinorMarkers(i) <> 0 Then GoTo Cleanup
+        End If
+    Next i
+    With UserList(MinorUsers(0))
+        If expectedSuccess Then
+            If .flags.invisible <> 1 Or .Counters.Invisibilidad < 11 Or .Counters.Invisibilidad > 16 Then GoTo Cleanup
+            If .Stats.MinMAN <> 1000 - Hechizos(h).ManaRequerido Or .Stats.MinSta <> 850 Then GoTo Cleanup
+        Else
+            If .Stats.MinMAN <> 1000 Or .Stats.MinSta <> 1000 Then GoTo Cleanup
+            If MinorHides(0) <> 0 Or MinorSounds(0) <> 0 Then GoTo Cleanup
+        End If
+    End With
+    TestMinorInvisibilityApplication = True
+Cleanup:
+    CapturingMinorInvisibility = False
+    If saved Then
+        For i = 0 To 5: UserList(MinorUsers(i)) = oldUsers(i): Next i
+        ConnGroups(1) = oldGroup1: ConnGroups(2) = oldGroup2
+        MapInfo(1) = oldMap: Hechizos(h) = oldSpell
+    End If
+    Exit Function
+TestError:
+    Debug.Print "Minor invisibility application " & Mode & ": " & Err.Number & " " & Err.Description
+    Resume Cleanup
+End Function
+
 Private Function TestMinorInvisibilityPacket() As Boolean
     On Error GoTo TestError
     Dim Writer As Network.Writer, bytes() As Byte
@@ -332,6 +478,10 @@ End Function
 
 Public Function test_suite_general() As Boolean
     Dim faction As Integer, armorCase As Integer, armorCases As Variant
+    Dim minorCase As Integer
+    For minorCase = 1 To 13
+        Call UnitTesting.RunTest("minor invisibility application/recipients " & CStr(minorCase), TestMinorInvisibilityApplication(minorCase))
+    Next minorCase
     Call UnitTesting.RunTest("minor invisibility spell 24 marker", modHechizos.MinorInvisibilityFxEligible(24, False))
     Call UnitTesting.RunTest("minor invisibility spell 30 marker", modHechizos.MinorInvisibilityFxEligible(30, False))
     Call UnitTesting.RunTest("minor invisibility hidden target excluded", Not modHechizos.MinorInvisibilityFxEligible(24, True))

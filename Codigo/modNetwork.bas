@@ -123,6 +123,9 @@ Public Sub Poll()
 End Sub
 
 Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
+#If UNIT_TEST = 1 Then
+    If Unit_General.CaptureMinorInvisibilitySend(UserIndex, Buffer) Then Exit Sub
+#End If
     Call Server.Send(UserList(UserIndex).ConnectionDetails.ConnID, False, Buffer)
 End Sub
 
