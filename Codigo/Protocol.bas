@@ -1256,10 +1256,6 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
             .CapabilityMask = AcceptedMask
         End With
     End If
-    Call LogInfoServidor("HOO capabilities: user=" & CStr(UserIndex) & _
-        " protocol=" & CStr(ProtocolVersion) & _
-        " requested=" & CStr(RequestedMask) & _
-        " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
