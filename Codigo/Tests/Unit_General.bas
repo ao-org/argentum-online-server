@@ -313,8 +313,31 @@ End Function
 ' removal + uppercase), PonerPuntos (thousand-separator formatting),
 ' InsideRectangle (point-in-rect), and IsValidIPAddress.
 ' ==========================================================================
+Private Function TestMinorInvisibilityPacket() As Boolean
+    On Error GoTo TestError
+    Dim Writer As Network.Writer, bytes() As Byte
+    Set Writer = Protocol_Writes.GetWriterBuffer()
+    Call Writer.Clear()
+    Call Protocol_Writes.PrepareMessageCreateFX(7, e_GraphicEffects.MinorInvisibilityActivation, 0, 10, 20)
+    Call Writer.GetData(bytes)
+    Call Writer.Clear()
+    If UBound(bytes) <> 9 Then Exit Function
+    TestMinorInvisibilityPacket = (CLng(bytes(0)) + CLng(bytes(1)) * 256& = ServerPacketID.eCreateFX And _
+        bytes(2) = 7 And bytes(3) = 0 And CLng(bytes(4)) + CLng(bytes(5)) * 256& = 30001 And _
+        bytes(6) = 0 And bytes(7) = 0 And bytes(8) = 10 And bytes(9) = 20)
+    Exit Function
+TestError:
+    TestMinorInvisibilityPacket = False
+End Function
+
 Public Function test_suite_general() As Boolean
     Dim faction As Integer, armorCase As Integer, armorCases As Variant
+    Call UnitTesting.RunTest("minor invisibility spell 24 marker", modHechizos.MinorInvisibilityFxEligible(24, False))
+    Call UnitTesting.RunTest("minor invisibility spell 30 marker", modHechizos.MinorInvisibilityFxEligible(30, False))
+    Call UnitTesting.RunTest("minor invisibility hidden target excluded", Not modHechizos.MinorInvisibilityFxEligible(24, True))
+    Call UnitTesting.RunTest("other invisibility spell excluded", Not modHechizos.MinorInvisibilityFxEligible(154, False))
+    Call UnitTesting.RunTest("shared sound spell excluded", Not modHechizos.MinorInvisibilityFxEligible(1, False))
+    Call UnitTesting.RunTest("minor invisibility existing CreateFX wire layout", TestMinorInvisibilityPacket())
     armorCases = Array("low HP preserves armor and skin", "low mana preserves armor and skin", _
         "low water preserves armor and skin", "low hunger preserves armor and skin", _
         "full stats allow replacement", "safe map allows replacement", "safe trigger allows replacement", _

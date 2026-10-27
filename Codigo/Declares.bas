@@ -852,6 +852,7 @@ Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageC
     Runa = 167
     LogeoLevel1 = 177
     TpVerde = 229
+    MinorInvisibilityActivation = 30001 ' HOO semantic eCreateFX marker, not an indexed graphic.
 End Enum
 
 Public Enum e_ParticleEffects 'particle sequenced fxs like fuerza2 and celeridad2 PrepareMessageParticleFX()
