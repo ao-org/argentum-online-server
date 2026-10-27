@@ -30,8 +30,26 @@ original presentation. Old HOO does not implement the reserved effect; coordinat
 upgrade is required for the new visuals. Disabled enhanced FX ignores the marker
 and preserves original sound/visibility (there was no legacy graphic to replace).
 
-Validation: six native unit regressions added to suite General: spell identity,
-hidden-target exclusion, unrelated/shared-sound exclusions, and the existing wire
-layout. Native VB6 compiler is unavailable locally; these are pending the existing
-PR validator. Source encoding remains Windows-1252/CRLF. `git diff --check` passed.
+## Review regression coverage and validation
+
+The original six General-suite tests check eligibility and marker bytes. Thirteen
+additional cases now call `HandleHechizoUsuario`, including its actual state
+application, counters, resource deductions, `InfoHechizo`, sound, and SendData
+recipient routing. A UNIT_TEST-only hook at `modNetwork.Send` records final
+recipient packets without creating real connections; production builds contain
+no hook or changed spell logic.
+
+Cases cover spells 24/30, dead/mounted/leaving/taunted targets, prohibited maps,
+already invisible/hidden/admin-invisible targets, unrelated spells, and safe-map
+dead observers. Eligible recipients receive exactly one marker before SetInvisible;
+outside-area, disconnected and other-map users receive none. Successful casts
+retain mana/stamina costs, sound 16, and the 11–16 second duration.
+
+The AO Server PR Validator passed **823/823 tests** on code commit
+`8239e43d8c695524f4988edc537fa69932c67dd6` (2026-10-27). This is CI evidence,
+not local native execution. The documented native VB6 compiler is unavailable
+locally. Separate PYMMO=0/PYMMO=1 builds were not independently run here; the
+validator does not expose a configuration matrix in its result.
+
+Source encoding remains Windows-1252/CRLF; `git diff --check` passed.
 Live multi-client visibility and successful/failed casts remain unverified.
