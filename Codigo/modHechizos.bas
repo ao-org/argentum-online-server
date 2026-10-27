@@ -1563,6 +1563,14 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             b = False
             Exit Sub
         End If
+        ' Publish only a successful, previously visible minor-invisibility cast.
+        ' Must precede SetInvisible: HOO captures the activation anchor before hiding.
+        If MinorInvisibilityFxEligible(h, UserList(targetUserIndex).flags.invisible <> 0 Or _
+                UserList(targetUserIndex).flags.Oculto <> 0 Or UserList(targetUserIndex).flags.AdminInvisible <> 0) Then
+            Call SendData(SendTarget.ToPCAliveArea, targetUserIndex, PrepareMessageCreateFX( _
+                UserList(targetUserIndex).Char.charindex, e_GraphicEffects.MinorInvisibilityActivation, 0, _
+                UserList(targetUserIndex).pos.x, UserList(targetUserIndex).pos.y), True)
+        End If
         UserList(targetUserIndex).flags.invisible = 1
         'Ladder
         'Reseteamos el contador de Invisibilidad
@@ -2528,6 +2536,11 @@ InfoHechizoDeNpcSobreUser_Err:
     Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
 End Sub
 
+
+' Spell identity is authoritative here; no client name/sound/visibility heuristic.
+Public Function MinorInvisibilityFxEligible(ByVal SpellId As Integer, ByVal AlreadyHidden As Boolean) As Boolean
+    MinorInvisibilityFxEligible = (SpellId = 24 Or SpellId = 30) And Not AlreadyHidden
+End Function
 
 Private Sub InfoHechizo(ByVal UserIndex As Integer)
     On Error GoTo InfoHechizo_Err
