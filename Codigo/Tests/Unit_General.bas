@@ -488,6 +488,13 @@ Public Function test_suite_general() As Boolean
     Call UnitTesting.RunTest("other invisibility spell excluded", Not modHechizos.MinorInvisibilityFxEligible(154, False))
     Call UnitTesting.RunTest("shared sound spell excluded", Not modHechizos.MinorInvisibilityFxEligible(1, False))
     Call UnitTesting.RunTest("minor invisibility existing CreateFX wire layout", TestMinorInvisibilityPacket())
+    Call UnitTesting.RunTest("alchemy legacy node requires scissors", CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyScissors, 0))
+    Call UnitTesting.RunTest("alchemy legacy node rejects knife", Not CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyKnife, 0))
+    Call UnitTesting.RunTest("alchemy knife matches knife node", CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyKnife, e_WorkingToolSubType.AlchemyKnife))
+    Call UnitTesting.RunTest("alchemy shovel matches shovel node", CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyShovel))
+    Call UnitTesting.RunTest("alchemy gloves match gloves node", CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyGloves, e_WorkingToolSubType.AlchemyGloves))
+    Call UnitTesting.RunTest("alchemy mismatched tool is rejected", Not CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyKnife, e_WorkingToolSubType.AlchemyShovel))
+    Call UnitTesting.RunTest("non gathering tool is rejected", Not CanUseAlchemyToolForNode(e_WorkingToolSubType.AlchemyCauldron, e_WorkingToolSubType.AlchemyCauldron))
     armorCases = Array("low HP preserves armor and skin", "low mana preserves armor and skin", _
         "low water preserves armor and skin", "low hunger preserves armor and skin", _
         "full stats allow replacement", "safe map allows replacement", "safe trigger allows replacement", _

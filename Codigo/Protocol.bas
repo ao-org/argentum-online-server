@@ -3250,6 +3250,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
                         End If
+                        If Not CanUseAlchemyToolForNode(ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo, ObjData(DummyInt).Subtipo) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+
                         Call ActualizarRecurso(.pos.Map, x, y)
                         If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
