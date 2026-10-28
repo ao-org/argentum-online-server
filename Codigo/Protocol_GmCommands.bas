@@ -3317,10 +3317,14 @@ ErrHandler:
 End Sub
 
 Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
+    Const IPV4_LOCALHOST As String = "127.0.0.1"
+    Const IPV6_LOCALHOST As String = "::1"
     Dim nowRaw    As Long
     Dim elapsedMs As Double
+    Dim isLocalhost As Boolean
     nowRaw = GetTickCountRaw()
     elapsedMs = TicksElapsed(UserList(UserIndex).Counters.LastGmMessage, nowRaw)
+    isLocalhost = UserList(UserIndex).ConnectionDetails.IP = IPV4_LOCALHOST Or UserList(UserIndex).ConnectionDetails.IP = IPV6_LOCALHOST
     On Error GoTo ErrHandler
     With UserList(UserIndex)
         Dim Consulta       As String
@@ -3348,7 +3352,7 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
                 End If
             Next i
         End If
-        If elapsedMs < IntervaloConsultaGM Then
+        If Not isLocalhost And elapsedMs < IntervaloConsultaGM Then
             ' Msg552=Solo puedes enviar una consulta cada 5 minutos.
             Call WriteLocaleMsg(UserIndex, MSG_SOLO_PUEDES_ENVIAR_CONSULTA_CADA_MINUTOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
