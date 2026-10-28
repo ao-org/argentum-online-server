@@ -1885,6 +1885,21 @@ ActualizarRecurso_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 End Sub
 
+Public Function CanUseAlchemyToolForNode(ByVal toolSubtype As e_WorkingToolSubType, ByVal nodeSubtype As Byte) As Boolean
+    Dim requiredSubtype As Byte
+    requiredSubtype = nodeSubtype
+
+    If requiredSubtype = 0 Then
+        requiredSubtype = e_WorkingToolSubType.AlchemyScissors
+    End If
+
+    Select Case toolSubtype
+        Case e_WorkingToolSubType.AlchemyScissors, e_WorkingToolSubType.AlchemyKnife, _
+                e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyGloves
+            CanUseAlchemyToolForNode = (toolSubtype = requiredSubtype)
+    End Select
+End Function
+
 Public Sub RecolectarPlantaAlquimia(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo RecolectarPlantaAlquimia_Err
 

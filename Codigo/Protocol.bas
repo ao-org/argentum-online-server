@@ -3228,7 +3228,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors, e_WorkingToolSubType.AlchemyKnife, _
+                            e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyGloves
+                        ' Herramientas de recoleccion de Alquimia
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
@@ -3248,6 +3250,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
                         End If
+                        If Not CanUseAlchemyToolForNode(ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo, ObjData(DummyInt).Subtipo) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+
                         Call ActualizarRecurso(.pos.Map, x, y)
                         If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.

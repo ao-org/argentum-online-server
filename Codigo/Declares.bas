@@ -49,6 +49,9 @@ Public Enum e_WorkingToolSubType
         MinerPickaxe = 8
         TailorSewingbox = 9
         FishingLine = 10
+        AlchemyKnife = 11
+        AlchemyShovel = 12
+        AlchemyGloves = 13
 End Enum
 
 
