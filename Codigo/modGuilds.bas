@@ -281,8 +281,8 @@ Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String
     Dim i          As Integer
     Dim go         As Integer
     Dim ClanNivel  As Byte
-    Dim ExpAcu     As Integer
-    Dim ExpNe      As Integer
+    Dim ExpAcu     As Long
+    Dim ExpNe      As Long
     GuildIndex = UserList(UserIndex).GuildIndex
     If GuildIndex = 0 Then Exit Sub
     Dim MemberList() As Long
