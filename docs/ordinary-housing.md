@@ -13,8 +13,8 @@ key/catalogue row; NULL `account_id` means available. Keys referenced by
 `castle.inside_key_obj_id` are excluded. No catalogue rows are deleted.
 
 Acquisition requires current account entitlement: Heroe (6057394), Leyenda
-(6057395), Noble (28929328), or Emperador (28929365). An expired entitlement does
-not revoke existing ownership. Release remains possible after the minimum period.
+(6057395), Noble (28929328), or Emperador (28929365). VB6 does not revoke existing ownership when entitlement expires. Release remains
+possible after the minimum period; the separate PyMMO expiry writer is discussed below.
 
 The minimum ownership period is **72 hours from `house_key.assigned_at`**.
 Release and exchange compare SQLite UTC `julianday('now')` with
@@ -116,9 +116,8 @@ requires status before another mutation after an uncertain/lost response.
 
 ## Rollout and validation
 
-Deploy the matching world server and HOO together. Deploy the PyMMO compatibility
-change first so patron synchronization cannot delete catalogue rows or revoke live
-keys. First-claim behavior and payments remain unchanged. Validate the consolidated
+Deploy the matching world server and HOO together. PyMMO source, authentication,
+first claims and payments are unchanged by this PR. Validate the consolidated
 schema (nullable house owner), catalogue objects and region resource identities on
 a staging copy/disposable database. Do not rerun old consolidation migrations.
 Back up deployment configuration through the normal operator process; this feature
@@ -132,8 +131,7 @@ on the threshold. Relog a former owner/visitor saved inside A and confirm the
 home-city position. Restart and repeat. Do not adjust real assignment timestamps
 to manufacture tests.
 
-Rollback requires matched client/server versions and the former executable; do
-not restore automatic PyMMO catalogue deletion. Existing ownership changes remain
+Rollback requires matched client/server versions and the former executable. Existing ownership changes remain
 valid consolidated rows, requiring no schema rollback. Inspect unresolved housing
 logs and reconcile status before permitting further changes; never blindly replay
 an uncertain mutation.
@@ -159,7 +157,10 @@ legacy account-login variant's packet ordering.
 
 Current external-writer audit found the patron gateway's
 `SQLAuthHelper.release_patron_houses` deleting consolidated catalogue rows. The
-companion removes that automatic mutation. `HousingService._claim` already uses
+PyMMO code remains unchanged at the user's request. That background cleanup can
+remove ownership independently of the VB6 player release/exchange rule and cannot
+reconcile live keys. It remains a rollout limitation, not a guarantee supplied by
+this PR. `HousingService._claim` already uses
 `BEGIN IMMEDIATE` and sets `CURRENT_TIMESTAMP` only on successful first claim.
 Historical documentation mentions a separate game API; its current implementation
 was not available in the checked-out repositories/search results. Its ownership
@@ -192,3 +193,9 @@ native writer packet export and all three real key-use rejection paths. No synth
 production transaction failure. Full resource-dependent world startup and a live
 client exchange/relog were not run; follow the staging smoke above before rollout.
 No real character/ownership rows were read or modified for these tests.
+
+The native concurrency fixture lives in this server repository at
+`Codigo/Tests/fixtures/native_pymmo_housing_peer.py`. Set
+`HOUSING_TEST_PYMMO_PEER` to that file, `HOUSING_TEST_PYMMO_ROOT` to an unchanged
+PyMMO checkout, and `HOUSING_TEST_PYTHON` to its native Python executable. No
+PyMMO companion PR or PyMMO source change is included.
