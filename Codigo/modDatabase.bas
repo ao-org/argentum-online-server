@@ -82,6 +82,7 @@ End Sub
 
 Public Sub Database_Close()
     On Error GoTo Database_Close_Err
+    Call HousingDbClose()
     If Connection.State <> adStateClosed Then
         Call Connection.Close
     End If

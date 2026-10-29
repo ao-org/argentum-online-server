@@ -150,6 +150,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
         If Unit_Network_Aurora.CaptureGuildPacket() Then Exit Sub
         If Unit_NpcCrossMapPursuit.CaptureAdjacentPacket(sndRoute, sndIndex, Queued) Then Exit Sub
         If Unit_NpcBow.CapturePacket(sndRoute, sndIndex, Queued) Then Exit Sub
+        If Unit_Housing.CaptureHousingPacket() Then Exit Sub
         If Unit_InventoryDestruction.CapturePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureAttributePacket(sndRoute, sndIndex) Then Exit Sub
         If Unit_General.CaptureTorchPacket(sndRoute, sndIndex) Then Exit Sub
@@ -792,6 +793,7 @@ SendToNpcArea_Err:
 
 Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ParamArray Args() As Variant)
     #If UNIT_TEST = 1 Then
+        If Unit_Housing.CaptureHousingPacket() Then Exit Sub
         If Unit_Traps.CapturePacket(-1, 0) Then Exit Sub
     #End If
     On Error GoTo SendToAreaByPos_Err

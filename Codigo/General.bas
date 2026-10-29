@@ -503,6 +503,11 @@ Sub Main()
     #End If
 
     #If UNIT_TEST = 1 Then
+        If LCase$(Trim$(Command$)) = "--test-housing" Then
+            Call Unit_Housing.RunHousingTests()
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
         If LCase$(Trim$(Command$)) = "--test-npc-respawn" Then
             Call Unit_NpcBow.InitializeTestWorld()
             Call Unit_NpcCrossMapPursuit.TestNpcRespawnEffects()
@@ -967,6 +972,9 @@ Sub Main()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LoadAdjacentTopology")
     #End If
+    If Not HousingInitialize(HousingConnectionString(), App.Path & "\HousingRegions.csv") Then
+        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/regions could not be validated"
+    End If
     Call LoadAdjacentTopology
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER LoadAdjacentTopology")
@@ -1309,6 +1317,9 @@ Sub Restart()
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
+    If Not HousingInitialize(HousingConnectionString(), App.Path & "\HousingRegions.csv") Then
+        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/regions could not be validated"
+    End If
     Call LoadAdjacentTopology
     Call CargarHechizos
     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))

@@ -497,6 +497,11 @@ Dim tStr                        As String
         Call WriteIntervals(UserIndex)
         Call UpdateUserInv(True, UserIndex, 0)
         Call UpdateUserHechizos(True, UserIndex, 0)
+        If Not HousingRefreshLogin(UserIndex) Then
+            Call WriteShowMessageBox(UserIndex, MSG_ERROR_EN_EL_PERSONAJE_COMUNIQUESE_CON_EL_STAFF, vbNullString)
+            Call CloseSocket(UserIndex)
+            Exit Function
+        End If
         Call EnviarLlaves(UserIndex)
         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
         If .flags.Inmovilizado Then Call WriteInmovilizaOK(UserIndex)
@@ -511,6 +516,13 @@ Dim tStr                        As String
             HomeCityId = e_City.cUllathorpe
         End If
   
+        ' Former owners and visitors may have an old saved position inside a house.
+        ' Correct only the live login position; ordinary character saves remain unchanged.
+        If HousingLoginNeedsHome(UserIndex) Then
+            .pos.Map = Cities(HomeCityId).Map
+            .pos.x = Cities(HomeCityId).x
+            .pos.y = Cities(HomeCityId).y
+        End If
         If Not MapaValido(.pos.Map) Then
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x

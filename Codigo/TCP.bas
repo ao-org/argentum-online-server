@@ -437,6 +437,7 @@ End Sub
 Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocketSL", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo CloseSocketSL_Err
     Call ClearNpcBow(UserIndex)
+    Call HousingResetSession(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
         Call LogDisconnectDiag(Source, "CloseSocketSL", UserIndex, UserList(UserIndex).ConnectionDetails.ConnID, Reason, PacketId, PacketName, PacketCount, Extra)

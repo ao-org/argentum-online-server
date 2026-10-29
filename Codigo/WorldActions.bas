@@ -651,6 +651,7 @@ Private Function ResolveHooDoorDestination(ByVal CurrentObjIndex As Integer, ByV
 End Function
 
 Private Function UserHasMatchingHooDoorKey(ByVal UserIndex As Integer, ByVal DoorObjIndex As Integer) As Boolean
+    If Not HousingDoorAccess(UserIndex, DoorObjIndex) Then Exit Function
     If ObjData(DoorObjIndex).clave = 0 Then Exit Function
     Dim Slot As Integer
     Dim KeyObjIndex As Integer

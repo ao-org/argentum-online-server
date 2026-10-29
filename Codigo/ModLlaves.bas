@@ -134,6 +134,11 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         Exit Sub
     End If
 
+    If Not HousingDoorAccess(UserIndex, currentTileObjIndex) Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Exit Sub
+    End If
+
     ' Validar que la llave coincida
     If TargObj.clave <> LlaveObj.clave Then
         Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)

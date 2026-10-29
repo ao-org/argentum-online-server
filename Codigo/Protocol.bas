@@ -932,6 +932,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
         Case ClientPacketID.eHooBowSubscribe
             Call HandleNpcBowSubscribe(UserIndex, reader)
+        Case ClientPacketID.eHousingRequest
+            Call HandleHousingRequest(UserIndex, reader)
         Case ClientPacketID.eHooBowAttack
             Call HandleNpcBowAttack(UserIndex, reader)
             #If PYMMO = 0 Then

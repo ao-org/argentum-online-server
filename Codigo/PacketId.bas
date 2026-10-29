@@ -255,6 +255,7 @@ Public Enum ServerPacketID
     eAdjacentPlayerUpsert
     eAdjacentPlayerRemove
     eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
+    eHousingResult ' 221 with PYMMO=1; ordinary-house status/mutation result.
     eMaxPacket
     [PacketCount]
 End Enum
@@ -585,6 +586,7 @@ Public Enum ClientPacketID
     eHooInventoryDestructionConfirm ' 314 with PYMMO=1.
     eHooBowSubscribe ' 315 with PYMMO=1.
     eHooBowAttack ' 316 with PYMMO=1.
+    eHousingRequest ' 317 with PYMMO=1; authenticated world housing.
     eMaxPacket
     [PacketCount]
 End Enum

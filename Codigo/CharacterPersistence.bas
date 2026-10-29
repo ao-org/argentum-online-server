@@ -40,11 +40,16 @@ Private Function db_load_house_key(ByRef User As t_User) As Boolean
             Dim LoopC As Integer
             LoopC = 1
             While Not RS.EOF
+                If LoopC > MAXKEYS Then
+                    Call RS.Close()
+                    Err.Raise vbObjectError + 726, "Housing", "Account keyring exceeds capacity"
+                End If
                 .Keys(LoopC) = RS!key_obj
                 LoopC = LoopC + 1
                 RS.MoveNext
                 db_load_house_key = True
             Wend
+            Call RS.Close()
         End If
     End With
 End Function

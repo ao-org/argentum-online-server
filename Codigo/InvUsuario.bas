@@ -2579,6 +2579,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 TargObj = ObjData(.flags.TargetObj)
                 '¿El objeto clickeado es una puerta?
                 If TargObj.OBJType = e_OBJType.otDoors Then
+                    If Not HousingDoorAccess(UserIndex, .flags.TargetObj) Then
+                        Call WriteLocaleMsg(UserIndex, MSG_NO_LLAVE_SIRVE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+                        Exit Sub
+                    End If
                     If TargObj.clave < 1000 Then
                         'Msg896= Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.
                         Call WriteLocaleMsg(UserIndex, MSG_LLAVES_INVENTARIO_ESTAN_DESACTIVADAS_SOLO_PERMITEN_LLAVERO, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
