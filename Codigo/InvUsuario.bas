@@ -973,6 +973,7 @@ Sub DesequiparSkin(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 Dim obj                         As t_ObjData
 Dim eSkinType                   As e_OBJType
+Dim spellIndex                  As Integer
 
     On Error GoTo DesequiparSkin_Error
     
@@ -1004,8 +1005,16 @@ Dim eSkinType                   As e_OBJType
                 End If
                 
             Case e_OBJType.otSkinsSpells
-               .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = 0
-               .Invent_Skins.Object(Slot).Equipped = False
+                spellIndex = obj.HechizoIndex
+                If spellIndex >= LBound(.Stats.UserSkinsHechizos) And spellIndex <= UBound(.Stats.UserSkinsHechizos) Then
+                    'Solo limpiamos si el FX activo es el de esta skin (evita borrar el de otra skin del mismo hechizo).
+                    If .Stats.UserSkinsHechizos(spellIndex) = obj.CreaFX Then
+                        .Stats.UserSkinsHechizos(spellIndex) = 0
+                    End If
+                End If
+                'Las skins de hechizo no cambian la apariencia del personaje: no hace falta ChangeUserChar.
+                Call WriteChangeSkinSlot(UserIndex, eSkinType, Slot)
+                Exit Sub
 
             Case e_OBJType.otSkinsHelmets
                 If .Invent_Skins.ObjIndexHelmetEquipped < 1 Then Exit Sub
@@ -3750,6 +3759,7 @@ Dim nuevoCasco                  As Integer
 Dim i                           As Integer
 Dim obj                         As t_ObjData
 Dim eSkinType                   As e_OBJType
+Dim spellIndex                  As Integer
 
     On Error GoTo SkinEquip_Error:
 
@@ -3791,11 +3801,19 @@ Dim eSkinType                   As e_OBJType
                 End If
 
             Case e_OBJType.otSkinsSpells
-                'Buscamos otros skins de este mismo hechizo equipados y lo desequipamos.
+                spellIndex = obj.HechizoIndex
+                'Validamos que el hechizo de la skin entre en el array antes de marcar nada como equipado.
+                If spellIndex < LBound(.Stats.UserSkinsHechizos) Or spellIndex > UBound(.Stats.UserSkinsHechizos) Then
+                    Call Logging.TraceError(9, "HechizoIndex invalido=" & spellIndex & " ObjIndex=" & ObjIndex, "InvUsuario.SkinEquip", Erl())
+                    Exit Sub
+                End If
+
+                'Desequipamos la skin que esté equipada para este mismo hechizo (solo las equipadas y no borradas).
                 For i = 1 To MAX_SKINSINVENTORY_SLOTS
-                    If .Invent_Skins.Object(i).ObjIndex > 0 Then
-                        If ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType = e_OBJType.otSkinsSpells Then
-                            If ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex = ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex And Slot <> i Then
+                    If i <> Slot And .Invent_Skins.Object(i).Equipped And Not .Invent_Skins.Object(i).Deleted Then
+                        If .Invent_Skins.Object(i).ObjIndex > 0 Then
+                            If ObjData(.Invent_Skins.Object(i).ObjIndex).OBJType = e_OBJType.otSkinsSpells And _
+                               ObjData(.Invent_Skins.Object(i).ObjIndex).HechizoIndex = spellIndex Then
                                 Call DesequiparSkin(UserIndex, i)
                                 Exit For
                             End If
@@ -3803,13 +3821,10 @@ Dim eSkinType                   As e_OBJType
                     End If
                 Next i
 
-                'Equipamos ahora nuestro nuevo skin
+                'Equipamos la nueva skin
                 .Invent_Skins.Object(Slot).Equipped = True
                 .Invent_Skins.Object(Slot).Type = e_OBJType.otSkinsSpells
-
-                If ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex > 0 Then
-                    .Stats.UserSkinsHechizos(ObjData(.Invent_Skins.Object(Slot).ObjIndex).HechizoIndex) = ObjData(.Invent_Skins.Object(Slot).ObjIndex).CreaFX
-                End If
+                .Stats.UserSkinsHechizos(spellIndex) = obj.CreaFX
 
             Case e_OBJType.otSkinsHelmets
             
