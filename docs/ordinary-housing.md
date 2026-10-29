@@ -36,7 +36,7 @@ Lock contention returns Busy. This is a synchronous bounded operation; it does
 not yield, use DoEvents, or retain transactions between loop iterations.
 
 Inside the write transaction, ownership, entitlement, the expected old key,
-minimum period, target availability, interior/threshold occupancy and every
+minimum period, target availability, door-threshold occupancy and every
 loaded account character's key capacity are checked before writes. Exchange
 releases A and assigns B atomically with exact affected-row checks. Rollback does
 not apply prepared key changes. A commit error is not represented as confirmed
@@ -51,40 +51,25 @@ are sent. Physical inventory keys and both keyring/HOO key routes consult the
 in-memory ordinary ownership cache, without per-door SQL. Ordinary unlocked-door
 interaction remains available to guests.
 
-Before admitting a login, authoritative keys are refreshed. A former owner or
-visitor saved inside a mapped ordinary interior returns to their validated home
-city in memory, using existing placement validation. Normal later character saves
-persist that position. No character-save SQL or `is_logged` behavior changes.
+Before admitting a login, authoritative keys are refreshed. There is no housing-specific
+login relocation. Character-save SQL and `is_logged` remain unchanged.
 
-## Explicit region coverage
+## Doors from existing world data
 
-`HousingRegions.csv` is required beside the server executable. Runtime map and
-resource identities are separate columns and must match the loaded world. `D`
-rows identify door anchors and the locked variant; `R` rows are explicit interior
-tile runs. There is no runtime flood fill, map-range heuristic, or name matching.
+No housing CSV or new resource configuration is required. At startup the server
+matches ordinary catalogue key lock codes to existing door objects on loaded maps.
+It validates the open/closed/locked variants and threshold bounds and records all
+matching entrances, bounded to 4096 doors. Houses without a validated installed
+entrance remain unavailable for in-game acquisition/release/exchange.
 
-Initial verified coverage:
-
-| Key | Main map / door | Main interior | Basement resource |
-| --- | --- | --- | --- |
-| 54 | 1 / (60,23) | x54–61, y18–23 | 603, explicit top-left room |
-| 65 | 1 / (50,23) | x44–51, y18–23 | 602, explicit top-left room |
-| 69 | 1 / (40,23) | x34–41, y18–23 | 601, explicit top-left room |
-| 73 | 1 / (45,40) | x39–46, y35–40 | 600, explicit top-left room |
-
-Each basement contains several independent properties: the entire basement map
-is **not** assigned to one house. Audited room exits return through the existing
-return-position mechanism. The offline audit checked directional walk boundaries,
-all doors, both interior exits and incoming links. Runtime validation checks map
-identity/bounds, non-overlapping interiors, door variant/lock consistency and
-coverage of every installed door using each mapped key.
-
-Other ordinary houses remain in the catalogue but are not actionable through
-this first in-game mapping. Unsafe unmapped release/exchange is Unavailable.
-Expand coverage only with independently verified interiors and associated doors.
-Occupants (owners, guests and retained logout users) and occupied thresholds block
-release/exchange. Successful changes close and lock old doors through existing
-collision and broadcast paths. There is no forced evacuation.
+Release/exchange checks the existing door thresholds for players and NPCs,
+including retained player slots, before closing and locking the old doors through
+existing collision and broadcast paths. No interior or basement boundaries are
+inferred. Interior occupancy checks and former-owner/visitor login relocation were
+removed at the requested scope change: a house can be released while someone is
+inside, provided the door thresholds are clear. Saved interior positions remain
+subject only to the existing general login validation. This is not interior
+occupancy protection or evacuation support.
 
 ## World wire contract
 
@@ -118,7 +103,7 @@ requires status before another mutation after an uncertain/lost response.
 
 Deploy the matching world server and HOO together. PyMMO source, authentication,
 first claims and payments are unchanged by this PR. Validate the consolidated
-schema (nullable house owner), catalogue objects and region resource identities on
+schema (nullable house owner), catalogue objects and installed door variants on
 a staging copy/disposable database. Do not rerun old consolidation migrations.
 Back up deployment configuration through the normal operator process; this feature
 does not copy, migrate or edit production data automatically.
@@ -187,8 +172,8 @@ rows because this driver's forward-only text fields fail when accessed twice.
 Coverage includes exact inclusive 72-hour SQL comparison, before-boundary denial,
 reconnect/reopen, expired entitlement, duplicate/payload mismatch and slot reuse,
 exchange rollback, injected pre-commit failure and lost post-commit reply,
-failed-status uncertainty retention, key capacity/cleared slots/castles, occupants,
-thresholds, locked-door normalization, login interior classification, and actual
+failed-status uncertainty retention, key capacity/cleared slots/castles, occupied
+thresholds, locked-door normalization, interior occupants remaining in place, and actual
 native writer packet export and all three real key-use rejection paths. No synthetic timing result is described as proof of a
 production transaction failure. Full resource-dependent world startup and a live
 client exchange/relog were not run; follow the staging smoke above before rollout.
@@ -199,3 +184,16 @@ The native concurrency fixture lives in this server repository at
 `HOUSING_TEST_PYMMO_PEER` to that file, `HOUSING_TEST_PYMMO_ROOT` to an unchanged
 PyMMO checkout, and `HOUSING_TEST_PYTHON` to its native Python executable. No
 PyMMO companion PR or PyMMO source change is included.
+
+## CSV removal validation
+
+The region file, parser and housing-specific login relocation were removed.
+Door discovery uses existing loaded map objects; interior occupants are not checked.
+Native VB6 housing tests passed 26/26 for each PYMMO variant, including discovery
+of multiple entrances, threshold blocking, interior guests remaining in place,
+and the unchanged 72-hour rule. Native Windows builds cover PYMMO=0/1 and
+UNIT_TEST=0/1. HOO changes in this follow-up are documentation and EN/ES message
+text only: the existing native test executable was rerun (395 passed, one optional
+visual test skipped); localization JSON validation passed. The full HOO suite and
+live client/server smoke were not rerun for this follow-up. Earlier full-suite
+failures above remain unresolved. No real database or PyMMO source was changed.

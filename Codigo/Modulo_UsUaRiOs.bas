@@ -516,13 +516,6 @@ Dim tStr                        As String
             HomeCityId = e_City.cUllathorpe
         End If
   
-        ' Former owners and visitors may have an old saved position inside a house.
-        ' Correct only the live login position; ordinary character saves remain unchanged.
-        If HousingLoginNeedsHome(UserIndex) Then
-            .pos.Map = Cities(HomeCityId).Map
-            .pos.x = Cities(HomeCityId).x
-            .pos.y = Cities(HomeCityId).y
-        End If
         If Not MapaValido(.pos.Map) Then
             .pos.Map = Cities(HomeCityId).Map
             .pos.x = Cities(HomeCityId).x

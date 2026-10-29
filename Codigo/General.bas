@@ -972,8 +972,8 @@ Sub Main()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LoadAdjacentTopology")
     #End If
-    If Not HousingInitialize(HousingConnectionString(), App.Path & "\HousingRegions.csv") Then
-        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/regions could not be validated"
+    If Not HousingInitialize(HousingConnectionString()) Then
+        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/doors could not be validated"
     End If
     Call LoadAdjacentTopology
     #If UNIT_TEST = 1 Then
@@ -1317,8 +1317,8 @@ Sub Restart()
     Call LoadRecursosEspeciales
     Call LoadTreeGraphics
     Call LoadMapData
-    If Not HousingInitialize(HousingConnectionString(), App.Path & "\HousingRegions.csv") Then
-        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/regions could not be validated"
+    If Not HousingInitialize(HousingConnectionString()) Then
+        Err.Raise vbObjectError + 725, "Housing", "Housing catalogue/doors could not be validated"
     End If
     Call LoadAdjacentTopology
     Call CargarHechizos

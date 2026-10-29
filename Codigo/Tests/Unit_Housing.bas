@@ -2,7 +2,7 @@ Attribute VB_Name = "Unit_Housing"
 Option Explicit
 #If UNIT_TEST = 1 Then
 Private fixtureConnection As ADODB.Connection
-Private fixturePath As String, regionPath As String
+Private fixturePath As String
 Private capturing As Boolean
 Private clearPackets As Long
 Private lastPacket() As Byte
@@ -33,9 +33,8 @@ Private Function Scalar(ByVal text As String) As Variant
 End Function
 
 Private Sub Fixture()
-    Dim fs As New Scripting.FileSystemObject, f As Integer, k As Long, o As Long
+    Dim fs As New Scripting.FileSystemObject, k As Long, o As Long
     fixturePath = fs.BuildPath(fs.GetSpecialFolder(2), fs.GetTempName()) & ".sqlite"
-    regionPath = fixturePath & ".csv"
     Set fixtureConnection = New ADODB.Connection
     fixtureConnection.ConnectionString = "DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath & ";Timeout=1;"
     Call fixtureConnection.Open()
@@ -64,13 +63,6 @@ Private Sub Fixture()
         Next
         MapData(k, 20, 1).ObjInfo.ObjIndex = k + 3
     Next
-    f = FreeFile
-    Open regionPath For Output As #f
-    Print #f, "10,D,1,1,10,20,10,20,13"
-    Print #f, "10,R,1,1,9,18,11,20,0"
-    Print #f, "20,D,1,1,20,20,20,20,23"
-    Print #f, "20,R,1,1,19,18,21,20,0"
-    Close #f
     For k = 1 To 3
         UserList(k).Id = 100 + k: UserList(k).AccountID = 1
         UserList(k).VersionId = k: UserList(k).pos.Map = 1
@@ -78,7 +70,7 @@ Private Sub Fixture()
         UserList(k).Keys(1) = 30
         Call HousingResetSession(CInt(k))
     Next
-    Call Expect(HousingInitialize("DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath, regionPath), "initialize synthetic catalogue/regions")
+    Call Expect(HousingInitialize("DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath), "initialize synthetic catalogue/doors")
     HousingTestFailAfterRelease = False: HousingTestFailBeforeCommit = False: HousingTestLoseCommitReply = False
     clearPackets = 0: HousingTestLastError = ""
 End Sub
@@ -90,7 +82,6 @@ Private Sub Cleanup()
     Set fixtureConnection = Nothing
     ' Only paths created by this fixture, never a configured world database.
     If Len(fixturePath) > 0 Then Kill fixturePath
-    If Len(regionPath) > 0 Then Kill regionPath
     If Len(fixturePath) > 0 Then
         Kill fixturePath & ".ready"
         Kill fixturePath & ".release"
@@ -146,19 +137,17 @@ Private Sub TestCase(ByVal n As Long)
         Call Expect(Attempt(HousingClaim, 0, 20, reply) = HousingOkay, "claim after lawful release has no account cooldown")
     Case 6
         Call MatureOwner()
-        UserList(3).AccountID = 2: UserList(3).pos.x = 10: UserList(3).pos.y = 19
-        Call Expect(Attempt(HousingRelease, 10, 0, reply) = HousingOccupied, "guest inside")
-        UserList(3).pos.y = 21
+        UserList(3).AccountID = 2: UserList(3).pos.x = 10: UserList(3).pos.y = 21
         Call Expect(Attempt(HousingRelease, 10, 0, reply) = HousingOccupied, "door threshold")
     Case 7
         Call MatureOwner()
         UserList(1).pos.x = 10: UserList(1).pos.y = 19
-        Call Expect(Not HousingLoginNeedsHome(1), "valid owner")
         UserList(1).AccountID = 2
-        Call Expect(HousingLoginNeedsHome(1), "visitor/former owner")
         Call Expect(Not HousingDoorAccess(1, 13), "stale key denied")
         Call Expect(HousingDoorAccess(2, 13), "current owner allowed")
         Call Expect(HousingDoorAccess(1, 31), "unrelated key unaffected")
+        Call Expect(Attempt(HousingRelease, 10, 0, reply) = HousingOkay, "interior guest does not block release")
+        Call Expect(UserList(1).pos.x = 10 And UserList(1).pos.y = 19, "no interior relocation")
     Case 8
         Call Expect(Attempt(HousingClaim, 0, 10, reply, 3) = HousingIneligible, "acquisition entitlement")
         Call MatureOwner()
@@ -223,8 +212,11 @@ Private Sub TestCase(ByVal n As Long)
     Case 17
         Call MatureOwner()
         MapData(10, 20, 1).ObjInfo.ObjIndex = 11
+        MapData(30, 20, 1).ObjInfo.ObjIndex = 11
+        Call Expect(HousingInitialize("DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath), "discover multiple entrances without external configuration")
         Call Expect(Attempt(HousingRelease, 10, 0, reply) = HousingOkay, "release open house")
         Call Expect(MapData(10, 20, 1).ObjInfo.ObjIndex = 13, "closed locked variant")
+        Call Expect(MapData(30, 20, 1).ObjInfo.ObjIndex = 13, "second discovered entrance also locked")
         Call Expect((MapData(10, 20, 1).Blocked And e_Block.NORTH) <> 0, "door collision")
         Call Expect((MapData(9, 21, 1).Blocked And e_Block.SOUTH) <> 0, "paired threshold collision")
     Case 18
@@ -261,7 +253,7 @@ Private Sub TestCase(ByVal n As Long)
         Call Expect(Attempt(HousingClaim, 0, 10, reply) = HousingOkay, "claim before restart")
         oldTimestamp = CStr(Scalar("SELECT assigned_at FROM house_key WHERE key_obj=10"))
         Call HousingDbClose()
-        Call Expect(HousingInitialize("DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath, regionPath), "new connection")
+        Call Expect(HousingInitialize("DRIVER={SQLite3 ODBC Driver};Database=" & fixturePath), "new connection")
         Call Expect(Attempt(HousingRelease, 10, 0, reply) = HousingMinimumPeriod, "restart retains period")
         Call Expect(Scalar("SELECT assigned_at FROM house_key WHERE key_obj=10") = oldTimestamp, "restart timestamp stable")
     Case 23, 24

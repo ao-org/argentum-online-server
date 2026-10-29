@@ -1,15 +1,11 @@
 Attribute VB_Name = "modHousingWorld"
 Option Explicit
 
-Private Type t_HousingRegion
+Private Type t_HousingDoor
     Key As Integer
-    Door As Boolean
     Map As Integer
-    Resource As Integer
     X1 As Integer
     Y1 As Integer
-    X2 As Integer
-    Y2 As Integer
     LockedObject As Integer
 End Type
 Private Type t_HousingKeyPlan
@@ -20,14 +16,14 @@ End Type
 Private ordinaryOwners As Object
 Private blockedAccounts As Object
 Private doorKeys() As Integer
-Private regions() As t_HousingRegion
-Private regionCount As Long
+Private doors() As t_HousingDoor
+Private doorCount As Long
 Private mappedKeys As Object
 Private plans() As t_HousingKeyPlan
 Private planCount As Long
 Private ready As Boolean
 
-Public Function HousingInitialize(ByVal connectionString As String, ByVal regionFile As String) As Boolean
+Public Function HousingInitialize(ByVal connectionString As String) As Boolean
     On Error GoTo Failed
     ready = False
     Set ordinaryOwners = CreateObject("Scripting.Dictionary")
@@ -59,7 +55,7 @@ Public Function HousingInitialize(ByVal connectionString As String, ByVal region
             If lockKeys.Exists(CStr(ObjData(obj).clave)) Then doorKeys(obj) = lockKeys(CStr(ObjData(obj).clave))
         End If
     Next
-    Call LoadRegions(regionFile)
+    Call LoadDoors()
     ready = True
     HousingInitialize = True
     Exit Function
@@ -73,60 +69,13 @@ Failed:
 #End If
 End Function
 
-Private Sub LoadRegions(ByVal path As String)
-    On Error GoTo Failed
-    Dim f As Integer, opened As Boolean, line As String, fields() As String
-    Dim r As t_HousingRegion, i As Long, j As Long, hasDoor As Boolean, hasInterior As Boolean
-    regionCount = 0
-    ReDim regions(1 To 4096)
-    f = FreeFile
-    Open path For Input As #f
-    opened = True
-    Do While Not EOF(f)
-        Line Input #f, line
-        line = Trim$(line)
-        If Len(line) > 0 Then
-            If Left$(line, 1) <> "#" Then
-                fields = Split(line, ",")
-                If UBound(fields) <> 8 Or regionCount = 4096 Then Err.Raise 5, "Housing", "Invalid region row"
-                r.Key = CInt(fields(0)): r.Door = (fields(1) = "D")
-                If fields(1) <> "D" And fields(1) <> "R" Then Err.Raise 5
-                r.Map = CInt(fields(2)): r.Resource = CInt(fields(3))
-                r.X1 = CInt(fields(4)): r.Y1 = CInt(fields(5))
-                r.X2 = CInt(fields(6)): r.Y2 = CInt(fields(7)): r.LockedObject = CInt(fields(8))
-                If Not ordinaryOwners.Exists(CStr(r.Key)) Then Err.Raise 5, "Housing", "Region key missing from ordinary catalogue"
-                If Not InMapBounds(r.Map, r.X1, r.Y1) Or Not InMapBounds(r.Map, r.X2, r.Y2) Then Err.Raise 5, "Housing", "Region outside map"
-                If MapInfo(r.Map).MapResource <> r.Resource Or r.X1 > r.X2 Or r.Y1 > r.Y2 Then Err.Raise 5, "Housing", "Invalid map mapping"
-                If r.Door Then
-                    If r.X1 <> r.X2 Or r.Y1 <> r.Y2 Then Err.Raise 5
-                    If Not InMapBounds(r.Map, r.X1 - 1, r.Y1 + 1) Then Err.Raise 5
-                    If Not ValidDoor(r) Then Err.Raise 5, "Housing", "Invalid door variants"
-                ElseIf r.LockedObject <> 0 Then
-                    Err.Raise 5
-                End If
-                For j = 1 To regionCount
-                    If Not r.Door And Not regions(j).Door And r.Map = regions(j).Map And r.Key <> regions(j).Key Then
-                        If r.X1 <= regions(j).X2 And r.X2 >= regions(j).X1 And r.Y1 <= regions(j).Y2 And r.Y2 >= regions(j).Y1 Then Err.Raise 5, "Housing", "Overlapping property regions"
-                    End If
-                Next
-                regionCount = regionCount + 1: regions(regionCount) = r
-            End If
-        End If
-    Loop
-    Close #f
-    opened = False
-    For i = 1 To regionCount
-        hasDoor = False: hasInterior = False
-        For j = 1 To regionCount
-            If regions(j).Key = regions(i).Key Then
-                If regions(j).Door Then hasDoor = True Else hasInterior = True
-            End If
-        Next
-        If Not hasDoor Or Not hasInterior Then Err.Raise 5, "Housing", "Incomplete property mapping"
-        mappedKeys(CStr(regions(i).Key)) = True
-    Next
-    ' Every installed door using these keys must be represented, not merely one entrance.
-    Dim m As Long, x As Long, y As Long, obj As Long, found As Boolean
+Private Sub LoadDoors()
+    ' Discover actual entrances from existing map objects and catalogue lock codes.
+    ' No interior boundaries are inferred from doors, exits or map numbers.
+    Dim m As Long, x As Long, y As Long, obj As Long
+    Dim door As t_HousingDoor
+    doorCount = 0
+    ReDim doors(1 To 4096)
     For m = 1 To NumMaps
         If MapInfo(m).MapResource <> 0 Then
             For y = 1 To 100
@@ -134,12 +83,15 @@ Private Sub LoadRegions(ByVal path As String)
                     If InMapBounds(CInt(m), CInt(x), CInt(y)) Then
                         obj = MapData(x, y, m).ObjInfo.ObjIndex
                         If obj > 0 And obj <= UBound(doorKeys) Then
-                            If mappedKeys.Exists(CStr(doorKeys(obj))) Then
-                                found = False
-                                For i = 1 To regionCount
-                                    If regions(i).Door And regions(i).Map = m And regions(i).X1 = x And regions(i).Y1 = y And regions(i).Key = doorKeys(obj) Then found = True
-                                Next
-                                If Not found Then Err.Raise 5, "Housing", "Unmapped additional door"
+                            If doorKeys(obj) <> 0 Then
+                                If doorCount = 4096 Then Err.Raise 5, "Housing", "Too many house doors"
+                                door.Key = doorKeys(obj): door.Map = m
+                                door.X1 = x: door.Y1 = y
+                                door.LockedObject = ObjData(obj).IndexCerradaLlave
+                                If Not InMapBounds(CInt(m), CInt(x - 1), CInt(y + 1)) Then Err.Raise 5, "Housing", "Invalid door threshold"
+                                If Not ValidDoor(door) Then Err.Raise 5, "Housing", "Invalid house door variants"
+                                doorCount = doorCount + 1: doors(doorCount) = door
+                                mappedKeys(CStr(door.Key)) = True
                             End If
                         End If
                     End If
@@ -147,15 +99,9 @@ Private Sub LoadRegions(ByVal path As String)
             Next
         End If
     Next
-    Exit Sub
-Failed:
-    Dim number As Long, detail As String
-    number = Err.Number: detail = Err.Description
-    If opened Then Close #f
-    Err.Raise number, "Housing regions", detail
 End Sub
 
-Private Function ValidDoor(ByRef r As t_HousingRegion) As Boolean
+Private Function ValidDoor(ByRef r As t_HousingDoor) As Boolean
     Dim ids(1 To 3) As Integer, i As Long, obj As Integer
     obj = r.LockedObject
     If obj < 1 Or obj > UBound(ObjData) Then Exit Function
@@ -264,31 +210,12 @@ Public Sub HousingBlockAccount(ByVal accountId As Long)
     Call LogError("Housing reconciliation unresolved; ordinary key access blocked until authoritative status/login refresh")
 End Sub
 
-Public Function HousingInteriorKey(ByRef pos As t_WorldPos) As Integer
-    Dim i As Long
-    For i = 1 To regionCount
-        With regions(i)
-            If Not .Door And .Map = pos.Map Then
-                If pos.x >= .X1 And pos.x <= .X2 And pos.y >= .Y1 And pos.y <= .Y2 Then
-                    HousingInteriorKey = .Key
-                    Exit Function
-                End If
-            End If
-        End With
-    Next
-End Function
-
 Public Function HousingCanVacate(ByVal key As Integer) As Boolean
     Dim u As Long, i As Long, x As Long, y As Long
-    For u = LBound(UserList) To UBound(UserList)
-        If UserList(u).Id > 0 Then
-            If HousingInteriorKey(UserList(u).pos) = key Then Exit Function
-        End If
-    Next
-    For i = 1 To regionCount
-        With regions(i)
-            If .Key = key And .Door Then
-                If Not ValidDoor(regions(i)) Then Exit Function
+    For i = 1 To doorCount
+        With doors(i)
+            If .Key = key Then
+                If Not ValidDoor(doors(i)) Then Exit Function
                 For y = .Y1 To .Y1 + 1
                     For x = .X1 - 1 To .X1
                         If MapData(x, y, .Map).UserIndex <> 0 Or MapData(x, y, .Map).NpcIndex <> 0 Then Exit Function
@@ -305,9 +232,9 @@ End Function
 
 Public Sub HousingCloseDoors(ByVal key As Integer)
     Dim i As Long
-    For i = 1 To regionCount
-        With regions(i)
-            If .Key = key And .Door Then
+    For i = 1 To doorCount
+        With doors(i)
+            If .Key = key Then
                 MapData(.X1, .Y1, .Map).ObjInfo.ObjIndex = .LockedObject
                 Call BloquearPuerta(.Map, .X1, .Y1, True)
                 Call modSendData.SendToAreaByPos(.Map, .X1, .Y1, PrepareMessageObjectCreate(.LockedObject, MapData(.X1, .Y1, .Map).ObjInfo.amount, .X1, .Y1))
@@ -320,11 +247,4 @@ Public Function HousingRefreshLogin(ByVal userIndex As Integer) As Boolean
     Dim request As t_HousingRequest, reply As t_HousingReply
     request.Operation = HousingCatalogue
     HousingRefreshLogin = (HousingDbOperation(UserList(userIndex).AccountID, request, reply) = HousingOkay)
-End Function
-
-Public Function HousingLoginNeedsHome(ByVal userIndex As Integer) As Boolean
-    Dim key As Integer
-    key = HousingInteriorKey(UserList(userIndex).pos)
-    If key = 0 Then Exit Function
-    HousingLoginNeedsHome = (ordinaryOwners(CStr(key)) <> UserList(userIndex).AccountID)
 End Function
