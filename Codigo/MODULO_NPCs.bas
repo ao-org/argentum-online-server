@@ -665,8 +665,8 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                         0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, _
                         .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Numero, queued)
             creationQueued = queued
-            If queued Then Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eQuestKillEligible, Not IsValidUserRef(.MaestroUser)))
             If queued Then Call NpcBowCharacterCreated(sndIndex, NpcIndex, body)
+            If queued Then Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eQuestKillEligible, Not IsValidUserRef(.MaestroUser)))
             If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
                 Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.charindex, e_CharValue.eDontBlockTile, True))
             End If
