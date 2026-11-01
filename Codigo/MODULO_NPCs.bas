@@ -2654,6 +2654,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
             End If
         End With
     Next i
+    Call RefreshNpcInspection(UserIndex)
     Exit Sub
 OnNpcKilledUpdateQuest_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)

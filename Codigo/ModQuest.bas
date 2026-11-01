@@ -323,6 +323,7 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         .Dirty = True ' Quest slot changed: quest removed/reset.
         UserList(UserIndex).flags.ModificoQuests = True
     End With
+    Call RefreshNpcInspection(UserIndex)
     Exit Sub
 CleanQuestSlot_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
