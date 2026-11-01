@@ -46,7 +46,7 @@ End Function
 Private Function ThreatFor(ByVal userIndex As Integer, ByVal npcIndex As Integer) As Byte
     With NpcList(npcIndex)
         If .Hostile = 0 Or .Attackable = 0 Or .MaestroUser.ArrayIndex <> 0 Then Exit Function
-        If .flags.LanzaSpells > 0 Then Exit Function
+        If .flags.LanzaSpells > 0 Or .Stats.MaxHit <= 0 Or .Stats.MaxHp <= 0 Or .IntervaloAtaque <= 0 Then Exit Function
         Dim armour As Double, damage As Double
         With UserList(userIndex).invent
             armour = (AverageArmour(.EquippedHelmetObjIndex) + 5# * (AverageArmour(.EquippedArmorObjIndex) + AverageArmour(.EquippedShieldObjIndex))) / 6#
@@ -115,7 +115,8 @@ Public Sub RefreshNpcInspection(ByVal userIndex As Integer)
         End If
         Dim valid As Boolean, npcIndex As Integer
         npcIndex = .npcIndex
-        valid = NpcList(npcIndex).flags.NPCActive And NpcList(npcIndex).VersionId = .npcVersion And _
+        valid = NpcList(npcIndex).flags.NPCActive And NpcList(npcIndex).Stats.MinHp > 0 And NpcList(npcIndex).Char.body > 0 And _
+            NpcList(npcIndex).VersionId = .npcVersion And _
             NpcList(npcIndex).Char.charindex = .characterIndex And NpcList(npcIndex).Numero = .npcNumber And _
             UserList(userIndex).pos.Map = .viewerMap And NpcList(npcIndex).pos.Map = .viewerMap
         If valid Then valid = NpcBowInLoadedArea(userIndex, npcIndex) And NpcList(npcIndex).flags.invisible = 0

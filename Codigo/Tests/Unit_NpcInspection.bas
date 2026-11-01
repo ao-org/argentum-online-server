@@ -30,7 +30,7 @@ Private Sub Fixture()
         .Stats.MaxHp = 100: .Stats.MinHp = 100
     End With
     With NpcList(1)
-        .flags.NPCActive = True: .VersionId = 4
+        .flags.NPCActive = True: .flags.invisible = 0: .VersionId = 4
         .Char.charindex = 2: .Char.body = 1
         .Numero = 10: .pos.Map = 1: .pos.x = 51: .pos.y = 50
         .Stats.MaxHp = 100: .Stats.MinHp = 100: .Stats.MaxHit = 20
@@ -115,12 +115,48 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).QuestStats.Quests(1).QuestIndex = 0
         Call RefreshNpcInspection(1)
         bytes = packets(3): Call Expect(bytes(15) = 1 And bytes(16) = 2, "abandon removes relevance")
+    Case 11
+        NpcList(1).Stats.MaxHit = 0
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(13) = 0, "missing physical damage is unknown")
+    Case 12
+        NpcList(1).Stats.MinHp = 0
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(12) = 0, "dead target is unavailable")
+    Case 13
+        UserList(1).Stats.MaxHp = 200
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(13) = 2, "lasting maximum HP updates threat")
+    Case 14
+        QuestList(1).RequiredNPCs = 33
+        ReDim QuestList(1).RequiredNPC(1 To 33)
+        ReDim UserList(1).QuestStats.Quests(1).NPCsKilled(1 To 33)
+        Dim i As Integer
+        For i = 1 To 33
+            QuestList(1).RequiredNPC(i).NpcIndex = 10
+            QuestList(1).RequiredNPC(i).amount = 8
+        Next i
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(15) = 160 And UBound(bytes) = 367, "bounded snapshot explicitly reports overflow")
+    Case 15
+        rejectQueue = True
+        NpcList(1).flags.invisible = 1
+        Call RefreshNpcInspection(1)
+        rejectQueue = False
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(12) = 0, "failed invalidation enqueue retried")
+    Case 16
+        Call SubscribeNpcInspection(1, 1000, 1, 0, 0)
+        UserList(1).Stats.MaxHp = 200
+        Call RefreshNpcInspection(1)
+        Call Expect(packets.Count = 1, "unsubscribe stops updates")
     End Select
     capturing = False
     Call UnitTesting.RunTest("NPC inspection " & index, True)
     Exit Sub
 Failed:
     capturing = False
+    Call UnitTesting.ProgressError("NPC inspection " & index, Err.Number, Err.Description)
     Call UnitTesting.RunTestError("NPC inspection " & index, Err.Description)
 End Sub
 Public Function TestSuite() As Boolean
@@ -129,7 +165,7 @@ Public Function TestSuite() As Boolean
     Call UnitTesting.RunTest("NPC threat missing data", InspectionThreatBand(0, 10, 2000) = 0 And InspectionThreatBand(100, 0, 2000) = 0)
     Call UnitTesting.RunTest("NPC threat thresholds", InspectionThreatBand(100, 5, 2000) = 1 And InspectionThreatBand(100, 6, 2000) = 2 And InspectionThreatBand(100, 15, 2000) = 3 And InspectionThreatBand(100, 30, 2000) = 4)
     Call UnitTesting.RunTest("NPC threat attack interval", InspectionThreatBand(100, 15, 1000) = 4)
-    For i = 1 To 10
+    For i = 1 To 16
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
