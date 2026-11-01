@@ -2137,10 +2137,12 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
             obj.amount = 1
             obj.ObjIndex = .Stats.NumObj_PezEspecial
             If Not MeterItemEnInventario(UserIndex, obj) Then
+                Call CompleteSpecialGatheringCatch(UserIndex, obj.ObjIndex, False)
                 .Stats.NumObj_PezEspecial = 0
                 .flags.PescandoEspecial = False
                 Exit Function
             End If
+            Call CompleteSpecialGatheringCatch(UserIndex, obj.ObjIndex, True)
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
             'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
             Call WriteLocaleMsg(UserIndex, MSG_FELICITACIONES_PESCADO_PEZ_GRAN_PORTE_OBJDATA_OBJ_OBJINDEX, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, ObjData(obj.ObjIndex).name)

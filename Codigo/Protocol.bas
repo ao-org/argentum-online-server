@@ -368,6 +368,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCraftCarpenter(UserIndex)
         Case ClientPacketID.eWorkLeftClick
             Call HandleWorkLeftClick(UserIndex)
+        Case ClientPacketID.eGatheringStart
+            Call HandleGatheringStart(UserIndex)
         Case ClientPacketID.eStartAutomatedAction
             Call HandleStartAutomatedAction(UserIndex)
         Case ClientPacketID.eCreateNewGuild
@@ -8622,7 +8624,19 @@ Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boo
     End If
 End Function
 
-Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
+Private Sub HandleGatheringStart(ByVal UserIndex As Integer)
+    On Error GoTo Failed
+    If reader.GetAvailable() <> 7 Then Exit Sub
+    Dim request As Long
+    request = reader.ReadInt32()
+    If request <= 0 Then Exit Sub
+    Call HandleStartAutomatedAction(UserIndex, request)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGatheringStart", Erl)
+End Sub
+
+Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer, Optional ByVal feedbackRequest As Long = 0)
     On Error GoTo HandleStartAutomatedAction_Err
     Dim x     As Byte
     Dim y     As Byte
@@ -8630,32 +8644,47 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     x = reader.ReadInt8()
     y = reader.ReadInt8()
     skill = reader.ReadInt8()
+    Dim reason As e_GatheringReason
+    reason = GatheringRestriction
+    If feedbackRequest > 0 Then
+        If skill <> e_Skill.Talar And skill <> e_Skill.Mineria And skill <> e_Skill.Pescar Then Exit Function
+        If Not IsValidMapPosition(UserList(UserIndex).pos.Map, x, y) Then
+            Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, GatheringTarget)
+            Exit Function
+        End If
+    End If
     Select Case skill
         Case e_Skill.Pescar
-            If Not CanUserFish(UserIndex, x, y) Then
+            If Not CanUserFish(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Talar
-            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
-            If Not CanUserExtractWood(UserIndex, x, y) Then
+            If Not CanUserExtractWood(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Mineria
-            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
-            If Not CanUserExtractMinerals(UserIndex, x, y) Then
+            If Not CanUserExtractMinerals(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Smelting
             If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
@@ -8663,7 +8692,10 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
     End Select
+    Call SendGatheringFeedback(UserIndex, GatheringStopped)
     Call StartAutomatedAction(x, y, skill, UserIndex)
+    Call BeginGatheringFeedback(UserIndex, feedbackRequest, skill)
+    Call SendGatheringFeedback(UserIndex, GatheringStarted)
     Call WriteMacroTrabajoToggle(UserIndex, True)
     Exit Function
 HandleStartAutomatedAction_Err:

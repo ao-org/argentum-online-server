@@ -115,6 +115,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         Dim WorkingTool As t_Obj
         WorkingTool.ObjIndex = .invent.EquippedWorkingToolObjIndex
         If Not IsValidObjectIndex(WorkingTool.ObjIndex) Then
+            Call SendGatheringFeedback(UserIndex, GatheringBlocked, GatheringTool)
             Call TraceError(1004, "Invalid fishing tool index: " & WorkingTool.ObjIndex, "modFishing.PerformFishing", Erl)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
@@ -127,6 +128,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             Case e_WorkingToolSubType.FishingNet
                 IsUsingFishingNet = True
             Case Else
+                Call SendGatheringFeedback(UserIndex, GatheringBlocked, GatheringTool)
                 Call TraceError(1004, "Invalid fishing tool index: " & WorkingTool.ObjIndex, "modFishing.PerformFishing", Erl)
                 Call ResetUserAutomatedActions(UserIndex)
                 Exit Sub
@@ -149,6 +151,7 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
         fishingChance = GetFishingChance(.Stats.UserSkills(e_Skill.Pescar))
         caughtFish = RandomNumber(1, 100) <= fishingChance
         If Not caughtFish Then
+            Call SendGatheringFeedback(UserIndex, GatheringFailedRoll)
             Call SendData(ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
             GoTo SkillImprovement
         End If
@@ -194,6 +197,8 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             .flags.PescandoEspecial = True
             .Stats.NumObj_PezEspecial = fishingCatch.ObjIndex
             Call WritePelearConPezEspecial(UserIndex)
+            Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringSpecialFish)
+            Call RememberSpecialGatheringCatch(UserIndex)
             Call ResetUserAutomatedActions(UserIndex)
             Exit Sub
         End If
@@ -224,11 +229,13 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             GoTo SkillImprovement
         End If
         Call SendData(ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(fishingCatch.ObjIndex).GrhIndex))
-        If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
+        If Not InsertGatheredItem(UserIndex, fishingCatch) Then
+            Call SendGatheringFeedback(UserIndex, GatheringBlocked, GatheringInventory)
             Call ResetUserAutomatedActions(UserIndex)
             GoTo SkillImprovement
         End If
-        Call WriteTextCharDrop(UserIndex, "+" & fishingCatch.amount, .Char.charindex, vbWhite)
+        If Not .AutomatedAction.IsActive Then Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringDepleted)
+        If Not HasGatheringFeedback(UserIndex) Then Call WriteTextCharDrop(UserIndex, "+" & fishingCatch.amount, .Char.charindex, vbWhite)
         Call SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
         ' Try to award bonus items
         If HasSpecialFishingRewards() Then
@@ -238,8 +245,10 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                 If specialRoll = 1 Then
                     fishingCatch.ObjIndex = EspecialesPesca(i).ObjIndex
                     fishingCatch.amount = 1
-                    If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
-                        Call TirarItemAlPiso(.pos, fishingCatch)
+                    If Not InsertGatheredItem(UserIndex, fishingCatch) Then
+                        Dim droppedAt As t_WorldPos
+                        droppedAt = TirarItemAlPiso(.pos, fishingCatch)
+                        Call ReportGatheringDrop(UserIndex, fishingCatch, droppedAt)
                     End If
                     Call WriteLocaleMsg(UserIndex, MSG_YOU_OBTAINED_ITEM, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -376,7 +385,8 @@ IsUniqueMapFish_Err:
     Call TraceError(Err.Number, Err.Description, "modFishing.IsUniqueMapFish", Erl)
 End Function
 
-Public Function CanUserFish(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+Public Function CanUserFish(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer, Optional ByRef reason As e_GatheringReason = GatheringNoReason) As Boolean
+    reason = GatheringTool
     With UserList(UserIndex)
         Debug.Assert TargetX <> 0
         Debug.Assert TargetY <> 0
@@ -392,14 +402,15 @@ Public Function CanUserFish(ByVal UserIndex As Integer, ByVal TargetX As Integer
         If toolSubtipo <> e_WorkingToolSubType.FishingRod And toolSubtipo <> e_WorkingToolSubType.FishingNet Then
             Exit Function
         End If
-        If Not ValidateFishingPosition(UserIndex, TargetX, TargetY) Then
+        If Not ValidateFishingPosition(UserIndex, TargetX, TargetY, reason) Then
             Exit Function
         End If
         CanUserFish = True
     End With
 End Function
 
-Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal TargetX As Integer, ByVal TargetY As Integer, Optional ByRef reason As e_GatheringReason = GatheringNoReason) As Boolean
+    reason = GatheringRestriction
     ValidateFishingPosition = False
     With UserList(UserIndex)
         ' Check if target position has water flag
@@ -425,6 +436,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                 End If
                 If Not IsAdjacentToWater(.pos) Then
                     ' Msg1021= Acércate a la costa para pescar.
+                    reason = GatheringRange
                     Call WriteLocaleMsg(UserIndex, MSG_ACERCATE_COSTA_PESCAR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
@@ -445,6 +457,7 @@ Public Function ValidateFishingPosition(ByVal UserIndex As Integer, ByVal Target
                     Exit Function
                 End If
                 If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
+                    reason = GatheringRange
                     Call WriteLocaleMsg(UserIndex, MSG_TOO_FAR_AWAY, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If

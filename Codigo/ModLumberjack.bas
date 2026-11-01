@@ -57,10 +57,12 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
             End If
             MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount - MiObj.amount
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
+            If Not InsertGatheredItem(UserIndex, MiObj) Then
+                nPos = TirarItemAlPiso(.pos, MiObj)
+                Call ReportGatheringDrop(UserIndex, MiObj, nPos)
             End If
-            Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
+            If Not .AutomatedAction.IsActive Then Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringDepleted)
+            If Not HasGatheringFeedback(UserIndex) Then Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
             If IsFeatureEnabled("gain_exp_while_working") Then
                 Call GiveExpWhileWorking(UserIndex, MiObj, e_JobsTypes.Woodcutter)
@@ -68,15 +70,21 @@ Public Sub ChopWood(ByVal UserIndex As Integer)
                 Call CheckUserLevel(UserIndex)
             End If
         Else
-            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
+            Call SendGatheringFeedback(UserIndex, GatheringFailedRoll)
+            If HasGatheringFeedback(UserIndex) Then
+                Call SendData(SendTarget.ToPCAliveAreaButIndex, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
+            Else
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .pos.x, .pos.y))
+            End If
         End If
         .Counters.Trabajando = .Counters.Trabajando + 1
         Call SubirSkill(UserIndex, e_Skill.Talar)
     End With
 End Sub
 
-Public Function CanUserExtractWood(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte) As Boolean
+Public Function CanUserExtractWood(ByVal UserIndex As Integer, ByVal TargetX As Byte, ByVal TargetY As Byte, Optional ByRef reason As e_GatheringReason = GatheringNoReason) As Boolean
     With UserList(UserIndex)
+        reason = GatheringTool
         If .invent.EquippedWorkingToolObjIndex <= 0 Then Exit Function
         If ObjData(MapData(TargetX, TargetY, .pos.Map).ObjInfo.ObjIndex).Elfico > 0 Then
             If Not ObjData(.invent.EquippedWorkingToolObjIndex).Elfico > 0 Then
