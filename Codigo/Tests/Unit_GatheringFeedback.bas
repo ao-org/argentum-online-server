@@ -122,6 +122,40 @@ Private Sub RunCase(ByVal index As Integer)
         obj.ObjIndex = 58: obj.amount = CLng(GetMaxInvOBJ()) + 1
         Call InsertGatheredItem(1, obj)
         Call Expect(packets.Count = 0, "existing oversize empty-slot behavior cannot invent a full input-quantity award")
+    Case 16
+        UserList(1).CurrentInventorySlots = 2
+        ObjData(58).OBJType = e_OBJType.otMinerals
+        UserList(1).flags.PescandoEspecial = True
+        UserList(1).Stats.NumObj_PezEspecial = 58
+        Call SpecialFishingTestTerminal(1, True)
+        Call Expect(UserList(1).invent.Object(1).ObjIndex = 58 And UserList(1).invent.Object(1).amount = 1, "real terminal handler awards server-selected fish")
+        Call SpecialFishingTestTerminal(1, True)
+        Call Expect(UserList(1).invent.Object(1).amount = 1 And Not UserList(1).flags.PescandoEspecial, "duplicate completion cannot award twice")
+    Case 17
+        UserList(1).CurrentInventorySlots = 2
+        UserList(1).invent.EquippedWorkingToolObjIndex = OBJ_FISHING_NET_BASIC
+        UserList(1).invent.EquippedWorkingToolSlot = 1
+        UserList(1).invent.Object(1).ObjIndex = OBJ_FISHING_NET_BASIC
+        UserList(1).invent.Object(1).amount = 3
+        ObjData(OBJ_FISHING_NET_BASIC).OBJType = e_OBJType.otWorkingTools
+        UserList(1).flags.PescandoEspecial = True
+        UserList(1).Stats.NumObj_PezEspecial = 58
+        Call SpecialFishingTestTerminal(1, False)
+        Call Expect(Not UserList(1).flags.PescandoEspecial And UserList(1).Stats.NumObj_PezEspecial = 0, "break clears catch and attack/equipment restriction")
+        Call Expect(UserList(1).invent.Object(1).amount = 2, "one failed challenge removes one net")
+        Call SpecialFishingTestTerminal(1, False)
+        Call SpecialFishingTestTerminal(1, True)
+        Call Expect(UserList(1).invent.Object(1).amount = 2, "duplicate break/completion cannot remove another net or award fish")
+    Case 18
+        UserList(1).flags.PescandoEspecial = True
+        UserList(1).Stats.NumObj_PezEspecial = 58
+        Call CancelSpecialFishing(1)
+        Call SpecialFishingTestTerminal(1, True)
+        Call Expect(UserList(1).invent.Object(1).amount = 0, "cancelled lifetime cannot award")
+        UserList(1).flags.PescandoEspecial = True
+        UserList(1).Stats.NumObj_PezEspecial = 58
+        UserList(1).flags.Muerto = 1
+        Call Expect(TakeSpecialFishingCatch(1) = 0 And Not UserList(1).flags.PescandoEspecial, "dead character cannot finish")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Gathering feedback " & index, True)
@@ -139,7 +173,7 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.RunTest("Gathering conditional protocol IDs", ServerPacketID.eGatheringFeedback = 223 And ClientPacketID.eGatheringStart = 321)
     #End If
-    For index = 1 To 15
+    For index = 1 To 18
         Call RunCase(index)
     Next index
     TestSuite = UnitTesting.GetFailedTests() = before

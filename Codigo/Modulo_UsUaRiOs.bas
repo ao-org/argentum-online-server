@@ -1767,6 +1767,7 @@ End Sub
 '
 Sub UserDie(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    Call CancelSpecialFishing(UserIndex)
     Call SuspendNpcBow(UserIndex)
     Call InvalidateInventoryDestruction(UserIndex)
     Call ClearPendingTargetableItem(UserIndex)
@@ -2204,6 +2205,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
                 End If
             End If
         End If
+        Call CancelSpecialFishing(UserIndex)
         'Quitar el dialogo
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
         Call WriteRemoveAllDialogs(UserIndex)

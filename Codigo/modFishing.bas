@@ -34,6 +34,34 @@ Public Const OBJ_SQUID_BANK                As Integer = 1990
 Public Const OBJ_SHRIMP_BANK               As Integer = 1991
 Public Const OBJ_FISH_AREA                 As Integer = 3740
 
+' Terminal packets consume the pending catch before any inventory mutation.
+' The legacy wire has no challenge token; rewards remain server-owned.
+Public Sub CancelSpecialFishing(ByVal UserIndex As Integer)
+    On Error GoTo CancelSpecialFishing_Err
+    With UserList(UserIndex)
+        .flags.PescandoEspecial = False
+        .Stats.NumObj_PezEspecial = 0
+    End With
+    Exit Sub
+CancelSpecialFishing_Err:
+    Call TraceError(Err.Number, Err.Description, "modFishing.CancelSpecialFishing", Erl)
+End Sub
+
+Public Function TakeSpecialFishingCatch(ByVal UserIndex As Integer) As Integer
+    On Error GoTo TakeSpecialFishingCatch_Err
+    With UserList(UserIndex)
+        If Not .flags.PescandoEspecial Then Exit Function
+        If .flags.Muerto = 0 And .Stats.NumObj_PezEspecial > 0 And .Stats.NumObj_PezEspecial <= UBound(ObjData) Then
+            TakeSpecialFishingCatch = .Stats.NumObj_PezEspecial
+        End If
+    End With
+    Call CancelSpecialFishing(UserIndex)
+    Exit Function
+TakeSpecialFishingCatch_Err:
+    TakeSpecialFishingCatch = 0
+    Call TraceError(Err.Number, Err.Description, "modFishing.TakeSpecialFishingCatch", Erl)
+End Function
+
 Public Sub InitializeFishingBonuses()
     If FishingBonusesInitialized Then Exit Sub
     ReDim FishingLevelBonus(1 To 47) As Double

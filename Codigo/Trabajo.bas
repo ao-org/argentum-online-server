@@ -2131,11 +2131,13 @@ PuedeDomarMascota_Err:
 End Function
 
 Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
+    Dim pendingFish As Integer
+    pendingFish = TakeSpecialFishingCatch(UserIndex)
     With UserList(UserIndex)
-        If .flags.PescandoEspecial Then
+        If pendingFish > 0 Then
             Dim obj As t_Obj
             obj.amount = 1
-            obj.ObjIndex = .Stats.NumObj_PezEspecial
+            obj.ObjIndex = pendingFish
             If Not MeterItemEnInventario(UserIndex, obj) Then
                 Call CompleteSpecialGatheringCatch(UserIndex, obj.ObjIndex, False)
                 .Stats.NumObj_PezEspecial = 0
