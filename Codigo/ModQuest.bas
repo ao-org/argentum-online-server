@@ -323,6 +323,7 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         .Dirty = True ' Quest slot changed: quest removed/reset.
         UserList(UserIndex).flags.ModificoQuests = True
     End With
+    Call RefreshNpcInspection(UserIndex)
     Exit Sub
 CleanQuestSlot_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
@@ -539,7 +540,35 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 EnviarQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 End Sub
-Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+Public Function CanInspectQuestTurnIn(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+    On Error GoTo Failed
+    If Not FinishQuestCheck(UserIndex, QuestIndex, QuestSlot, False) Then Exit Function
+    If Not HasUserRequiredClassForQuest(UserIndex, QuestList(QuestIndex)) Then Exit Function
+    ' Match FinishQuest reward admission without consuming objectives or granting rewards.
+    Dim freeSlots As Long, known As Long, i As Long, j As Long
+    With QuestList(QuestIndex)
+        If .RewardOBJs > 0 Then
+            For i = 1 To UserList(UserIndex).CurrentInventorySlots
+                If UserList(UserIndex).invent.Object(i).ObjIndex = 0 Then freeSlots = freeSlots + 1
+            Next i
+            If freeSlots < .RewardOBJs Then Exit Function
+        End If
+        If .RewardSpellCount > 0 Then
+            For i = 1 To .RewardSpellCount
+                For j = 1 To UBound(UserList(UserIndex).Stats.UserHechizos)
+                    If UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i) Then known = known + 1
+                Next j
+            Next i
+            If known = .RewardSpellCount Then Exit Function
+        End If
+    End With
+    CanInspectQuestTurnIn = True
+    Exit Function
+Failed:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.CanInspectQuestTurnIn", Erl)
+End Function
+
+Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte, Optional ByVal Notify As Boolean = True) As Boolean
     On Error GoTo FinishQuestCheck_Err
 
     Dim i As Integer
@@ -562,7 +591,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             Next i
         End If
         If .GlobalQuestIndex > 0 Then
-            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded, Notify) Then
                 Exit Function
             End If
         End If

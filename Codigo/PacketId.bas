@@ -255,6 +255,7 @@ Public Enum ServerPacketID
     eAdjacentPlayerUpsert
     eAdjacentPlayerRemove
     eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
+    eNpcInspection ' 221 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum
@@ -585,6 +586,7 @@ Public Enum ClientPacketID
     eHooInventoryDestructionConfirm ' 314 with PYMMO=1.
     eHooBowSubscribe ' 315 with PYMMO=1.
     eHooBowAttack ' 316 with PYMMO=1.
+    eNpcInspectionSubscribe ' 317 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum

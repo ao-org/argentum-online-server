@@ -930,6 +930,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionPrepare(UserIndex, reader)
         Case ClientPacketID.eHooInventoryDestructionConfirm
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.eNpcInspectionSubscribe
+            Call HandleNpcInspectionSubscribe(UserIndex)
         Case ClientPacketID.eHooBowSubscribe
             Call HandleNpcBowSubscribe(UserIndex, reader)
         Case ClientPacketID.eHooBowAttack
@@ -1289,6 +1291,19 @@ Private Sub HandleHooHouseDoorAction(ByVal UserIndex As Integer)
     Exit Sub
 HandleHooHouseDoorAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooHouseDoorAction", Erl)
+End Sub
+
+Private Sub HandleNpcInspectionSubscribe(ByVal UserIndex As Integer)
+    On Error GoTo Failed
+    Dim request As Long, map As Integer, character As Integer, npc As Integer
+    request = reader.ReadInt32()
+    map = reader.ReadInt16()
+    character = reader.ReadInt16()
+    npc = reader.ReadInt16()
+    Call SubscribeNpcInspection(UserIndex, request, map, character, npc)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNpcInspectionSubscribe", Erl)
 End Sub
 
 Private Sub HandleHooTargetedSpellCast(ByVal UserIndex As Integer)
@@ -7625,6 +7640,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.QuestItemSlot)
         End If
     End With
+    Call RefreshNpcInspection(UserIndex)
     Exit Sub
 HandleQuestAccept_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
