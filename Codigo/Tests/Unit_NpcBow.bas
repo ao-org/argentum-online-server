@@ -722,6 +722,7 @@ Private Sub RunCase(ByVal index As Integer)
     Call UnitTesting.RunTest("NPC bow " & CStr(index), True)
     Exit Sub
 Failed:
+    Call UnitTesting.ProgressError("NPC bow " & CStr(index), Err.Number, Err.Description)
     Call UnitTesting.RunTestError("NPC bow " & CStr(index), CStr(Err.Number) & ": " & Err.Description & vbCrLf & Join(GetLastMessages(), vbCrLf))
 End Sub
 
