@@ -20,12 +20,12 @@ they cannot decode the extended adjacent snapshot from the new server.
   Zero and -32768 are invalid. Both signs may be present for the same template.
   This is a complete replacement, including an empty snapshot.
 - The template prefix is followed by UInt8 quest count (0..5). Each quest has
-  Int16 quest ID, String8 title (UTF-8 with Int16 byte length, at most 128 VB6
+  Int16 quest ID, String8 title (UTF-8 with variable-length byte count, at most 128 VB6
   characters / 512 UTF-8 bytes), Int16 objective count (1..510), then that many
   triples of Int16 signed template, current, required. Current is nonnegative
   and strictly below required. Duplicate template requirements remain deduplicated
   in the prefix, while distinct objectives retain their own exact progress.
-- Maximum payload including ID and bounded titles is 22990 bytes (2550 templates,
+- Maximum payload including ID and bounded titles is 22995 bytes (2550 templates,
   2550 objective triples, five titles). This uses the existing framed transport.
   The HOO companion accepts the old prefix without guessing tooltip details;
   old clients cannot read the rich suffix. Deploy the updated client first.
