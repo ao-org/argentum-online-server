@@ -8626,6 +8626,7 @@ End Function
 
 Private Sub HandleGatheringStart(ByVal UserIndex As Integer)
     On Error GoTo Failed
+    If reader.GetAvailable() <> 7 Then Exit Sub
     Dim request As Long
     request = reader.ReadInt32()
     If request <= 0 Then Exit Sub
@@ -8691,6 +8692,7 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer, Optional 
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
     End Select
+    Call SendGatheringFeedback(UserIndex, GatheringStopped)
     Call StartAutomatedAction(x, y, skill, UserIndex)
     Call BeginGatheringFeedback(UserIndex, feedbackRequest, skill)
     Call SendGatheringFeedback(UserIndex, GatheringStarted)

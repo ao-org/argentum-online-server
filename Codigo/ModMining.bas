@@ -69,10 +69,10 @@ Public Sub MineMinerals(ByVal UserIndex As Integer)
             End If
             MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount = MapData(.AutomatedAction.x, .AutomatedAction.y, .pos.Map).ObjInfo.amount - MiObj.amount
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                Call TirarItemAlPiso(.pos, MiObj)
-                Call SendGatheringFeedback(UserIndex, GatheringGroundReward, GatheringNoReason, MiObj.ObjIndex, MiObj.amount)
+                nPos = TirarItemAlPiso(.pos, MiObj)
+                Call ReportGatheringDrop(UserIndex, MiObj, nPos)
             Else
-                Call SendGatheringFeedback(UserIndex, GatheringReward, GatheringNoReason, MiObj.ObjIndex, MiObj.amount)
+                Call SendGatheringFeedback(UserIndex, GatheringReward, IIf(.AutomatedAction.IsActive, GatheringNoReason, GatheringDepleted), MiObj.ObjIndex, MiObj.amount)
             End If
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
             If Not .AutomatedAction.IsActive Then Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringDepleted)

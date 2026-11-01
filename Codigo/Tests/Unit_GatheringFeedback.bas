@@ -100,6 +100,13 @@ Private Sub RunCase(ByVal index As Integer)
     Case 12
         Call SendGatheringFeedback(1, GatheringReward, GatheringNoReason, 58, 0)
         Call Expect(packets.Count = 0, "zero yield cannot claim collection")
+    Case 13
+        Dim obj As t_Obj, destination As t_WorldPos
+        obj.ObjIndex = 58: obj.amount = 3
+        Call ReportGatheringDrop(1, obj, destination)
+        bytes = packets(1)
+        Call Expect(bytes(13) = GatheringBlocked And bytes(14) = GatheringNoDropSpace And bytes(15) = 1, "no floor placement is not an award or a stopped loop")
+        Call Expect(bytes(16) = 0 And bytes(18) = 0 And UserList(1).AutomatedAction.IsActive, "no fabricated floor award")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Gathering feedback " & index, True)
@@ -117,7 +124,7 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.RunTest("Gathering conditional protocol IDs", ServerPacketID.eGatheringFeedback = 223 And ClientPacketID.eGatheringStart = 321)
     #End If
-    For index = 1 To 12
+    For index = 1 To 13
         Call RunCase(index)
     Next index
     TestSuite = UnitTesting.GetFailedTests() = before

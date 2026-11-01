@@ -21,6 +21,7 @@ Public Enum e_GatheringReason
     GatheringRestriction = 6
     GatheringDepleted = 7
     GatheringSpecialFish = 8
+    GatheringNoDropSpace = 9
 End Enum
 Private Type GatheringContext
     request As Long
@@ -65,7 +66,7 @@ End Sub
 
 ' Called only at actual validation/award/roll branches, never from inventory sync.
 ' Retain the stopped context for the special-fish minigame's eventual award.
-Public Sub SendGatheringFeedback(ByVal userIndex As Integer, ByVal outcome As e_GatheringOutcome, Optional ByVal reason As e_GatheringReason = GatheringNoReason, Optional ByVal objectIndex As Integer = 0, Optional ByVal amount As Long = 0)
+Public Sub SendGatheringFeedback(ByVal userIndex As Integer, ByVal outcome As e_GatheringOutcome, Optional ByVal reason As e_GatheringReason = GatheringNoReason, Optional ByVal objectIndex As Integer = 0, Optional ByVal amount As Long = 0, Optional ByVal keepActive As Boolean = False)
     On Error GoTo Failed
     If Not HasGatheringFeedback(userIndex) Then Exit Sub
     With contexts(userIndex)
@@ -77,7 +78,7 @@ Public Sub SendGatheringFeedback(ByVal userIndex As Integer, ByVal outcome As e_
         .sequence = .sequence + 1
         Dim active As Boolean
         active = UserList(userIndex).AutomatedAction.IsActive And Not .stopped
-        If outcome = GatheringBlocked Or outcome = GatheringStopped Then active = False
+        If (outcome = GatheringBlocked And Not keepActive) Or outcome = GatheringStopped Then active = False
         If Not active Then .stopped = True
         Dim writer As Network.Writer
         Set writer = Protocol_Writes.GetWriterBuffer()
@@ -134,4 +135,13 @@ Public Sub CompleteSpecialGatheringCatch(ByVal userIndex As Integer, ByVal objec
 Failed:
     contexts(userIndex) = current
     Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.SpecialCatch", Erl)
+End Sub
+
+Public Sub ReportGatheringDrop(ByVal userIndex As Integer, ByRef obj As t_Obj, ByRef destination As t_WorldPos)
+    If destination.x > 0 And destination.y > 0 Then
+        Call SendGatheringFeedback(userIndex, GatheringGroundReward, GatheringNoReason, obj.ObjIndex, obj.amount)
+    Else
+        ' Preserve the existing retry loop even when floor placement fails.
+        Call SendGatheringFeedback(userIndex, GatheringBlocked, GatheringNoDropSpace, 0, 0, True)
+    End If
 End Sub

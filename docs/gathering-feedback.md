@@ -24,7 +24,7 @@ Outcomes: 0 accepted start, 1 inventory award, 2 valid unsuccessful roll,
 3 blocked, 4 stopped, 5 award dropped on ground. Reasons: 0 unspecified,
 1 stamina, 2 inventory full, 3 invalid resource target, 4 missing/unsuitable tool,
 5 distance, 6 fishing location/tool restriction, 7 depleted, 8 special-fish
-challenge. Unspecified does not imply success or a guessed failure reason.
+challenge, 9 no floor space. Unspecified does not imply success or a guessed failure reason.
 
 Only real extraction branches emit awards. Wood/ore overflow still falls on the
 floor; fishing's inventory-full branch still stops without granting the catch.
@@ -37,7 +37,7 @@ implement repeated extraction); no activity is inferred from sending Work.
 The per-user context includes ID/version. ResetUserAutomatedActions emits one
 stop before clearing gameplay state. A blocked result suppresses a redundant
 stop. A stopped context cannot become active again, but can report a legitimate
-late award. A rejected replacement leaves the old server action unchanged.
+late award. A rejected replacement leaves the old server action unchanged; HOO retains its confirmed status. Accepted replacement stops only the old feedback context before starting the new one.
 A bounded client request history and monotonically increasing sequence reject
 duplicates and stale status; they cannot infer changes from console messages.
 

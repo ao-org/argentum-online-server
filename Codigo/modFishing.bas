@@ -234,7 +234,8 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             Call ResetUserAutomatedActions(UserIndex)
             GoTo SkillImprovement
         End If
-        Call SendGatheringFeedback(UserIndex, GatheringReward, GatheringNoReason, fishingCatch.ObjIndex, fishingCatch.amount)
+        Call SendGatheringFeedback(UserIndex, GatheringReward, IIf(.AutomatedAction.IsActive, GatheringNoReason, GatheringDepleted), fishingCatch.ObjIndex, fishingCatch.amount)
+        If Not .AutomatedAction.IsActive Then Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringDepleted)
         If Not HasGatheringFeedback(UserIndex) Then Call WriteTextCharDrop(UserIndex, "+" & fishingCatch.amount, .Char.charindex, vbWhite)
         Call SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
         ' Try to award bonus items
@@ -246,8 +247,9 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                     fishingCatch.ObjIndex = EspecialesPesca(i).ObjIndex
                     fishingCatch.amount = 1
                     If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
-                        Call TirarItemAlPiso(.pos, fishingCatch)
-                        Call SendGatheringFeedback(UserIndex, GatheringGroundReward, GatheringNoReason, fishingCatch.ObjIndex, fishingCatch.amount)
+                        Dim droppedAt As t_WorldPos
+                        droppedAt = TirarItemAlPiso(.pos, fishingCatch)
+                        Call ReportGatheringDrop(UserIndex, fishingCatch, droppedAt)
                     Else
                         Call SendGatheringFeedback(UserIndex, GatheringReward, GatheringNoReason, fishingCatch.ObjIndex, fishingCatch.amount)
                     End If
