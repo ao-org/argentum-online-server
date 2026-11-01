@@ -229,12 +229,11 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
             GoTo SkillImprovement
         End If
         Call SendData(ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(fishingCatch.ObjIndex).GrhIndex))
-        If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
+        If Not InsertGatheredItem(UserIndex, fishingCatch) Then
             Call SendGatheringFeedback(UserIndex, GatheringBlocked, GatheringInventory)
             Call ResetUserAutomatedActions(UserIndex)
             GoTo SkillImprovement
         End If
-        Call SendGatheringFeedback(UserIndex, GatheringReward, IIf(.AutomatedAction.IsActive, GatheringNoReason, GatheringDepleted), fishingCatch.ObjIndex, fishingCatch.amount)
         If Not .AutomatedAction.IsActive Then Call SendGatheringFeedback(UserIndex, GatheringStopped, GatheringDepleted)
         If Not HasGatheringFeedback(UserIndex) Then Call WriteTextCharDrop(UserIndex, "+" & fishingCatch.amount, .Char.charindex, vbWhite)
         Call SendData(ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
@@ -246,12 +245,10 @@ Public Sub PerformFishing(ByVal UserIndex As Integer)
                 If specialRoll = 1 Then
                     fishingCatch.ObjIndex = EspecialesPesca(i).ObjIndex
                     fishingCatch.amount = 1
-                    If Not MeterItemEnInventario(UserIndex, fishingCatch) Then
+                    If Not InsertGatheredItem(UserIndex, fishingCatch) Then
                         Dim droppedAt As t_WorldPos
                         droppedAt = TirarItemAlPiso(.pos, fishingCatch)
                         Call ReportGatheringDrop(UserIndex, fishingCatch, droppedAt)
-                    Else
-                        Call SendGatheringFeedback(UserIndex, GatheringReward, GatheringNoReason, fishingCatch.ObjIndex, fishingCatch.amount)
                     End If
                     Call WriteLocaleMsg(UserIndex, MSG_YOU_OBTAINED_ITEM, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 End If

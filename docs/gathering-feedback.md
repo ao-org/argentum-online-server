@@ -30,7 +30,7 @@ Only real extraction branches emit awards. Wood/ore overflow still falls on the
 floor; fishing's inventory-full branch still stops without granting the catch.
 Bonus fish items and completed special-fish challenges report their actual award.
 Special catches retain their original request through a later activity change.
-No inventory-sync observer, rates, rolls, costs, allocation or retry changes.
+Only the existing gathering award call is observed synchronously before/after insertion, so stack limits cannot inflate the reported quantity. No inventory-sync observer, rates, rolls, costs, allocation or retry changes.
 Legacy manual WorkLeftClick still follows its existing handlers (which do not
 implement repeated extraction); no activity is inferred from sending Work.
 

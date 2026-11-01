@@ -107,6 +107,21 @@ Private Sub RunCase(ByVal index As Integer)
         bytes = packets(1)
         Call Expect(bytes(13) = GatheringBlocked And bytes(14) = GatheringNoDropSpace And bytes(15) = 1, "no floor placement is not an award or a stopped loop")
         Call Expect(bytes(16) = 0 And bytes(18) = 0 And UserList(1).AutomatedAction.IsActive, "no fabricated floor award")
+    Case 14
+        UserList(1).CurrentInventorySlots = 1
+        ObjData(58).OBJType = e_OBJType.otMinerals
+        obj.ObjIndex = 58: obj.amount = 3
+        Call Expect(InsertGatheredItem(1, obj), "actual first insertion")
+        obj.amount = 2
+        Call Expect(InsertGatheredItem(1, obj), "actual stacked insertion")
+        bytes = packets(2)
+        Call Expect(bytes(18) = 2 And UserList(1).invent.Object(1).amount = 5, "report awarded delta, not resulting inventory total")
+    Case 15
+        UserList(1).CurrentInventorySlots = 1
+        ObjData(58).OBJType = e_OBJType.otMinerals
+        obj.ObjIndex = 58: obj.amount = CLng(GetMaxInvOBJ()) + 1
+        Call InsertGatheredItem(1, obj)
+        Call Expect(packets.Count = 0, "existing oversize empty-slot behavior cannot invent a full input-quantity award")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Gathering feedback " & index, True)
@@ -124,7 +139,7 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.RunTest("Gathering conditional protocol IDs", ServerPacketID.eGatheringFeedback = 223 And ClientPacketID.eGatheringStart = 321)
     #End If
-    For index = 1 To 13
+    For index = 1 To 15
         Call RunCase(index)
     Next index
     TestSuite = UnitTesting.GetFailedTests() = before

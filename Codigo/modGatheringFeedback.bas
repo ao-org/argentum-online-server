@@ -153,3 +153,45 @@ Public Sub ReportGatheringDrop(ByVal userIndex As Integer, ByRef obj As t_Obj, B
 Failed:
     Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.ReportDrop", Erl)
 End Sub
+
+Private Function GatheredInventoryTotal(ByVal userIndex As Integer, ByRef obj As t_Obj) As Long
+    On Error GoTo Failed
+    If obj.ObjIndex = 12 Then
+        GatheredInventoryTotal = UserList(userIndex).Stats.GLD
+        Exit Function
+    End If
+    Dim slot As Integer
+    For slot = 1 To UserList(userIndex).CurrentInventorySlots
+        With UserList(userIndex).invent.Object(slot)
+            If .ObjIndex = obj.ObjIndex And .ElementalTags = obj.ElementalTags Then
+                GatheredInventoryTotal = GatheredInventoryTotal + .amount
+            End If
+        End With
+    Next slot
+    Exit Function
+Failed:
+    GatheredInventoryTotal = -1
+    Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.InventoryTotal", Erl)
+End Function
+
+' This synchronous observation wraps only the existing gathering award call.
+' It is not an inventory-update observer. Preserve MeterItemEnInventario's
+' return value and mutations, including existing stack-cap behavior.
+Public Function InsertGatheredItem(ByVal userIndex As Integer, ByRef obj As t_Obj) As Boolean
+    On Error GoTo Failed
+    Dim before As Long, after As Long, reason As e_GatheringReason
+    If Not HasGatheringFeedback(userIndex) Then
+        InsertGatheredItem = MeterItemEnInventario(userIndex, obj)
+        Exit Function
+    End If
+    before = GatheredInventoryTotal(userIndex, obj)
+    InsertGatheredItem = MeterItemEnInventario(userIndex, obj)
+    If Not InsertGatheredItem Or before < 0 Then Exit Function
+    after = GatheredInventoryTotal(userIndex, obj)
+    If after <= before Then Exit Function
+    If Not UserList(userIndex).AutomatedAction.IsActive Then reason = GatheringDepleted
+    Call SendGatheringFeedback(userIndex, GatheringReward, reason, obj.ObjIndex, after - before)
+    Exit Function
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.Insert", Erl)
+End Function
