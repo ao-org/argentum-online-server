@@ -36,7 +36,7 @@ Kill objectives match `RequiredNPC.NpcIndex = Npc.Numero` exactly, as
 `OnNpcKilledUpdateQuest` does, and disappear when current reaches required.
 Turn-ins match `TalkTo` or the NPC's `QuestNumber` list, and use the existing
 `FinishQuestCheck` (items, kills, spells, skills, target objectives and global
-quest conditions), plus class/reward admission in `CanInspectQuestTurnIn`. `TalkTo` is not a separate talk-progress objective. Real click-to-visit objectives use `RequiredTargetNPC` and `NPCsTarget` (kind 3).
+quest conditions with notifications suppressed), plus class/reward admission in `CanInspectQuestTurnIn`. `TalkTo` is not a separate talk-progress objective. Real click-to-visit objectives use `RequiredTargetNPC` and `NPCsTarget` (kind 3).
 
 ## Threat: intentionally limited estimate
 
@@ -60,6 +60,11 @@ friendly/noncombat NPCs and owned summons are never defaulted to Low.
 Suite 45 exercises real subscriptions/packet writes, exact quest matching,
 completion versus turn-in, multiple quests, invalid lifetimes/maps/visibility,
 changed enqueue failure and stable current-HP-independent threat. Pure threshold
-checks are included. Native VB6 compiler is unavailable in the development
-workspace; PR validation must compile both conditional configurations and run
-this suite. No native test pass is claimed here before CI evidence.
+checks are included, along with conditional packet-ID assertions and absence of
+quest-chat side effects during inspection.
+
+The native PR validator built source commit `a572fedc7ba0c1e85743c73f260f7c69731198fc`
+and reported **857/857 passed, zero failures**. The VB6 compiler is unavailable
+locally; this is CI evidence, not a local native run. The report does not establish
+a complete PYMMO=0/PYMMO=1 configuration matrix; that remains unverified.
+Live companion-client gameplay remains outstanding.
