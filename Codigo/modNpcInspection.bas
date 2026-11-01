@@ -135,7 +135,8 @@ Public Sub RefreshNpcInspection(ByVal userIndex As Integer)
                 If quest > 0 Then
                     For objective = 1 To QuestList(quest).RequiredNPCs
                         If QuestList(quest).RequiredNPC(objective).NpcIndex = .npcNumber Then
-                            If UserList(userIndex).QuestStats.Quests(slot).NPCsKilled(objective) < QuestList(quest).RequiredNPC(objective).amount Then
+                            If UserList(userIndex).QuestStats.Quests(slot).NPCsKilled(objective) >= 0 And _
+                                UserList(userIndex).QuestStats.Quests(slot).NPCsKilled(objective) < QuestList(quest).RequiredNPC(objective).amount Then
                                 If count = MAX_ENTRIES Then
                                     truncated = True
                                     Exit For
@@ -149,7 +150,8 @@ Public Sub RefreshNpcInspection(ByVal userIndex As Integer)
                     Next objective
                     For objective = 1 To QuestList(quest).RequiredTargetNPCs
                         If QuestList(quest).RequiredTargetNPC(objective).NpcIndex = .npcNumber Then
-                            If UserList(userIndex).QuestStats.Quests(slot).NPCsTarget(objective) < QuestList(quest).RequiredTargetNPC(objective).amount Then
+                            If UserList(userIndex).QuestStats.Quests(slot).NPCsTarget(objective) >= 0 And _
+                                UserList(userIndex).QuestStats.Quests(slot).NPCsTarget(objective) < QuestList(quest).RequiredTargetNPC(objective).amount Then
                                 If count = MAX_ENTRIES Then
                                     truncated = True
                                     Exit For

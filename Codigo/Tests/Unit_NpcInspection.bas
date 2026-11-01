@@ -181,6 +181,10 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).QuestStats.Quests(1).NPCsTarget(1) = 1
         Call RefreshNpcInspection(1)
         bytes = packets(3): Call Expect(bytes(15) = 0, "completed visit disappears")
+    Case 20
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = -1
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(15) = 0, "invalid progress is omitted instead of emitting malformed data")
     End Select
     capturing = False
     Call UnitTesting.RunTest("NPC inspection " & index, True)
@@ -201,7 +205,7 @@ Public Function TestSuite() As Boolean
     Call UnitTesting.RunTest("NPC threat missing data", InspectionThreatBand(0, 10, 2000) = 0 And InspectionThreatBand(100, 0, 2000) = 0)
     Call UnitTesting.RunTest("NPC threat thresholds", InspectionThreatBand(100, 5, 2000) = 1 And InspectionThreatBand(100, 6, 2000) = 2 And InspectionThreatBand(100, 15, 2000) = 3 And InspectionThreatBand(100, 30, 2000) = 4)
     Call UnitTesting.RunTest("NPC threat attack interval", InspectionThreatBand(100, 15, 1000) = 4)
-    For i = 1 To 19
+    For i = 1 To 20
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
