@@ -3103,6 +3103,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
     End With
     Call modSendData.SendData(ToIndex, UserIndex)
     Call RefreshNpcInspection(UserIndex)
+    Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
 WriteQuestListSend_Err:
     Call Writer.Clear

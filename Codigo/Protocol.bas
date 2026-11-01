@@ -7640,6 +7640,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         End If
     End With
     Call RefreshNpcInspection(UserIndex)
+    Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
 HandleQuestAccept_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)

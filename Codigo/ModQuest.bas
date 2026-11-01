@@ -324,6 +324,7 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         UserList(UserIndex).flags.ModificoQuests = True
     End With
     Call RefreshNpcInspection(UserIndex)
+    Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
 CleanQuestSlot_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)

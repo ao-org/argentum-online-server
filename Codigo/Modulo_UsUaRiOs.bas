@@ -726,6 +726,7 @@ Dim tStr                        As String
         End If
         Call WriteCurrentWeatherState(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
+        Call SendQuestObjectiveSnapshot(UserIndex, True)
         Call MaybeSendRemortState(UserIndex)
         If .Stats.ELV = 1 Then
             Call WriteLocaleMsg(UserIndex, MSG_BIENVENIDO_TIERRAS_ARGENTUM_ONLINE_NOMBRE_TENGAS_BUEN_VIAJE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_GUILD, GetUserDisplayName(UserIndex)) ' Msg522=¡Bienvenido a las tierras de Argentum Online! ¡<nombre> que tengas buen viaje y mucha suerte!
