@@ -59,7 +59,7 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 8
         Call SendQuestObjectiveSnapshot(1)
         bytes = packets(1)
-        Call Expect(UBound(bytes) = 3 And bytes(2) = 0, "objective completion pushes empty replacement")
+        Call Expect(UBound(bytes) = 4 And bytes(2) = 0, "objective completion pushes empty replacement")
     Case 3
         UserList(1).QuestStats.Quests(2).QuestIndex = 1
         ReDim UserList(1).QuestStats.Quests(2).NPCsKilled(1 To 1)
@@ -88,14 +88,14 @@ Private Sub RunCase(ByVal index As Integer)
     Case 6
         npc.Numero = 10: npc.Name = "Shared name"
         Call OnNpcKilledUpdateQuest(1, npc)
-        Call Expect(UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 4 And packets.Count = 0, "real progress remains marked without redundant packets")
+        Call Expect(UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 4 And packets.Count = 1, "real progress publishes current counts")
         npc.Numero = 11
         Call OnNpcKilledUpdateQuest(1, npc)
         Call Expect(UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 4, "same name is not matching identity")
         npc.Numero = 10
         UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 7
         Call OnNpcKilledUpdateQuest(1, npc)
-        bytes = packets(1)
+        bytes = packets(2)
         Call Expect(bytes(2) = 0, "real kill completion removes projection immediately")
     Case 7
         rejectQueue = True
@@ -130,7 +130,21 @@ Private Sub RunCase(ByVal index As Integer)
         Next q
         Call SendQuestObjectiveSnapshot(1)
         bytes = packets(1)
-        Call Expect(UBound(bytes) = 5103, "all 2550 possible templates fit one bounded snapshot")
+        Call Expect(UBound(bytes) = 20429, "all 2550 possible templates fit one bounded snapshot")
+    Case 12
+        QuestList(1).nombre = "Fangs of Fire"
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 2
+        QuestList(1).RequiredNPC(1).amount = 25
+        Call SendQuestObjectiveSnapshot(1)
+        bytes = packets(1)
+        Dim reader As New Network.Reader
+        Call reader.SetData(bytes)
+        Call Expect(reader.ReadInt16() = ServerPacketID.eQuestObjectiveTemplates, "objective packet")
+        Call Expect(reader.ReadInt16() = 1 And reader.ReadInt16() = 10, "template prefix")
+        Call Expect(reader.ReadInt8() = 1 And reader.ReadInt16() = 1, "accepted quest identity")
+        Call Expect(reader.ReadString8() = "Fangs of Fire", "authoritative quest title")
+        Call Expect(reader.ReadInt16() = 1 And reader.ReadInt16() = 10, "kill objective")
+        Call Expect(reader.ReadInt16() = 2 And reader.ReadInt16() = 25 And reader.GetAvailable() = 0, "exact current and required, full payload")
     Case 11
         QuestList(1).RequiredTargetNPCs = 1
         ReDim QuestList(1).RequiredTargetNPC(1 To 1)
@@ -160,7 +174,7 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.RunTest("Quest objective conditional packet ID", ServerPacketID.eQuestObjectiveTemplates = 224)
     #End If
-    For i = 1 To 11
+    For i = 1 To 12
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before

@@ -14,10 +14,23 @@ Private Type ObjectiveSnapshotCache
 End Type
 Private mCache() As ObjectiveSnapshotCache
 Private mCapacity As Long
+Private Type ObjectiveDetail
+    quest As Integer
+    npc As Integer
+    progress As Integer
+    required As Integer
+End Type
 
 Public Sub CollectQuestObjectiveTemplates(ByVal userIndex As Integer, ByRef templates() As Integer, ByRef count As Integer)
+    Dim details() As ObjectiveDetail, detailCount As Integer
+    Call CollectQuestObjectiveData(userIndex, templates, count, details, detailCount)
+End Sub
+
+Private Sub CollectQuestObjectiveData(ByVal userIndex As Integer, ByRef templates() As Integer, ByRef count As Integer, ByRef details() As ObjectiveDetail, ByRef detailCount As Integer)
     On Error GoTo CollectQuestObjectiveTemplates_Err
     count = 0
+    detailCount = 0
+    ReDim details(1 To MAX_QUEST_OBJECTIVE_TEMPLATES)
     ReDim templates(1 To MAX_QUEST_OBJECTIVE_TEMPLATES)
     Dim seen As New Dictionary
     Dim slot As Integer, quest As Integer, objective As Integer
@@ -45,6 +58,11 @@ Public Sub CollectQuestObjectiveTemplates(ByVal userIndex As Integer, ByRef temp
                     ' Same exact template/progress conditions as kill/visit and inspection.
                     If npc > 0 And progress >= 0 And progress < required Then
                         If kind = 2 Then npc = -npc
+                        detailCount = detailCount + 1
+                        details(detailCount).quest = quest
+                        details(detailCount).npc = npc
+                        details(detailCount).progress = progress
+                        details(detailCount).required = required
                         If Not seen.Exists(CStr(npc)) Then
                             Call seen.Add(CStr(npc), True)
                             count = count + 1
@@ -59,6 +77,7 @@ Public Sub CollectQuestObjectiveTemplates(ByVal userIndex As Integer, ByRef temp
 CollectQuestObjectiveTemplates_Err:
     ' Incomplete metadata must not leave a guessed partial projection.
     count = 0
+    detailCount = 0
     Call TraceError(Err.Number, Err.Description, "modQuestObjectives.CollectQuestObjectiveTemplates", Erl)
 End Sub
 
@@ -71,10 +90,18 @@ Public Sub SendQuestObjectiveSnapshot(ByVal userIndex As Integer, Optional ByVal
         ReDim Preserve mCache(1 To mCapacity)
     End If
     Dim templates() As Integer, count As Integer, i As Integer, fingerprint As String
-    Call CollectQuestObjectiveTemplates(userIndex, templates, count)
-    For i = 1 To count
-        fingerprint = fingerprint & CStr(templates(i)) & ";"
+    Dim details() As ObjectiveDetail, detailCount As Integer
+    Call CollectQuestObjectiveData(userIndex, templates, count, details, detailCount)
+    Dim quests As New Dictionary, questKey As Variant, questCount As Integer
+    For i = 1 To detailCount
+        With details(i)
+            If Not quests.Exists(CStr(.quest)) Then Call quests.Add(CStr(.quest), Left$(QuestList(.quest).nombre, 128))
+            fingerprint = fingerprint & .quest & ":" & .npc & ":" & .progress & ":" & .required & ";"
+        End With
     Next i
+    For Each questKey In quests.Keys
+        fingerprint = fingerprint & Len(CStr(quests(questKey))) & ":" & CStr(quests(questKey))
+    Next questKey
     With mCache(userIndex)
         If Not force And .known And .userId = UserList(userIndex).Id And _
             .userVersion = UserList(userIndex).VersionId And .fingerprint = fingerprint Then Exit Sub
@@ -85,6 +112,24 @@ Public Sub SendQuestObjectiveSnapshot(ByVal userIndex As Integer, Optional ByVal
         For i = 1 To count
             Call writer.WriteInt16(templates(i))
         Next i
+        ' One title per accepted quest; bounded to five titles and 2550 objectives.
+        Call writer.WriteInt8(quests.Count)
+        For Each questKey In quests.Keys
+            questCount = 0
+            For i = 1 To detailCount
+                If details(i).quest = CInt(questKey) Then questCount = questCount + 1
+            Next i
+            Call writer.WriteInt16(CInt(questKey))
+            Call writer.WriteString8(CStr(quests(questKey)))
+            Call writer.WriteInt16(questCount)
+            For i = 1 To detailCount
+                If details(i).quest = CInt(questKey) Then
+                    Call writer.WriteInt16(details(i).npc)
+                    Call writer.WriteInt16(details(i).progress)
+                    Call writer.WriteInt16(details(i).required)
+                End If
+            Next i
+        Next questKey
         Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
         If queued Then
             .known = True

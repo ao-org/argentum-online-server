@@ -19,8 +19,18 @@ they cannot decode the extended adjacent snapshot from the new server.
   negative N means unfinished click-to-visit objective for template abs(N).
   Zero and -32768 are invalid. Both signs may be present for the same template.
   This is a complete replacement, including an empty snapshot.
-- Maximum payload including ID is 5104 bytes: five accepted quests, two lists
-  of at most 255 objectives. Duplicate requirements are removed server-side.
+- The template prefix is followed by UInt8 quest count (0..5). Each quest has
+  Int16 quest ID, String8 title (UTF-8 with Int16 byte length, at most 128 VB6
+  characters / 512 UTF-8 bytes), Int16 objective count (1..510), then that many
+  triples of Int16 signed template, current, required. Current is nonnegative
+  and strictly below required. Duplicate template requirements remain deduplicated
+  in the prefix, while distinct objectives retain their own exact progress.
+- Maximum payload including ID and bounded titles is 22990 bytes (2550 templates,
+  2550 objective triples, five titles). This uses the existing framed transport.
+  The HOO companion accepts the old prefix without guessing tooltip details;
+  old clients cannot read the rich suffix. Deploy the updated client first.
+- Names/counts change the accepted-enqueue cache fingerprint. Progress updates
+  publish a replacement even when the relevant template set remains identical.
 - Existing `eUpdateCharValue` gets type 2 (`eQuestKillEligible`): existing Int16
   character index, Int16 value type, Long Boolean. Sent after successful NPC
   creation and on taming to existing viewers. It does not alter ownership,
@@ -51,7 +61,7 @@ or character/session changes; actor metadata is recreated with each actor.
 
 ## Validation
 
-Suite 47 covers accepted versus unaccepted, completion, overlapping quests,
+Suite 47 (13 cases) covers authoritative titles/exact counters and accepted versus unaccepted, completion, overlapping quests,
 click-to-visit, malformed counters, exact matching, real kill progress callbacks,
 accepted-enqueue caching, session reuse, the 2550-entry bound and distinct
 kill/visit eligibility. Existing adjacent tests assert the added eligibility byte
