@@ -2081,10 +2081,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         PacketTimerThreshold(PacketNames.Walk), MacroIterations(PacketNames.Walk))
             End If
         End If
-        If .flags.PescandoEspecial Then
-            .Stats.NumObj_PezEspecial = 0
-            .flags.PescandoEspecial = False
-        End If
+        If .flags.PescandoEspecial Then Call CancelSpecialFishing(UserIndex)
         If UserMod.CanMove(.flags, .Counters) Then
             If .flags.Comerciando Or .flags.Crafteando <> 0 Then Exit Sub
             If .flags.Meditando Then
@@ -8330,6 +8327,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim caniaOld As Integer
     Dim shouldBreak As Boolean
 
+    If TakeSpecialFishingCatch(UserIndex) = 0 Then Exit Sub
     With UserList(UserIndex)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
@@ -8378,6 +8376,16 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
 HandleRomperCania_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub SpecialFishingTestTerminal(ByVal UserIndex As Integer, ByVal complete As Boolean)
+    If complete Then
+        Call HandleFinalizarPescaEspecial(UserIndex)
+    Else
+        Call HandleRomperCania(UserIndex)
+    End If
+End Sub
+#End If
 
 Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     On Error GoTo HandleFinalizarPescaEspecial_Err:
