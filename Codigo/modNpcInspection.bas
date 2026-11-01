@@ -147,12 +147,25 @@ Public Sub RefreshNpcInspection(ByVal userIndex As Integer)
                             End If
                         End If
                     Next objective
+                    For objective = 1 To QuestList(quest).RequiredTargetNPCs
+                        If QuestList(quest).RequiredTargetNPC(objective).NpcIndex = .npcNumber Then
+                            If UserList(userIndex).QuestStats.Quests(slot).NPCsTarget(objective) < QuestList(quest).RequiredTargetNPC(objective).amount Then
+                                If count = MAX_ENTRIES Then
+                                    truncated = True
+                                    Exit For
+                                End If
+                                count = count + 1: questIds(count) = quest: kinds(count) = 3
+                                current(count) = UserList(userIndex).QuestStats.Quests(slot).NPCsTarget(objective)
+                                required(count) = QuestList(quest).RequiredTargetNPC(objective).amount
+                            End If
+                        End If
+                    Next objective
                     canReturn = QuestList(quest).TalkTo = .npcNumber
                     For objective = 1 To NpcList(npcIndex).NumQuest
                         If NpcList(npcIndex).QuestNumber(objective) = quest Then canReturn = True
                     Next objective
                     If canReturn Then
-                        If FinishQuestCheck(userIndex, quest, CByte(slot)) Then
+                        If CanInspectQuestTurnIn(userIndex, quest, CByte(slot)) Then
                             If count < MAX_ENTRIES Then
                                 count = count + 1: questIds(count) = quest: kinds(count) = 2
                             Else

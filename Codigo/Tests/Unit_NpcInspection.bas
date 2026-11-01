@@ -150,6 +150,37 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).Stats.MaxHp = 200
         Call RefreshNpcInspection(1)
         Call Expect(packets.Count = 1, "unsubscribe stops updates")
+    Case 17
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 8
+        QuestList(1).TalkTo = 10
+        QuestList(1).RewardOBJs = 1
+        UserList(1).CurrentInventorySlots = 0
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(15) = 0, "full reward inventory is not ready")
+        UserList(1).CurrentInventorySlots = 1
+        Call RefreshNpcInspection(1)
+        bytes = packets(3): Call Expect(bytes(15) = 1 And bytes(18) = 2, "free reward slot admits turn-in")
+    Case 18
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 8
+        QuestList(1).TalkTo = 10
+        QuestList(1).RequiredClassesCount = 1
+        ReDim QuestList(1).RequiredClass(1 To 1)
+        QuestList(1).RequiredClass(1) = e_Class.Hunter
+        UserList(1).clase = e_Class.Mage
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(15) = 0, "wrong class is not ready")
+    Case 19
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 8
+        QuestList(1).RequiredTargetNPCs = 1
+        ReDim QuestList(1).RequiredTargetNPC(1 To 1)
+        QuestList(1).RequiredTargetNPC(1).NpcIndex = 10
+        QuestList(1).RequiredTargetNPC(1).amount = 1
+        ReDim UserList(1).QuestStats.Quests(1).NPCsTarget(1 To 1)
+        Call RefreshNpcInspection(1)
+        bytes = packets(2): Call Expect(bytes(15) = 1 And bytes(18) = 3, "real click-to-visit objective")
+        UserList(1).QuestStats.Quests(1).NPCsTarget(1) = 1
+        Call RefreshNpcInspection(1)
+        bytes = packets(3): Call Expect(bytes(15) = 0, "completed visit disappears")
     End Select
     capturing = False
     Call UnitTesting.RunTest("NPC inspection " & index, True)
@@ -162,10 +193,15 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
+    #If PYMMO = 1 Then
+        Call UnitTesting.RunTest("NPC inspection packet IDs", ServerPacketID.eNpcInspection = 221 And ClientPacketID.eNpcInspectionSubscribe = 317)
+    #Else
+        Call UnitTesting.RunTest("NPC inspection conditional packet IDs", ServerPacketID.eNpcInspection = 222 And ClientPacketID.eNpcInspectionSubscribe = 320)
+    #End If
     Call UnitTesting.RunTest("NPC threat missing data", InspectionThreatBand(0, 10, 2000) = 0 And InspectionThreatBand(100, 0, 2000) = 0)
     Call UnitTesting.RunTest("NPC threat thresholds", InspectionThreatBand(100, 5, 2000) = 1 And InspectionThreatBand(100, 6, 2000) = 2 And InspectionThreatBand(100, 15, 2000) = 3 And InspectionThreatBand(100, 30, 2000) = 4)
     Call UnitTesting.RunTest("NPC threat attack interval", InspectionThreatBand(100, 15, 1000) = 4)
-    For i = 1 To 16
+    For i = 1 To 19
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before

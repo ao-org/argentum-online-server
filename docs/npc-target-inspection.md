@@ -12,7 +12,7 @@ Int16 character index, Int16 NPC template. Character zero unsubscribes.
 Server `221`: echoed request/map/character/template, Byte available (0/1),
 Byte threat (0 unknown, 1 low, 2 challenging, 3 dangerous, 4 deadly),
 Byte offensive trait bits (1 poison, 2 projectile, 4 spells), Byte entry count
-(low 7 bits, maximum 32; bit 7 flags omitted overflow), then entries: Int16 quest ID, Byte kind (1 kill, 2 ready turn-in),
+(low 7 bits, maximum 32; bit 7 flags omitted overflow), then entries: Int16 quest ID, Byte kind (1 kill, 2 ready turn-in, 3 click-to-visit),
 Int32 current, Int32 required. Turn-in counts are zero.
 The existing conditional enums supply the corresponding PYMMO=0 IDs.
 
@@ -36,7 +36,7 @@ Kill objectives match `RequiredNPC.NpcIndex = Npc.Numero` exactly, as
 `OnNpcKilledUpdateQuest` does, and disappear when current reaches required.
 Turn-ins match `TalkTo` or the NPC's `QuestNumber` list, and use the existing
 `FinishQuestCheck` (items, kills, spells, skills, target objectives and global
-quest conditions). `TalkTo` is not a separate talk-progress objective.
+quest conditions), plus class/reward admission in `CanInspectQuestTurnIn`. `TalkTo` is not a separate talk-progress objective. Real click-to-visit objectives use `RequiredTargetNPC` and `NPCsTarget` (kind 3).
 
 ## Threat: intentionally limited estimate
 
