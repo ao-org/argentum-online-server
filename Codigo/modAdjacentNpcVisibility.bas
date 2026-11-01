@@ -240,7 +240,7 @@ Private Function VisualFingerprint(ByVal npcIndex As Integer) As String
         VisualFingerprint = CStr(.VersionId) & "|" & .pos.Map & "|" & .pos.x & "|" & .pos.y & "|" & _
             .Char.body & "|" & .Char.head & "|" & .Char.Heading & "|" & .Char.WeaponAnim & "|" & _
             .Char.ShieldAnim & "|" & .Char.CascoAnim & "|" & .Char.CartAnim & "|" & .Char.speeding & "|" & .flags.NPCIdle & "|" & _
-            .Numero & "|" & GetNpcDisplayName(npcIndex)
+            .Numero & "|" & GetNpcDisplayName(npcIndex) & "|" & CStr(IsValidUserRef(.MaestroUser))
     End With
 End Function
 
@@ -298,6 +298,7 @@ Private Function SendUpsert(ByVal userIndex As Integer, ByVal epoch As Long, ByV
         Call writer.WriteBool(.flags.NPCIdle)
         Call writer.WriteInt16(.Numero)
         Call writer.WriteString8(GetNpcDisplayName(npcIndex))
+        Call writer.WriteBool(Not IsValidUserRef(.MaestroUser))
     End With
     ' String8 is UTF-8 with a varuint byte count; the transport frame is UInt16.
     If writer.GetOffset() > MAX_PACKET_BYTES Then Err.Raise vbObjectError + 184, "Adjacent NPC upsert", "Display text exceeds the transport frame limit"

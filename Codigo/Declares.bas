@@ -2079,6 +2079,7 @@ End Type
 
 Public Enum e_CharValue
     eDontBlockTile = 1
+    eQuestKillEligible = 2
 End Enum
 
 'Datos de user o npc

@@ -257,6 +257,7 @@ Public Enum ServerPacketID
     eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
     eNpcInspection ' 221 with PYMMO=1.
     eGatheringFeedback ' 222 with PYMMO=1.
+    eQuestObjectiveTemplates ' 223 with PYMMO=1; bounded accepted-objective projection.
     eMaxPacket
     [PacketCount]
 End Enum

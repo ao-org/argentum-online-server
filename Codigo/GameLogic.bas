@@ -1265,6 +1265,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                                         .NPCsTarget(j) = .NPCsTarget(j) + 1
                                         .Dirty = True ' Quest slot changed: target progress increased.
                                         Call RefreshNpcInspection(UserIndex)
+                                        Call SendQuestObjectiveSnapshot(UserIndex)
                                     End If
                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
                                         Call FinishQuest(UserIndex, .QuestIndex, i)

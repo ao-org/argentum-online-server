@@ -2049,6 +2049,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, Optional ByRe
                 Call SetNpcRef(.MascotasIndex(Index), NpcIndex)
                 .MascotasType(Index) = NpcList(NpcIndex).Numero
                 Call SetUserRef(NpcList(NpcIndex).MaestroUser, UserIndex)
+                Call SendData(ToNPCArea, NpcIndex, PrepareUpdateCharValue(NpcList(NpcIndex).Char.charindex, e_CharValue.eQuestKillEligible, False))
                 Call RevokeNpcBow(NpcIndex)
                 .flags.ModificoMascotas = True
                 Call FollowAmo(NpcIndex)
