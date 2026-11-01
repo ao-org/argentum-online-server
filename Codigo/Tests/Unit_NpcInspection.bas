@@ -185,6 +185,16 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).QuestStats.Quests(1).NPCsKilled(1) = -1
         Call RefreshNpcInspection(1)
         bytes = packets(2): Call Expect(bytes(15) = 0, "invalid progress is omitted instead of emitting malformed data")
+    Case 21
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 8
+        QuestList(1).TalkTo = 10
+        QuestList(1).GlobalQuestIndex = 1
+        QuestList(1).GlobalQuestThresholdNeeded = 5
+        ReDim GlobalQuestInfo(1 To 1)
+        GlobalQuestInfo(1).GatheringGlobalCounter = 0
+        Call RefreshNpcInspection(1)
+        Call Expect(packets.Count = 2, "inspection eligibility must not emit global quest chat warnings")
+        bytes = packets(2): Call Expect(bytes(15) = 0, "blocked global quest not ready")
     End Select
     capturing = False
     Call UnitTesting.RunTest("NPC inspection " & index, True)
@@ -205,7 +215,7 @@ Public Function TestSuite() As Boolean
     Call UnitTesting.RunTest("NPC threat missing data", InspectionThreatBand(0, 10, 2000) = 0 And InspectionThreatBand(100, 0, 2000) = 0)
     Call UnitTesting.RunTest("NPC threat thresholds", InspectionThreatBand(100, 5, 2000) = 1 And InspectionThreatBand(100, 6, 2000) = 2 And InspectionThreatBand(100, 15, 2000) = 3 And InspectionThreatBand(100, 30, 2000) = 4)
     Call UnitTesting.RunTest("NPC threat attack interval", InspectionThreatBand(100, 15, 1000) = 4)
-    For i = 1 To 20
+    For i = 1 To 21
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before

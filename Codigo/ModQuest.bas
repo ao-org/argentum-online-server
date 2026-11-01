@@ -542,7 +542,7 @@ EnviarQuest_Err:
 End Sub
 Public Function CanInspectQuestTurnIn(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
     On Error GoTo Failed
-    If Not FinishQuestCheck(UserIndex, QuestIndex, QuestSlot) Then Exit Function
+    If Not FinishQuestCheck(UserIndex, QuestIndex, QuestSlot, False) Then Exit Function
     If Not HasUserRequiredClassForQuest(UserIndex, QuestList(QuestIndex)) Then Exit Function
     ' Match FinishQuest reward admission without consuming objectives or granting rewards.
     Dim freeSlots As Long, known As Long, i As Long, j As Long
@@ -568,7 +568,7 @@ Failed:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CanInspectQuestTurnIn", Erl)
 End Function
 
-Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte, Optional ByVal Notify As Boolean = True) As Boolean
     On Error GoTo FinishQuestCheck_Err
 
     Dim i As Integer
@@ -591,7 +591,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             Next i
         End If
         If .GlobalQuestIndex > 0 Then
-            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded, Notify) Then
                 Exit Function
             End If
         End If
