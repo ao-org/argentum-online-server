@@ -115,7 +115,11 @@ Failed:
 End Sub
 
 Public Sub RememberSpecialGatheringCatch(ByVal userIndex As Integer)
+    On Error GoTo Failed
     If HasGatheringFeedback(userIndex) Then specialCatches(userIndex) = contexts(userIndex)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.RememberCatch", Erl)
 End Sub
 
 Public Sub CompleteSpecialGatheringCatch(ByVal userIndex As Integer, ByVal objectIndex As Integer, ByVal awarded As Boolean)
@@ -138,10 +142,14 @@ Failed:
 End Sub
 
 Public Sub ReportGatheringDrop(ByVal userIndex As Integer, ByRef obj As t_Obj, ByRef destination As t_WorldPos)
+    On Error GoTo Failed
     If destination.x > 0 And destination.y > 0 Then
         Call SendGatheringFeedback(userIndex, GatheringGroundReward, GatheringNoReason, obj.ObjIndex, obj.amount)
     Else
         ' Preserve the existing retry loop even when floor placement fails.
         Call SendGatheringFeedback(userIndex, GatheringBlocked, GatheringNoDropSpace, 0, 0, True)
     End If
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modGatheringFeedback.ReportDrop", Erl)
 End Sub
