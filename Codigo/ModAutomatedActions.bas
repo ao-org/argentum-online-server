@@ -81,6 +81,7 @@ Public Function DecreaseUserStamina(ByVal UserIndex As Integer, ByVal StaminaReq
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareLocalizedChatOverHead(MSG_NO_ENERGY, UserList(UserIndex).Char.charindex, vbWhite))
             'Msg93=Estás muy cansado
             Call WriteLocaleMsg(UserIndex, MSG_MUY_CANSADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Call SendGatheringFeedback(UserIndex, GatheringBlocked, GatheringStamina)
             Call ResetUserAutomatedActions(UserIndex)
             DecreaseUserStamina = False
         End If
@@ -116,11 +117,13 @@ Public Function ValidResourceAtPos(ByVal UserIndex As Integer, ByVal WorkingTool
     End With
 End Function
 
-Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer) As Boolean
+Public Function CanUserExtractResource(ByVal UserIndex As Integer, ByVal ResourceType As e_OBJType, ByVal TargetX As Integer, ByVal TargetY As Integer, Optional ByRef reason As e_GatheringReason = GatheringNoReason) As Boolean
+    reason = GatheringTarget
     If Not ValidResourceAtPos(UserIndex, ResourceType, TargetX, TargetY) Then
         Call NotifyInvalidResourceTarget(UserIndex, ResourceType, TargetX, TargetY)
         Exit Function
     End If
+    reason = GatheringRange
     If Not CheckResourceDistance(UserIndex, CLOSE_DISTANCE_EXTRACTION, TargetX, TargetY) Then
         Call WriteLocaleMsg(UserIndex, MSG_PORTAL_TO_DESTINATION, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
         Exit Function

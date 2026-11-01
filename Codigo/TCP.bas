@@ -1395,6 +1395,7 @@ Sub ResetCd(ByRef User As t_User)
 End Sub
 
 Sub ResetUserAutomatedActions(ByRef UserIndex As Integer)
+    Call SendGatheringFeedback(UserIndex, GatheringStopped)
     With UserList(UserIndex)
         .AutomatedAction.IsActive = False
         .AutomatedAction.skill = 0
