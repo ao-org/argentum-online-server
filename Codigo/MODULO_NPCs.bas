@@ -1109,6 +1109,7 @@ Public Sub BuildNpcInfoCache()
         End If
     Next i
     NpcInfoCacheInitialized = True
+    Call ResetQuestTurnInRecipients()
     Exit Sub
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.BuildNpcInfoCache", Erl)

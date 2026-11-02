@@ -1707,6 +1707,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     UserList(UserIndex).Stats.SkillDirty(Skill) = True
+    Call SendQuestTurnInSnapshot(UserIndex)
     Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(skill) & Chr$(172) & UserList(UserIndex).Stats.UserSkills(skill))
 
     With UserList(UserIndex)

@@ -64,6 +64,7 @@ Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQues
             End If
         End If
     End With
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Public Function IsAnyGlobalQuestBossAlive(ByVal GlobalQuestIndex As Integer) As Boolean
@@ -86,6 +87,7 @@ Public Sub MarkGlobalQuestBossAsDead(ByVal GlobalQuestIndex As Integer, ByVal Bo
         For i = LBound(.BossIndexes) To UBound(.BossIndexes)
             If .BossIndexes(i) = BossIndex And .IsBossAlive(i) Then
                 .IsBossAlive(i) = False
+                Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
                 Exit Sub
             End If
         Next i
@@ -213,6 +215,7 @@ Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmoun
             End If
         End If
     End If
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Public Sub MaybeChangeGlobalQuestsState()
@@ -268,6 +271,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_FINISHED, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
@@ -284,6 +288,7 @@ Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_STARTED, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Function SQLiteToDate(strDate As String) As Date
