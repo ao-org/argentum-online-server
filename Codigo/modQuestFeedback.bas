@@ -7,6 +7,8 @@ Private Type FeedbackCache
     userId As Long
     version As Integer
     known As Boolean
+    sequence As Long
+    nextCycle As Long
     fingerprint As String
     quests(1 To 5) As Integer
     cycles(1 To 5) As Long
@@ -14,8 +16,6 @@ Private Type FeedbackCache
 End Type
 Private mUsers() As FeedbackCache
 Private mCapacity As Long
-Private mSequence As Long
-Private mCycle As Long
 
 Private Sub EnsureFeedbackUser(ByVal userIndex As Integer)
     If userIndex > mCapacity Then
@@ -26,6 +26,7 @@ Private Sub EnsureFeedbackUser(ByVal userIndex As Integer)
         If .userId <> UserList(userIndex).Id Or .version <> UserList(userIndex).VersionId Then
             .userId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
             .known = False: .fingerprint = ""
+            .sequence = 0: .nextCycle = 0
             Dim slot As Integer
             For slot = 1 To MAXUSERQUESTS
                 .quests(slot) = 0: .cycles(slot) = 0
@@ -55,9 +56,9 @@ Private Function Lifecycle(ByVal userIndex As Integer, ByVal slot As Integer, By
             If .quests(i) = 0 Then available = i
         Next i
         If available = 0 Then available = slot
-        mCycle = mCycle + 1
-        .quests(available) = quest: .cycles(available) = mCycle
-        Lifecycle = mCycle
+        .nextCycle = .nextCycle + 1
+        .quests(available) = quest: .cycles(available) = .nextCycle
+        Lifecycle = .nextCycle
     End With
 End Function
 
@@ -93,9 +94,9 @@ Private Function GoalsFor(ByVal userIndex As Integer, ByVal slot As Integer, ByV
     Set GoalsFor = goals
 End Function
 
-Private Sub WriteFeedbackHeader(ByVal writer As Network.Writer, ByVal completion As Boolean, ByVal silent As Boolean, ByVal count As Byte)
+Private Sub WriteFeedbackHeader(ByVal writer As Network.Writer, ByVal userIndex As Integer, ByVal completion As Boolean, ByVal silent As Boolean, ByVal count As Byte)
     Call writer.WriteInt16(ServerPacketID.eQuestFeedback)
-    Call writer.WriteInt32(mSequence + 1)
+    Call writer.WriteInt32(mUsers(userIndex).sequence + 1)
     Call writer.WriteInt8(Abs(CInt(completion)))
     Call writer.WriteInt8(Abs(CInt(silent)))
     Call writer.WriteInt8(count)
@@ -135,7 +136,7 @@ Public Function PublishQuestFeedback(ByVal userIndex As Integer, ByVal ready As 
     Dim writer As Network.Writer, queued As Boolean
     Set writer = Protocol_Writes.GetWriterBuffer()
     If force Or Not mUsers(userIndex).known Or fingerprint <> mUsers(userIndex).fingerprint Then
-        Call WriteFeedbackHeader(writer, False, force Or Not mUsers(userIndex).known, count)
+        Call WriteFeedbackHeader(writer, userIndex, False, force Or Not mUsers(userIndex).known, count)
         For slot = 1 To MAXUSERQUESTS
             quest = UserList(userIndex).QuestStats.Quests(slot).QuestIndex
             If quest > 0 And quest <= UBound(QuestList) Then
@@ -157,7 +158,7 @@ Public Function PublishQuestFeedback(ByVal userIndex As Integer, ByVal ready As 
         Call writer.WriteInt16(0)
         Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
         If Not queued Then Exit Function
-        mSequence = mSequence + 1
+        mUsers(userIndex).sequence = mUsers(userIndex).sequence + 1
         mUsers(userIndex).known = True: mUsers(userIndex).fingerprint = fingerprint
     End If
     ' Receipts are copied at the successful grant boundary; never reconstructed
@@ -166,7 +167,7 @@ Public Function PublishQuestFeedback(ByVal userIndex As Integer, ByVal ready As 
         Dim receipt As Collection, rewards As Collection
         Set receipt = mUsers(userIndex).receipts(1)
         Set rewards = receipt(4)
-        Call WriteFeedbackHeader(writer, True, False, 1)
+        Call WriteFeedbackHeader(writer, userIndex, True, False, 1)
         Call writer.WriteInt16(receipt(1))
         Call writer.WriteInt32(receipt(2))
         Call writer.WriteString8(receipt(3))
@@ -181,7 +182,7 @@ Public Function PublishQuestFeedback(ByVal userIndex As Integer, ByVal ready As 
         queued = False
         Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
         If Not queued Then Exit Function
-        mSequence = mSequence + 1
+        mUsers(userIndex).sequence = mUsers(userIndex).sequence + 1
         Call mUsers(userIndex).receipts.Remove(1)
     Loop
     PublishQuestFeedback = True
