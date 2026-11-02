@@ -189,7 +189,6 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         End If
         ' Si el NPC tiene un objetivo
         If IsValidUserRef(.TargetUser) Then
-            Call ResetNpcWanderState(NpcIndex)
             'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
             If NPCs.CanMove(.Contadores, .flags) Then
                 Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, GetHeadingFromWorldPos(.pos, UserList(.TargetUser.ArrayIndex).pos))
@@ -946,6 +945,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         If UsuarioAtacableConMagia(.TargetUser.ArrayIndex) Or UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
             ' Si no tiene un camino pero esta pegado al usuario, no queremos gastar tiempo calculando caminos.
             If .pathFindingInfo.PathLength = 0 And EstaPegadoAlUsuario Then Exit Sub
+            Call ResetNpcWanderState(AtackerNpcIndex)
             Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.TargetUser.ArrayIndex).pos)
         Else
             Call AI_CaminarSinRumboCercaDeOrigen(AtackerNpcIndex)
