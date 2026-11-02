@@ -2,6 +2,8 @@ Attribute VB_Name = "modQuestTurnIn"
 ' Argentum 20 Game Server. Copyright (C) 2026 Noland Studios LTD.
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
+Private Const MAX_RECIPIENTS_PER_QUEST As Integer = 128
+Private Const MAX_RECIPIENTS_PER_PACKET As Integer = 384
 
 Private mRecipients As Object
 Private Type TurnInCache
@@ -85,7 +87,7 @@ Public Sub SendQuestTurnInSnapshot(ByVal userIndex As Integer, Optional ByVal fo
     With mCache(userIndex)
         If Not force And .known And .userId = UserList(userIndex).Id And _
             .version = UserList(userIndex).VersionId And .fingerprint = fingerprint Then Exit Sub
-        Dim writer As Network.Writer, queued As Boolean, entry As Variant
+        Dim writer As Network.Writer, queued As Boolean, entry As Variant, recipientTotal As Long
         Set writer = Protocol_Writes.GetWriterBuffer()
         Call writer.WriteInt16(ServerPacketID.eQuestTurnIns)
         Call writer.WriteInt8(ready.Count)
@@ -95,9 +97,10 @@ Public Sub SendQuestTurnInSnapshot(ByVal userIndex As Integer, Optional ByVal fo
             Call writer.WriteString8(Left$(QuestList(quest).nombre, 128))
             Set recipients = RecipientsFor(quest)
             ' Overflow preserves readiness but does not guess a partial destination set.
-            If recipients.Count > 128 Then
+            If recipients.Count > MAX_RECIPIENTS_PER_QUEST Or recipientTotal + recipients.Count > MAX_RECIPIENTS_PER_PACKET Then
                 Call writer.WriteInt8(0)
             Else
+                recipientTotal = recipientTotal + recipients.Count
                 Call writer.WriteInt8(recipients.Count)
                 For Each recipient In recipients
                     Call writer.WriteInt16(CInt(recipient))

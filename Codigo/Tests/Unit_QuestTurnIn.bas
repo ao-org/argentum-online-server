@@ -86,6 +86,39 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(1).CurrentInventorySlots = 0
         Call SendQuestTurnInSnapshot(1, True)
         bytes = packets(1): Call Expect(bytes(2) = 0, "reward admission uses real eligibility")
+    Case 6
+        ReDim QuestList(0 To 5)
+        ReDim NpcInfoCache(1 To 100)
+        Dim q As Integer, npc As Integer, n As Integer
+        For q = 1 To 5
+            QuestList(q).nombre = "Quest"
+            UserList(1).QuestStats.Quests(q).QuestIndex = q
+        Next q
+        For npc = 1 To 100
+            NpcInfoCache(npc).Exists = True: NpcInfoCache(npc).name = "Recipient"
+            NpcInfoCache(npc).NumQuest = 5
+            ReDim NpcInfoCache(npc).QuestNumber(1 To 5)
+            For q = 1 To 5
+                NpcInfoCache(npc).QuestNumber(q) = q
+            Next q
+        Next npc
+        Call ResetQuestTurnInRecipients()
+        Call SendQuestTurnInSnapshot(1, True)
+        bytes = packets(1): Call reader.SetData(bytes)
+        Call Expect(reader.ReadInt16() = ServerPacketID.eQuestTurnIns And reader.ReadInt8() = 5, "all readiness retained")
+        For q = 1 To 5
+            Call Expect(reader.ReadInt16() = q And reader.ReadString8() = "Quest", "quest identity")
+            n = reader.ReadInt8()
+            If q <= 3 Then
+                Call Expect(n = 100, "complete recipient list")
+            Else
+                Call Expect(n = 0, "packet budget reports unknown instead of partial recipients")
+            End If
+            For npc = 1 To n
+                Call Expect(reader.ReadInt16() = npc And reader.ReadString8() = "Recipient", "recipient bytes")
+            Next npc
+        Next q
+        Call Expect(reader.GetAvailable() = 0, "bounded payload consumed")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Quest turn-in " & index, True)
@@ -97,7 +130,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 5
+    For i = 1 To 6
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
