@@ -1838,7 +1838,7 @@ Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRe
                     expUser = Round(expUser)
                 End If
             End If
-            If expUser > 0 Then
+            If expUser > 0 And UserList(userIndex).Stats.ELV < STAT_MAXELV Then
                 If UserList(userIndex).Stats.ELV < STAT_MAXELV Then
                     If recipients.IsParty Then
                         With UserList(userIndex).Stats
