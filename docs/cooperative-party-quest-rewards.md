@@ -49,10 +49,19 @@ or protocol-generation changes.
 
 ## Validation
 
-Native VB6 compiler is absent locally. New suite50 contains42 deterministic cases;
-configured drop probability1 guarantees rolls without modifying production RNG.
-Native PR-validator results will be recorded after execution. Source checks preserve
-Windows-1252/CRLF and run `git diff --check`.
+Base: `4adb0cf9b120509abb6b42449a7da1b867aa03c1`.
+Tested code: `616765bdc5aac3200be203b3092a290182a62cc1`.
+The existing native AO Server PR Validator compiled and passed **962/962 tests**,
+including all 42 new suite-50 cases, in **50,791.46 ms**. Earlier fixture failures
+were traced to capturing leader references before initializing its session version;
+the fixture was corrected without weakening eligibility or packet assertions.
+Configured drop probability 1 guarantees test rolls without modifying production RNG.
+
+The documented VB6 compiler is absent locally. The result above is the remote
+native validator, not a local build. The validator does not expose independent
+PYMMO=0/1 and UNIT_TEST=0/1 build results; that separate native matrix remains
+unverified. Windows-1252 and CRLF were checked for all 13 changed VB6 paths;
+`git diff --check origin/master...HEAD` passed. No live HOO checks were performed.
 
 Persistence tests cover existing dirty detection/saved projections and a private
 in-memory SQLite round trip through the real quest/inventory serializers/loaders.
@@ -60,6 +69,12 @@ Only UNIT_TEST builds expose the narrow accessors and scoped synchronous Execute
 mode; production database behavior is unchanged. Live HOO relog remains manual.
 
 ## Two-client acceptance checklist
+
+Authored example (source/data inspection only): quest 30, **Forja del Piquete de
+Blodium**, requires level 25 and class 9, 100 kills of NPC 267 (Nivor/Goat), and
+25 of item 405. NPC 267 configures quest-30 item 405 at quantity 1, probability
+1 in 5. Use eligible ordinary characters and accept through normal interaction;
+these are existing definitions, not content changes or a live-test claim.
 
 1. Two same-party characters accept the same kill quest. Kill near each other;
    both get one progress update. Let a support-only member deal no damage.
