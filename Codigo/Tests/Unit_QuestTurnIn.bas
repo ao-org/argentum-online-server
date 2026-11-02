@@ -302,6 +302,55 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(feedbackPackets.Count = 2, "accepted receipt is not replayed")
         Call BeginQuestFeedbackLifecycle(1, 1)
         Call Expect(CaptureQuestFeedbackLifecycle(1, 1, 1) <> lifecycleId, "repeat acceptance has new lifecycle")
+    Case 18
+        UserList(1).QuestStats.Quests(2).QuestIndex = 2
+        Dim preservedCycle As Long
+        preservedCycle = CaptureQuestFeedbackLifecycle(1, 2, 2)
+        Call CleanQuestSlot(1, 1): Call ArrangeUserQuests(1)
+        Call Expect(UserList(1).QuestStats.Quests(1).QuestIndex = 2, "fixture reorder")
+        Call Expect(CaptureQuestFeedbackLifecycle(1, 1, 2) = preservedCycle, "slot compaction preserves accepted lifecycle")
+    Case 19
+        UserList(1).flags.TargetNPC.ArrayIndex = 1: NpcList(1).Char.charindex = 2
+        UserList(1).Stats.ELV = STAT_MAXELV
+        QuestList(1).RewardEXP = 1000
+        Call FinishQuest(1, 1, 1): Call ProcessQuestTurnInUpdates()
+        Call Expect(UserList(1).QuestStats.NumQuestsDone = 1, "max-level quest completes")
+        receiptCount = 0
+        For Each packet In feedbackPackets
+            bytes = packet: Call reader.SetData(bytes)
+            Call reader.ReadInt16(): Call reader.ReadInt32()
+            If reader.ReadInt8() = 1 Then
+                receiptCount = receiptCount + 1
+                Call reader.ReadInt8(): Call reader.ReadInt8(): Call reader.ReadInt16(): Call reader.ReadInt32()
+                Call reader.ReadString8(): Call reader.ReadInt8(): Call reader.ReadInt16()
+                Call Expect(reader.ReadInt16() = 0, "skipped max-level experience not claimed")
+            End If
+        Next packet
+        Call Expect(receiptCount = 1, "empty actual receipt still confirms completion")
+    Case 20
+        UserList(1).QuestStats.Quests(2).QuestIndex = 2
+        Dim firstRewards As New Collection, secondRewards As New Collection
+        Call AddGrantedQuestReward(firstRewards, 1, 0, 50)
+        Call AddGrantedQuestReward(secondRewards, 3, 0, 200000)
+        Call QueueQuestCompletionFeedback(1, CaptureQuestFeedbackLifecycle(1, 1, 1), 1, firstRewards)
+        Call QueueQuestCompletionFeedback(1, CaptureQuestFeedbackLifecycle(1, 2, 2), 2, secondRewards)
+        Call ProcessQuestTurnInUpdates()
+        receiptCount = 0
+        For Each packet In feedbackPackets
+            bytes = packet: Call reader.SetData(bytes)
+            Call reader.ReadInt16(): Call reader.ReadInt32()
+            If reader.ReadInt8() = 1 Then
+                receiptCount = receiptCount + 1
+                Call reader.ReadInt8(): Call reader.ReadInt8()
+                Call Expect(reader.ReadInt16() = receiptCount, "receipt retains its quest")
+                Call reader.ReadInt32(): Call reader.ReadString8(): Call reader.ReadInt8(): Call reader.ReadInt16()
+                Call Expect(reader.ReadInt16() = 1, "one grant per receipt")
+                kind = reader.ReadInt8(): Call reader.ReadInt16(): amount = reader.ReadInt32()
+                If receiptCount = 1 Then Call Expect(kind = 1 And amount = 50, "first reward unmixed")
+                If receiptCount = 2 Then Call Expect(kind = 3 And amount = 200000, "second reward unmixed")
+            End If
+        Next packet
+        Call Expect(receiptCount = 2, "both turn-ins retained")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Quest turn-in " & index, True)
@@ -313,7 +362,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 17
+    For i = 1 To 20
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
