@@ -171,6 +171,7 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearPartyProposal(UserIndex)
     Call ClearPartyXpRotation(UserIndex)
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
@@ -1024,7 +1025,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 .Char.charindex = charindex
                 CharList(charindex) = UserIndex
                 If .Grupo.EnGrupo Then
-                    Call modSendData.SendData(ToGroup, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+                    Call PublishManagedParty(PartyLeaderIndex(UserIndex))
                 End If
             End If
             'Place character on map if needed

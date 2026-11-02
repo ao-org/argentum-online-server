@@ -932,6 +932,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionPrepare(UserIndex, reader)
         Case ClientPacketID.eHooInventoryDestructionConfirm
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.ePartyManagement
+            Call HandlePartyManagement(UserIndex, reader)
         Case ClientPacketID.eNpcInspectionSubscribe
             Call HandleNpcInspectionSubscribe(UserIndex)
         Case ClientPacketID.eHooBowSubscribe
@@ -3390,40 +3392,10 @@ TamingCompleted:
                 Call WriteHooTamingResult(UserIndex, PacketCounter, .pos.Map, x, y, TamingCharacter, TamingResult)
             Case e_Skill.Grupo
                 Call LookatTile(UserIndex, .pos.Map, x, y)
-                'Target whatever is in that tile
-                tU = .flags.TargetUser.ArrayIndex
-                If IsValidUserRef(.flags.TargetUser) And tU <> UserIndex Then
-                    If UserList(UserIndex).Grupo.EnGrupo = False Then
-                        If UserList(tU).flags.Muerto = 0 Then
-                            If Abs(.pos.x - x) + Abs(.pos.y - y) > 8 Then
-                                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If UserList(UserIndex).Grupo.CantidadMiembros = 0 Then
-                                Call SetUserRef(UserList(UserIndex).Grupo.Lider, UserIndex)
-                                Call SetUserRef(UserList(UserIndex).Grupo.Miembros(1), UserIndex)
-                                UserList(UserIndex).Grupo.CantidadMiembros = 1
-                                Call InvitarMiembro(UserIndex, tU)
-                            Else
-                                Call SetUserRef(UserList(UserIndex).Grupo.Lider, UserIndex)
-                                Call InvitarMiembro(UserIndex, tU)
-                            End If
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                        End If
-                    Else
-                        If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
-                            Call InvitarMiembro(UserIndex, tU)
-                        Else
-                            'Msg1131= Tu no podés invitar usuarios, debe hacerlo ¬1
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INVITAR_USUARIOS_DEBE_HACERLO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, GetUserDisplayName(UserList(UserIndex).Grupo.Lider.ArrayIndex))
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                        End If
-                    End If
+                If IsValidUserRef(.flags.TargetUser) Then
+                    Call InvitarMiembro(UserIndex, .flags.TargetUser.ArrayIndex)
                 Else
-                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WritePartyManagementState(UserIndex, 0, PartyUnavailable)
                 End If
             Case e_Skill.MarcaDeClan
                 Dim clan_nivel As Byte
@@ -7183,34 +7155,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
         If respuesta Then
             Select Case UserList(UserIndex).flags.pregunta
                 Case 1
-                    Log = "Repuesta Afirmativa 1"
-                    If UserList(UserIndex).Grupo.EnGrupo Then
-                        Call WriteLocaleMsg(UserIndex, MsgYouAreAlreadyInGroup, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                        Exit Sub
-                    End If
-                    If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex Then
-                            ' Msg722=¡El lider del grupo ha cambiado, imposible unirse!
-                            Call WriteLocaleMsg(UserIndex, MSG_LIDER_GRUPO_HA_CAMBIADO_IMPOSIBLE_UNIRSE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                        Else
-                            Log = "Repuesta Afirmativa 1-1 "
-                            If Not IsValidUserRef(UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
-                                ' Msg723=¡El grupo ya no existe!
-                                Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_EXISTE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                            Else
-                                Log = "Repuesta Afirmativa 1-2 "
-                                If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-                                    Call GroupCreateSuccess(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
-                                    Log = "Repuesta Afirmativa 1-3 "
-                                End If
-                                Call AddUserToGRoup(UserIndex, UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
-                            End If
-                        End If
-                    Else
-                        ' Msg724=Servidor » Solicitud de grupo invalida, reintente...
-                        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_GRUPO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
-                    End If
-                    'unirlo
+                    Call AcceptManagedParty(UserIndex)
                 Case 2
                     Log = "Repuesta Afirmativa 2"
                     ' Msg725=¡Ahora sos un ciudadano!
@@ -7295,10 +7240,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 1
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        'Msg1245= El usuario no esta interesado en formar parte del grupo.
-                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, MSG_EL_USUARIO_NO_ESTA_INTERESADO_EN_FORMAR_PARTE_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WritePartyManagementState(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, 0, PartyDeclined)
                     End If
-                    Call SetUserRef(UserList(UserIndex).Grupo.PropuestaDe, 0)
+                    Call ClearPartyProposal(UserIndex)
                     'Msg1246= Has rechazado la propuesta.
                     Call WriteLocaleMsg(UserIndex, MSG_RECHAZADO_PROPUESTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Case 2
@@ -7342,38 +7286,22 @@ End Sub
 Private Sub HandleRequestGrupo(ByVal UserIndex As Integer)
     On Error GoTo hErr
     'Author: Pablo Mercavides
-    Call WriteDatosGrupo(UserIndex)
+    Call WritePartyManagementState(UserIndex)
     Exit Sub
 hErr:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGrupo", Erl)
 End Sub
 
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    On Error GoTo HandleAbandonarGrupo_Err
-    With UserList(UserIndex)
-        If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
-            Call FinalizarGrupo(UserIndex)
-        Else
-            Call SalirDeGrupo(UserIndex)
-        End If
-    End With
-    Exit Sub
-HandleAbandonarGrupo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
+    ' Required HOO management requests carry party identity/revision. An old
+    ' uncorrelated leave must not affect a newly joined or recreated party.
+    Call WritePartyManagementState(UserIndex, 0, PartyStale)
 End Sub
 
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    On Error GoTo HandleHecharDeGrupo_Err
-    With UserList(UserIndex)
-        Dim Indice As Byte
-        Indice = reader.ReadInt8()
-        Call EcharMiembro(UserIndex, Indice)
-    End With
-    Exit Sub
-HandleHecharDeGrupo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
+    Dim ignored As Byte
+    ignored = reader.ReadInt8()
+    Call WritePartyManagementState(UserIndex, 0, PartyStale)
 End Sub
 
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
@@ -8516,6 +8444,8 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Not .Grupo.EnGrupo Then Exit Sub
         If Not IsFeatureEnabled("target_group_frames") Then Exit Sub
+        If PartyLeaderIndex(UserIndex) = 0 Then Exit Sub
+        If TargetGroupMember < 1 Or TargetGroupMember > 6 Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
         If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub

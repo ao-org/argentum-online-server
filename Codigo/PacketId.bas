@@ -593,6 +593,7 @@ Public Enum ClientPacketID
     eHooBowAttack ' 316 with PYMMO=1.
     eNpcInspectionSubscribe ' 317 with PYMMO=1.
     eGatheringStart ' 318 with PYMMO=1.
+    ePartyManagement ' 319 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum
