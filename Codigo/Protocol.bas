@@ -7295,18 +7295,9 @@ hErr:
 End Sub
 
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    On Error GoTo HandleAbandonarGrupo_Err
-    With UserList(UserIndex)
-        If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
-            Call FinalizarGrupo(UserIndex)
-        Else
-            Call SalirDeGrupo(UserIndex)
-        End If
-    End With
-    Exit Sub
-HandleAbandonarGrupo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
+    ' Required HOO management requests carry party identity/revision. An old
+    ' uncorrelated leave must not affect a newly joined or recreated party.
+    Call WritePartyManagementState(UserIndex, 0, PartyStale)
 End Sub
 
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)

@@ -29,14 +29,14 @@ party ID; acceptance revalidates all requirements and current capacity. Old prop
 cannot join a recreated party. Invitation success requires the question to enqueue.
 
 Kick/leave/disband use party identity and roster revision; kick additionally uses
-the intended versioned member identity, never a shifted slot. The retired positional
-kick request is rejected with refreshed state. Duplicate/newer action correlation
+the intended versioned member identity, never a shifted slot. Retired uncorrelated leave/disband and positional
+kick requests is rejected with refreshed state. Duplicate/newer action correlation
 is cached once per current user session, bounded by the user pool. No action is
 optimistically applied by HOO. Live party/member combat targeting remains separate.
 
 ## Validation
 
-27 new deterministic server cases join the existing full validator. Native execution
+31 new deterministic server cases join the existing full validator. Native execution
 is pending. The documented local VB6 compiler is unavailable. Windows-1252/CRLF
 and diff checks are performed locally; no live gameplay has been verified yet.
 

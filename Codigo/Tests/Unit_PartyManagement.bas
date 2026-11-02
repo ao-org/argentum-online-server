@@ -76,6 +76,23 @@ Private Sub Add(ByVal invited As Integer)
     Call Expect(InviteManagedParty(1, invited) = PartySuccess, "invitation issued")
     Call Expect(AcceptManagedParty(invited) = PartySuccess, "invitation accepted")
 End Sub
+Private Sub Dispatch(ByVal userIndex As Integer, ByVal packetId As Long, Optional ByVal response As Boolean = False)
+    Dim writer As Network.Writer, reader As New Network.Reader, data() As Byte
+    Set writer = Protocol_Writes.GetWriterBuffer()
+    Call writer.Clear(): Call writer.WriteInt16(packetId)
+    If packetId = ClientPacketID.ePartyManagement Then
+        Call writer.WriteInt32(1): Call writer.WriteInt8(1)
+        Call writer.WriteInt32(0): Call writer.WriteInt32(0)
+        Call writer.WriteInt16(0): Call writer.WriteInt16(0): Call writer.WriteString8("")
+    ElseIf packetId = ClientPacketID.eResponderPregunta Then
+        Call writer.WriteBool(response)
+    ElseIf packetId = ClientPacketID.eHecharDeGrupo Then
+        Call writer.WriteInt8(1)
+    End If
+    Call writer.GetData(data): Call writer.Clear(): Call reader.SetData(data)
+    Mapping(1).PacketCount = 0
+    Call Protocol.HandleIncomingData(1, reader, userIndex)
+End Sub
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
     Call Fixture()
@@ -218,6 +235,25 @@ Private Sub RunCase(ByVal index As Integer)
         Call IncreaseVersionId(1)
         Call Request(1, 1, 1)
         Call Expect(PartyLeaderIndex(1) = 1 And ResultFor(1, 1) = PartySuccess, "new session starts fresh request correlation")
+    Case 28
+        Call Dispatch(1, ClientPacketID.ePartyManagement)
+        Call Expect(PartyLeaderIndex(1) = 1 And ResultFor(1, 1) = PartySuccess, "maintained packet dispatcher/reader creates party")
+    Case 29
+        Call Request(1, 1, 1): Call Add(2)
+        Call Dispatch(2, ClientPacketID.eAbandonarGrupo)
+        Call Expect(UserList(2).Grupo.EnGrupo And ResultFor(2, 0) = PartyStale, "uncorrelated leave cannot affect new membership")
+        Call Dispatch(1, ClientPacketID.eHecharDeGrupo)
+        Call Expect(UserList(2).Grupo.EnGrupo And ResultFor(1, 0) = PartyStale, "positional kick cannot hit shifted member")
+    Case 30, 31
+        Call Request(1, 1, 1): id = UserList(1).Grupo.Id
+        Call Expect(InviteManagedParty(1, 2) = PartySuccess, "question issued")
+        Call Dispatch(2, ClientPacketID.eResponderPregunta, index = 30)
+        If index = 30 Then
+            Call Expect(UserList(1).Grupo.CantidadMiembros = 2 And UserList(1).Grupo.Id = id, "production question acceptance preserves identity")
+        Else
+            Call Expect(UserList(1).Grupo.CantidadMiembros = 1 And Not UserList(2).Grupo.EnGrupo, "production decline retains lone leader")
+            Call Expect(ResultFor(1, 0) = PartyDeclined And Not UserList(2).flags.RespondiendoPregunta, "decline clears proposal and informs inviter")
+        End If
     End Select
     capturing = False
     Call UnitTesting.Progress("Party management " & index & " passed")
@@ -232,7 +268,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim i As Integer, before As Long, oldExp As Long
     before = UnitTesting.GetFailedTests(): oldExp = ExpLevelUp(10)
-    For i = 1 To 27: Call RunCase(i): Next i
+    For i = 1 To 31: Call RunCase(i): Next i
     ExpLevelUp(10) = oldExp
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
