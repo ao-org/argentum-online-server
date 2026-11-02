@@ -75,7 +75,14 @@ awards, six recipients with variable 1..5-unit awards, attacker/roster changes,
 mixed damage/death and repeated real kills, eligibility changes, disbanding,
 leader/member reconnects and slot reuse. Existing modifier/solo and exact pool
 assertions remain. The old 153/147 expectation now requires a fair 150/150.
-Native validation of the rotating allocator is pending.
+Tested fix: `484c9a4c03e9eba37d63ad04c2754c1a32b4a7de`.
+The native AO Server PR Validator compiled and passed **973/973 tests**, including
+all **53/53 party reward cases**, in **55,006.24 ms**. The two-member 100 one-base
+awards at ExpMult=2 now produce exactly 100 XP each; repeated/variable small awards,
+attacker/roster changes, NPC changes and membership/session cases all passed.
+Windows-1252/CRLF and `git diff --check cb006f90...HEAD` passed. Local VB6 compiler,
+independent conditional-build matrix and live HOO validation remain unavailable
+or unperformed as detailed below. Subsequent validation-note edits change only docs.
 
 ## Prior validation
 
