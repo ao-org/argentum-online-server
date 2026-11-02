@@ -30,15 +30,20 @@ cannot join a recreated party. Invitation success requires the question to enque
 
 Kick/leave/disband use party identity and roster revision; kick additionally uses
 the intended versioned member identity, never a shifted slot. Retired uncorrelated leave/disband and positional
-kick requests is rejected with refreshed state. Duplicate/newer action correlation
+kick requests are rejected with refreshed state. Duplicate/newer action correlation
 is cached once per current user session, bounded by the user pool. No action is
 optimistically applied by HOO. Live party/member combat targeting remains separate.
 
 ## Validation
 
-31 new deterministic server cases join the existing full validator. Native execution
-is pending. The documented local VB6 compiler is unavailable. Windows-1252/CRLF
-and diff checks are performed locally; no live gameplay has been verified yet.
+The AO Server PR Validator built/tested source commit `19457183`: **1004/1004
+passed**, including all 31 new management cases and the existing 53 party reward
+cases (67,220.88 ms total). This includes production packet dispatcher and
+Accept/Decline integration. The documented local VB6 compiler is unavailable;
+this is native CI evidence, not a claimed local build. Separate PYMMO=0/1 and
+UNIT_TEST=0/1 matrix builds are not exposed independently by this validator.
+Windows-1252/CRLF and `git diff --check` pass locally. No live gameplay has been
+verified. Client draft: https://github.com/morgolock/heroes-of-old/pull/853.
 
 ## Coordinated release and two-client checklist
 
