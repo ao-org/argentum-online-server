@@ -215,6 +215,7 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
     Dim i            As Byte
+    Dim before As Long, missing As Long, capacity As Long
     For i = 1 To Npc.NumDropQuest
         With Npc.DropQuest(i)
         
@@ -235,10 +236,19 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
             
             Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
             If Probabilidad = 1 Then
+                before = CountInventoryObjects(UserIndex, .ObjIndex)
+                missing = MissingQuestDropItems(UserIndex, .QuestIndex, .ObjIndex)
                 Dropeo.Amount = .Amount
+                If Dropeo.Amount > missing Then Dropeo.Amount = missing
                 Dropeo.ObjIndex = .ObjIndex
-                Call MeterItemEnInventario(UserIndex, Dropeo)
-                Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
+                capacity = QuestDropStackCapacity(UserIndex, .ObjIndex)
+                If capacity > 0 And Dropeo.Amount > capacity Then Dropeo.Amount = capacity
+                If Dropeo.Amount > 0 Then
+                    Call MeterItemEnInventario(UserIndex, Dropeo)
+                    If CountInventoryObjects(UserIndex, .ObjIndex) > before Then
+                        Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_SoundEffects.Dropeo_Sound, Npc.pos.x, Npc.pos.y))
+                    End If
+                End If
             End If
             
         End With
@@ -248,3 +258,23 @@ NextQuest:
 ErrHandler:
     Call LogError("Error DropObjQuest al dropear el item " & ObjData(Npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 End Sub
+
+Private Function QuestDropStackCapacity(ByVal userIndex As Integer, ByVal objIndex As Integer) As Long
+    On Error GoTo QuestDropStackCapacity_Err
+    Dim slot As Integer, room As Long, maximum As Long
+    maximum = GetMaxInvOBJ()
+    For slot = 1 To UserList(userIndex).CurrentInventorySlots
+        With UserList(userIndex).invent.Object(slot)
+            If .ObjIndex = 0 Then
+                QuestDropStackCapacity = maximum: Exit Function
+            End If
+            If .ObjIndex = objIndex And .ElementalTags = e_ElementalTags.Normal Then
+                room = maximum - .Amount
+                If room > QuestDropStackCapacity Then QuestDropStackCapacity = room
+            End If
+        End With
+    Next slot
+    Exit Function
+QuestDropStackCapacity_Err:
+    Call TraceError(Err.Number, Err.Description, "InvMod.QuestDropStackCapacity", Erl)
+End Function

@@ -498,3 +498,85 @@ Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As I
 AddUserToGRoup_Err:
     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)
 End Sub
+
+' A snapshot, not the mutable roster, is used for both reward counting and payment.
+' The leader is already in Miembros (normally slot 1). The credited player comes
+' first for deterministic integer remainder allocation; every reference is deduped.
+Public Function IsRewardUser(ByVal userIndex As Integer) As Boolean
+    On Error GoTo IsRewardUser_Err
+    If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Function
+    With UserList(userIndex)
+        IsRewardUser = .flags.UserLogged And .ConnectionDetails.ConnIDValida And .flags.Muerto = 0
+    End With
+    Exit Function
+IsRewardUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.IsRewardUser", Erl)
+End Function
+
+Public Sub CollectPartyRewardRecipients(ByVal credited As Integer, ByRef result As t_PartyRewardRecipients, Optional ByVal npcMap As Integer = 0)
+    On Error GoTo CollectPartyRewardRecipients_Err
+    Dim emptyResult As t_PartyRewardRecipients
+    result = emptyResult
+    If Not IsRewardUser(credited) Then Exit Sub
+    If npcMap <> 0 Then
+        If UserList(credited).pos.Map <> npcMap Then Exit Sub
+    End If
+    result.Count = 1
+    Call SetUserRef(result.Users(1), credited)
+    Dim leader As Integer, groupId As Long, i As Integer, j As Integer, member As Integer
+    Dim foundCredited As Boolean, duplicate As Boolean, rosterCount As Integer
+    With UserList(credited).Grupo
+        If Not .EnGrupo Or .Id <= 0 Then Exit Sub
+        If Not IsValidUserRef(.Lider) Then Exit Sub
+        leader = .Lider.ArrayIndex: groupId = .Id
+    End With
+    With UserList(leader).Grupo
+        If Not .EnGrupo Or .Id <> groupId Then Exit Sub
+        If Not IsValidUserRef(.Lider) Then Exit Sub
+        If .Lider.ArrayIndex <> leader Then Exit Sub
+        rosterCount = .CantidadMiembros
+        If rosterCount < 1 Or rosterCount > UBound(.Miembros) Then Exit Sub
+        For i = 1 To rosterCount
+            If IsValidUserRef(.Miembros(i)) Then
+                If .Miembros(i).ArrayIndex = credited Then foundCredited = True
+            End If
+        Next i
+        If Not foundCredited Then Exit Sub
+        result.IsParty = True
+        For i = 1 To rosterCount
+            If IsValidUserRef(.Miembros(i)) Then
+                member = .Miembros(i).ArrayIndex
+                If IsRewardUser(member) Then
+                    If UserList(member).Grupo.EnGrupo And UserList(member).Grupo.Id = groupId Then
+                        If IsValidUserRef(UserList(member).Grupo.Lider) Then
+                            If UserList(member).Grupo.Lider.ArrayIndex = leader Then
+                                If UserList(member).pos.Map = UserList(credited).pos.Map Then
+                                    If Distancia(UserList(credited).pos, UserList(member).pos) < 20 Then
+                                        duplicate = False
+                                        For j = 1 To result.Count
+                                            If result.Users(j).ArrayIndex = member Then duplicate = True
+                                        Next j
+                                        If Not duplicate Then
+                                            result.Count = result.Count + 1
+                                            result.Users(result.Count) = .Miembros(i)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        Next i
+    End With
+    Exit Sub
+CollectPartyRewardRecipients_Err:
+    ' Never use a partially validated party projection. Keep the valid solo credit.
+    result = emptyResult
+    If IsRewardUser(credited) Then
+        If npcMap = 0 Or UserList(credited).pos.Map = npcMap Then
+            result.Count = 1: Call SetUserRef(result.Users(1), credited)
+        End If
+    End If
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.CollectPartyRewardRecipients", Erl)
+End Sub

@@ -2942,6 +2942,12 @@ Public Type t_UserPersistSnapshot
     LastQuestsDone() As Integer
 End Type
 
+Public Type t_PartyRewardRecipients
+    Count As Integer
+    IsParty As Boolean
+    Users(1 To 6) As t_UserReference
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte

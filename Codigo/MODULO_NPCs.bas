@@ -174,7 +174,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Call LogError("Phoenix killed while isnt alive, it was gm-Spawned or this is an error.")
         End If
     End If
-    If NpcList(NpcIndex).ShowKillerConsole > 0 Then
+    If NpcList(NpcIndex).ShowKillerConsole > 0 And IsRewardUser(UserIndex) Then
         'Msg1986=¬1 ha muerto en manos de ¬2
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_KILLED_BY_USER, NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
@@ -183,7 +183,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call MarkGlobalQuestBossAsDead(MiNPC.flags.GlobalQuestBossIndex, MiNPC.Numero)
     End If
     Call QuitarNPC(NpcIndex, eDie)
-    If UserIndex > 0 Then ' Lo mato un usuario?
+    If IsRewardUser(UserIndex) Then ' Valid credited user; no environmental awards.
         If MiNPC.flags.Snd3 > 0 Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MiNPC.flags.Snd3, MiNPC.pos.x, MiNPC.pos.y))
         Else
@@ -212,26 +212,16 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call IncrementLongCounter(UserList(UserIndex).Stats.NPCsMuertos, "NPCsMuertos")
         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
         Call SubirSkill(UserIndex, e_Skill.Supervivencia)
-        If MiNPC.flags.ExpCount > 0 Then
-            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + MiNPC.flags.ExpCount
-                If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-                Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiNPC.flags.ExpCount), UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, RGB(0, 169, 255))
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
-            End If
-            MiNPC.flags.ExpCount = 0
-        End If
+        Call AwardNpcDeathExperience(UserIndex, MiNPC)
         EraCriminal = Status(UserIndex)
         If MiNPC.GiveEXPClan > 0 Then
             If UserList(UserIndex).GuildIndex > 0 Then
                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan * SvrConfig.GetValue("ExpMult"))
             End If
         End If
-        Call OnNpcKilledUpdateQuest(UserIndex, MiNPC)
+        Call AwardNpcPartyQuests(UserIndex, MiNPC)
         'Tiramos el oro
         Call NPCTirarOro(MiNPC, UserIndex)
-        Call NpcDropQuestObj(MiNPC, UserIndex)
         Call NpcDropObj(MiNPC, UserIndex)
     End If
     ' Mascotas y npcs de entrenamiento no respawnean
@@ -2627,41 +2617,58 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
         CanAttackNotOwner = AttackResult.Result = eMounted Or AttackResult.Result = eOutOfRange
     End If
 End Function
+Public Sub AwardNpcPartyQuests(ByVal credited As Integer, ByRef npc As t_Npc)
+    On Error GoTo AwardNpcPartyQuests_Err
+    If npc.npcType = DummyTarget Or npc.MaestroUser.ArrayIndex <> 0 Then Exit Sub
+    Dim recipients As t_PartyRewardRecipients, i As Integer, userIndex As Integer
+    Call CollectPartyRewardRecipients(credited, recipients, npc.pos.Map)
+    For i = 1 To recipients.Count
+        If IsValidUserRef(recipients.Users(i)) Then
+            userIndex = recipients.Users(i).ArrayIndex
+            ' Inventory writes and objective publication only dirty the deferred
+            ' turn-in queue; readiness sees the completed kill + item mutation.
+            Call OnNpcKilledUpdateQuest(userIndex, npc)
+            Call NpcDropQuestObj(npc, userIndex)
+        End If
+    Next i
+    Exit Sub
+AwardNpcPartyQuests_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.AwardNpcPartyQuests", Erl)
+End Sub
+
 Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_Npc)
     On Error GoTo OnNpcKilledUpdateQuest_Err
-    Dim i As Integer
-    Dim j As Integer
+    If MiNPC.npcType = DummyTarget Or MiNPC.MaestroUser.ArrayIndex <> 0 Then Exit Sub
+    Dim i As Integer, j As Integer, changed As Boolean, wasComplete As Boolean
     Dim chatColor As Long
-        
     For i = 1 To MAXUSERQUESTS
         With UserList(UserIndex).QuestStats.Quests(i)
-            If .QuestIndex Then
-                If QuestList(.QuestIndex).RequiredNPCs Then
-                    For j = 1 To QuestList(.QuestIndex).RequiredNPCs
-                        If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
-                            If QuestList(.QuestIndex).RequiredNPC(j).Amount > .NPCsKilled(j) Then
-                                .NPCsKilled(j) = .NPCsKilled(j) + 1
-                                .Dirty = True ' Quest slot changed: NPC kill progress increased.
-                            End If
+            If .QuestIndex > 0 Then
+                wasComplete = AllRequiredNPCsKilled(UserIndex, .QuestIndex, i)
+                For j = 1 To QuestList(.QuestIndex).RequiredNPCs
+                    If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
+                        If .NPCsKilled(j) < QuestList(.QuestIndex).RequiredNPC(j).Amount Then
+                            .NPCsKilled(j) = .NPCsKilled(j) + 1
+                            .Dirty = True: changed = True
                             chatColor = GetNPCProgressColor(.NPCsKilled(j), QuestList(.QuestIndex).RequiredNPC(j).Amount)
-                            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, _
-                                    UserList(UserIndex).Char.charindex, chatColor)
-                            If AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
-                                'Msg2160=Ya has matado todas las criaturas que la misión ¬1 requería.
-                                Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(.QuestIndex).nombre)
-                            End If
+                            Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).Amount & " " & MiNPC.Name, UserList(UserIndex).Char.charindex, chatColor)
                         End If
-                    Next j
+                    End If
+                Next j
+                If Not wasComplete And AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
+                    Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(.QuestIndex).nombre)
                 End If
-                UserList(UserIndex).flags.ModificoQuests = True
             End If
         End With
     Next i
-    Call RefreshNpcInspection(UserIndex)
-    Call SendQuestObjectiveSnapshot(UserIndex)
+    If changed Then
+        UserList(UserIndex).flags.ModificoQuests = True
+        Call RefreshNpcInspection(UserIndex)
+        Call SendQuestObjectiveSnapshot(UserIndex)
+    End If
     Exit Sub
 OnNpcKilledUpdateQuest_Err:
-    Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest_Err", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.OnNpcKilledUpdateQuest", Erl)
 End Sub
 
 #If UNIT_TEST = 1 Then
