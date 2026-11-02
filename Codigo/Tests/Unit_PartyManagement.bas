@@ -90,6 +90,9 @@ Private Sub Dispatch(ByVal userIndex As Integer, ByVal packetId As Long, Optiona
         Call writer.WriteInt8(1)
     End If
     Call writer.GetData(data): Call writer.Clear(): Call reader.SetData(data)
+    If packetId = ClientPacketID.ePartyManagement Then
+        Call Expect(UBound(data) = 19, "management request has full 20-byte layout; bytes=" & (UBound(data) + 1))
+    End If
     Mapping(1).PacketCount = 0
     Call Protocol.HandleIncomingData(1, reader, userIndex)
 End Sub
@@ -237,7 +240,7 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(PartyLeaderIndex(1) = 1 And ResultFor(1, 1) = PartySuccess, "new session starts fresh request correlation")
     Case 28
         Call Dispatch(1, ClientPacketID.ePartyManagement)
-        Call Expect(PartyLeaderIndex(1) = 1 And ResultFor(1, 1) = PartySuccess, "maintained packet dispatcher/reader creates party")
+        Call Expect(PartyLeaderIndex(1) = 1 And ResultFor(1, 1) = PartySuccess, "maintained packet dispatcher/reader creates party; leader=" & PartyLeaderIndex(1) & "; result=" & ResultFor(1, 1))
     Case 29
         Call Request(1, 1, 1): Call Add(2)
         Call Dispatch(2, ClientPacketID.eAbandonarGrupo)
