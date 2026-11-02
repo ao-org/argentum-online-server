@@ -4174,12 +4174,12 @@ PrepareTrapUpdate_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
 End Function
-Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer, Optional ByVal request As Long = 0, Optional ByVal result As e_PartyResult = PartyState)
+Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer, Optional ByVal request As Long = 0, Optional ByVal result As e_PartyResult = PartyState, Optional ByVal feedback As Long = 0)
     On Error GoTo Failed
     Dim leader As Integer, i As Integer, member As Integer
     leader = PartyLeaderIndex(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eUpdateGroupInfo)
-    Call Writer.WriteInt32(request): Call Writer.WriteInt8(result)
+    Call Writer.WriteInt32(request): Call Writer.WriteInt8(result): Call Writer.WriteInt32(feedback)
     Call Writer.WriteInt16(UserIndex): Call Writer.WriteInt16(UserList(UserIndex).VersionId)
     Call Writer.WriteBool(UserList(UserIndex).flags.SeguroParty)
     If leader = 0 Then

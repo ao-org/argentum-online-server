@@ -20,6 +20,8 @@ Public Enum e_PartyResult
     PartyFaction = 14
     PartyGameMaster = 15
     PartyDeclined = 16
+    PartyInvitationSent = 17
+    PartyJoined = 18
 End Enum
 Private Type PartyRequestCache
     userId As Long
@@ -27,6 +29,8 @@ Private Type PartyRequestCache
     request As Long
     fingerprint As String
     result As e_PartyResult
+    feedback As Long
+    feedbackSequence As Long
 End Type
 Private mRequests() As PartyRequestCache
 Private mCapacity As Integer
@@ -88,9 +92,35 @@ ClearPartyProposal_Err:
     Call TraceError(Err.Number, Err.Description, "modPartyManagement.ClearPartyProposal", Erl)
 End Sub
 
-Public Sub WritePartyManagementState(ByVal userIndex As Integer, Optional ByVal request As Long = 0, Optional ByVal result As e_PartyResult = PartyState)
+Private Sub EnsurePartyRequestSession(ByVal userIndex As Integer)
+    If userIndex > mCapacity Then
+        mCapacity = UBound(UserList): ReDim Preserve mRequests(1 To mCapacity)
+    End If
+    With mRequests(userIndex)
+        If .userId <> UserList(userIndex).Id Or .version <> UserList(userIndex).VersionId Then
+            .userId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
+            .request = 0: .feedback = 0: .feedbackSequence = 0
+        End If
+    End With
+End Sub
+
+Private Function NextPartyFeedbackId(ByVal userIndex As Integer) As Long
+    Call EnsurePartyRequestSession(userIndex)
+    With mRequests(userIndex)
+        ' Exhaustion is practically unreachable; never wrap into a duplicate ID.
+        If .feedbackSequence < &H7FFFFFFF Then .feedbackSequence = .feedbackSequence + 1
+        NextPartyFeedbackId = .feedbackSequence
+    End With
+End Function
+
+Public Sub WritePartyManagementState(ByVal userIndex As Integer, Optional ByVal request As Long = 0, Optional ByVal result As e_PartyResult = PartyState, Optional ByVal feedback As Long = -1)
     On Error GoTo WritePartyManagementState_Err
-    Call SendData(ToIndex, userIndex, PrepareUpdateGroupInfo(userIndex, request, result))
+    If result = PartyState Then
+        feedback = 0
+    ElseIf feedback < 0 Then
+        feedback = NextPartyFeedbackId(userIndex)
+    End If
+    Call SendData(ToIndex, userIndex, PrepareUpdateGroupInfo(userIndex, request, result, feedback))
     Exit Sub
 WritePartyManagementState_Err:
     Call TraceError(Err.Number, Err.Description, "modPartyManagement.WritePartyManagementState", Erl)
@@ -216,10 +246,13 @@ Public Function AcceptManagedParty(ByVal invited As Integer) As e_PartyResult
         Call SetUserRef(.Lider, inviter)
     End With
     Call PublishManagedParty(inviter)
-    Call WritePartyManagementState(inviter, 0, PartySuccess)
 Finished:
     Call ClearPartyProposal(invited)
-    Call WritePartyManagementState(invited, 0, AcceptManagedParty)
+    If AcceptManagedParty = PartySuccess Then
+        Call WritePartyManagementState(invited, 0, PartyJoined)
+    Else
+        Call WritePartyManagementState(invited, 0, AcceptManagedParty)
+    End If
     Exit Function
 Failed:
     AcceptManagedParty = PartyExpired
@@ -323,19 +356,19 @@ End Sub
 Public Sub ExecutePartyManagement(ByVal userIndex As Integer, ByVal request As Long, ByVal action As Byte, ByVal partyId As Long, ByVal revision As Long, ByRef target As t_UserReference, ByVal name As String)
     On Error GoTo Failed
     If Not IsRewardCredit(userIndex) Or request <= 0 Then Exit Sub
-    If userIndex > mCapacity Then
-        mCapacity = UBound(UserList): ReDim Preserve mRequests(1 To mCapacity)
-    End If
+    Call EnsurePartyRequestSession(userIndex)
     Dim result As e_PartyResult, fingerprint As String, emptyCache As PartyRequestCache, leader As Integer, invited As Integer
     fingerprint = action & ":" & partyId & ":" & revision & ":" & target.ArrayIndex & ":" & target.VersionId & ":" & name
     With mRequests(userIndex)
-        If .userId <> UserList(userIndex).Id Or .version <> UserList(userIndex).VersionId Then
-            .userId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId: .request = 0
-        End If
         If request <= .request Then
             result = PartyStale
             If request = .request And fingerprint = .fingerprint Then result = .result
-            Call WritePartyManagementState(userIndex, request, result): Exit Sub
+            If request = .request And fingerprint = .fingerprint Then
+                Call WritePartyManagementState(userIndex, request, result, .feedback)
+            Else
+                Call WritePartyManagementState(userIndex, request, result)
+            End If
+            Exit Sub
         End If
         result = PartySuccess: leader = PartyLeaderIndex(userIndex)
         If action = 0 Then
@@ -368,6 +401,7 @@ Public Sub ExecutePartyManagement(ByVal userIndex As Integer, ByVal request As L
             name = Trim$(name): resolved = NameIndex(name)
             If IsValidUserRef(resolved) Then invited = resolved.ArrayIndex
             result = InviteManagedParty(userIndex, invited)
+            If result = PartySuccess Then result = PartyInvitationSent
         ElseIf action = 3 Then
             If Not IsValidUserRef(target) Then
                 result = PartyStale
@@ -382,8 +416,10 @@ Public Sub ExecutePartyManagement(ByVal userIndex As Integer, ByVal request As L
             result = PartyStale
         End If
         .request = request: .fingerprint = fingerprint: .result = result
+        .feedback = 0
+        If result <> PartyState Then .feedback = NextPartyFeedbackId(userIndex)
     End With
-    Call WritePartyManagementState(userIndex, request, result)
+    Call WritePartyManagementState(userIndex, request, result, mRequests(userIndex).feedback)
     Exit Sub
 Failed:
     Call TraceError(Err.Number, Err.Description, "modPartyManagement.ExecutePartyManagement", Erl)

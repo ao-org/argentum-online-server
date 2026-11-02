@@ -34,7 +34,10 @@ Private Function GetNextId() As Long
 End Function
 
 Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Integer)
-    Call WritePartyManagementState(UserIndex, 0, InviteManagedParty(UserIndex, InvitadoIndex))
+    Dim result As e_PartyResult
+    result = InviteManagedParty(UserIndex, InvitadoIndex)
+    If result = PartySuccess Then result = PartyInvitationSent
+    Call WritePartyManagementState(UserIndex, 0, result)
 End Sub
 Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     Dim leader As Integer

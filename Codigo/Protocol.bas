@@ -7241,8 +7241,6 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
                         Call WritePartyManagementState(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, 0, PartyDeclined)
-                        'Msg1245= El usuario no esta interesado en formar parte del grupo.
-                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, MSG_EL_USUARIO_NO_ESTA_INTERESADO_EN_FORMAR_PARTE_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                     Call ClearPartyProposal(UserIndex)
                     'Msg1246= Has rechazado la propuesta.

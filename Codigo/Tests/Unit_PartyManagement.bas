@@ -73,6 +73,26 @@ Private Function ResultFor(ByVal userIndex As Integer, ByVal requestId As Long) 
         End If
     Next i
 End Function
+Private Function FeedbackFor(ByVal userIndex As Integer, ByVal requestId As Long) As Long
+    Dim i As Long, data() As Byte, reader As New Network.Reader, result As Long
+    For i = packets.Count To 1 Step -1
+        If recipients(i) = userIndex Then
+            data = packets(i): Call reader.SetData(data)
+            If reader.ReadInt16() = ServerPacketID.eUpdateGroupInfo Then
+                If reader.ReadInt32() = requestId Then
+                    result = reader.ReadInt8(): FeedbackFor = reader.ReadInt32(): Exit Function
+                End If
+            End If
+        End If
+    Next i
+End Function
+Private Function PacketCountFor(ByVal userIndex As Integer, ByVal packetId As Long) As Long
+    Dim i As Long, data() As Byte
+    For i = 1 To packets.Count
+        data = packets(i)
+        If recipients(i) = userIndex And CLng(data(0)) + 256& * data(1) = packetId Then PacketCountFor = PacketCountFor + 1
+    Next i
+End Function
 Private Sub Add(ByVal invited As Integer)
     Call Expect(InviteManagedParty(1, invited) = PartySuccess, "invitation issued")
     Call Expect(AcceptManagedParty(invited) = PartySuccess, "invitation accepted")
@@ -110,6 +130,7 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(UserList(1).Grupo.Id > 0 And IsValidUserRef(UserList(1).Grupo.Miembros(1)), "valid identity and self reference")
         data = packets(packets.Count): Call reader.SetData(data)
         Call Expect(reader.ReadInt16() = ServerPacketID.eUpdateGroupInfo And reader.ReadInt32() = 1 And reader.ReadInt8() = PartySuccess, "packet result header")
+        Call Expect(reader.ReadInt32() > 0, "operation feedback sequence")
         Call Expect(reader.ReadInt16() = 1 And reader.ReadInt16() = fixtureVersion And Not reader.ReadBool(), "local identity and safety")
         Call Expect(reader.ReadInt32() = UserList(1).Grupo.Id And reader.ReadInt32() = 1, "party identity/revision")
         Call Expect(reader.ReadInt16() = 1 And reader.ReadInt16() = fixtureVersion And reader.ReadInt8() = 1, "leader and count")
@@ -125,7 +146,7 @@ Private Sub RunCase(ByVal index As Integer)
     Case 3
         Call Request(1, 1, 1): id = UserList(1).Grupo.Id
         Call Request(1, 2, 2, "Party2")
-        Call Expect(ResultFor(1, 2) = PartySuccess And UserList(2).flags.pregunta = 1 And UserList(2).flags.RespondiendoPregunta, "named invitation uses server question")
+        Call Expect(ResultFor(1, 2) = PartyInvitationSent And UserList(2).flags.pregunta = 1 And UserList(2).flags.RespondiendoPregunta, "named invitation uses server question")
         Call Expect(AcceptManagedParty(2) = PartySuccess, "acceptance succeeds")
         Call Expect(UserList(1).Grupo.CantidadMiembros = 2 And UserList(1).Grupo.Id = id, "acceptance preserves one-person identity")
         Call Expect(UserList(2).Grupo.ProposalPartyId = 0, "proposal cleaned")
@@ -258,6 +279,37 @@ Private Sub RunCase(ByVal index As Integer)
             Call Expect(UserList(1).Grupo.CantidadMiembros = 1 And Not UserList(2).Grupo.EnGrupo, "production decline retains lone leader")
             Call Expect(ResultFor(1, 0) = PartyDeclined And Not UserList(2).flags.RespondiendoPregunta, "decline clears proposal and informs inviter")
         End If
+    Case 32
+        Call Request(1, 1, 1): UserList(2).flags.SeguroParty = True
+        Call InvitarMiembro(1, 2)
+        Call Expect(ResultFor(1, 0) = PartyBlocked And FeedbackFor(1, 0) > 0, "targeted blocked invitation has explicit sequenced outcome")
+    Case 33
+        Call Request(1, 1, 1): Call InvitarMiembro(1, 2)
+        Call Expect(ResultFor(1, 0) = PartyInvitationSent, "targeted invitation is sent, not generic management success")
+        Call Dispatch(2, ClientPacketID.eResponderPregunta, True)
+        Call Expect(ResultFor(2, 0) = PartyJoined And FeedbackFor(2, 0) > 0, "acceptor gets joined outcome")
+        Call Expect(ResultFor(1, 0) = PartyState, "join broadcasts state without duplicate inviter success")
+    Case 34
+        Call Request(1, 1, 1): Call Request(1, 2, 2, "Party2")
+        id = FeedbackFor(1, 2)
+        Call Request(1, 2, 2, "Party2")
+        Call Expect(ResultFor(1, 2) = PartyInvitationSent And FeedbackFor(1, 2) = id And id > 0, "duplicate request retains feedback sequence")
+        Call Request(1, 3, 0)
+        Call Expect(ResultFor(1, 3) = PartyState And FeedbackFor(1, 3) = 0, "refresh is silent synchronization")
+    Case 35
+        Call Request(1, 1, 1): Call InvitarMiembro(1, 2)
+        before = PacketCountFor(1, ServerPacketID.eLocaleMsg)
+        Call Dispatch(2, ClientPacketID.eResponderPregunta, False)
+        Call Expect(ResultFor(1, 0) = PartyDeclined And FeedbackFor(1, 0) > 0, "decline is explicit feedback")
+        Call Expect(PacketCountFor(1, ServerPacketID.eLocaleMsg) = before, "decline has no duplicate inviter console message")
+    Case 36
+        Call WritePartyManagementState(2, 0, PartyBlocked)
+        Call Expect(FeedbackFor(2, 0) = 1, "new session sequence starts once")
+        Call WritePartyManagementState(2, 0, PartyFull)
+        Call Expect(FeedbackFor(2, 0) = 2, "different outcomes advance sequence")
+        Call IncreaseVersionId(2)
+        Call WritePartyManagementState(2, 0, PartyExpired)
+        Call Expect(FeedbackFor(2, 0) = 1, "reused slot starts fresh feedback session")
     End Select
     capturing = False
     Call UnitTesting.Progress("Party management " & index & " passed")
@@ -272,7 +324,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim i As Integer, before As Long, oldExp As Long
     before = UnitTesting.GetFailedTests(): oldExp = ExpLevelUp(10)
-    For i = 1 To 31: Call RunCase(i): Next i
+    For i = 1 To 36: Call RunCase(i): Next i
     ExpLevelUp(10) = oldExp
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
