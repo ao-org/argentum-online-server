@@ -71,9 +71,12 @@ Private Sub Fixture()
             .Stats.UserSkills(e_Skill.liderazgo) = 0
             .CurrentInventorySlots = 3
             .Grupo.EnGrupo = True: .Grupo.Id = 77
-            Call SetUserRef(.Grupo.Lider, 3)
         End With
         Call AcceptQuest(i, 1, 1)
+    Next i
+    ' Versioned references must be captured after every user has its session ID.
+    For i = 1 To 4
+        Call SetUserRef(UserList(i).Grupo.Lider, 3)
     Next i
     With UserList(3).Grupo
         .CantidadMiembros = 3
