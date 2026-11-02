@@ -27,7 +27,8 @@ Private Sub Fixture()
     Call Unit_NpcBow.InitializeTestWorld()
     ReDim UserList(1 To 7)
     Set m_NameIndex = New Dictionary
-    fixtureVersion = fixtureVersion + 1
+    ' Leave one generation for cases that deliberately reconnect inside a fixture.
+    fixtureVersion = fixtureVersion + 2
     Dim i As Integer, wrapper As clsUserRefWrapper
     For i = 1 To 7
         With UserList(i)
