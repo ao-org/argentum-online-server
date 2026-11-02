@@ -258,6 +258,7 @@ Public Enum ServerPacketID
     eNpcInspection ' 221 with PYMMO=1.
     eGatheringFeedback ' 222 with PYMMO=1.
     eQuestObjectiveTemplates ' 223 with PYMMO=1; bounded accepted-objective projection.
+    eQuestTurnIns ' 224 with PYMMO=1; complete ready-quest replacement.
     eMaxPacket
     [PacketCount]
 End Enum

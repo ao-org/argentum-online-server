@@ -350,6 +350,7 @@ ResetQuestStats_Err:
 End Sub
  
 Public Sub LoadQuests()
+    Call ResetQuestTurnInRecipients()
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Carga el archivo QUESTS.DAT en el array QuestList.
     'Last modified: 27/01/2010 by Amraphen

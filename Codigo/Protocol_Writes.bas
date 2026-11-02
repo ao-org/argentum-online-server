@@ -1595,6 +1595,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
             Call modSendData.SendData(ToIndex, UserIndex)
         End If
     End With
+    Call SendQuestTurnInSnapshot(UserIndex)
     Exit Sub
 WriteInventoryUnlockSlots_Err:
     Call Writer.Clear
@@ -1653,6 +1654,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
         Call Writer.WriteBool(False)
     End If
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call SendQuestTurnInSnapshot(UserIndex)
     Exit Sub
 WriteChangeInventorySlot_Err:
     Call Writer.Clear
@@ -1711,6 +1713,7 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
         Call Writer.WriteBool(False)
     End If
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call SendQuestTurnInSnapshot(UserIndex)
     Exit Sub
 WriteChangeSpellSlot_Err:
     Call Writer.Clear
@@ -2360,6 +2363,7 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
         Call Writer.WriteInt8(UserList(UserIndex).Stats.UserSkills(i))
     Next i
     Call modSendData.SendData(ToIndex, UserIndex)
+    Call SendQuestTurnInSnapshot(UserIndex)
     Exit Sub
 WriteSendSkills_Err:
     Call Writer.Clear
