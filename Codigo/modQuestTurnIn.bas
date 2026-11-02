@@ -233,7 +233,7 @@ Private Function EvaluateSnapshot(ByVal userIndex As Integer, Optional ByVal for
         If Not force And .known And .userId = UserList(userIndex).Id And _
             .version = UserList(userIndex).VersionId And .fingerprint = fingerprint Then
             .globalGates = UserGlobalGates(userIndex)
-            EvaluateSnapshot = True
+            EvaluateSnapshot = PublishQuestFeedback(userIndex, ready, force)
             Exit Function
         End If
         Dim writer As Network.Writer, queued As Boolean, entry As Variant, recipientTotal As Long
@@ -259,7 +259,7 @@ Private Function EvaluateSnapshot(ByVal userIndex As Integer, Optional ByVal for
         Next entry
         Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
         If queued Then
-            EvaluateSnapshot = True
+            EvaluateSnapshot = PublishQuestFeedback(userIndex, ready, force)
             .globalGates = UserGlobalGates(userIndex)
             .known = True: .userId = UserList(userIndex).Id
             .version = UserList(userIndex).VersionId: .fingerprint = fingerprint

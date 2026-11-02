@@ -664,6 +664,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
     On Error GoTo WriteUpdateGold_Err
+    Call SendQuestTurnInSnapshot(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eUpdateGold)
     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
     Call Writer.WriteInt32(SvrConfig.GetValue("OroPorNivelBilletera"))
