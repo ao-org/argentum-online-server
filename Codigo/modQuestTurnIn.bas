@@ -139,6 +139,7 @@ Public Sub ProcessQuestTurnInUpdates(Optional ByVal nowRaw As Long = 0)
         userIndex = CInt(key)
         With mCache(userIndex)
             If Not UserList(userIndex).flags.UserLogged Or UserList(userIndex).Id <> .dirtyId Or UserList(userIndex).VersionId <> .dirtyVersion Then
+                Call ResetQuestDiscoveryUser(userIndex)
                 Call mDirty.Remove(key)
             ElseIf Not .retry Or TicksElapsed(.attempted, nowRaw) >= 250 Then
                 processed = processed + 1: id = .dirtyId: version = .dirtyVersion

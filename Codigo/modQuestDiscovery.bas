@@ -47,6 +47,20 @@ Failed:
     Call TraceError(Err.Number, Err.Description, "modQuestDiscovery.ResetQuestDiscoveryIndex", Erl)
 End Sub
 
+Public Sub ResetQuestDiscoveryUser(ByVal userIndex As Integer)
+    On Error GoTo Failed
+    If userIndex < 1 Or userIndex > mCapacity Then Exit Sub
+    With mCache(userIndex)
+        Set .pendingRows = Nothing
+        .pendingInputs = "": .pendingFingerprint = ""
+        .inputs = "": .fingerprint = "": .known = False
+        .userId = 0: .version = 0: .sequence = 0
+    End With
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modQuestDiscovery.ResetQuestDiscoveryUser", Erl)
+End Sub
+
 Private Sub BuildIndex()
     On Error GoTo Failed
     Dim npc As Long, offer As Integer, quest As Integer, links As Long, key As String
