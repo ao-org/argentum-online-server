@@ -16,6 +16,7 @@ Private Type TurnInCache
     dirtyVersion As Integer
     force As Boolean
     retry As Boolean
+    readinessDirty As Boolean
     attempted As Long
 End Type
 Private mCache() As TurnInCache
@@ -89,17 +90,20 @@ Private Sub CollectGlobalChanges()
     If mGlobals Is Nothing Then Exit Sub
     If mGlobalSent Is Nothing Then Set mGlobalSent = CreateObject("Scripting.Dictionary")
     Dim key As Variant, signature As String, index As Integer, userIndex As Long, slot As Integer, quest As Integer
+    Dim discoveryChanged As Boolean
     For Each key In mGlobals.Keys
         index = CInt(key)
         If ValidGlobal(index) Then
             signature = GlobalSignature(index)
             If Not mGlobalSent.Exists(key) Then mGlobalSent(key) = ""
             If mGlobalSent(key) <> signature Then
+                discoveryChanged = InvalidateQuestDiscoveryGlobal(index)
                 #If UNIT_TEST = 1 Then
                     GlobalScanCount = GlobalScanCount + 1
                 #End If
                 For userIndex = 1 To LastUser
                     If UserList(userIndex).flags.UserLogged Then
+                        If discoveryChanged Then Call SendQuestTurnInSnapshot(CInt(userIndex), False, True)
                         For slot = 1 To MAXUSERQUESTS
                             quest = UserList(userIndex).QuestStats.Quests(slot).QuestIndex
                             If quest > 0 And quest <= UBound(QuestList) Then
@@ -129,7 +133,7 @@ Public Sub ProcessQuestTurnInUpdates(Optional ByVal nowRaw As Long = 0)
     Call CollectGlobalChanges()
     If mDirty Is Nothing Then Exit Sub
     If nowRaw = 0 Then nowRaw = GetTickCountRaw()
-    Dim key As Variant, userIndex As Integer, processed As Integer, id As Long, version As Integer
+    Dim key As Variant, userIndex As Integer, processed As Integer, id As Long, version As Integer, succeeded As Boolean
     For Each key In mDirty.Keys
         If processed >= 128 Then Exit For
         userIndex = CInt(key)
@@ -138,7 +142,12 @@ Public Sub ProcessQuestTurnInUpdates(Optional ByVal nowRaw As Long = 0)
                 Call mDirty.Remove(key)
             ElseIf Not .retry Or TicksElapsed(.attempted, nowRaw) >= 250 Then
                 processed = processed + 1: id = .dirtyId: version = .dirtyVersion
-                If EvaluateSnapshot(userIndex, .force) Then
+                If .readinessDirty Then
+                    succeeded = EvaluateSnapshot(userIndex, .force)
+                Else
+                    succeeded = PublishQuestDiscovery(userIndex, .force)
+                End If
+                If succeeded Then
                     If .dirtyId = id And .dirtyVersion = version Then Call mDirty.Remove(key)
                 Else
                     If .dirtyId = id And .dirtyVersion = version Then
@@ -157,7 +166,7 @@ End Sub
 
 ' Existing mutation call sites now request a presentation update, never send it
 ' inside an inventory/reward operation. Force also obeys the consistent boundary.
-Public Sub SendQuestTurnInSnapshot(ByVal userIndex As Integer, Optional ByVal force As Boolean = False)
+Public Sub SendQuestTurnInSnapshot(ByVal userIndex As Integer, Optional ByVal force As Boolean = False, Optional ByVal discoveryOnly As Boolean = False)
     On Error GoTo Failed
     If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Sub
     If Not UserList(userIndex).flags.UserLogged Then Exit Sub
@@ -169,8 +178,10 @@ Public Sub SendQuestTurnInSnapshot(ByVal userIndex As Integer, Optional ByVal fo
         If .dirtyId <> UserList(userIndex).Id Or .dirtyVersion <> UserList(userIndex).VersionId Or Not mDirty.Exists(CStr(userIndex)) Then
             .dirtyId = UserList(userIndex).Id: .dirtyVersion = UserList(userIndex).VersionId
             .force = force: .retry = False
+            .readinessDirty = Not discoveryOnly
         Else
             .force = .force Or force
+            .readinessDirty = .readinessDirty Or Not discoveryOnly
         End If
     End With
     mDirty(CStr(userIndex)) = True
@@ -181,6 +192,7 @@ End Sub
 
 Public Sub ResetQuestTurnInRecipients()
     Set mRecipients = Nothing
+    Call ResetQuestDiscoveryIndex()
 End Sub
 
 Private Function RecipientsFor(ByVal quest As Integer) As Collection
@@ -214,6 +226,7 @@ Private Function EvaluateSnapshot(ByVal userIndex As Integer, Optional ByVal for
     #If UNIT_TEST = 1 Then
         EvaluationCount = EvaluationCount + 1
     #End If
+    If Not PublishQuestDiscovery(userIndex, force) Then Exit Function
     Dim ready As New Collection, slot As Integer, quest As Integer, fingerprint As String
     For slot = 1 To MAXUSERQUESTS
         quest = UserList(userIndex).QuestStats.Quests(slot).QuestIndex
