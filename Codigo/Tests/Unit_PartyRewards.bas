@@ -121,8 +121,8 @@ Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
     Call Fixture()
     Dim recipients As t_PartyRewardRecipients, i As Integer, n As Integer, pet As Integer
-    Dim before As Long, saved As t_UserQuest, savedItem As t_Obj
-    Dim result As e_DamageResult, sounds As Long, base As Long
+    Dim before As Long
+    Dim result As e_DamageResult, config As clsIniManager
     Select Case index
     Case 1
         Call AwardNpcPartyQuests(1, victim)
@@ -308,6 +308,53 @@ Private Sub RunCase(ByVal index As Integer)
         UserList(3).Grupo.Id = 78
         Call CollectPartyRewardRecipients(1, recipients)
         Call Expect(recipients.Count = 1 And Not recipients.IsParty, "leader identity mismatch preserves solo")
+    Case 34
+        Call SetFeatureToggle("collectible_cards", True)
+        victim.CollectibleCardIndex = 1
+        UserList(1).AccountCollectibleCardQuantities(1) = 1
+        NpcList(1).CollectibleCardIndex = 2
+        Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = CLng(50 * GetCardExpBonusForCard(1, 1)), "saved NPC card bonus, not recycled live slot")
+        Call Expect(UserList(2).Stats.Exp = 50, "cards per recipient")
+    Case 35
+        Set config = New clsIniManager
+        Call config.Initialize(App.Path & "\Example.Configuracion.ini")
+        Call config.ChangeValue("CONFIGURACIONES", "ExpMult", "3")
+        Set SvrConfig = New ServerConfig
+        Call SvrConfig.LoadSettings(App.Path & "\Example.Configuracion.ini", config)
+        n = GetNextAvailableNpc(): Call InstallVictim(n)
+        Call CalcularDarExp(1, n, 21)
+        victim = NpcList(n): Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 153 And UserList(2).Stats.Exp = 147, "damage and remainder apply multiplier exactly once")
+    Case 36
+        UserList(1).Stats.Exp = MAXEXP - 10
+        ExpLevelUp(10) = MAXEXP + 1
+        victim.flags.ExpCount = MAXEXP
+        Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = MAXEXP, "XP cap before integer addition")
+    Case 37
+        Call Drops()
+        Call AcceptQuest(2, 1, 2)
+        Call AwardNpcPartyQuests(1, victim)
+        Call Expect(CountInventoryObjects(1, 50) = 3 And CountInventoryObjects(2, 50) = 0, "quest-specific personal drop requires acceptance")
+    Case 38
+        Call Drops()
+        UserList(2).invent.Object(1).ObjIndex = 50: UserList(2).invent.Object(1).Amount = 5
+        Call AwardNpcPartyQuests(1, victim)
+        Call Expect(CountInventoryObjects(2, 50) = 5 And CountPackets(ServerPacketID.ePlayWave, 2) = 0, "complete item requirement grants/sounds nothing")
+    Case 39
+        Call SetUserRef(UserList(3).Grupo.Lider, 4)
+        Call CollectPartyRewardRecipients(1, recipients)
+        Call Expect(recipients.Count = 1 And Not recipients.IsParty, "leader must identify itself")
+    Case 40
+        UserList(3).flags.UserLogged = False: UserList(3).ConnectionDetails.ConnIDValida = False
+        Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 50 And UserList(2).Stats.Exp = 50, "valid absent leader identity need not receive XP")
+    Case 41
+        UserList(1).flags.Muerto = 1
+        Call AwardNpcPartyQuests(1, victim): Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 0 And UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 0, "dead credit is not a recipient")
+        Call Expect(UserList(2).Stats.Exp = 100 And UserList(2).QuestStats.Quests(1).NPCsKilled(1) = 1, "valid dead source retains live party credit")
     End Select
     capturing = False
     Call UnitTesting.Progress("Party rewards " & index & " passed")
@@ -327,7 +374,7 @@ Public Function TestSuite() As Boolean
     For i = 1 To STAT_MAXELV
         oldExp(i) = ExpLevelUp(i)
     Next i
-    For i = 1 To 33
+    For i = 1 To 41
         Call RunCase(i)
     Next i
     For i = 1 To STAT_MAXELV

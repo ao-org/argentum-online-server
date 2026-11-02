@@ -502,27 +502,34 @@ End Sub
 ' A snapshot, not the mutable roster, is used for both reward counting and payment.
 ' The leader is already in Miembros (normally slot 1). The credited player comes
 ' first for deterministic integer remainder allocation; every reference is deduped.
-Public Function IsRewardUser(ByVal userIndex As Integer) As Boolean
-    On Error GoTo IsRewardUser_Err
+Public Function IsRewardCredit(ByVal userIndex As Integer) As Boolean
+    On Error GoTo IsRewardCredit_Err
     If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Function
     With UserList(userIndex)
-        IsRewardUser = .flags.UserLogged And .ConnectionDetails.ConnIDValida And .flags.Muerto = 0
+        IsRewardCredit = .flags.UserLogged And .ConnectionDetails.ConnIDValida
     End With
     Exit Function
-IsRewardUser_Err:
-    Call TraceError(Err.Number, Err.Description, "ModGrupos.IsRewardUser", Erl)
+IsRewardCredit_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.IsRewardCredit", Erl)
+End Function
+
+Public Function IsRewardUser(ByVal userIndex As Integer) As Boolean
+    If Not IsRewardCredit(userIndex) Then Exit Function
+    IsRewardUser = UserList(userIndex).flags.Muerto = 0
 End Function
 
 Public Sub CollectPartyRewardRecipients(ByVal credited As Integer, ByRef result As t_PartyRewardRecipients, Optional ByVal npcMap As Integer = 0)
     On Error GoTo CollectPartyRewardRecipients_Err
     Dim emptyResult As t_PartyRewardRecipients
     result = emptyResult
-    If Not IsRewardUser(credited) Then Exit Sub
+    If Not IsRewardCredit(credited) Then Exit Sub
     If npcMap <> 0 Then
         If UserList(credited).pos.Map <> npcMap Then Exit Sub
     End If
-    result.Count = 1
-    Call SetUserRef(result.Users(1), credited)
+    If IsRewardUser(credited) Then
+        result.Count = 1
+        Call SetUserRef(result.Users(1), credited)
+    End If
     Dim leader As Integer, groupId As Long, i As Integer, j As Integer, member As Integer
     Dim foundCredited As Boolean, duplicate As Boolean, rosterCount As Integer
     With UserList(credited).Grupo

@@ -49,7 +49,7 @@ or protocol-generation changes.
 
 ## Validation
 
-Native VB6 compiler is absent locally. New suite50 contains33 deterministic cases;
+Native VB6 compiler is absent locally. New suite50 contains41 deterministic cases;
 configured drop probability1 guarantees rolls without modifying production RNG.
 Native PR-validator results will be recorded after execution. Source checks preserve
 Windows-1252/CRLF and run `git diff --check`.

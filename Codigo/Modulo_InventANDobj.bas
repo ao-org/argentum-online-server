@@ -214,7 +214,7 @@ Public Sub NpcDropQuestObj(ByRef Npc As t_Npc, ByRef UserIndex As Integer)
     If Npc.NumDropQuest = 0 Then Exit Sub
     Dim Dropeo       As t_Obj
     Dim Probabilidad As Long
-    Dim i            As Byte
+    Dim i            As Integer
     Dim before As Long, missing As Long, capacity As Long
     For i = 1 To Npc.NumDropQuest
         With Npc.DropQuest(i)

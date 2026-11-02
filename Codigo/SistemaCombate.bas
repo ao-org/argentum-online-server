@@ -1803,7 +1803,7 @@ End Sub
 Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRef recipients As t_PartyRewardRecipients)
     On Error GoTo PayNpcBaseExperience_Err
     Dim i As Integer, userIndex As Integer, share As Long, remainder As Long
-    Dim expUser As Double, groupExp As Long, deltaLevel As Integer, penalty As Single
+    Dim expUser As Double, deltaLevel As Integer, penalty As Single
     Dim bonus As Single, finalPercent As Integer
     share = baseExp \ recipients.Count: remainder = baseExp Mod recipients.Count
     For i = 1 To recipients.Count
@@ -1815,7 +1815,7 @@ Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRe
             If SvrConfig.GetValue("ExpMult") > 0 Then expUser = expUser * SvrConfig.GetValue("ExpMult")
             ' Keep party modifier rounding at the same Long boundary as before.
             If recipients.IsParty Then
-                groupExp = expUser: expUser = groupExp
+                expUser = Round(expUser)
             End If
             If npc.nivel > 0 Then
                 deltaLevel = UserList(userIndex).Stats.ELV - npc.nivel
@@ -1823,7 +1823,7 @@ Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRe
                     penalty = GetExpPenalty(userIndex, 0, deltaLevel)
                     expUser = expUser * penalty
                     If recipients.IsParty Then
-                        groupExp = expUser: expUser = groupExp
+                        expUser = Round(expUser)
                     End If
                     If UserList(userIndex).ChatCombate = 1 Then
                         finalPercent = penalty * 100
@@ -1835,7 +1835,7 @@ Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRe
                 bonus = GetCardExpBonusForCard(userIndex, npc.CollectibleCardIndex)
                 If bonus > 1# Then expUser = expUser * bonus
                 If recipients.IsParty Then
-                    groupExp = expUser: expUser = groupExp
+                    expUser = Round(expUser)
                 End If
             End If
             If expUser > 0 Then

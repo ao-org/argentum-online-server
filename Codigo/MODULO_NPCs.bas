@@ -174,7 +174,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Call LogError("Phoenix killed while isnt alive, it was gm-Spawned or this is an error.")
         End If
     End If
-    If NpcList(NpcIndex).ShowKillerConsole > 0 And IsRewardUser(UserIndex) Then
+    If NpcList(NpcIndex).ShowKillerConsole > 0 And IsRewardCredit(UserIndex) Then
         'Msg1986=¬1 ha muerto en manos de ¬2
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_NPC_KILLED_BY_USER, NpcList(NpcIndex).Name & "¬" & UserList(UserIndex).Name, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
     End If
@@ -183,7 +183,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Call MarkGlobalQuestBossAsDead(MiNPC.flags.GlobalQuestBossIndex, MiNPC.Numero)
     End If
     Call QuitarNPC(NpcIndex, eDie)
-    If IsRewardUser(UserIndex) Then ' Valid credited user; no environmental awards.
+    If IsRewardCredit(UserIndex) Then ' Valid credited user; no environmental awards.
         If MiNPC.flags.Snd3 > 0 Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(MiNPC.flags.Snd3, MiNPC.pos.x, MiNPC.pos.y))
         Else
