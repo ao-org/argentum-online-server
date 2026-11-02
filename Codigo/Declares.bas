@@ -2964,6 +2964,8 @@ Type Tgrupo
     PropuestaDe As t_UserReference
     Id As Long
     XpRotation As t_PartyXpRotation
+    RosterRevision As Long
+    ProposalPartyId As Long
 End Type
 
 Public Type t_LastNetworkUssage

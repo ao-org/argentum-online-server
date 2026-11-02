@@ -4174,43 +4174,46 @@ PrepareTrapUpdate_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
 End Function
-Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
-    On Error GoTo PrepareUpdateGroupInfo_Err
+Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer, Optional ByVal request As Long = 0, Optional ByVal result As e_PartyResult = PartyState)
+    On Error GoTo Failed
+    Dim leader As Integer, i As Integer, member As Integer
+    leader = PartyLeaderIndex(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eUpdateGroupInfo)
-    
-    ' Si el usuario no está en grupo, enviar 0
-    If Not UserList(UserIndex).Grupo.EnGrupo Then
-        Writer.WriteInt8 (0)
+    Call Writer.WriteInt32(request): Call Writer.WriteInt8(result)
+    Call Writer.WriteInt16(UserIndex): Call Writer.WriteInt16(UserList(UserIndex).VersionId)
+    Call Writer.WriteBool(UserList(UserIndex).flags.SeguroParty)
+    If leader = 0 Then
+        Call Writer.WriteInt32(0): Call Writer.WriteInt32(0)
+        Call Writer.WriteInt16(0): Call Writer.WriteInt16(0): Call Writer.WriteInt8(0)
         Exit Function
     End If
-    
-    ' Si la referencia al líder no es válida, enviar 0
-    If Not IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
-        Writer.WriteInt8 (0)
-        Exit Function
-    End If
-    
-    ' Obtener el índice del líder real del grupo
-    Dim LeaderIndex As Integer
-    LeaderIndex = UserList(UserIndex).Grupo.Lider.ArrayIndex
-    
-    ' Enviar información del grupo
-    With UserList(LeaderIndex).Grupo
-        Dim i As Integer
-        Writer.WriteInt8 (.CantidadMiembros)
+    With UserList(leader).Grupo
+        Call Writer.WriteInt32(.Id): Call Writer.WriteInt32(.RosterRevision)
+        Call Writer.WriteInt16(leader): Call Writer.WriteInt16(UserList(leader).VersionId)
+        Dim count As Byte
         For i = 1 To .CantidadMiembros
-            Writer.WriteString8 (GetUserDisplayName(.Miembros(i).ArrayIndex))
-            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
-            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
-            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
-            Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
+            If IsValidUserRef(.Miembros(i)) Then
+                If PartyLeaderIndex(.Miembros(i).ArrayIndex) = leader Then count = count + 1
+            End If
+        Next i
+        Call Writer.WriteInt8(count)
+        For i = 1 To .CantidadMiembros
+            If IsValidUserRef(.Miembros(i)) Then
+                member = .Miembros(i).ArrayIndex
+                If PartyLeaderIndex(member) = leader Then
+                    Call Writer.WriteInt16(member): Call Writer.WriteInt16(UserList(member).VersionId)
+                    Call Writer.WriteString8(GetUserDisplayName(member))
+                    Call Writer.WriteInt16(UserList(member).Char.charindex): Call Writer.WriteInt16(UserList(member).Char.head)
+                    Call Writer.WriteInt32(UserList(member).Stats.MinHp): Call Writer.WriteInt32(UserList(member).Stats.MaxHp)
+                    Call Writer.WriteInt32(UserList(member).Stats.MinMAN): Call Writer.WriteInt32(UserList(member).Stats.MaxMAN)
+                End If
+            End If
         Next i
     End With
-    
     Exit Function
-PrepareUpdateGroupInfo_Err:
-    Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareUpdateGroupInfo", Erl)
+Failed:
+    Call Writer.Clear()
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.PrepareUpdateGroupInfo", Erl)
 End Function
 
 ''
