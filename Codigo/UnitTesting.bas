@@ -388,6 +388,9 @@ Public Sub WriteResultsToFile(ByVal filePath As String)
         Next i
     End If
     
+    #If UNIT_TEST = 1 Then
+        If Len(Unit_QuestTurnIn.Measurements()) > 0 Then Print #f, Unit_QuestTurnIn.Measurements()
+    #End If
     Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
     
     If FailedTests = 0 Then

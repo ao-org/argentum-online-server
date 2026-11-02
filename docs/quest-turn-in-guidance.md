@@ -36,3 +36,22 @@ follow a route back to its recipient, inspect the checked scroll and hover text,
 then collect the reward. Remove a required item before turn-in and verify readiness
 disappears. Check rejected turn-in, abandonment, repeatable acceptance, hidden
 tracker, manual unpin/reconnect and character switching with both HOO UIs.
+
+## Coalesced readiness publication
+
+Mutation hooks enqueue a user identity (account ID and connection version). The
+existing network Tick drains after Poll and before Server.Flush, after synchronous
+quest/reward operations finish. It evaluates at most 128 dirty identities per tick;
+no periodic player/quest scan is added. Failed enqueue retains work, rotates it
+behind other pending users and retries after at least 250 ms. Fingerprints advance
+only on accepted enqueue. Logout/reused slots discard old pending identities.
+
+Global notifications reject zero/invalid indices and coalesce by global identity.
+Unchanged counter/active/boss state does no scan; changed events inspect accepted
+slots and only enqueue users whose eligibility gate changed (or lacks a current
+snapshot). Contribution and completion within one poll publish the final state.
+
+Suite 48 adds deterministic batching, retry, identity reuse and completion tests,
+plus native before/after evaluation-count and elapsed-time workloads. Measurements
+are printed in the harness report; these are presentation workloads, not capacity
+claims.
