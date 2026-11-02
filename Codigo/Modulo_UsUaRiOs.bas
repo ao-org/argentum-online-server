@@ -171,6 +171,7 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearPartyXpRotation(UserIndex)
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)

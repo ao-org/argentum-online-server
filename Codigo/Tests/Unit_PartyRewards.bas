@@ -188,6 +188,7 @@ Private Sub RunCase(ByVal index As Integer)
     Dim recipients As t_PartyRewardRecipients, i As Integer, n As Integer, pet As Integer
     Dim before As Long, beforeFirst As Long, beforeSecond As Long, beforeFourth As Long
     Dim lowest As Long, highest As Long, iteration As Integer, member As Integer, attacker As Integer
+    Dim allocated As Long, units As Integer
     Dim result As e_DamageResult, config As clsIniManager
     Select Case index
     Case 1
@@ -391,7 +392,7 @@ Private Sub RunCase(ByVal index As Integer)
         n = GetNextAvailableNpc(): Call InstallVictim(n)
         Call CalcularDarExp(1, n, 21)
         victim = NpcList(n): Call AwardNpcDeathExperience(1, victim)
-        Call Expect(UserList(1).Stats.Exp = 153 And UserList(2).Stats.Exp = 147, "damage and remainder apply multiplier exactly once")
+        Call Expect(UserList(1).Stats.Exp = 150 And UserList(2).Stats.Exp = 150, "damage and remainder apply multiplier exactly once")
     Case 36
         UserList(1).Stats.Exp = MAXEXP - 10
         ExpLevelUp(10) = MAXEXP + 1
@@ -469,6 +470,20 @@ Private Sub RunCase(ByVal index As Integer)
         For member = 1 To 6
             Call Expect(UserList(member).Stats.Exp = 20, "no six-member starvation")
         Next member
+        victim.GiveEXP = 90: victim.Stats.MaxHp = 90: victim.Stats.MinHp = 90: victim.flags.ExpCount = 90
+        Call InstallVictim(n): allocated = 120
+        For iteration = 1 To 30
+            units = (iteration Mod 5) + 1
+            Call CalcularDarExp(1, n, units): allocated = allocated + units
+            lowest = UserList(1).Stats.Exp: highest = lowest: before = 0
+            For member = 1 To 6
+                before = before + UserList(member).Stats.Exp
+                If UserList(member).Stats.Exp < lowest Then lowest = UserList(member).Stats.Exp
+                If UserList(member).Stats.Exp > highest Then highest = UserList(member).Stats.Exp
+            Next member
+            Call Expect(before = allocated And highest - lowest <= 1, "cursor advances by all remainder units for variable awards")
+        Next iteration
+        Call Expect(NpcList(n).flags.ExpCount = 0, "variable small awards conserve pool")
     Case 46
         victim.GiveEXP = 120: victim.Stats.MaxHp = 120: victim.Stats.MinHp = 120: victim.flags.ExpCount = 120
         n = GetNextAvailableNpc(): Call InstallVictim(n)
@@ -524,13 +539,16 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(UserList(1).Stats.Exp - beforeFirst = 3 And UserList(4).Stats.Exp - beforeFourth = 3 And UserList(2).Stats.Exp = beforeSecond, "departed member receives no allocated XP")
     Case 49
         victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
-        Call FinalizarGrupo(3): Call GroupCreateSuccess(3)
+        Call FinalizarGrupo(3)
+        Call Expect(UserList(3).Grupo.XpRotation.PartyId = 0, "explicit disband cleanup")
+        Call GroupCreateSuccess(3)
         Call RestoreFixtureParty(UserList(3).Grupo.Id)
         victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
         Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 0, "new party does not inherit old remainder cursor")
     Case 50
         victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
         Call IncreaseVersionId(3)
+        Call Expect(UserList(3).Grupo.XpRotation.PartyId = 0, "explicit session cleanup")
         Call RestoreFixtureParty(77)
         victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
         Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 0, "leader reconnect resets party-session cursor")

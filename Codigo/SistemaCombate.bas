@@ -1686,6 +1686,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
     If NpcList(NpcIndex).MaestroUser.ArrayIndex <> 0 Then Exit Sub
     If ElDaño <= 0 Or NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
     Dim recipients As t_PartyRewardRecipients, baseExp As Long, damage As Long
+    Dim baseShares(1 To 6) As Long
     Call CollectPartyRewardRecipients(UserIndex, recipients)
     If recipients.Count = 0 Then Exit Sub
     If Not recipients.IsParty Then
@@ -1699,8 +1700,9 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
     baseExp = CLng(CDbl(damage) * NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp)
     If baseExp > NpcList(NpcIndex).flags.ExpCount Then baseExp = NpcList(NpcIndex).flags.ExpCount
     If baseExp <= 0 Then Exit Sub
+    If Not AllocatePartyBaseExperience(recipients, baseExp, baseShares) Then Exit Sub
     NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - baseExp
-    Call PayNpcBaseExperience(NpcList(NpcIndex), baseExp, recipients)
+    Call PayNpcBaseExperience(NpcList(NpcIndex), recipients, baseShares)
     Exit Sub
 CalcularDarExp_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
@@ -1776,6 +1778,7 @@ Public Sub AwardNpcDeathExperience(ByVal credited As Integer, ByRef npc As t_Npc
     If npc.MaestroUser.ArrayIndex <> 0 Or npc.npcType = DummyTarget Then Exit Sub
     If npc.flags.ExpCount <= 0 Then Exit Sub
     Dim recipients As t_PartyRewardRecipients, baseExp As Long
+    Dim baseShares(1 To 6) As Long
     Call CollectPartyRewardRecipients(credited, recipients)
     If recipients.Count = 0 Then Exit Sub
     If Not recipients.IsParty Then
@@ -1793,25 +1796,24 @@ Public Sub AwardNpcDeathExperience(ByVal credited As Integer, ByRef npc As t_Npc
         Exit Sub
     End If
     baseExp = npc.flags.ExpCount
+    If Not AllocatePartyBaseExperience(recipients, baseExp, baseShares) Then Exit Sub
     npc.flags.ExpCount = 0
-    Call PayNpcBaseExperience(npc, baseExp, recipients)
+    Call PayNpcBaseExperience(npc, recipients, baseShares)
     Exit Sub
 AwardNpcDeathExperience_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AwardNpcDeathExperience", Erl)
 End Sub
 
-Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByVal baseExp As Long, ByRef recipients As t_PartyRewardRecipients)
+Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByRef recipients As t_PartyRewardRecipients, ByRef baseShares() As Long)
     On Error GoTo PayNpcBaseExperience_Err
-    Dim i As Integer, userIndex As Integer, share As Long, remainder As Long
+    Dim i As Integer, userIndex As Integer
     Dim expUser As Double, deltaLevel As Integer, penalty As Single
     Dim bonus As Single, finalPercent As Integer
-    share = baseExp \ recipients.Count: remainder = baseExp Mod recipients.Count
     For i = 1 To recipients.Count
         ' No callbacks/yields between collecting and paying; references also guard slot reuse.
         If IsValidUserRef(recipients.Users(i)) Then
             userIndex = recipients.Users(i).ArrayIndex
-            expUser = share
-            If i <= remainder Then expUser = expUser + 1
+            expUser = baseShares(i)
             If SvrConfig.GetValue("ExpMult") > 0 Then expUser = expUser * SvrConfig.GetValue("ExpMult")
             ' Keep party modifier rounding at the same Long boundary as before.
             If recipients.IsParty Then

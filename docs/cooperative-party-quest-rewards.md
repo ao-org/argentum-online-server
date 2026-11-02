@@ -20,10 +20,29 @@ player-owned victims and no valid credited player do not receive shared rewards.
 
 Damage XP remains incremental. Party damage-derived base XP keeps existing CLng
 nearest-even rounding, damage cap and remaining pool cap. Eligibility resolves
-before any debit. Each award divides integer base with quotient/remainder: credited
-player then roster order receive at most one extra base unit, so shares sum exactly
-to the single pool debit. The absent-leader phantom divisor/message is removed.
-The saved death remainder uses the same party allocation and modifiers once.
+before any debit. `AllocatePartyBaseExperience` sorts at most six snapshot indices
+by user slot (without changing quest order/the roster), gives each the integer
+quotient, then distributes remainder units around a rotating ring. The next cursor
+advances by exactly the extra units distributed. Allocated base shares sum exactly
+to the single pool debit. For an unchanged eligible set, cumulative base allocations
+differ by at most one, regardless of attacker, roster ordering or NPC changes.
+The absent-leader phantom divisor/message is removed. Damage and saved death
+remainders use the same allocator and modifiers once.
+
+Rotation is one fixed-size `t_PartyXpRotation` in the leader's existing `Tgrupo`,
+keyed by party ID plus the versioned leader identity. It stores only a versioned
+next-recipient reference, no payable XP or fractional debt. Each award resolves the
+next eligible successor in stable slot order, skipping absent/ineligible members.
+A reused/reconnected slot cannot inherit the old version's next turn. An eligible
+returning member participates in future awards only, never catches up missed XP.
+No timers, dictionary, database persistence, NPC state or world-wide scans are used.
+
+Party creation/disband (including automatic disband), removal/leaving, joining and
+user-version rollover explicitly clear the affected user's local rotation storage;
+leader state survives ordinary member changes unless the party ends. Party/leader
+session checks also reject stale ownership at allocation time. Normal whole-user
+resets clear the fixed-size state too. Allocation succeeds before the NPC pool is
+debited; solo paths do not enter the allocator.
 
 ExpMult, per-recipient level penalty, card bonus and leadership bonus remain in
 that order; existing Long rounding after party multipliers/penalties and final
@@ -47,7 +66,18 @@ it evaluates final kill-plus-item state at the normal boundary, without forced
 intermediate snapshots. No packet, client, database schema, quest content, capability
 or protocol-generation changes.
 
-## Validation
+## XP fairness review regression
+
+Tests-only commit `701957bc` reproduced nine failures among the eleven new
+fairness/lifecycle cases; all original 42 party cases passed. The suite now has
+53 cases, including 100 single-base awards at ExpMult=2, repeated three-base
+awards, six recipients with variable 1..5-unit awards, attacker/roster changes,
+mixed damage/death and repeated real kills, eligibility changes, disbanding,
+leader/member reconnects and slot reuse. Existing modifier/solo and exact pool
+assertions remain. The old 153/147 expectation now requires a fair 150/150.
+Native validation of the rotating allocator is pending.
+
+## Prior validation
 
 Base: `4adb0cf9b120509abb6b42449a7da1b867aa03c1`.
 Tested code: `616765bdc5aac3200be203b3092a290182a62cc1`.
@@ -75,6 +105,12 @@ Blodium**, requires level 25 and class 9, 100 kills of NPC 267 (Nivor/Goat), and
 25 of item 405. NPC 267 configures quest-30 item 405 at quantity 1, probability
 1 in 5. Use eligible ordinary characters and accept through normal interaction;
 these are existing definitions, not content changes or a live-test claim.
+
+For XP review acceptance, set two eligible members without personal bonuses and
+ExpMult=2; repeated one-base-XP awards should total equally over even counts,
+including across kills and when attackers/roster order change. Check six members
+with small awards, eligibility changes and disband/reconnect. Account separately
+for configured personal modifiers and max-level rules.
 
 1. Two same-party characters accept the same kill quest. Kill near each other;
    both get one progress update. Let a support-only member deal no damage.

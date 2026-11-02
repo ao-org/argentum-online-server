@@ -152,6 +152,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Next j
     End With
     
+    Call ClearPartyXpRotation(UserIndexEchar)
     With UserList(UserIndexEchar)
         Call WriteLocaleMsg(UserIndex, MSG_FUE_EXPULSADO_GRUPO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO, .Name)
         Call WriteLocaleMsg(UserIndexEchar, MSG_REMOVED_FROM_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -207,6 +208,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             .CantidadMiembros = 0
             Call SetUserRef(.Miembros(1), 0)
             .Id = -1
+            Call ClearPartyXpRotation(UserIndex)
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
@@ -226,6 +228,7 @@ End Sub
 
 Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
     On Error GoTo SalirDeGrupo_Err
+    Call ClearPartyXpRotation(UserIndex)
     Dim i          As Long
     Dim LoopC      As Long
     Dim indexviejo As Byte
@@ -295,6 +298,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, MSG_GROUP_DISBANDED_ALL_MEMBERS_LEFT, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
+            Call ClearPartyXpRotation(.Grupo.Lider.ArrayIndex)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False
             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Lider, 0)
             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.PropuestaDe, 0)
@@ -325,6 +329,7 @@ End Sub
 
 Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
     On Error GoTo SalirDeGrupoForzado_Err
+    Call ClearPartyXpRotation(UserIndex)
     Dim i          As Long
     Dim LoopC      As Long
     Dim indexviejo As Byte
@@ -359,6 +364,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 0
             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
             UserList(.Grupo.Lider.ArrayIndex).Grupo.Id = -1
+            Call ClearPartyXpRotation(.Grupo.Lider.ArrayIndex)
             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
             If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
@@ -377,6 +383,7 @@ SalirDeGrupoForzado_Err:
 End Sub
 Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
     On Error GoTo FinalizarGrupo_Err
+    Call ClearPartyXpRotation(LiderIndex)
     Dim i As Integer
     Dim OriginalMemberCount As Integer
     
@@ -386,6 +393,7 @@ Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
     ' Procesar a todos los miembros del grupo
     For i = 1 To OriginalMemberCount
         Dim MemberIndex As Integer: MemberIndex = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+        Call ClearPartyXpRotation(MemberIndex)
         With UserList(MemberIndex)
             Dim j As Integer
             For j = 1 To OriginalMemberCount
@@ -465,6 +473,7 @@ CompartirUbicacion_Err:
 End Sub
 
 Public Sub GroupCreateSuccess(ByVal LiderIndex As Integer)
+    Call ClearPartyXpRotation(LiderIndex)
     Call WriteLocaleMsg(LiderIndex, MSG_EL_GRUPO_HA_SIDO_CREADO, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
     With UserList(LiderIndex)
         .Grupo.EnGrupo = True
@@ -480,6 +489,7 @@ Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As I
             Exit Sub
         End If
     Next Index
+    Call ClearPartyXpRotation(UserIndex)
     UserList(GroupLiderIndex).Grupo.CantidadMiembros = UserList(GroupLiderIndex).Grupo.CantidadMiembros + 1
     Call SetUserRef(UserList(GroupLiderIndex).Grupo.Miembros(UserList(GroupLiderIndex).Grupo.CantidadMiembros), UserIndex)
     Call SetUserRef(UserList(UserIndex).Grupo.Lider, GroupLiderIndex)
@@ -501,7 +511,7 @@ End Sub
 
 ' A snapshot, not the mutable roster, is used for both reward counting and payment.
 ' The leader is already in Miembros (normally slot 1). The credited player comes
-' first for deterministic integer remainder allocation; every reference is deduped.
+' first for quest processing; XP separately sorts the same deduped snapshot.
 Public Function IsRewardCredit(ByVal userIndex As Integer) As Boolean
     On Error GoTo IsRewardCredit_Err
     If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Function
@@ -550,6 +560,8 @@ Public Sub CollectPartyRewardRecipients(ByVal credited As Integer, ByRef result 
         Next i
         If Not foundCredited Then Exit Sub
         result.IsParty = True
+        result.PartyId = groupId
+        Call SetUserRef(result.Leader, leader)
         For i = 1 To rosterCount
             If IsValidUserRef(.Miembros(i)) Then
                 member = .Miembros(i).ArrayIndex
@@ -587,3 +599,69 @@ CollectPartyRewardRecipients_Err:
     End If
     Call TraceError(Err.Number, Err.Description, "ModGrupos.CollectPartyRewardRecipients", Erl)
 End Sub
+
+Public Sub ClearPartyXpRotation(ByVal userIndex As Integer)
+    On Error GoTo ClearPartyXpRotation_Err
+    If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Sub
+    Dim emptyRotation As t_PartyXpRotation
+    UserList(userIndex).Grupo.XpRotation = emptyRotation
+    Exit Sub
+ClearPartyXpRotation_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.ClearPartyXpRotation", Erl)
+End Sub
+
+' Compute and commit one bounded rotation before the caller debits the NPC pool.
+' No entitlement/XP is retained: only the next versioned identity on the ring.
+Public Function AllocatePartyBaseExperience(ByRef recipients As t_PartyRewardRecipients, ByVal baseExp As Long, ByRef shares() As Long) As Boolean
+    On Error GoTo AllocatePartyBaseExperience_Err
+    If Not recipients.IsParty Or recipients.Count < 1 Or recipients.Count > UBound(recipients.Users) Or baseExp <= 0 Then Exit Function
+    If Not IsValidUserRef(recipients.Leader) Then Exit Function
+    Dim leader As Integer, i As Integer, j As Integer, entry As Integer
+    Dim order(1 To 6) As Integer, quotient As Long, remainder As Integer
+    Dim start As Integer, ordinal As Integer, current As t_UserReference
+    leader = recipients.Leader.ArrayIndex
+    If Not UserList(leader).Grupo.EnGrupo Or UserList(leader).Grupo.Id <> recipients.PartyId Then Exit Function
+    If Not IsValidUserRef(UserList(leader).Grupo.Lider) Then Exit Function
+    If UserList(leader).Grupo.Lider.ArrayIndex <> leader Then Exit Function
+    quotient = baseExp \ recipients.Count: remainder = baseExp Mod recipients.Count
+    ' Insertion sort of at most six snapshot indices; never mutate the roster or
+    ' the quest recipient order. Slot order is stable during a character session.
+    For i = 1 To recipients.Count
+        shares(i) = quotient
+        entry = i: j = i
+        Do While j > 1
+            If recipients.Users(order(j - 1)).ArrayIndex < recipients.Users(entry).ArrayIndex Then Exit Do
+            order(j) = order(j - 1): j = j - 1
+        Loop
+        order(j) = entry
+    Next i
+    With UserList(leader).Grupo.XpRotation
+        If .PartyId <> recipients.PartyId Or .Leader.ArrayIndex <> leader Or .Leader.VersionId <> recipients.Leader.VersionId Then
+            Call ClearPartyXpRotation(leader)
+            .PartyId = recipients.PartyId: .Leader = recipients.Leader
+        End If
+        If remainder > 0 Then
+            start = 1
+            If .NextRecipient.ArrayIndex > 0 Then
+                ' Resume at the first eligible successor. A slot reused by a new
+                ' version cannot inherit the old session's reserved next turn.
+                For i = 1 To recipients.Count
+                    current = recipients.Users(order(i))
+                    If current.ArrayIndex > .NextRecipient.ArrayIndex Or (current.ArrayIndex = .NextRecipient.ArrayIndex And current.VersionId = .NextRecipient.VersionId) Then
+                        start = i: Exit For
+                    End If
+                Next i
+            End If
+            For i = 0 To remainder - 1
+                ordinal = ((start - 1 + i) Mod recipients.Count) + 1
+                shares(order(ordinal)) = shares(order(ordinal)) + 1
+            Next i
+            ordinal = ((start - 1 + remainder) Mod recipients.Count) + 1
+            .NextRecipient = recipients.Users(order(ordinal))
+        End If
+    End With
+    AllocatePartyBaseExperience = True
+    Exit Function
+AllocatePartyBaseExperience_Err:
+    Call TraceError(Err.Number, Err.Description, "ModGrupos.AllocatePartyBaseExperience", Erl)
+End Function
