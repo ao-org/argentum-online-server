@@ -158,6 +158,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
         End If
 
+        Dim granted As New Collection, feedbackCycle As Long, actualExp As Long
+        feedbackCycle = CaptureQuestFeedbackLifecycle(UserIndex, QuestSlot, QuestIndex)
         'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, NpcList(NpcIndex).Char.charindex, vbYellow)
                 'Si la quest pedia objetos, se los saca al personaje.
@@ -181,7 +183,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         'Se entrega la experiencia.
         If .RewardEXP Then
             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * SvrConfig.GetValue("ExpMult"))
+                actualExp = (.RewardEXP * SvrConfig.GetValue("ExpMult"))
+                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + actualExp
+                Call AddGrantedQuestReward(granted, 1, 0, actualExp)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
                 Call WriteLocaleMsg(UserIndex, MSG_GANADO_PUNTOS_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
@@ -196,11 +200,13 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             GiveGLD = (.RewardGLD * SvrConfig.GetValue("GoldMult"))
             If GiveGLD < 100000 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
+                Call AddGrantedQuestReward(granted, 2, 0, GiveGLD)
                 'Msg1315= Has ganado ¬1 monedas de oro como recompensa.
                 Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, PonerPuntos(GiveGLD))
                 Call WriteUpdateGold(UserIndex)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
+                Call AddGrantedQuestReward(granted, 3, 0, GiveGLD)
                 'Msg1316= Has ganado ¬1 monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.
                 Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA_RECOMPENSA_HA_SIDO, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, PonerPuntos(GiveGLD))
             End If
@@ -209,7 +215,12 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         If .RewardOBJs > 0 Then
             For i = 1 To .RewardOBJs
                 If .RewardOBJ(i).amount Then
-                    Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
+                    Dim beforeAmount As Long, actualAmount As Long
+                    beforeAmount = CountInventoryObjects(UserIndex, .RewardOBJ(i).ObjIndex, .RewardOBJ(i).ElementalTags)
+                    If MeterItemEnInventario(UserIndex, .RewardOBJ(i)) Then
+                        actualAmount = CountInventoryObjects(UserIndex, .RewardOBJ(i).ObjIndex, .RewardOBJ(i).ElementalTags) - beforeAmount
+                        Call AddGrantedQuestReward(granted, 4, .RewardOBJ(i).ObjIndex, actualAmount)
+                    End If
                     'Msg1318=Has recibido ¬1 como recompensa.
                     Call WriteLocaleMsg(UserIndex, MSG_RECIBIDO_COMO_RECOMPENSA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
                             QuestIndex).RewardOBJ(i).ObjIndex).name)
@@ -228,6 +239,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                         Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_ESPACIO_MAS_HECHIZOS_1317, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Else
                         UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
+                        Call AddGrantedQuestReward(granted, 5, .RewardSpellList(i), 1)
                         Call UpdateUserHechizos(False, UserIndex, CByte(j))
                     End If
                     UserList(UserIndex).flags.ModificoHechizos = True
@@ -242,6 +254,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Call ArrangeUserQuests(UserIndex)
         'Se agrega que el usuario ya hizo esta quest. -  La agrego aunque sea repetible, para llevar el control
         Call AddDoneQuest(UserIndex, QuestIndex)
+        Call QueueQuestCompletionFeedback(UserIndex, feedbackCycle, QuestIndex, granted)
         Call LogQuestEvent(UserList(UserIndex).Id, UserList(UserIndex).name, QuestIndex, .nombre, "TurnedIn")
         If .Repetible = 0 Then
             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)

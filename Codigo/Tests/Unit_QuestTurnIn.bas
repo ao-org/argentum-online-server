@@ -3,6 +3,7 @@ Option Explicit
 #If UNIT_TEST = 1 Then
 Private capturing As Boolean
 Private packets As Collection
+Private feedbackPackets As Collection
 Private rejectQueue As Boolean
 Private mMeasurements As String
 Public Function Measurements() As String
@@ -19,6 +20,12 @@ Public Function CapturePacket(ByRef queued As Boolean) As Boolean
         If CLng(bytes(0)) + 256& * bytes(1) = ServerPacketID.eQuestTurnIns And queued Then
             Dim value As Variant: value = bytes
             Call packets.Add(value)
+        End If
+    End If
+    If UBound(bytes) >= 1 And queued Then
+        If CLng(bytes(0)) + 256& * bytes(1) = ServerPacketID.eQuestFeedback Then
+            Dim feedback As Variant: feedback = bytes
+            Call feedbackPackets.Add(feedback)
         End If
     End If
     CapturePacket = True
@@ -49,7 +56,8 @@ Private Sub RunCase(ByVal index As Integer)
     ReDim NpcInfoCache(12).QuestNumber(1 To 1)
     NpcInfoCache(12).QuestNumber(1) = 1
     Call ResetQuestTurnInRecipients()
-    Set packets = New Collection: capturing = True: rejectQueue = False
+    Set packets = New Collection: Set feedbackPackets = New Collection
+    capturing = True: rejectQueue = False
     Dim bytes() As Byte, reader As New Network.Reader
     Select Case index
     Case 1
@@ -228,6 +236,72 @@ Private Sub RunCase(ByVal index As Integer)
         mMeasurements = mMeasurements & vbCrLf & "Global events: 4 users, 20 threshold changes x2 notifications; immediate=" & beforeScans & " scans/" & beforeCount & " evaluations/" & beforeMs & " ms; batched=" & GlobalScanCount & " scans/" & EvaluationCount & " evaluations/" & afterMs & " ms"
         Call RefreshGlobalQuestTurnIns(1): Call ProcessQuestTurnInUpdates()
         Call Expect(GlobalScanCount = 20 And EvaluationCount = 80, "unchanged global state does no work")
+    Case 14
+        QuestList(1).RequiredTargetNPCs = 1
+        ReDim QuestList(1).RequiredTargetNPC(1 To 1)
+        QuestList(1).RequiredTargetNPC(1).NpcIndex = 11: QuestList(1).RequiredTargetNPC(1).amount = 1
+        ReDim UserList(1).QuestStats.Quests(1).NPCsTarget(1 To 1)
+        UserList(1).QuestStats.Quests(1).NPCsTarget(1) = 1
+        QuestList(1).RequiredOBJs = 1: ReDim QuestList(1).RequiredOBJ(1 To 1)
+        QuestList(1).RequiredOBJ(1).ObjIndex = 50: QuestList(1).RequiredOBJ(1).amount = 5
+        UserList(1).invent.Object(1).ObjIndex = 50: UserList(1).invent.Object(1).amount = 3
+        Call SendQuestTurnInSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        bytes = feedbackPackets(1): Call reader.SetData(bytes)
+        Call Expect(reader.ReadInt16() = ServerPacketID.eQuestFeedback, "feedback packet ID")
+        Call Expect(reader.ReadInt32() > 0 And reader.ReadInt8() = 0 And reader.ReadInt8() = 1 And reader.ReadInt8() = 1, "initial synchronization silent")
+        Call Expect(reader.ReadInt16() = 1 And reader.ReadInt32() > 0 And reader.ReadString8() = "Quest", "quest lifecycle identity")
+        Call Expect(reader.ReadInt8() = 0 And reader.ReadInt16() = 3, "missing item prevents readiness, complete goals retained")
+        Call Expect(reader.ReadInt8() = 1 And reader.ReadInt16() = 1 And reader.ReadInt16() = 10 And reader.ReadInt32() = 8 And reader.ReadInt32() = 8, "final kill count retained")
+        Call Expect(reader.ReadInt8() = 2 And reader.ReadInt16() = 1 And reader.ReadInt16() = 11 And reader.ReadInt32() = 1 And reader.ReadInt32() = 1, "visit count")
+        Call Expect(reader.ReadInt8() = 3 And reader.ReadInt16() = 1 And reader.ReadInt16() = 50 And reader.ReadInt32() = 3 And reader.ReadInt32() = 5, "actual item count")
+        UserList(1).invent.Object(1).amount = 5
+        Call WriteChangeInventorySlot(1, 1): Call ProcessQuestTurnInUpdates()
+        Call Expect(feedbackPackets.Count = 2, "item changes publish updated counts")
+        Call SendQuestTurnInSnapshot(1): Call ProcessQuestTurnInUpdates()
+        Call Expect(feedbackPackets.Count = 2, "duplicate feedback suppressed")
+    Case 15
+        UserList(1).flags.TargetNPC.ArrayIndex = 1: NpcList(1).Char.charindex = 2
+        QuestList(1).RewardGLD = 200000
+        QuestList(1).RewardOBJs = 1: ReDim QuestList(1).RewardOBJ(1 To 1)
+        QuestList(1).RewardOBJ(1).ObjIndex = 50: QuestList(1).RewardOBJ(1).amount = 3
+        Call SendQuestTurnInSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        Call FinishQuest(1, 1, 1): Call ProcessQuestTurnInUpdates()
+        Call Expect(UserList(1).QuestStats.NumQuestsDone = 1, "real turn-in completed")
+        Dim packet As Variant, receiptCount As Integer, rewardCount As Integer, kind As Integer, rewardId As Integer, amount As Long
+        For Each packet In feedbackPackets
+            bytes = packet: Call reader.SetData(bytes)
+            Call reader.ReadInt16(): Call reader.ReadInt32()
+            If reader.ReadInt8() = 1 Then
+                receiptCount = receiptCount + 1
+                Call Expect(reader.ReadInt8() = 0 And reader.ReadInt8() = 1 And reader.ReadInt16() = 1, "correlated completion")
+                Call reader.ReadInt32(): Call reader.ReadString8(): Call reader.ReadInt8(): Call reader.ReadInt16()
+                rewardCount = reader.ReadInt16()
+                Call Expect(rewardCount = 2, "only actual gold and item grants")
+                kind = reader.ReadInt8(): rewardId = reader.ReadInt16(): amount = reader.ReadInt32()
+                Call Expect(kind = 3 And rewardId = 0 And amount = UserList(1).Stats.Banco And amount = 200000 * SvrConfig.GetValue("GoldMult"), "bank gold uses actual multiplier")
+                Call Expect(reader.ReadInt8() = 4 And reader.ReadInt16() = 50 And reader.ReadInt32() = CountInventoryObjects(1, 50), "actual awarded objects")
+            End If
+        Next packet
+        Call Expect(receiptCount = 1, "one receipt after actual grant")
+    Case 16
+        UserList(1).flags.TargetNPC.ArrayIndex = 1: NpcList(1).Char.charindex = 2
+        UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 0
+        Call FinishQuest(1, 1, 1): Call ProcessQuestTurnInUpdates()
+        Call Expect(feedbackPackets.Count = 0 And UserList(1).QuestStats.Quests(1).QuestIndex = 1, "rejected turn-in has no receipt")
+    Case 17
+        Dim rewards As New Collection, lifecycleId As Long
+        Call SendQuestTurnInSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        lifecycleId = CaptureQuestFeedbackLifecycle(1, 1, 1)
+        Call AddGrantedQuestReward(rewards, 1, 0, 27)
+        Call AddGrantedQuestReward(rewards, 4, 50, 0)
+        Call QueueQuestCompletionFeedback(1, lifecycleId, 1, rewards)
+        rejectQueue = True: Call ProcessQuestTurnInUpdates(1000)
+        rejectQueue = False: Call ProcessQuestTurnInUpdates(1250)
+        Call Expect(feedbackPackets.Count = 2, "failed receipt retries without duplication")
+        Call ProcessQuestTurnInUpdates(1500)
+        Call Expect(feedbackPackets.Count = 2, "accepted receipt is not replayed")
+        Call BeginQuestFeedbackLifecycle(1, 1)
+        Call Expect(CaptureQuestFeedbackLifecycle(1, 1, 1) <> lifecycleId, "repeat acceptance has new lifecycle")
     End Select
     capturing = False
     Call UnitTesting.RunTest("Quest turn-in " & index, True)
@@ -239,7 +313,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 13
+    For i = 1 To 17
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before

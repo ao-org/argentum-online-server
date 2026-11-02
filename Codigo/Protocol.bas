@@ -7639,6 +7639,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.QuestItemSlot)
         End If
     End With
+    Call BeginQuestFeedbackLifecycle(UserIndex, QuestSlot)
     Call RefreshNpcInspection(UserIndex)
     Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
