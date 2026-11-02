@@ -10,7 +10,7 @@ Client request319 (production PYMMO=1): Int32 positive request ID, Byte action
 (0 refresh,1 create,2 invite by name,3 kick,4 leave,5 disband), Int32 party ID,
 Int32 roster revision, Int16 target user slot/version, String8 name <=30 characters.
 String8 uses the existing variable-length prefix/UTF-8 codec. State response uses
-the existing eUpdateGroupInfo ID with its new required layout. Result codes0..16
+the existing eUpdateGroupInfo ID with its new required layout. Result codes0..18
 are localized by HOO. Name/row counts and identities are validated before mutation.
 No feature flags, retired-client compatibility, proto generation or DB changes.
 
@@ -65,3 +65,33 @@ or deploy automatically.
    shared quests/items and small-XP fairness tests in a multi-member party.
 7. Check classic/modern UI, compact HUD visibility/targeting, text focus, keybinding,
    pointer press/release consumption, overlay/focus loss and session resets.
+
+## Invitation operation feedback
+
+Roster synchronization and operation feedback are separate. The required
+UpdateGroupInfo layout now includes an Int32 feedback sequence immediately after
+the result byte. State/refresh snapshots use result0 and sequence0. Each actual
+outcome has a positive, session-scoped sequence; duplicate correlated replies reuse
+their original sequence. Result17 explicitly means an invitation was sent;
+result18 means the recipient joined. Generic success is never inferred to mean
+an invitation was sent. Member broadcasts remain silent.
+
+HOO immediately presents each new outcome inline when Party is open, or in the
+existing localized system console when closed. Closing while waiting does not
+hide the eventual result. Refresh and invitation-safety synchronization preserve
+the last outcome. Sequence suppression prevents duplicate feedback; session reset
+clears transient state. A stale roster revision cannot discard an independent
+operation result. The redundant legacy inviter-decline console line was removed;
+the invitee's existing decline confirmation remains.
+
+Matching client/server builds are required; no new negotiation or versioning
+mechanism is introduced. Manual checks: with Party closed, invite a player who
+blocks popups, invite successfully and decline, fill the final slot before another
+invitation is accepted, and close Party while a named invite awaits its reply.
+Check each explanation once in EN/ES and classic/modern UI, then refresh and
+verify no replay. These live two-client checks remain unperformed.
+
+Feedback source `29418f78` passed the native full validator: **1009/1009**,
+including all 36 management cases (67,526.81 ms). Final acceptance-result
+assertions are additionally verified by the latest PR validator run. The local
+VB6 compiler and independent conditional build matrix remain unavailable.

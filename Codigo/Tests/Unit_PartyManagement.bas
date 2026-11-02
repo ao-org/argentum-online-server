@@ -210,10 +210,12 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(InviteManagedParty(1, 6) = PartySuccess And InviteManagedParty(1, 7) = PartySuccess, "two proposals for final slot")
         Call Expect(AcceptManagedParty(6) = PartySuccess And AcceptManagedParty(7) = PartyFull, "acceptances serialize capacity")
         Call Expect(UserList(1).Grupo.CantidadMiembros = 6 And Not UserList(7).Grupo.EnGrupo, "never exceed six")
+        Call Expect(ResultFor(7, 0) = PartyFull And FeedbackFor(7, 0) > 0, "losing acceptance receives visible full-party outcome")
     Case 18
         Call Request(1, 1, 1): Call Expect(InviteManagedParty(1, 2) = PartySuccess, "issued")
         UserList(2).pos.x = 59
         Call Expect(AcceptManagedParty(2) = PartyUnavailable, "acceptance revalidates movement eligibility")
+        Call Expect(ResultFor(2, 0) = PartyUnavailable And FeedbackFor(2, 0) > 0, "moved acceptor receives actionable feedback")
     Case 19
         Call Request(1, 1, 1): Call Add(2)
         UserList(1).ConnectionDetails.ConnIDValida = False
