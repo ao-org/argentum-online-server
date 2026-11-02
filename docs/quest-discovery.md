@@ -55,20 +55,22 @@ Int16 offer count (0..128)
 repeat count:
     Int16 NPC template (>0)
     Int16 quest ID (>0)
-    String8 title (at most 128 Windows-1252 bytes)
+    String8 title (at most 128 source characters; existing 7-bit length prefix)
 ```
 
 Pages form a full atomic replacement, starting at page zero. Empty final page
 zero clears availability. Partial enqueue failure leaves work pending; retry
-restarts the transaction. The sent cache advances only after every page queues.
+resumes at the first unqueued page. At most four pages are sent per drain; changed
+eligibility supersedes a pending transaction with a newer sequence. The sent cache advances only after every page queues.
 The client rejects stale/duplicate completed sequences, missing pages, invalid
 IDs/counts and duplicate template/quest pairs. It keeps the previous complete
 snapshot while receiving a replacement and clears all state at session reset.
 
 VB6 authored quest IDs are signed Int16 (maximum 32767). Each NPC's offer count
-is a Byte (maximum 255). Pages carry at most **17035 payload bytes** and a
+is a Byte (maximum 255). Pages carry at most **49931 payload bytes** (conservative UTF-8 encoding bound) and a
 snapshot supports **32767 relationships**, with a pre-index limit of 131072.
-Larger authoring/snapshots send an explicit unavailable empty replacement and
+The client validates 384 wire bytes / 512 normalized UTF-8 bytes per title and
+at most 255 offers per NPC. Larger authoring/snapshots send an explicit unavailable empty replacement and
 log the capacity error; no partial set is silently published or left stale.
 Current local assets audit: 427 quest definitions, 173 unique valid offer links,
 102 providers, comfortably inside these bounds. This is source/data validation,

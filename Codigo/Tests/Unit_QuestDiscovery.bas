@@ -165,15 +165,15 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(Not PublishQuestDiscovery(1, True), "partial page failure")
         Call Expect(packets.Count = 1, "first page accepted only")
         rejectAt = 0
-        Call Expect(PublishQuestDiscovery(1, True), "retry restarts complete transaction")
-        Call Expect(packets.Count = 3, "two retry pages, no silent truncation")
-        For page = 2 To 3
+        Call Expect(PublishQuestDiscovery(1, True), "retry resumes transaction")
+        Call Expect(packets.Count = 2, "partial-send resumes without repeating accepted page")
+        For page = 1 To 2
             bytes = packets(page): Call reader.SetData(bytes)
             Call reader.ReadInt16(): Call reader.ReadInt32()
-            Call Expect(reader.ReadInt16() = page - 2, "ordered pages")
+            Call Expect(reader.ReadInt16() = page - 1, "ordered pages")
             flags = reader.ReadInt8(): count = reader.ReadInt16()
-            If page = 2 Then Call Expect(flags = 0 And count = 128, "full nonterminal page")
-            If page = 3 Then Call Expect(flags = 1 And count = 127, "terminal remainder")
+            If page = 1 Then Call Expect(flags = 0 And count = 128, "full nonterminal page")
+            If page = 2 Then Call Expect(flags = 1 And count = 127, "terminal remainder")
             For q = 1 To count
                 Call reader.ReadInt16(): Call reader.ReadInt16(): Call reader.ReadString8()
             Next q
@@ -195,11 +195,15 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(packets.Count = 2, "boss-state change refreshes discovery")
     End Select
     capturing = False
+    Call UnitTesting.Progress("Quest discovery " & index & " passed")
     Call UnitTesting.RunTest("Quest discovery " & index, True)
     Exit Sub
 Failed:
+    Dim failure As String
+    failure = Err.Description
     capturing = False
-    Call UnitTesting.RunTestError("Quest discovery " & index, Err.Description)
+    Call UnitTesting.Progress("Quest discovery " & index & " failed: " & failure)
+    Call UnitTesting.RunTestError("Quest discovery " & index, failure)
 End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer

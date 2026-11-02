@@ -5,6 +5,7 @@ Option Explicit
 Public Const QUEST_DISCOVERY_PAGE_SIZE As Integer = 128
 Public Const QUEST_DISCOVERY_LIMIT As Long = 32767
 Private Const MAX_INDEX_LINKS As Long = 131072
+Private Const MAX_PAGES_PER_DRAIN As Integer = 4
 Private Const FLAG_FINAL As Byte = 1
 Private Const FLAG_UNAVAILABLE As Byte = 2
 Private mOffers As Object
@@ -20,6 +21,12 @@ Private Type DiscoveryCache
     inputs As String
     fingerprint As String
     sequence As Long
+    pendingRows As Collection
+    pendingInputs As String
+    pendingFingerprint As String
+    pendingUnavailable As Boolean
+    nextRow As Long
+    nextPage As Integer
 End Type
 Private mCache() As DiscoveryCache
 Private mCapacity As Long
@@ -175,68 +182,82 @@ Public Function PublishQuestDiscovery(ByVal userIndex As Integer, Optional ByVal
     With mCache(userIndex)
         If .userId <> UserList(userIndex).Id Or .version <> UserList(userIndex).VersionId Then
             .known = False: .sequence = 0
+            Set .pendingRows = Nothing
+            .userId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
         End If
-        If .known And Not force And .inputs = inputs Then
-            PublishQuestDiscovery = True
-            Exit Function
+        If .pendingRows Is Nothing Then
+            If .known And Not force And .inputs = inputs Then
+                PublishQuestDiscovery = True
+                Exit Function
+            End If
+        ElseIf .pendingInputs <> inputs Then
+            Set .pendingRows = Nothing
         End If
-        #If UNIT_TEST = 1 Then
-            DiscoveryEvaluationCount = DiscoveryEvaluationCount + 1
-        #End If
-        overflow = mIndexOverflow
-        If Not overflow Then
-            For Each key In mOffers.Keys
-                If IsQuestDiscoverable(userIndex, CInt(key)) Then
-                    Set providers = mOffers(key)
-                    For Each npc In providers.Keys
-                        Call rows.Add(Array(CInt(npc), CInt(key)))
-                        fingerprint = fingerprint & npc & ":" & key & ":" & Left$(QuestList(CInt(key)).nombre, 128) & ";"
-                        If rows.Count > QUEST_DISCOVERY_LIMIT Then
-                            overflow = True
-                            Exit For
-                        End If
-                    Next npc
-                End If
-                If overflow Then Exit For
-            Next key
+        If .pendingRows Is Nothing Then
+            #If UNIT_TEST = 1 Then
+                DiscoveryEvaluationCount = DiscoveryEvaluationCount + 1
+            #End If
+            overflow = mIndexOverflow
+            If Not overflow And FreeQuestSlot(userIndex) > 0 Then
+                For Each key In mOffers.Keys
+                    If IsQuestDiscoverable(userIndex, CInt(key)) Then
+                        Set providers = mOffers(key)
+                        For Each npc In providers.Keys
+                            Call rows.Add(Array(CInt(npc), CInt(key)))
+                            fingerprint = fingerprint & npc & ":" & key & ":" & Left$(QuestList(CInt(key)).nombre, 128) & ";"
+                            If rows.Count > QUEST_DISCOVERY_LIMIT Then
+                                overflow = True
+                                Exit For
+                            End If
+                        Next npc
+                    End If
+                    If overflow Then Exit For
+                Next key
+            End If
+            If overflow Then
+                Set rows = New Collection
+                fingerprint = "unavailable"
+            End If
+            If .known And Not force And .fingerprint = fingerprint Then
+                .inputs = inputs: PublishQuestDiscovery = True
+                Exit Function
+            End If
+            .sequence = .sequence + 1
+            Set .pendingRows = rows
+            .pendingInputs = inputs: .pendingFingerprint = fingerprint
+            .pendingUnavailable = overflow: .nextRow = 1: .nextPage = 0
         End If
-        If overflow Then
-            Set rows = New Collection
-            fingerprint = "unavailable"
-        End If
-        If .known And Not force And .fingerprint = fingerprint Then
-            .inputs = inputs: PublishQuestDiscovery = True
-            Exit Function
-        End If
-        .sequence = .sequence + 1
-        Dim page As Integer, first As Long, last As Long, i As Long, flags As Byte, row As Variant
+        Dim first As Long, last As Long, i As Long, flags As Byte, row As Variant, pages As Integer
         Dim writer As Network.Writer, queued As Boolean
-        first = 1
         Do
+            first = .nextRow
             last = first + QUEST_DISCOVERY_PAGE_SIZE - 1
-            If last > rows.Count Then last = rows.Count
+            If last > .pendingRows.Count Then last = .pendingRows.Count
             flags = 0
-            If last = rows.Count Then flags = FLAG_FINAL
-            If overflow Then flags = flags Or FLAG_UNAVAILABLE
+            If last = .pendingRows.Count Then flags = FLAG_FINAL
+            If .pendingUnavailable Then flags = flags Or FLAG_UNAVAILABLE
             Set writer = Protocol_Writes.GetWriterBuffer()
             Call writer.WriteInt16(ServerPacketID.eQuestDiscovery)
             Call writer.WriteInt32(.sequence)
-            Call writer.WriteInt16(page)
+            Call writer.WriteInt16(.nextPage)
             Call writer.WriteInt8(flags)
             Call writer.WriteInt16(last - first + 1)
             For i = first To last
-                row = rows(i)
+                row = .pendingRows(i)
                 Call writer.WriteInt16(CInt(row(0)))
                 Call writer.WriteInt16(CInt(row(1)))
                 Call writer.WriteString8(Left$(QuestList(CInt(row(1))).nombre, 128))
             Next i
             Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
             If Not queued Then Exit Function
-            first = last + 1: page = page + 1
-        Loop While first <= rows.Count
-        If overflow Then Call TraceError(6, "Discovery capacity exceeded; unavailable replacement sent", "modQuestDiscovery.PublishQuestDiscovery", 0)
-        .userId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
-        .inputs = inputs: .fingerprint = fingerprint: .known = True
+            .nextRow = last + 1: .nextPage = .nextPage + 1: pages = pages + 1
+            If .nextRow > .pendingRows.Count Then Exit Do
+            If pages >= MAX_PAGES_PER_DRAIN Then Exit Function
+        Loop
+        If .pendingUnavailable Then Call TraceError(6, "Discovery capacity exceeded; unavailable replacement sent", "modQuestDiscovery.PublishQuestDiscovery", 0)
+        .inputs = .pendingInputs: .fingerprint = .pendingFingerprint: .known = True
+        Set .pendingRows = Nothing
+        .pendingInputs = "": .pendingFingerprint = ""
     End With
     PublishQuestDiscovery = True
     Exit Function
