@@ -301,7 +301,7 @@ Public Function PublishQuestDiscovery(ByVal userIndex As Integer, Optional ByVal
         Loop
         If .pendingUnavailable Then Call TraceError(6, "Discovery capacity exceeded; unavailable replacement sent", "modQuestDiscovery.PublishQuestDiscovery", 0)
         .inputs = .pendingInputs: .fingerprint = .pendingFingerprint: .known = True
-        If TraceDiscoveryNpc() > 0 Then Call TraceDiscovery("committed user=" & userIndex & " sequence=" & .sequence & " rows=" & .pendingRows.Count & " unavailable=" & .pendingUnavailable)
+        If TraceDiscoveryNpc() > 0 Then Call TraceDiscovery("committed user=" & userIndex & " sequence=" & .sequence & " rows=" & .pendingRows.Count & " unavailable=" & .pendingUnavailable & " free-slot=" & FreeQuestSlot(userIndex))
         Set .pendingRows = Nothing
         .pendingInputs = "": .pendingFingerprint = ""
     End With
