@@ -31,7 +31,7 @@ Private Sub Fixture()
     Dim i As Integer, wrapper As clsUserRefWrapper
     For i = 1 To 7
         With UserList(i)
-            .Id = 500 + i: .VersionId = fixtureVersion: .Name = "Party" & i
+            .AccountID = 500 + i: .Id = 500 + i: .VersionId = fixtureVersion: .Name = "Party" & i
             .flags.UserLogged = True: .ConnectionDetails.ConnIDValida = True
             .flags.Privilegios = e_PlayerType.User
             .Stats.ELV = 10: .Stats.MinHp = 100: .Stats.MaxHp = 100
