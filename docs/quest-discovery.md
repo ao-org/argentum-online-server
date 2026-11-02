@@ -91,10 +91,18 @@ suppression, enqueue retry, slot reuse, and multi-page retry/layout. Existing
 quest/turn-in tests remain enabled. New/touched VB6 sources use Windows-1252 and
 CRLF. Packet IDs were source-checked in both conditional configurations.
 
-The documented native VB6 compiler is unavailable locally. Compilation and native
-execution are pending the existing PR validator; do not read source checks as a
-native test pass. Independent PYMMO=0/1 native matrix and live gameplay remain
-outstanding unless explicitly reported in the PR.
+The documented native VB6 compiler is unavailable locally. The existing native
+PR validator compiled and passed **920/920 tests** at code commit
+`bf8656559968c08ae56d188244c39e86e76e4274` (36,637.43 ms), including all eleven
+new discovery cases and broader quest/turn-in regressions. The job does not expose
+an independent PYMMO=0/1 native matrix; that matrix and live gameplay remain
+outstanding. Do not read source checks as a separate native configuration pass.
+
+Companion HOO PR: https://github.com/morgolock/heroes-of-old/pull/850.
+Client code `68b9c39651523da1a244f9f51229b945dac5d046` passed native Windows
+Release client/unit builds and 321/321 focused tests (61 suites, 14.488s).
+EN/ES classic/modern-coordinate GL fixtures were inspected; they are labelled
+synthetic data, not live production eligibility or stitched multiplayer checks.
 
 Manual check using authored NPC 19 (Lyra), quest 320 (Resonancia anomala): use a
 level 13..24 character with an available slot, no active copy, and verify `!`.
