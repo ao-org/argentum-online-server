@@ -218,17 +218,14 @@ Public Function GetUserCardQuantity(ByVal UserIndex As Integer, ByVal CardIndex 
 End Function
 
 Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single
-    ' Returns the EXP multiplier based on the card level for THIS specific NPC
-    ' Returns 1.0 if no bonus applies
-    Dim CardIndex As Integer
+    GetCardExpBonusForNpc = GetCardExpBonusForCard(UserIndex, NpcList(NpcIndex).CollectibleCardIndex)
+End Function
+
+Public Function GetCardExpBonusForCard(ByVal UserIndex As Integer, ByVal CardIndex As Integer) As Single
     Dim CardQuantity As Byte
-    
-    ' Get the card index for this NPC
-    CardIndex = NpcList(NpcIndex).CollectibleCardIndex
-    
     ' Validate card index
     If CardIndex < 1 Or CardIndex > MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE Then
-        GetCardExpBonusForNpc = 1#
+        GetCardExpBonusForCard = 1#
         Exit Function
     End If
     
@@ -237,11 +234,11 @@ Public Function GetCardExpBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex
     
     ' Apply EXP bonus based on card level (quantity)
     ' Accumulative bonuses as the player levels up their card
-    GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonusBase"))
-    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl1")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus1"))
-    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl2")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus2"))
-    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl3")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus3"))
-    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl4")) Then GetCardExpBonusForNpc = CSng(SvrConfig.GetValue("CardExpBonus4"))
+    GetCardExpBonusForCard = CSng(SvrConfig.GetValue("CardExpBonusBase"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl1")) Then GetCardExpBonusForCard = CSng(SvrConfig.GetValue("CardExpBonus1"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl2")) Then GetCardExpBonusForCard = CSng(SvrConfig.GetValue("CardExpBonus2"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl3")) Then GetCardExpBonusForCard = CSng(SvrConfig.GetValue("CardExpBonus3"))
+    If CLng(CardQuantity) >= CLng(SvrConfig.GetValue("CardExpBonusLvl4")) Then GetCardExpBonusForCard = CSng(SvrConfig.GetValue("CardExpBonus4"))
 End Function
 
 Public Function GetCardDamageBonusForNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Single

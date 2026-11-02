@@ -1804,3 +1804,16 @@ SaveInventorySkins_Error:
     Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
 
 End Function
+
+#If UNIT_TEST = 1 Then
+' Narrow access to the real serializers/loaders for the isolated SQLite fixture.
+Public Sub SavePartyQuestRewardsForTest(ByVal userIndex As Integer)
+    Dim breakdown As String, sql As New cStringBuilder
+    Call SaveCharacterQuestsDB(UserList(userIndex), breakdown, sql)
+    Call SaveCharacterInventoryDB(UserList(userIndex), breakdown)
+End Sub
+Public Function LoadPartyQuestRewardsForTest(ByVal userIndex As Integer) As Boolean
+    Call SetupUserQuests(UserList(userIndex))
+    LoadPartyQuestRewardsForTest = LoadCharacterInventory(userIndex)
+End Function
+#End If

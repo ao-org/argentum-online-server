@@ -56,6 +56,7 @@ Module=modQuestTurnIn; Codigo\modQuestTurnIn.bas
 Module=modQuestFeedback; Codigo\modQuestFeedback.bas
 Module=modQuestDiscovery; Codigo\modQuestDiscovery.bas
 Module=Unit_QuestDiscovery; Codigo\Tests\Unit_QuestDiscovery.bas
+Module=Unit_PartyRewards; Codigo\Tests\Unit_PartyRewards.bas
 Module=Unit_QuestTurnIn; Codigo\Tests\Unit_QuestTurnIn.bas
 Module=modGatheringFeedback; Codigo\modGatheringFeedback.bas
 Module=Unit_GatheringFeedback; Codigo\Tests\Unit_GatheringFeedback.bas

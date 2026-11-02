@@ -963,3 +963,22 @@ Private Function HasUserRequiredClassForQuest(ByVal UserIndex As Integer, ByRef 
 HasUserRequiredClassForQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.HasUserRequiredClassForQuest", Erl)
 End Function
+
+Public Function MissingQuestDropItems(ByVal userIndex As Integer, ByVal questIndex As Integer, ByVal objIndex As Integer) As Long
+    On Error GoTo MissingQuestDropItems_Err
+    Dim i As Integer, required As Long
+    With QuestList(questIndex)
+        For i = 1 To .RequiredOBJs
+            If .RequiredOBJ(i).ObjIndex = objIndex Then
+                ' Match FaltanItemsQuest/TieneObjetos: first matching requirement.
+                required = .RequiredOBJ(i).Amount
+                MissingQuestDropItems = required - CountInventoryObjects(userIndex, objIndex)
+                If MissingQuestDropItems < 0 Then MissingQuestDropItems = 0
+                Exit Function
+            End If
+        Next i
+    End With
+    Exit Function
+MissingQuestDropItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.MissingQuestDropItems", Erl)
+End Function
