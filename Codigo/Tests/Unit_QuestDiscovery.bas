@@ -5,6 +5,7 @@ Private capturing As Boolean
 Private packets As Collection
 Private attempts As Long
 Private rejectAt As Long
+Private fixtureVersion As Integer
 Public Function CapturePacket(ByRef queued As Boolean) As Boolean
     If Not capturing Then Exit Function
     Dim bytes() As Byte, writer As Network.Writer
@@ -28,13 +29,14 @@ Private Sub Expect(ByVal value As Boolean, ByVal label As String)
     If Not value Then Err.Raise vbObjectError + 849, "Quest discovery", label
 End Sub
 Private Sub Fixture()
+    fixtureVersion = fixtureVersion + 1
     Call Unit_NpcBow.InitializeTestWorld()
     Call ResetTurnInTestCounters()
     ReDim QuestList(0 To 300)
     ReDim NpcInfoCache(1 To 20)
     ReDim GlobalQuestInfo(1 To 1)
     With UserList(1)
-        .Id = 140: .VersionId = 1: .flags.UserLogged = True
+        .Id = 140: .VersionId = fixtureVersion: .flags.UserLogged = True
         .Stats.ELV = 10: .clase = e_Class.Mage: .Faccion.Status = e_Facciones.Ciudadano
         .QuestStats.NumQuestsDone = 0
         Dim slot As Integer
