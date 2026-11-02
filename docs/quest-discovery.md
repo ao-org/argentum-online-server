@@ -113,3 +113,33 @@ check availability clears. Also test a prerequisite-locked/non-repeatable quest,
 level/skill/faction changes, reconnect and another character. In HOO check both
 UI modes, adjacent maps, hidden/roof-covered NPCs, clipping/HUD occlusion, marker
 setting, hover names and prepared magic/bow press/release safety.
+
+## Targeted missing-marker diagnosis
+
+Set `AO_TRACE_QUEST_DISCOVERY_NPC=432` before server startup to trace a specific
+provider template. The environment is read once. At most64 log records cover index
+construction, matching quest IDs, the shared acceptance failure enum/free slot,
+failed enqueue and final committed sequence/row count. IDs only are logged; no
+extra player packets, DB reads, subscriptions or global scans are introduced.
+Unset and restart to disable/reset the budget. Diagnostics do not change eligibility.
+
+Authored assets at `78d1253e6e662a53a78e58389bd4514cd58d0c77`: Alaric NPC432 offers
+231 (minimum1) and230 (minimum1, completed231 prerequisite); Heather415 offers38
+(minimum13); NPC408 (Romina in Spanish, Makrom in current English) offers427
+(level1..8). No HP fields are authored for these noncombat providers. Controlled
+fixtures use those exact acceptance/provider fields, not inferred subtitles.
+The current dialog Available calculation is partial; actual acceptance and discovery
+also enforce all shared eligibility checks and available accepted-quest capacity.
+
+New tests cover initial publication with zero accepted quests, eligible231 alongside
+blocked230, Heather/Romina level limits, production HandleQuestAccept invalidation,
+failed-enqueue retry and reconnect. Native source `1c8085b5` passes **1013/1013**
+full validator tests (71,012.87 ms), including all15 discovery cases. Local VB6
+compilation and an independent conditional-build matrix are unavailable.
+
+The companion HOO fix addresses a reproduced client-only 0/0-health update being
+misclassified as death. Initial creation alone does not reproduce it; no live
+Seneca/Alaric session has confirmed the reported login case. Collect the server
+trace and matching `HOO_TRACE_QUEST_MARKERS=1` client page/commit/actor trace before
+opening the quest dialog to identify the exact failing stage. No protocol or
+coordinated deployment is required for this optional diagnostic addition.
