@@ -54,6 +54,40 @@ Private Sub Fixture()
     Set packets = New Collection
     attempts = 0: rejectAt = 0: capturing = True
 End Sub
+Private Sub AuthoredProvidersFixture()
+    ' Eligibility/relationships copied from assets Dat/NPCs.dat and Quests.DAT;
+    ' no subtitle/name matching. Item requirements affect turn-in, not acceptance.
+    ReDim NpcInfoCache(1 To 432)
+    ReDim QuestList(0 To 427)
+    NpcInfoCache(432).Exists = True: NpcInfoCache(432).NumQuest = 2
+    ReDim NpcInfoCache(432).QuestNumber(1 To 2)
+    NpcInfoCache(432).QuestNumber(1) = 231: NpcInfoCache(432).QuestNumber(2) = 230
+    QuestList(231).nombre = "La Aguja y la Garra": QuestList(231).RequiredLevel = 1
+    QuestList(231).RequiredOBJs = 1: ReDim QuestList(231).RequiredOBJ(1 To 1)
+    QuestList(231).RequiredOBJ(1).ObjIndex = 538: QuestList(231).RequiredOBJ(1).amount = 1
+    QuestList(230).nombre = "El Rugido de Bruin": QuestList(230).RequiredLevel = 1: QuestList(230).RequiredQuest = 231
+    NpcInfoCache(415).Exists = True: NpcInfoCache(415).NumQuest = 1
+    ReDim NpcInfoCache(415).QuestNumber(1 To 1): NpcInfoCache(415).QuestNumber(1) = 38
+    QuestList(38).nombre = "Comienza la Aventura": QuestList(38).RequiredLevel = 13
+    NpcInfoCache(408).Exists = True: NpcInfoCache(408).NumQuest = 1
+    ReDim NpcInfoCache(408).QuestNumber(1 To 1): NpcInfoCache(408).QuestNumber(1) = 427
+    QuestList(427).nombre = "Un pequeno problema con las ratas": QuestList(427).RequiredLevel = 1: QuestList(427).LimitLevel = 8
+    UserList(1).Stats.ELV = 1
+    Call ResetQuestDiscoveryIndex()
+End Sub
+Private Function LastSnapshotOffers(ByVal npc As Integer, ByVal quest As Integer) As Boolean
+    Dim reader As New Network.Reader, bytes() As Byte, count As Integer, i As Integer, n As Integer, q As Integer
+    bytes = packets(packets.Count): Call reader.SetData(bytes)
+    Call Expect(reader.ReadInt16() = ServerPacketID.eQuestDiscovery, "discovery packet")
+    Call reader.ReadInt32(): Call reader.ReadInt16()
+    Call Expect(reader.ReadInt8() = 1, "atomic final snapshot")
+    count = reader.ReadInt16()
+    For i = 1 To count
+        n = reader.ReadInt16(): q = reader.ReadInt16(): Call reader.ReadString8()
+        If n = npc And q = quest Then LastSnapshotOffers = True
+    Next i
+    Call Expect(reader.GetAvailable() = 0, "exact discovery snapshot boundary")
+End Function
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
     Call Fixture()
@@ -195,6 +229,39 @@ Private Sub RunCase(ByVal index As Integer)
         GlobalQuestInfo(1).IsBossAlive(1) = False
         Call RefreshGlobalQuestTurnIns(1): Call ProcessQuestTurnInUpdates()
         Call Expect(packets.Count = 2, "boss-state change refreshes discovery")
+    Case 12
+        Call AuthoredProvidersFixture()
+        Call Expect(QuestAcceptanceFailure(1, 0, 231, QuestList(231)) = QuestAcceptAllowed, "Alaric 231 is genuinely acceptable in controlled level-one fixture")
+        Call Expect(QuestAcceptanceFailure(1, 0, 230, QuestList(230)) = QuestAcceptPrerequisite, "Alaric 230 requires completed 231")
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        Call Expect(LastSnapshotOffers(432, 231) And Not LastSnapshotOffers(432, 230), "zero accepted quests still publish Alaric eligible offer without dialog")
+        Call Expect(LastSnapshotOffers(408, 427) And Not LastSnapshotOffers(415, 38), "Romina level-one eligible; Heather requires 13")
+    Case 13
+        Call AuthoredProvidersFixture(): UserList(1).Stats.ELV = 13
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        Call Expect(LastSnapshotOffers(415, 38) And Not LastSnapshotOffers(408, 427), "Heather eligibility and Romina maximum level are preserved")
+    Case 14
+        Call AuthoredProvidersFixture()
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        NpcList(1).flags.NPCActive = True: NpcList(1).Numero = 432
+        NpcList(1).pos = UserList(1).pos: NpcList(1).NumQuest = 2
+        ReDim NpcList(1).QuestNumber(1 To 2)
+        NpcList(1).QuestNumber(1) = 231: NpcList(1).QuestNumber(2) = 230
+        Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
+        Dim acceptBytes(0 To 0) As Byte: acceptBytes(0) = 1
+        Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(acceptBytes)
+        Call Protocol.HandleQuestAccept(1): Call ProcessQuestTurnInUpdates()
+        Call Expect(TieneQuest(1, 231) > 0, "production acceptance retains actual quest ID")
+        Call Expect(Not LastSnapshotOffers(432, 231), "confirmed acceptance removes available marker")
+    Case 15
+        Call AuthoredProvidersFixture(): rejectAt = 1
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates(1000)
+        Call Expect(packets.Count = 0, "failed login enqueue is not cached as sent")
+        rejectAt = 0: Call ProcessQuestTurnInUpdates(1250)
+        Call Expect(LastSnapshotOffers(432, 231), "bounded retry publishes initial Alaric snapshot")
+        Call ResetQuestDiscoveryUser(1): Call IncreaseVersionId(1)
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates(1500)
+        Call Expect(LastSnapshotOffers(432, 231), "reconnect republishes eligible offer")
     End Select
     capturing = False
     Call UnitTesting.Progress("Quest discovery " & index & " passed")
@@ -210,7 +277,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 11
+    For i = 1 To 15
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
