@@ -49,13 +49,15 @@ or protocol-generation changes.
 
 ## Validation
 
-Native VB6 compiler is absent locally. New suite50 contains41 deterministic cases;
+Native VB6 compiler is absent locally. New suite50 contains42 deterministic cases;
 configured drop probability1 guarantees rolls without modifying production RNG.
 Native PR-validator results will be recorded after execution. Source checks preserve
 Windows-1252/CRLF and run `git diff --check`.
 
-Persistence tests use existing dirty detection and saved quest/inventory projections;
-a real database save/reload and live HOO gameplay are separate manual checks.
+Persistence tests cover existing dirty detection/saved projections and a private
+in-memory SQLite round trip through the real quest/inventory serializers/loaders.
+Only UNIT_TEST builds expose the narrow accessors and scoped synchronous Execute
+mode; production database behavior is unchanged. Live HOO relog remains manual.
 
 ## Two-client acceptance checklist
 

@@ -3,6 +3,7 @@ Attribute VB_Name = "Unit_PartyRewards"
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
 #If UNIT_TEST = 1 Then
+Public SynchronousPersistence As Boolean
 Private capturing As Boolean
 Private packets As Collection
 Private packetUsers As Collection
@@ -118,6 +119,38 @@ Private Sub InstallVictim(ByVal index As Integer)
     NpcList(index).Char.charindex = index
     CharList(index) = index
     MapData(51, 50, 1).NpcIndex = index
+End Sub
+
+Private Sub PersistenceRoundTrip()
+    On Error GoTo Failed
+    Dim original As ADODB.Connection, database As New ADODB.Connection
+    Dim oldAsync As Byte, i As Integer, blankQuests As t_QuestStats, blankInventory As t_Inventario
+    Set original = Connection: oldAsync = Current_async
+    ' Existing SQLite ODBC dependency, private in-memory schema; never writes the
+    ' validator/game database. Execute is synchronous only inside this test scope.
+    Call database.Open("DRIVER={SQLite3 ODBC Driver};DATABASE=:memory:")
+    Call database.Execute("CREATE TABLE quest (user_id INTEGER, number INTEGER, quest_id INTEGER, npcs TEXT, npcstarget TEXT, PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE inventory_item (user_id INTEGER, number INTEGER, item_id INTEGER, amount INTEGER, is_equipped INTEGER, elemental_tags INTEGER, PRIMARY KEY(user_id,number))")
+    Set Connection = database: SynchronousPersistence = True
+    For i = 1 To 2
+        Call SavePartyQuestRewardsForTest(i)
+    Next i
+    For i = 1 To 2
+        UserList(i).QuestStats = blankQuests: UserList(i).invent = blankInventory
+        Call Expect(LoadPartyQuestRewardsForTest(i), "production inventory reload")
+        Call Expect(UserList(i).QuestStats.Quests(1).QuestIndex = 1 And UserList(i).QuestStats.Quests(1).NPCsKilled(1) = 1, "quest serializer/loader round trip")
+        Call Expect(CountInventoryObjects(i, 50) = 3, "normal inventory serializer/loader round trip")
+    Next i
+    SynchronousPersistence = False: Set Connection = original: Current_async = oldAsync
+    Call database.Close()
+    Exit Sub
+Failed:
+    Dim message As String: message = Err.Description
+    SynchronousPersistence = False: Set Connection = original: Current_async = oldAsync
+    On Error Resume Next
+    Call database.Close()
+    On Error GoTo 0
+    Err.Raise vbObjectError + 852, "Party persistence", message
 End Sub
 
 Private Sub RunCase(ByVal index As Integer)
@@ -358,6 +391,10 @@ Private Sub RunCase(ByVal index As Integer)
         Call AwardNpcPartyQuests(1, victim): Call AwardNpcDeathExperience(1, victim)
         Call Expect(UserList(1).Stats.Exp = 0 And UserList(1).QuestStats.Quests(1).NPCsKilled(1) = 0, "dead credit is not a recipient")
         Call Expect(UserList(2).Stats.Exp = 100 And UserList(2).QuestStats.Quests(1).NPCsKilled(1) = 1, "valid dead source retains live party credit")
+    Case 42
+        Call Drops()
+        Call AwardNpcPartyQuests(1, victim)
+        Call PersistenceRoundTrip()
     End Select
     capturing = False
     Call UnitTesting.Progress("Party rewards " & index & " passed")
@@ -377,7 +414,7 @@ Public Function TestSuite() As Boolean
     For i = 1 To STAT_MAXELV
         oldExp(i) = ExpLevelUp(i)
     Next i
-    For i = 1 To 41
+    For i = 1 To 42
         Call RunCase(i)
     Next i
     For i = 1 To STAT_MAXELV
