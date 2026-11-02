@@ -153,11 +153,41 @@ Failed:
     Err.Raise vbObjectError + 852, "Party persistence", message
 End Sub
 
+Private Sub SetXpMultiplier(ByVal multiplier As Integer)
+    Dim config As New clsIniManager
+    Call config.Initialize(App.Path & "\Example.Configuracion.ini")
+    Call config.ChangeValue("CONFIGURACIONES", "ExpMult", CStr(multiplier))
+    Set SvrConfig = New ServerConfig
+    Call SvrConfig.LoadSettings(App.Path & "\Example.Configuracion.ini", config)
+End Sub
+
+Private Sub RestoreFixtureParty(ByVal groupId As Long)
+    Dim i As Integer
+    For i = 1 To 3
+        With UserList(i).Grupo
+            .EnGrupo = True: .Id = groupId
+            Call SetUserRef(.Lider, 3)
+        End With
+    Next i
+    With UserList(3).Grupo
+        .CantidadMiembros = 3
+        Call SetUserRef(.Miembros(1), 3)
+        Call SetUserRef(.Miembros(2), 1)
+        Call SetUserRef(.Miembros(3), 2)
+    End With
+End Sub
+
+Private Sub ExpectFairPair(ByVal total As Long)
+    Call Expect(UserList(1).Stats.Exp + UserList(2).Stats.Exp = total, "exact cumulative pool accounting")
+    Call Expect(Abs(UserList(1).Stats.Exp - UserList(2).Stats.Exp) <= 1, "cumulative difference at most one")
+End Sub
+
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
     Call Fixture()
     Dim recipients As t_PartyRewardRecipients, i As Integer, n As Integer, pet As Integer
-    Dim before As Long
+    Dim before As Long, beforeFirst As Long, beforeSecond As Long, beforeFourth As Long
+    Dim lowest As Long, highest As Long, iteration As Integer, member As Integer, attacker As Integer
     Dim result As e_DamageResult, config As clsIniManager
     Select Case index
     Case 1
@@ -395,6 +425,132 @@ Private Sub RunCase(ByVal index As Integer)
         Call Drops()
         Call AwardNpcPartyQuests(1, victim)
         Call PersistenceRoundTrip()
+    Case 43
+        Call SetXpMultiplier(2)
+        n = GetNextAvailableNpc(): Call InstallVictim(n)
+        For iteration = 1 To 100
+            Call CalcularDarExp(1, n, 1)
+            Call Expect(NpcList(n).flags.ExpCount = 100 - iteration, "one base unit debit per hit")
+        Next iteration
+        Call Expect(UserList(1).Stats.Exp = 100 And UserList(2).Stats.Exp = 100, "100 single-base hits at multiplier2 split100/100")
+    Case 44
+        victim.GiveEXP = 300: victim.Stats.MaxHp = 300: victim.Stats.MinHp = 300: victim.flags.ExpCount = 300
+        n = GetNextAvailableNpc(): Call InstallVictim(n)
+        For iteration = 1 To 100
+            Call CalcularDarExp(1, n, 3)
+            Call ExpectFairPair(3& * iteration)
+            Call Expect(NpcList(n).flags.ExpCount = 300 - 3& * iteration, "three-unit award pool debit")
+        Next iteration
+    Case 45
+        ReDim Preserve UserList(1 To 6)
+        For member = 1 To 6
+            With UserList(member)
+                .Id = 200 + member: .VersionId = fixtureVersion
+                .flags.UserLogged = True: .ConnectionDetails.ConnIDValida = True
+                .pos.Map = 1: .pos.x = 50: .pos.y = 50
+                .Stats.ELV = 10: .Grupo.EnGrupo = True: .Grupo.Id = 77
+                Call SetUserRef(.Grupo.Lider, 3)
+            End With
+            Call SetUserRef(UserList(3).Grupo.Miembros(member), member)
+        Next member
+        UserList(3).Grupo.CantidadMiembros = 6
+        victim.GiveEXP = 120: victim.Stats.MaxHp = 120: victim.Stats.MinHp = 120: victim.flags.ExpCount = 120
+        n = GetNextAvailableNpc(): Call InstallVictim(n)
+        For iteration = 1 To 120
+            Call CalcularDarExp(1, n, 1)
+            lowest = UserList(1).Stats.Exp: highest = lowest: before = 0
+            For member = 1 To 6
+                before = before + UserList(member).Stats.Exp
+                If UserList(member).Stats.Exp < lowest Then lowest = UserList(member).Stats.Exp
+                If UserList(member).Stats.Exp > highest Then highest = UserList(member).Stats.Exp
+            Next member
+            Call Expect(before = iteration And highest - lowest <= 1, "six recipients conserve/fairly rotate small awards")
+        Next iteration
+        For member = 1 To 6
+            Call Expect(UserList(member).Stats.Exp = 20, "no six-member starvation")
+        Next member
+    Case 46
+        victim.GiveEXP = 120: victim.Stats.MaxHp = 120: victim.Stats.MinHp = 120: victim.flags.ExpCount = 120
+        n = GetNextAvailableNpc(): Call InstallVictim(n)
+        For iteration = 1 To 120
+            attacker = 2
+            If iteration Mod 3 = 0 Then attacker = 1
+            Call SetUserRef(UserList(3).Grupo.Miembros(2), attacker)
+            Call SetUserRef(UserList(3).Grupo.Miembros(3), 3 - attacker)
+            Call CalcularDarExp(attacker, n, 1)
+            Call ExpectFairPair(iteration)
+        Next iteration
+        Call Expect(NpcList(n).flags.ExpCount = 0, "changing attacker/roster never changes debit")
+    Case 47
+        n = GetNextAvailableNpc()
+        For iteration = 1 To 20
+            victim.GiveEXP = 3: victim.Stats.MaxHp = 3: victim.Stats.MinHp = 3: victim.flags.ExpCount = 3
+            Call InstallVictim(n)
+            Call CalcularDarExp(1, n, 1)
+            Call Expect(NpcList(n).flags.ExpCount = 2, "mixed award damage debit")
+            victim = NpcList(n)
+            Call AwardNpcDeathExperience(1, victim)
+            Call Expect(victim.flags.ExpCount = 0, "mixed award remainder consumed")
+            Call ExpectFairPair(3& * iteration)
+        Next iteration
+    Case 48
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        For iteration = 1 To 5
+            Select Case iteration
+            Case 1: UserList(2).flags.Muerto = 1
+            Case 2: UserList(2).flags.Muerto = 0: UserList(2).pos.x = 70
+            Case 3: UserList(2).pos.x = 50: UserList(2).pos.Map = 2
+            Case 4: UserList(2).pos.Map = 1: UserList(2).ConnectionDetails.ConnIDValida = False
+            Case 5: UserList(2).ConnectionDetails.ConnIDValida = True: UserList(2).Grupo.Id = 78
+            End Select
+            victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+            Call Expect(UserList(2).Stats.Exp = 0, "ineligible member earns no unit/debt")
+        Next iteration
+        UserList(2).Grupo.Id = 77
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 6 And UserList(2).Stats.Exp = 1, "return resumes rotation without catch-up payment")
+        UserList(3).Grupo.CantidadMiembros = 4
+        Call SetUserRef(UserList(3).Grupo.Miembros(4), 4)
+        beforeFirst = UserList(1).Stats.Exp: beforeSecond = UserList(2).Stats.Exp
+        For iteration = 1 To 9
+            victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Next iteration
+        Call Expect(UserList(1).Stats.Exp - beforeFirst = 3 And UserList(2).Stats.Exp - beforeSecond = 3 And UserList(4).Stats.Exp = 3, "joined eligible member rotates fairly")
+        UserList(2).Grupo.EnGrupo = False
+        beforeFirst = UserList(1).Stats.Exp: beforeSecond = UserList(2).Stats.Exp: beforeFourth = UserList(4).Stats.Exp
+        For iteration = 1 To 6
+            victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Next iteration
+        Call Expect(UserList(1).Stats.Exp - beforeFirst = 3 And UserList(4).Stats.Exp - beforeFourth = 3 And UserList(2).Stats.Exp = beforeSecond, "departed member receives no allocated XP")
+    Case 49
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call FinalizarGrupo(3): Call GroupCreateSuccess(3)
+        Call RestoreFixtureParty(UserList(3).Grupo.Id)
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 0, "new party does not inherit old remainder cursor")
+    Case 50
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call IncreaseVersionId(3)
+        Call RestoreFixtureParty(77)
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 0, "leader reconnect resets party-session cursor")
+    Case 51, 52
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call IncreaseVersionId(2)
+        If index = 52 Then UserList(2).Id = 999
+        Call SetUserRef(UserList(3).Grupo.Miembros(3), 2)
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 0, "reconnected/reused slot does not inherit old next identity")
+        victim.flags.ExpCount = 1: Call AwardNpcDeathExperience(1, victim)
+        Call Expect(UserList(1).Stats.Exp = 2 And UserList(2).Stats.Exp = 1, "new session participates without owed XP")
+    Case 53
+        For iteration = 1 To 20
+            victim.flags.ExpCount = 1
+            n = GetNextAvailableNpc(): Call InstallVictim(n)
+            Call MuereNpc(n, 1)
+            Call Expect(Not NpcList(n).flags.NPCActive, "real repeated kill releases slot")
+            Call ExpectFairPair(iteration)
+        Next iteration
     End Select
     capturing = False
     Call UnitTesting.Progress("Party rewards " & index & " passed")
@@ -414,7 +570,7 @@ Public Function TestSuite() As Boolean
     For i = 1 To STAT_MAXELV
         oldExp(i) = ExpLevelUp(i)
     Next i
-    For i = 1 To 42
+    For i = 1 To 53
         Call RunCase(i)
     Next i
     For i = 1 To STAT_MAXELV
