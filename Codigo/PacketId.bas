@@ -260,6 +260,7 @@ Public Enum ServerPacketID
     eQuestObjectiveTemplates ' 223 with PYMMO=1; bounded accepted-objective projection.
     eQuestTurnIns ' 224 with PYMMO=1; complete ready-quest replacement.
     eQuestFeedback ' 225 with PYMMO=1; synchronized progress and actual-grant receipts.
+    eQuestDiscovery ' 226 with PYMMO=1; paged authoritative availability replacement.
     eMaxPacket
     [PacketCount]
 End Enum

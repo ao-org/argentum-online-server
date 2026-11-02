@@ -1088,6 +1088,7 @@ End Function
 
 Public Sub BuildNpcInfoCache()
     On Error GoTo ErrHandler
+    Call ResetQuestDiscoveryIndex()
     If LeerNPCs Is Nothing Then Exit Sub
     NpcInfoCacheInitialized = False
     ReDim NpcInfoCache(1 To MaxNPCs)

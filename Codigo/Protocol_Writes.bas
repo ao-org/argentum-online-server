@@ -1471,6 +1471,7 @@ End Sub
 Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
     'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
     On Error GoTo WriteUpdateUserStats_Err
+    Call SendQuestTurnInSnapshot(UserIndex)
     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
     Call Writer.WriteInt16(ServerPacketID.eUpdateUserStats)
@@ -2219,6 +2220,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteMiniStats(ByVal UserIndex As Integer)
     On Error GoTo WriteMiniStats_Err
+    Call SendQuestTurnInSnapshot(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eMiniStats)
     Call Writer.WriteInt32(UserList(UserIndex).Faccion.ciudadanosMatados)
     Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)

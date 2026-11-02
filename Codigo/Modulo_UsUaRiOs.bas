@@ -965,6 +965,7 @@ End Sub
 
 Sub RefreshCharStatus(ByVal UserIndex As Integer)
     On Error GoTo RefreshCharStatus_Err
+    Call SendQuestTurnInSnapshot(UserIndex)
     '*************************************************
     'Author: Tararira
     'Last modified: 6/04/2007

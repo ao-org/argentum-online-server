@@ -5876,6 +5876,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_HONORABLE_CONSEJO_REAL_BANDERBILL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.consejo
+                    Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
                 End With
             End If
@@ -5912,6 +5913,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_CONSEJO_LEGION_OSCURA, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.concilio
+                    Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
                 End With
             End If
@@ -6036,6 +6038,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                 End If
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
+                Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_LEGION_OSCURA_GLOBAL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
                 Call WriteLocaleMsg(UserIndex, MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS, username)
@@ -6089,6 +6092,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 End If
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_ARMADA_REAL_GLOBAL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
                 Call WriteLocaleMsg(UserIndex, MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA, username)
