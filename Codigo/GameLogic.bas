@@ -264,7 +264,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
             End If
             Exit Function
         End If
-        If MapInfo(Map).OnlyGroups And Not .Grupo.EnGrupo Then
+        If MapInfo(Map).OnlyGroups And Not PartyHasMultipleMembers(UserIndex) Then
             If .flags.UltimoMensaje <> MSG_MAP_REQUIRES_GROUP Then
                 ' Msg775=Necesitas pertenecer a un grupo para entrar a este mapa.
                 Call WriteLocaleMsg(UserIndex, MSG_MAP_REQUIRES_GROUP, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -1264,6 +1264,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Inte
                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).amount > .NPCsTarget(j) Then
                                         .NPCsTarget(j) = .NPCsTarget(j) + 1
                                         .Dirty = True ' Quest slot changed: target progress increased.
+                                        Call RefreshNpcInspection(UserIndex)
+                                        Call SendQuestObjectiveSnapshot(UserIndex)
                                     End If
                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
                                         Call FinishQuest(UserIndex, .QuestIndex, i)
@@ -2118,3 +2120,9 @@ Public Function ClampChance(ByVal v As Single) As Integer
     If v > 100 Then v = 100
     ClampChance = CInt(Fix(v))
 End Function
+
+#If UNIT_TEST = 1 Then
+Public Function PartyMapAdmissionForTest(ByVal userIndex As Integer, ByVal map As Integer) As Boolean
+    PartyMapAdmissionForTest = CheckMapRestrictions(userIndex, map)
+End Function
+#End If

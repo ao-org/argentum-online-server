@@ -49,6 +49,9 @@ Public Enum e_WorkingToolSubType
         MinerPickaxe = 8
         TailorSewingbox = 9
         FishingLine = 10
+        AlchemyKnife = 11
+        AlchemyShovel = 12
+        AlchemyGloves = 13
 End Enum
 
 
@@ -852,6 +855,7 @@ Public Enum e_GraphicEffects 'Image sequenced fxs like paralizar PrepareMessageC
     Runa = 167
     LogeoLevel1 = 177
     TpVerde = 229
+    MinorInvisibilityActivation = 30001 ' HOO semantic eCreateFX marker, not an indexed graphic.
 End Enum
 
 Public Enum e_ParticleEffects 'particle sequenced fxs like fuerza2 and celeridad2 PrepareMessageParticleFX()
@@ -2075,6 +2079,7 @@ End Type
 
 Public Enum e_CharValue
     eDontBlockTile = 1
+    eQuestKillEligible = 2
 End Enum
 
 'Datos de user o npc
@@ -2937,6 +2942,20 @@ Public Type t_UserPersistSnapshot
     LastQuestsDone() As Integer
 End Type
 
+Public Type t_PartyRewardRecipients
+    Count As Integer
+    IsParty As Boolean
+    PartyId As Long
+    Leader As t_UserReference
+    Users(1 To 6) As t_UserReference
+End Type
+
+Public Type t_PartyXpRotation
+    PartyId As Long
+    Leader As t_UserReference
+    NextRecipient As t_UserReference
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte
@@ -2944,6 +2963,9 @@ Type Tgrupo
     Lider As t_UserReference
     PropuestaDe As t_UserReference
     Id As Long
+    XpRotation As t_PartyXpRotation
+    RosterRevision As Long
+    ProposalPartyId As Long
 End Type
 
 Public Type t_LastNetworkUssage
@@ -3500,6 +3522,7 @@ Public Type t_NpcInfoCache
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
+    HealthFieldsOmitted As Boolean
     StatsMaxHp As Long
     StatsMinHp As Long
     StatsMaxHit As Long

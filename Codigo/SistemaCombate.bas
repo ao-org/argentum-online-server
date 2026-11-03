@@ -1683,14 +1683,26 @@ End Function
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
     On Error GoTo CalcularDarExp_Err
-    If NpcList(NpcIndex).MaestroUser.ArrayIndex <> 0 Then
+    If NpcList(NpcIndex).MaestroUser.ArrayIndex <> 0 Then Exit Sub
+    If ElDaño <= 0 Or NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
+    Dim recipients As t_PartyRewardRecipients, baseExp As Long, damage As Long
+    Dim baseShares(1 To 6) As Long
+    Call CollectPartyRewardRecipients(UserIndex, recipients)
+    If recipients.Count = 0 Then Exit Sub
+    If Not recipients.IsParty Then
+        ' Retain the historical solo damage calculation and rounding unchanged.
+        Call GetExpForUser(UserIndex, NpcIndex, ElDaño)
         Exit Sub
     End If
-    If UserList(UserIndex).Grupo.EnGrupo Then
-        Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
-    Else
-        Call GetExpForUser(UserIndex, NpcIndex, ElDaño)
-    End If
+    damage = ElDaño
+    If recipients.IsParty And damage > NpcList(NpcIndex).Stats.MinHp Then damage = NpcList(NpcIndex).Stats.MinHp
+    ' Preserve VB6's existing nearest-even rounding of damage-derived base XP.
+    baseExp = CLng(CDbl(damage) * NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp)
+    If baseExp > NpcList(NpcIndex).flags.ExpCount Then baseExp = NpcList(NpcIndex).flags.ExpCount
+    If baseExp <= 0 Then Exit Sub
+    If Not AllocatePartyBaseExperience(recipients, baseExp, baseShares) Then Exit Sub
+    NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - baseExp
+    Call PayNpcBaseExperience(NpcList(NpcIndex), recipients, baseShares)
     Exit Sub
 CalcularDarExp_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
@@ -1761,135 +1773,97 @@ GetExpForUser_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetExpForUser", Erl)
 End Sub
 
-Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
-    On Error GoTo CalcularDarExpGrupal_Err
-    Dim ExpaDar                 As Long
-    Dim BonificacionGrupo       As Single
-    Dim CantidadMiembrosValidos As Integer
-    Dim i                       As Long
-    Dim Index                   As Integer
-    'If UserList(UserIndex).Grupo.EnGrupo Then
-    'Chekeamos que las variables sean validas para las operaciones
-    If NpcIndex = 0 Then Exit Sub
-    If UserIndex = 0 Then Exit Sub
-    If ElDaño <= 0 Then ElDaño = 0
-    If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-    If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
-    'La experiencia a dar es la porcion de vida quitada * toda la experiencia
-    ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
-    If ExpaDar <= 0 Then Exit Sub
-    'Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-    'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-    'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
-    If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
-        ExpaDar = NpcList(NpcIndex).flags.ExpCount
-        NpcList(NpcIndex).flags.ExpCount = 0
-    Else
-        NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
+Public Sub AwardNpcDeathExperience(ByVal credited As Integer, ByRef npc As t_Npc)
+    On Error GoTo AwardNpcDeathExperience_Err
+    If npc.MaestroUser.ArrayIndex <> 0 Or npc.npcType = DummyTarget Then Exit Sub
+    If npc.flags.ExpCount <= 0 Then Exit Sub
+    Dim recipients As t_PartyRewardRecipients, baseExp As Long
+    Dim baseShares(1 To 6) As Long
+    Call CollectPartyRewardRecipients(credited, recipients)
+    If recipients.Count = 0 Then Exit Sub
+    If Not recipients.IsParty Then
+        ' Preserve the existing unmodified solo death remainder.
+        With UserList(credited)
+            If .Stats.ELV < STAT_MAXELV Then
+                .Stats.Exp = .Stats.Exp + npc.flags.ExpCount
+                If .Stats.Exp > MAXEXP Then .Stats.Exp = MAXEXP
+                Call WriteTextOverTile(credited, "+" & PonerPuntos(npc.flags.ExpCount), .pos.x, .pos.y, RGB(0, 169, 255))
+                Call WriteUpdateExp(credited)
+                Call CheckUserLevel(credited)
+            End If
+        End With
+        npc.flags.ExpCount = 0
+        Exit Sub
     End If
-    With UserList(UserIndex)
-        If Not IsValidUserRef(.Grupo.Lider) Then Exit Sub
-        Dim LiderIndex As Integer
-        LiderIndex = .Grupo.Lider.ArrayIndex
-        For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-            If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-                Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                If UserList(Index).flags.Muerto = 0 Then
-                    If .pos.Map = UserList(Index).pos.Map Then
-                        If Distancia(.pos, UserList(Index).pos) < 20 Then
-                            CantidadMiembrosValidos = CantidadMiembrosValidos + 1
-                        End If
+    baseExp = npc.flags.ExpCount
+    If Not AllocatePartyBaseExperience(recipients, baseExp, baseShares) Then Exit Sub
+    npc.flags.ExpCount = 0
+    Call PayNpcBaseExperience(npc, recipients, baseShares)
+    Exit Sub
+AwardNpcDeathExperience_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AwardNpcDeathExperience", Erl)
+End Sub
+
+Private Sub PayNpcBaseExperience(ByRef npc As t_Npc, ByRef recipients As t_PartyRewardRecipients, ByRef baseShares() As Long)
+    On Error GoTo PayNpcBaseExperience_Err
+    Dim i As Integer, userIndex As Integer
+    Dim expUser As Double, deltaLevel As Integer, penalty As Single
+    Dim bonus As Single, finalPercent As Integer
+    For i = 1 To recipients.Count
+        ' No callbacks/yields between collecting and paying; references also guard slot reuse.
+        If IsValidUserRef(recipients.Users(i)) Then
+            userIndex = recipients.Users(i).ArrayIndex
+            expUser = baseShares(i)
+            If SvrConfig.GetValue("ExpMult") > 0 Then expUser = expUser * SvrConfig.GetValue("ExpMult")
+            ' Keep party modifier rounding at the same Long boundary as before.
+            If recipients.IsParty Then
+                expUser = Round(expUser)
+            End If
+            If npc.nivel > 0 Then
+                deltaLevel = UserList(userIndex).Stats.ELV - npc.nivel
+                If deltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
+                    penalty = GetExpPenalty(userIndex, 0, deltaLevel)
+                    expUser = expUser * penalty
+                    If recipients.IsParty Then
+                        expUser = Round(expUser)
+                    End If
+                    If UserList(userIndex).ChatCombate = 1 Then
+                        finalPercent = penalty * 100
+                        Call WriteLocaleMsg(userIndex, MSG_DEBIDO_NIVEL_OBTIENES_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, finalPercent)
                     End If
                 End If
             End If
-        Next
-        ' Verificar si el líder está en otro mapa
-        If UserList(LiderIndex).pos.Map <> .pos.Map Then
-            CantidadMiembrosValidos = CantidadMiembrosValidos + 1 ' Se cuenta como un miembro más para dividir la exp
-            ' Avisamos a los miembros del grupo
-            For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-                If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-                    Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                    ' Enviar el mensaje solo si el miembro no está muerto y tiene el chat de combate activado
-                    If UserList(Index).flags.Muerto = 0 And UserList(Index).ChatCombate = 1 Then
-                        'Msg1437=El líder del grupo está demasiado lejos, su experiencia se pierde.
-                        Call WriteLocaleMsg(Index, MSG_EL_LIDER_DEL_GRUPO_ESTA_DEMASIADO_LEJOS_SU_EXPERIENCIA_SE_PIERDE, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                    End If
+            If IsFeatureEnabled("collectible_cards") Then
+                bonus = GetCardExpBonusForCard(userIndex, npc.CollectibleCardIndex)
+                If bonus > 1# Then expUser = expUser * bonus
+                If recipients.IsParty Then
+                    expUser = Round(expUser)
                 End If
-            Next i
-        End If
-        If CantidadMiembrosValidos = 0 Then Exit Sub
-        If SvrConfig.GetValue("ExpMult") > 0 Then
-            ExpaDar = ExpaDar * SvrConfig.GetValue("ExpMult")
-        End If
-        ExpaDar = ExpaDar / CantidadMiembrosValidos
-        Dim ExpUser As Long, DeltaLevel As Integer, ExpBonusForUser As Double
-        If ExpaDar > 0 Then
-            For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
-                If IsValidUserRef(UserList(LiderIndex).Grupo.Miembros(i)) Then
-                    Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
-                    If UserList(Index).flags.Muerto = 0 Then
-                        If Distancia(.pos, UserList(Index).pos) < 20 Then
-                            ExpUser = ExpaDar
-                            If UserList(Index).Stats.ELV < STAT_MAXELV Then
-                                If NpcList(NpcIndex).nivel Then
-                                    DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
-                                    If DeltaLevel > CInt(SvrConfig.GetValue("NpcDeltaLevelPenalties")) Then
-                                        Dim Penalty As Single
-                                        Penalty = GetExpPenalty(Index, NpcIndex, DeltaLevel)
-                                        ExpUser = ExpUser * Penalty
-                                        ' Si tiene el chat activado, enviamos el mensaje
-                                        If UserList(Index).ChatCombate = 1 Then
-                                            ' Mostrar porcentaje final de experiencia como número entero
-                                            Dim PorcentajeFinal As Integer
-                                            PorcentajeFinal = Penalty * 100
-                                            'Msg1467=Debido a tu nivel, obtienes el ¬1% de la experiencia.
-                                            Call WriteLocaleMsg(Index, MSG_DEBIDO_NIVEL_OBTIENES_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, PorcentajeFinal)
-                                        End If
-                                    End If
-                                End If
-                                
-                                If IsFeatureEnabled("collectible_cards") Then
-                                    ' Apply card collection bonus for THIS specific NPC
-                                    Dim CardBonus As Single
-                                    CardBonus = GetCardExpBonusForNpc(Index, NpcIndex)
-                                    
-                                    If CardBonus > 1# Then
-                                        ExpUser = ExpUser * CardBonus
-                                    End If
-                                End If
-                                
-                                If (UserList(Index).Stats.UserSkills(e_Skill.liderazgo) >= (15 - UserList(Index).Stats.UserAtributos(e_Atributos.Carisma) / 2)) Then
-                                    ExpBonusForUser = ExpUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
-                                    UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpBonusForUser
-                                Else
-                                    UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
-                                End If
-                                If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
-                                If UserList(Index).ChatCombate = 1 Then
-                                    Call WriteLocaleMsg(Index, MSG_EL_GRUPO_HA_GANADO_PUNTOS_DE_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, ExpUser)
-                                End If
-                                Call WriteUpdateExp(Index)
-                                Call CheckUserLevel(Index)
-                            End If
-                        Else
-                            If UserList(Index).ChatCombate = 1 Then
-                                Call WriteLocaleMsg(Index, MSG_ADVERTENCIA_TU_GRUPO_ESTA_DEMASIADO_LEJOS_NO_HAS_GANADO_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                            End If
-                        End If
-                    Else
-                        If UserList(Index).ChatCombate = 1 Then
-                            'Msg1064= Estás muerto, no has ganado experencia del grupo.
-                            Call WriteLocaleMsg(Index, MSG_ESTAS_MUERTO_NO_HAS_GANADO_EXPERENCIA_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT)
-                        End If
+            End If
+            If expUser > 0 And UserList(userIndex).Stats.ELV < STAT_MAXELV Then
+                If UserList(userIndex).Stats.ELV < STAT_MAXELV Then
+                    If recipients.IsParty Then
+                        With UserList(userIndex).Stats
+                            If .UserSkills(e_Skill.liderazgo) >= (15 - .UserAtributos(e_Atributos.Carisma) / 2) Then expUser = expUser * SvrConfig.GetValue("LeadershipExpPartyBonus")
+                        End With
                     End If
+                    ' Clamp before conversion/addition to avoid overflow at MAXEXP.
+                    If expUser > MAXEXP - UserList(userIndex).Stats.Exp Then expUser = MAXEXP - UserList(userIndex).Stats.Exp
+                    UserList(userIndex).Stats.Exp = UserList(userIndex).Stats.Exp + expUser
+                    Call WriteUpdateExp(userIndex)
+                    Call CheckUserLevel(userIndex)
                 End If
-            Next i
+                If recipients.IsParty Then
+                    If UserList(userIndex).ChatCombate = 1 Then Call WriteLocaleMsg(userIndex, MSG_EL_GRUPO_HA_GANADO_PUNTOS_DE_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_COMBAT, e_FontTypeNames.FONTTYPE_FIGHT, expUser)
+                Else
+                    Call WriteTextOverTile(userIndex, "+" & PonerPuntos(expUser), UserList(userIndex).pos.x, UserList(userIndex).pos.y, RGB(0, 169, 255))
+                End If
+            End If
         End If
-    End With
+    Next i
     Exit Sub
-CalcularDarExpGrupal_Err:
-    Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
+PayNpcBaseExperience_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.PayNpcBaseExperience", Erl)
 End Sub
 
 Function GetExpPenalty(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, DeltaLevel As Integer) As Single

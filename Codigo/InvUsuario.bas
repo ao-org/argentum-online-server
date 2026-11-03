@@ -826,6 +826,7 @@ Dim obj                         As t_ObjData
                             If obj.Que_Skill <> 0 Then
                                 .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
                                 .Stats.SkillDirty(obj.Que_Skill) = True
+                        Call SendQuestTurnInSnapshot(UserIndex)
                             End If
                         Case e_MagicItemEffect.eRegenerateHealth
                             .flags.RegeneracionHP = 0
@@ -1405,6 +1406,7 @@ Dim Ropaje                      As Integer
                     Case e_MagicItemEffect.eModifySkills
                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
                         .Stats.SkillDirty(obj.Que_Skill) = True
+                        Call SendQuestTurnInSnapshot(UserIndex)
                     Case e_MagicItemEffect.eRegenerateHealth
                         .flags.RegeneracionHP = 1
                     Case e_MagicItemEffect.eRegenerateMana
@@ -2017,7 +2019,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Select Case obj.Subtipo
                     Case 1, 2  ' Herramientas del Pescador - Caña y Red
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Pescar)
-                    Case 3     ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors, e_WorkingToolSubType.AlchemyKnife, _
+                            e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyGloves
+                        ' Herramientas de recoleccion de Alquimia
                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Alquimia)
                     Case 4     ' Herramientas de Alquimia - Olla
                         Call ReturnCraftingItems(UserIndex)

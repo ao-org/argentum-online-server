@@ -323,8 +323,7 @@ DoNavega_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 End Sub
 
-Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
-    On Error GoTo TieneObjetos_Err
+Public Function CountInventoryObjects(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Long
     Dim i     As Long
     Dim total As Long
     If (ItemIndex = GOLD_OBJ_INDEX) Then
@@ -335,6 +334,13 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
             total = total + UserList(UserIndex).invent.Object(i).amount
         End If
     Next i
+    CountInventoryObjects = total
+End Function
+
+Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
+    On Error GoTo TieneObjetos_Err
+    Dim total As Long
+    total = CountInventoryObjects(UserIndex, ItemIndex, ElementalTags)
     If cant <= total Then
         TieneObjetos = True
         Exit Function
@@ -1885,6 +1891,21 @@ ActualizarRecurso_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 End Sub
 
+Public Function CanUseAlchemyToolForNode(ByVal toolSubtype As e_WorkingToolSubType, ByVal nodeSubtype As Byte) As Boolean
+    Dim requiredSubtype As Byte
+    requiredSubtype = nodeSubtype
+
+    If requiredSubtype = 0 Then
+        requiredSubtype = e_WorkingToolSubType.AlchemyScissors
+    End If
+
+    Select Case toolSubtype
+        Case e_WorkingToolSubType.AlchemyScissors, e_WorkingToolSubType.AlchemyKnife, _
+                e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyGloves
+            CanUseAlchemyToolForNode = (toolSubtype = requiredSubtype)
+    End Select
+End Function
+
 Public Sub RecolectarPlantaAlquimia(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo RecolectarPlantaAlquimia_Err
 
@@ -2034,6 +2055,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, Optional ByRe
                 Call SetNpcRef(.MascotasIndex(Index), NpcIndex)
                 .MascotasType(Index) = NpcList(NpcIndex).Numero
                 Call SetUserRef(NpcList(NpcIndex).MaestroUser, UserIndex)
+                Call SendData(ToNPCArea, NpcIndex, PrepareUpdateCharValue(NpcList(NpcIndex).Char.charindex, e_CharValue.eQuestKillEligible, False))
                 Call RevokeNpcBow(NpcIndex)
                 .flags.ModificoMascotas = True
                 Call FollowAmo(NpcIndex)
@@ -2116,16 +2138,20 @@ PuedeDomarMascota_Err:
 End Function
 
 Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
+    Dim pendingFish As Integer
+    pendingFish = TakeSpecialFishingCatch(UserIndex)
     With UserList(UserIndex)
-        If .flags.PescandoEspecial Then
+        If pendingFish > 0 Then
             Dim obj As t_Obj
             obj.amount = 1
-            obj.ObjIndex = .Stats.NumObj_PezEspecial
+            obj.ObjIndex = pendingFish
             If Not MeterItemEnInventario(UserIndex, obj) Then
+                Call CompleteSpecialGatheringCatch(UserIndex, obj.ObjIndex, False)
                 .Stats.NumObj_PezEspecial = 0
                 .flags.PescandoEspecial = False
                 Exit Function
             End If
+            Call CompleteSpecialGatheringCatch(UserIndex, obj.ObjIndex, True)
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
             'Msg922=Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).name & " )
             Call WriteLocaleMsg(UserIndex, MSG_FELICITACIONES_PESCADO_PEZ_GRAN_PORTE_OBJDATA_OBJ_OBJINDEX, e_TextChannel.TEXTCHANNEL_PROGRESSION, e_FontTypeNames.FONTTYPE_EXP, ObjData(obj.ObjIndex).name)

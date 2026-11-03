@@ -46,6 +46,8 @@ Option Explicit
 ' Module-level Writer and Reader instances
 Private Writer As Network.Writer
 Private reader As Network.reader
+Private capturingGuild As Boolean
+Private guildPackets As Collection
 
 ' --------------------------------------------------------------------------
 ' CreateReaderFromWriter
@@ -1098,9 +1100,72 @@ Private Function test_aurora_packet_id_no_duplicates() As Boolean
     test_aurora_packet_id_no_duplicates = True
 End Function
 
+
+Public Function CaptureGuildPacket() As Boolean
+    If Not capturingGuild Then Exit Function
+    Dim bytes() As Byte, value As Variant, packetWriter As Network.Writer
+    Set packetWriter = Protocol_Writes.GetWriterBuffer()
+    Call packetWriter.GetData(bytes)
+    Call packetWriter.Clear()
+    value = bytes
+    Call guildPackets.Add(value)
+    CaptureGuildPacket = True
+End Function
+
+Private Function test_guild_experience_width(ByVal leader As Boolean) As Boolean
+    On Error GoTo Failed
+    Dim values As Variant, value As Variant, bytes() As Byte
+    Dim guildList(0 To 0) As String, members(0 To 0) As Long
+    Dim applicants(0 To 0) As String, expectedId As Integer
+    Dim packetReader As Network.reader
+    values = Array(0&, 32767&, 32768&, 1000000&, 2147483647)
+    guildList(0) = "Other-2"
+    applicants(0) = "Applicant"
+    ' Member ID 0 intentionally avoids database access in this writer fixture.
+    Call Protocol_Writes.InitializeAuxiliaryBuffer()
+    capturingGuild = True
+    For Each value In values
+        Set guildPackets = New Collection
+        If leader Then
+            expectedId = ServerPacketID.eGuildLeaderInfo
+            Call WriteGuildLeaderInfo(1, guildList, members, "News", applicants, 3, CLng(value), 2147483647)
+        Else
+            expectedId = ServerPacketID.eguildNews
+            Call WriteGuildNews(1, "News", guildList, members, 3, CLng(value), 2147483647)
+        End If
+        If guildPackets.Count <> 1 Then GoTo Failed
+        bytes = guildPackets.Item(1)
+        Set packetReader = New Network.reader
+        Call packetReader.SetData(bytes)
+        If packetReader.ReadInt16 <> expectedId Then GoTo Failed
+        If Not leader Then
+            If packetReader.ReadString8 <> "News" Then GoTo Failed
+        End If
+        If packetReader.ReadString8 <> "Other-2" Then GoTo Failed
+        If packetReader.ReadString8 <> vbNullString Then GoTo Failed
+        If leader Then
+            If packetReader.ReadString8 <> "News" Then GoTo Failed
+            If packetReader.ReadString8 <> "Applicant" Then GoTo Failed
+        End If
+        If packetReader.ReadInt8 <> 3 Then GoTo Failed
+        If packetReader.ReadInt32 <> CLng(value) Then GoTo Failed
+        If packetReader.ReadInt32 <> 2147483647 Then GoTo Failed
+        If packetReader.GetAvailable <> 0 Then GoTo Failed
+    Next value
+    test_guild_experience_width = True
+Failed:
+    capturingGuild = False
+    Set guildPackets = Nothing
+    Dim packetWriter As Network.Writer
+    Set packetWriter = Protocol_Writes.GetWriterBuffer()
+    If Not packetWriter Is Nothing Then Call packetWriter.Clear()
+End Function
+
 Public Function test_suite_network_aurora() As Boolean
     On Error GoTo ErrHandler
 
+    Call UnitTesting.RunTest("guild member response preserves Long XP", test_guild_experience_width(False))
+    Call UnitTesting.RunTest("guild leader response preserves Long XP", test_guild_experience_width(True))
     Call UnitTesting.RunTest("test_aurora_pbt_int8_round_trip", test_aurora_pbt_int8_round_trip())
     Call UnitTesting.RunTest("test_aurora_pbt_int16_round_trip", test_aurora_pbt_int16_round_trip())
     Call UnitTesting.RunTest("test_aurora_pbt_int32_round_trip", test_aurora_pbt_int32_round_trip())

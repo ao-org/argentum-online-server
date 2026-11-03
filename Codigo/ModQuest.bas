@@ -37,6 +37,25 @@ Public Enum e_QuestPermittedFactions
     ChaosCouncil = 32
 End Enum
  
+Public Enum e_QuestAcceptFailure
+    QuestAcceptAllowed = 0
+    QuestAcceptInvalid = 1
+    QuestAcceptWorkersOnly = 2
+    QuestAcceptTooFar = 3
+    QuestAcceptAlreadyActive = 4
+    QuestAcceptPrerequisite = 5
+    QuestAcceptMinimumLevel = 6
+    QuestAcceptMaximumLevel = 7
+    QuestAcceptSkill = 8
+    QuestAcceptClass = 9
+    QuestAcceptFaction = 10
+    QuestAcceptInvalidFaction = 11
+    QuestAcceptCompleted = 12
+    QuestAcceptGlobalThreshold = 13
+    QuestAcceptGlobalInactive = 14
+    QuestAcceptGlobalBoss = 15
+End Enum
+
 Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
     On Error GoTo TieneQuest_Err
     Dim i As Integer
@@ -158,8 +177,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
         End If
 
+        Dim granted As New Collection, feedbackCycle As Long, actualExp As Long
+        feedbackCycle = CaptureQuestFeedbackLifecycle(UserIndex, QuestSlot, QuestIndex)
         'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
-        Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, NpcList(NpcIndex).Char.charindex, vbYellow)
                 'Si la quest pedia objetos, se los saca al personaje.
         If .RequiredOBJs Then
             For i = 1 To .RequiredOBJs
@@ -181,10 +201,11 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         'Se entrega la experiencia.
         If .RewardEXP Then
             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * SvrConfig.GetValue("ExpMult"))
+                actualExp = (.RewardEXP * SvrConfig.GetValue("ExpMult"))
+                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + actualExp
+                Call AddGrantedQuestReward(granted, 1, 0, actualExp)
                 Call WriteUpdateExp(UserIndex)
                 Call CheckUserLevel(UserIndex)
-                Call WriteLocaleMsg(UserIndex, MSG_GANADO_PUNTOS_EXPERIENCIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, (.RewardEXP * SvrConfig.GetValue("ExpMult")))
             Else
                 'Msg1314= No se te ha dado experiencia porque eres nivel máximo.
                 Call WriteLocaleMsg(UserIndex, MSG_NO_HA_DADO_EXPERIENCIA_PORQUE_ERES_NIVEL_MAXIMO, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -196,23 +217,26 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             GiveGLD = (.RewardGLD * SvrConfig.GetValue("GoldMult"))
             If GiveGLD < 100000 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
+                Call AddGrantedQuestReward(granted, 2, 0, GiveGLD)
                 'Msg1315= Has ganado ¬1 monedas de oro como recompensa.
-                Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, PonerPuntos(GiveGLD))
                 Call WriteUpdateGold(UserIndex)
             Else
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
+                Call AddGrantedQuestReward(granted, 3, 0, GiveGLD)
                 'Msg1316= Has ganado ¬1 monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.
-                Call WriteLocaleMsg(UserIndex, MSG_GANADO_MONEDAS_ORO_COMO_RECOMPENSA_RECOMPENSA_HA_SIDO, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, PonerPuntos(GiveGLD))
             End If
         End If
         'Si hay recompensa de objetos, se entregan.
         If .RewardOBJs > 0 Then
             For i = 1 To .RewardOBJs
                 If .RewardOBJ(i).amount Then
-                    Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
+                    Dim beforeAmount As Long, actualAmount As Long
+                    beforeAmount = CountInventoryObjects(UserIndex, .RewardOBJ(i).ObjIndex, .RewardOBJ(i).ElementalTags)
+                    If MeterItemEnInventario(UserIndex, .RewardOBJ(i)) Then
+                        actualAmount = CountInventoryObjects(UserIndex, .RewardOBJ(i).ObjIndex, .RewardOBJ(i).ElementalTags) - beforeAmount
+                        Call AddGrantedQuestReward(granted, 4, .RewardOBJ(i).ObjIndex, actualAmount)
+                    End If
                     'Msg1318=Has recibido ¬1 como recompensa.
-                    Call WriteLocaleMsg(UserIndex, MSG_RECIBIDO_COMO_RECOMPENSA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList( _
-                            QuestIndex).RewardOBJ(i).ObjIndex).name)
                 End If
             Next i
         End If
@@ -228,6 +252,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                         Call WriteLocaleMsg(UserIndex, MSG_NO_TENES_ESPACIO_MAS_HECHIZOS_1317, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
                     Else
                         UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
+                        Call AddGrantedQuestReward(granted, 5, .RewardSpellList(i), 1)
                         Call UpdateUserHechizos(False, UserIndex, CByte(j))
                     End If
                     UserList(UserIndex).flags.ModificoHechizos = True
@@ -242,6 +267,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Call ArrangeUserQuests(UserIndex)
         'Se agrega que el usuario ya hizo esta quest. -  La agrego aunque sea repetible, para llevar el control
         Call AddDoneQuest(UserIndex, QuestIndex)
+        Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, NpcList(NpcIndex).Char.charindex, vbYellow)
+        Call QueueQuestCompletionFeedback(UserIndex, feedbackCycle, QuestIndex, granted)
         Call LogQuestEvent(UserList(UserIndex).Id, UserList(UserIndex).name, QuestIndex, .nombre, "TurnedIn")
         If .Repetible = 0 Then
             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
@@ -265,6 +292,7 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
         ReDim Preserve .QuestsDone(1 To .NumQuestsDone)
         .QuestsDone(.NumQuestsDone) = QuestIndex
     End With
+    Call SendQuestTurnInSnapshot(UserIndex)
     Exit Sub
 AddDoneQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
@@ -323,6 +351,8 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         .Dirty = True ' Quest slot changed: quest removed/reset.
         UserList(UserIndex).flags.ModificoQuests = True
     End With
+    Call RefreshNpcInspection(UserIndex)
+    Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
 CleanQuestSlot_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
@@ -348,6 +378,7 @@ ResetQuestStats_Err:
 End Sub
  
 Public Sub LoadQuests()
+    Call ResetQuestTurnInRecipients()
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Carga el archivo QUESTS.DAT en el array QuestList.
     'Last modified: 27/01/2010 by Amraphen
@@ -539,7 +570,35 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 EnviarQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 End Sub
-Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+Public Function CanInspectQuestTurnIn(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+    On Error GoTo Failed
+    If Not FinishQuestCheck(UserIndex, QuestIndex, QuestSlot, False) Then Exit Function
+    If Not HasUserRequiredClassForQuest(UserIndex, QuestList(QuestIndex)) Then Exit Function
+    ' Match FinishQuest reward admission without consuming objectives or granting rewards.
+    Dim freeSlots As Long, known As Long, i As Long, j As Long
+    With QuestList(QuestIndex)
+        If .RewardOBJs > 0 Then
+            For i = 1 To UserList(UserIndex).CurrentInventorySlots
+                If UserList(UserIndex).invent.Object(i).ObjIndex = 0 Then freeSlots = freeSlots + 1
+            Next i
+            If freeSlots < .RewardOBJs Then Exit Function
+        End If
+        If .RewardSpellCount > 0 Then
+            For i = 1 To .RewardSpellCount
+                For j = 1 To UBound(UserList(UserIndex).Stats.UserHechizos)
+                    If UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i) Then known = known + 1
+                Next j
+            Next i
+            If known = .RewardSpellCount Then Exit Function
+        End If
+    End With
+    CanInspectQuestTurnIn = True
+    Exit Function
+Failed:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.CanInspectQuestTurnIn", Erl)
+End Function
+
+Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte, Optional ByVal Notify As Boolean = True) As Boolean
     On Error GoTo FinishQuestCheck_Err
 
     Dim i As Integer
@@ -562,7 +621,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             Next i
         End If
         If .GlobalQuestIndex > 0 Then
-            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded) Then
+            If Not FinishGlobalQuestCheck(UserIndex, .GlobalQuestIndex, .GlobalQuestThresholdNeeded, Notify) Then
                 Exit Function
             End If
         End If
@@ -646,45 +705,46 @@ Handler:
     Call TraceError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
 End Function
 
-Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal QuestIndex As Integer, ByRef tmpQuest As t_Quest) As Boolean
+Public Function QuestAcceptanceFailure(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal QuestIndex As Integer, ByRef tmpQuest As t_Quest) As e_QuestAcceptFailure
     On Error GoTo ErrHandler
-    CanUserAcceptQuest = False
+    QuestAcceptanceFailure = QuestAcceptInvalid
+    If QuestIndex <= 0 Or QuestIndex > UBound(QuestList) Then Exit Function
     If tmpQuest.Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
-        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ONLY_FOR_WORKERS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+        QuestAcceptanceFailure = QuestAcceptWorkersOnly
         Exit Function
     End If
     If NpcIndex > 0 Then
         If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
             ' Msg8=Estas demasiado lejos.
-            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
+            QuestAcceptanceFailure = QuestAcceptTooFar
             Exit Function
         End If
     End If
     If TieneQuest(UserIndex, QuestIndex) Then
-        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_IN_PROGRESS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+        QuestAcceptanceFailure = QuestAcceptAlreadyActive
         Exit Function
     End If
     If tmpQuest.RequiredQuest > 0 Then
         If Not UserDoneQuest(UserIndex, tmpQuest.RequiredQuest) Then
-            Call WriteLocaleMsg(UserIndex, MSG_MUST_COMPLETE_QUEST_TO_START_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, QuestList(tmpQuest.RequiredQuest).nombre)
+            QuestAcceptanceFailure = QuestAcceptPrerequisite
             Exit Function
         End If
     End If
     'El personaje tiene suficiente nivel?
     If UserList(UserIndex).Stats.ELV < tmpQuest.RequiredLevel Then
-        Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_AT_LEAST_LEVEL_TO_START_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, tmpQuest.RequiredLevel)
+        QuestAcceptanceFailure = QuestAcceptMinimumLevel
         Exit Function
     End If
     'El personaje es nivel muy alto?
     If tmpQuest.LimitLevel > 0 Then 'Si el nivel limite es mayor a 0, por si no esta asignada la propiedad en quest.dat
         If UserList(UserIndex).Stats.ELV > tmpQuest.LimitLevel Then
-            Call WriteLocaleMsg(UserIndex, MSG_LEVEL_TOO_HIGH_FOR_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+            QuestAcceptanceFailure = QuestAcceptMaximumLevel
             Exit Function
         End If
     End If
     If tmpQuest.RequiredSkill.SkillType > 0 Then
         If UserList(UserIndex).Stats.UserSkills(tmpQuest.RequiredSkill.SkillType) < tmpQuest.RequiredSkill.RequiredValue Then
-            Call WriteLocaleMsg(UserIndex, MSG_MUST_INCREASE_SKILL_TO_CONTINUE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, tmpQuest.RequiredSkill.SkillType)
+            QuestAcceptanceFailure = QuestAcceptSkill
             Exit Function
         End If
     End If
@@ -692,7 +752,7 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     'Requiere clase?
     If Not HasUserRequiredClassForQuest(UserIndex, tmpQuest) Then
         'Msg2167=Esta misión no está disponible para tu clase.
-        Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+        QuestAcceptanceFailure = QuestAcceptClass
         Exit Function
     End If
     
@@ -700,43 +760,43 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
         Select Case UserList(UserIndex).Faccion.Status
             Case e_Facciones.Ciudadano
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Citizen) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case e_Facciones.Armada
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalArmy) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case e_Facciones.consejo
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.RoyalCouncil) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case e_Facciones.Criminal
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.Criminal) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case e_Facciones.Caos
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosLegion) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case e_Facciones.concilio
                 If Not IsSet(tmpQuest.PermittedFactions, e_QuestPermittedFactions.ChaosCouncil) Then
-                    Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+                    QuestAcceptanceFailure = QuestAcceptFaction
                     Exit Function
                 End If
             Case Else
-                Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
+                QuestAcceptanceFailure = QuestAcceptInvalidFaction
                 Exit Function
         End Select
     End If
     
     If tmpQuest.Repetible = 0 Then
         If UserDoneQuest(UserIndex, QuestIndex) Then
-            Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_COMPLETED, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP)
+            QuestAcceptanceFailure = QuestAcceptCompleted
             Exit Function
         End If
     End If
@@ -744,25 +804,68 @@ Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As
     If tmpQuest.GlobalQuestIndex > 0 Then
         If tmpQuest.GlobalQuestThresholdNeeded > 0 Then
             If tmpQuest.GlobalQuestThresholdNeeded > GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter Then
-                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+                QuestAcceptanceFailure = QuestAcceptGlobalThreshold
                 Exit Function
             End If
         Else
             If Not GlobalQuestInfo(tmpQuest.GlobalQuestIndex).IsActive Then
-                Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                QuestAcceptanceFailure = QuestAcceptGlobalInactive
                 Exit Function
             End If
             If IsAnyGlobalQuestBossAlive(tmpQuest.GlobalQuestIndex) Then
-                Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+                QuestAcceptanceFailure = QuestAcceptGlobalBoss
                 Exit Function
             End If
         End If
     End If
-    CanUserAcceptQuest = True
+    QuestAcceptanceFailure = QuestAcceptAllowed
+    Exit Function
+ErrHandler:
+    QuestAcceptanceFailure = QuestAcceptInvalid
+End Function
+Public Function CanUserAcceptQuest(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal QuestIndex As Integer, ByRef tmpQuest As t_Quest) As Boolean
+    On Error GoTo ErrHandler
+    Dim failure As e_QuestAcceptFailure
+    failure = QuestAcceptanceFailure(UserIndex, NpcIndex, QuestIndex, tmpQuest)
+    If failure = QuestAcceptAllowed Then
+        CanUserAcceptQuest = True
+        Exit Function
+    End If
+    Select Case failure
+    Case QuestAcceptWorkersOnly
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ONLY_FOR_WORKERS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+    Case QuestAcceptTooFar
+        Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
+    Case QuestAcceptAlreadyActive
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_IN_PROGRESS, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+    Case QuestAcceptPrerequisite
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_COMPLETE_QUEST_TO_START_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, QuestList(tmpQuest.RequiredQuest).nombre)
+    Case QuestAcceptMinimumLevel
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_BE_AT_LEAST_LEVEL_TO_START_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, tmpQuest.RequiredLevel)
+    Case QuestAcceptMaximumLevel
+        Call WriteLocaleMsg(UserIndex, MSG_LEVEL_TOO_HIGH_FOR_MISSION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+    Case QuestAcceptSkill
+        Call WriteLocaleMsg(UserIndex, MSG_MUST_INCREASE_SKILL_TO_CONTINUE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja, tmpQuest.RequiredSkill.SkillType)
+    Case QuestAcceptClass
+        Call WriteLocaleMsg(UserIndex, MSG_MISSION_CLASS_NOT_AVAILABLE, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+    Case QuestAcceptFaction
+        Call WriteLocaleMsg(UserIndex, MSG_PROHIBITED_ACTION_FOR_YOUR_FACTION, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD)
+    Case QuestAcceptInvalidFaction
+        Call WriteLocaleMsg(UserIndex, MSG_HAY_ERROR_OBJETO_INFORMALE_ADMINISTRADOR, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_New_Naranja)
+    Case QuestAcceptCompleted
+        Call WriteLocaleMsg(UserIndex, MSG_QUEST_ALREADY_COMPLETED, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP)
+    Case QuestAcceptGlobalThreshold
+        Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_REWARD_LOCKED_THRESHOLD_NOT_REACHED, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_EXP, GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(tmpQuest.GlobalQuestIndex).GatheringThreshold & "¬" & tmpQuest.GlobalQuestThresholdNeeded)
+    Case QuestAcceptGlobalInactive
+        Call WriteLocaleMsg(UserIndex, MSG_GLOBAL_EVENT_FINISHED_CANNOT_DELIVER_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+    Case QuestAcceptGlobalBoss
+        Call WriteLocaleMsg(UserIndex, MSG_EVENT_BOSS_ALIVE_CANNOT_DELIVER_SEASONAL_ITEMS, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos)
+    End Select
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "ModQuest.CanUserAcceptQuest", Erl)
 End Function
+
 Public Function AllRequiredNPCsKilled(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
     On Error GoTo AllRequiredNPCsKilled_Err
 
@@ -859,4 +962,23 @@ Private Function HasUserRequiredClassForQuest(ByVal UserIndex As Integer, ByRef 
 
 HasUserRequiredClassForQuest_Err:
     Call TraceError(Err.Number, Err.Description, "ModQuest.HasUserRequiredClassForQuest", Erl)
+End Function
+
+Public Function MissingQuestDropItems(ByVal userIndex As Integer, ByVal questIndex As Integer, ByVal objIndex As Integer) As Long
+    On Error GoTo MissingQuestDropItems_Err
+    Dim i As Integer, required As Long
+    With QuestList(questIndex)
+        For i = 1 To .RequiredOBJs
+            If .RequiredOBJ(i).ObjIndex = objIndex Then
+                ' Match FaltanItemsQuest/TieneObjetos: first matching requirement.
+                required = .RequiredOBJ(i).Amount
+                MissingQuestDropItems = required - CountInventoryObjects(userIndex, objIndex)
+                If MissingQuestDropItems < 0 Then MissingQuestDropItems = 0
+                Exit Function
+            End If
+        Next i
+    End With
+    Exit Function
+MissingQuestDropItems_Err:
+    Call TraceError(Err.Number, Err.Description, "ModQuest.MissingQuestDropItems", Erl)
 End Function

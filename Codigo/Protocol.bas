@@ -368,6 +368,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleCraftCarpenter(UserIndex)
         Case ClientPacketID.eWorkLeftClick
             Call HandleWorkLeftClick(UserIndex)
+        Case ClientPacketID.eGatheringStart
+            Call HandleGatheringStart(UserIndex)
         Case ClientPacketID.eStartAutomatedAction
             Call HandleStartAutomatedAction(UserIndex)
         Case ClientPacketID.eCreateNewGuild
@@ -930,6 +932,10 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionPrepare(UserIndex, reader)
         Case ClientPacketID.eHooInventoryDestructionConfirm
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.ePartyManagement
+            Call HandlePartyManagement(UserIndex, reader)
+        Case ClientPacketID.eNpcInspectionSubscribe
+            Call HandleNpcInspectionSubscribe(UserIndex)
         Case ClientPacketID.eHooBowSubscribe
             Call HandleNpcBowSubscribe(UserIndex, reader)
         Case ClientPacketID.eHooBowAttack
@@ -1256,10 +1262,6 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
             .CapabilityMask = AcceptedMask
         End With
     End If
-    Call LogInfoServidor("HOO capabilities: user=" & CStr(UserIndex) & _
-        " protocol=" & CStr(ProtocolVersion) & _
-        " requested=" & CStr(RequestedMask) & _
-        " accepted=" & CStr(AcceptedMask))
     Call MaybeSendRemortState(UserIndex)
     Exit Sub
 HandleHooClientCapabilities_Err:
@@ -1293,6 +1295,19 @@ Private Sub HandleHooHouseDoorAction(ByVal UserIndex As Integer)
     Exit Sub
 HandleHooHouseDoorAction_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHooHouseDoorAction", Erl)
+End Sub
+
+Private Sub HandleNpcInspectionSubscribe(ByVal UserIndex As Integer)
+    On Error GoTo Failed
+    Dim request As Long, map As Integer, character As Integer, npc As Integer
+    request = reader.ReadInt32()
+    map = reader.ReadInt16()
+    character = reader.ReadInt16()
+    npc = reader.ReadInt16()
+    Call SubscribeNpcInspection(UserIndex, request, map, character, npc)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleNpcInspectionSubscribe", Erl)
 End Sub
 
 Private Sub HandleHooTargetedSpellCast(ByVal UserIndex As Integer)
@@ -2068,10 +2083,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         PacketTimerThreshold(PacketNames.Walk), MacroIterations(PacketNames.Walk))
             End If
         End If
-        If .flags.PescandoEspecial Then
-            .Stats.NumObj_PezEspecial = 0
-            .flags.PescandoEspecial = False
-        End If
+        If .flags.PescandoEspecial Then Call CancelSpecialFishing(UserIndex)
         If UserMod.CanMove(.flags, .Counters) Then
             If .flags.Comerciando Or .flags.Crafteando <> 0 Then Exit Sub
             If .flags.Meditando Then
@@ -3232,7 +3244,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                 Select Case ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo
-                    Case e_WorkingToolSubType.AlchemyScissors  ' Herramientas de Alquimia - Tijeras
+                    Case e_WorkingToolSubType.AlchemyScissors, e_WorkingToolSubType.AlchemyKnife, _
+                            e_WorkingToolSubType.AlchemyShovel, e_WorkingToolSubType.AlchemyGloves
+                        ' Herramientas de recoleccion de Alquimia
                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
                             Call WriteWorkRequestTarget(UserIndex, 0)
                             ' Msg711=Esta prohibido cortar raices en las ciudades.
@@ -3252,6 +3266,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
                             Exit Sub
                         End If
+                        If Not CanUseAlchemyToolForNode(ObjData(.invent.EquippedWorkingToolObjIndex).Subtipo, ObjData(DummyInt).Subtipo) Then
+                            Call WriteLocaleMsg(UserIndex, MSG_NECESITAS_HERRAMIENTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+
                         Call ActualizarRecurso(.pos.Map, x, y)
                         If MapData(x, y, .pos.Map).ObjInfo.amount <= 0 Then
                             ' Msg712=El árbol ya no te puede entregar mas raices.
@@ -3371,40 +3392,10 @@ TamingCompleted:
                 Call WriteHooTamingResult(UserIndex, PacketCounter, .pos.Map, x, y, TamingCharacter, TamingResult)
             Case e_Skill.Grupo
                 Call LookatTile(UserIndex, .pos.Map, x, y)
-                'Target whatever is in that tile
-                tU = .flags.TargetUser.ArrayIndex
-                If IsValidUserRef(.flags.TargetUser) And tU <> UserIndex Then
-                    If UserList(UserIndex).Grupo.EnGrupo = False Then
-                        If UserList(tU).flags.Muerto = 0 Then
-                            If Abs(.pos.x - x) + Abs(.pos.y - y) > 8 Then
-                                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-                                Call WriteWorkRequestTarget(UserIndex, 0)
-                                Exit Sub
-                            End If
-                            If UserList(UserIndex).Grupo.CantidadMiembros = 0 Then
-                                Call SetUserRef(UserList(UserIndex).Grupo.Lider, UserIndex)
-                                Call SetUserRef(UserList(UserIndex).Grupo.Miembros(1), UserIndex)
-                                UserList(UserIndex).Grupo.CantidadMiembros = 1
-                                Call InvitarMiembro(UserIndex, tU)
-                            Else
-                                Call SetUserRef(UserList(UserIndex).Grupo.Lider, UserIndex)
-                                Call InvitarMiembro(UserIndex, tU)
-                            End If
-                        Else
-                            Call WriteLocaleMsg(UserIndex, MSG_USER_IS_DEAD, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                        End If
-                    Else
-                        If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
-                            Call InvitarMiembro(UserIndex, tU)
-                        Else
-                            'Msg1131= Tu no podés invitar usuarios, debe hacerlo ¬1
-                            Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_INVITAR_USUARIOS_DEBE_HACERLO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, GetUserDisplayName(UserList(UserIndex).Grupo.Lider.ArrayIndex))
-                            Call WriteWorkRequestTarget(UserIndex, 0)
-                        End If
-                    End If
+                If IsValidUserRef(.flags.TargetUser) Then
+                    Call InvitarMiembro(UserIndex, .flags.TargetUser.ArrayIndex)
                 Else
-                    Call WriteLocaleMsg(UserIndex, MSG_PICKUP_UNAVAILABLE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                    Call WritePartyManagementState(UserIndex, 0, PartyUnavailable)
                 End If
             Case e_Skill.MarcaDeClan
                 Dim clan_nivel As Byte
@@ -5879,6 +5870,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_HONORABLE_CONSEJO_REAL_BANDERBILL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA)) 'Msg1643=¬1 fue aceptado en el honorable Consejo Real de Banderbill.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.consejo
+                    Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
                 End With
             End If
@@ -5915,6 +5907,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_ACEPTADO_CONSEJO_LEGION_OSCURA, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CONSEJOCAOS)) 'Msg1644=¬1 fue aceptado en el Consejo de la Legión Oscura.
                 With UserList(tUser.ArrayIndex)
                     .Faccion.Status = e_Facciones.concilio
+                    Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                     Call WarpUserChar(tUser.ArrayIndex, .pos.Map, .pos.x, .pos.y, False)
                 End With
             End If
@@ -6039,6 +6032,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                 End If
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Criminal
+                Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_LEGION_OSCURA_GLOBAL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS))
                 Call WriteLocaleMsg(UserIndex, MSG_EXPULSADO_FUERZAS_CAOS_PROHIBIDA_REENLISTADA, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CRIMINAL_CAOS, username)
@@ -6092,6 +6086,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 End If
                 UserList(tUser.ArrayIndex).Faccion.Reenlistadas = MAX_FACTION_ENLISTMENTS + 1
                 UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Ciudadano
+                Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 UserList(tUser.ArrayIndex).Faccion.FactionScore = 0
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_EXPULSADO_ARMADA_REAL_GLOBAL, username, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA))
                 Call WriteLocaleMsg(UserIndex, MSG_EXPULSADO_FUERZAS_REALES_PROHIBIDA_REENLISTADA, e_TextChannel.TEXTCHANNEL_FACTION, e_FontTypeNames.FONTTYPE_CITIZEN_ARMADA, username)
@@ -7182,34 +7177,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
         If respuesta Then
             Select Case UserList(UserIndex).flags.pregunta
                 Case 1
-                    Log = "Repuesta Afirmativa 1"
-                    If UserList(UserIndex).Grupo.EnGrupo Then
-                        Call WriteLocaleMsg(UserIndex, MsgYouAreAlreadyInGroup, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                        Exit Sub
-                    End If
-                    If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex Then
-                            ' Msg722=¡El lider del grupo ha cambiado, imposible unirse!
-                            Call WriteLocaleMsg(UserIndex, MSG_LIDER_GRUPO_HA_CAMBIADO_IMPOSIBLE_UNIRSE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                        Else
-                            Log = "Repuesta Afirmativa 1-1 "
-                            If Not IsValidUserRef(UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
-                                ' Msg723=¡El grupo ya no existe!
-                                Call WriteLocaleMsg(UserIndex, MSG_NO_GRUPO_EXISTE, e_TextChannel.TEXTCHANNEL_GROUP, e_FontTypeNames.FONTTYPE_New_GRUPO)
-                            Else
-                                Log = "Repuesta Afirmativa 1-2 "
-                                If UserList(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-                                    Call GroupCreateSuccess(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
-                                    Log = "Repuesta Afirmativa 1-3 "
-                                End If
-                                Call AddUserToGRoup(UserIndex, UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
-                            End If
-                        End If
-                    Else
-                        ' Msg724=Servidor » Solicitud de grupo invalida, reintente...
-                        Call WriteLocaleMsg(UserIndex, MSG_SERVIDOR_SOLICITUD_GRUPO_INVALIDA_REINTENTE, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)
-                    End If
-                    'unirlo
+                    Call AcceptManagedParty(UserIndex)
                 Case 2
                     Log = "Repuesta Afirmativa 2"
                     ' Msg725=¡Ahora sos un ciudadano!
@@ -7294,10 +7262,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 Case 1
                     Log = "Repuesta negativa 1"
                     If IsValidUserRef(UserList(UserIndex).Grupo.PropuestaDe) Then
-                        'Msg1245= El usuario no esta interesado en formar parte del grupo.
-                        Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, MSG_EL_USUARIO_NO_ESTA_INTERESADO_EN_FORMAR_PARTE_DEL_GRUPO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+                        Call WritePartyManagementState(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, 0, PartyDeclined)
                     End If
-                    Call SetUserRef(UserList(UserIndex).Grupo.PropuestaDe, 0)
+                    Call ClearPartyProposal(UserIndex)
                     'Msg1246= Has rechazado la propuesta.
                     Call WriteLocaleMsg(UserIndex, MSG_RECHAZADO_PROPUESTA, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Case 2
@@ -7341,38 +7308,22 @@ End Sub
 Private Sub HandleRequestGrupo(ByVal UserIndex As Integer)
     On Error GoTo hErr
     'Author: Pablo Mercavides
-    Call WriteDatosGrupo(UserIndex)
+    Call WritePartyManagementState(UserIndex)
     Exit Sub
 hErr:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGrupo", Erl)
 End Sub
 
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    On Error GoTo HandleAbandonarGrupo_Err
-    With UserList(UserIndex)
-        If UserList(UserIndex).Grupo.Lider.ArrayIndex = UserIndex Then
-            Call FinalizarGrupo(UserIndex)
-        Else
-            Call SalirDeGrupo(UserIndex)
-        End If
-    End With
-    Exit Sub
-HandleAbandonarGrupo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
+    ' Required HOO management requests carry party identity/revision. An old
+    ' uncorrelated leave must not affect a newly joined or recreated party.
+    Call WritePartyManagementState(UserIndex, 0, PartyStale)
 End Sub
 
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    On Error GoTo HandleHecharDeGrupo_Err
-    With UserList(UserIndex)
-        Dim Indice As Byte
-        Indice = reader.ReadInt8()
-        Call EcharMiembro(UserIndex, Indice)
-    End With
-    Exit Sub
-HandleHecharDeGrupo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
+    Dim ignored As Byte
+    ignored = reader.ReadInt8()
+    Call WritePartyManagementState(UserIndex, 0, PartyStale)
 End Sub
 
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
@@ -7642,6 +7593,9 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.QuestItemSlot)
         End If
     End With
+    Call BeginQuestFeedbackLifecycle(UserIndex, QuestSlot)
+    Call RefreshNpcInspection(UserIndex)
+    Call SendQuestObjectiveSnapshot(UserIndex)
     Exit Sub
 HandleQuestAccept_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
@@ -8329,6 +8283,7 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     Dim caniaOld As Integer
     Dim shouldBreak As Boolean
 
+    If TakeSpecialFishingCatch(UserIndex) = 0 Then Exit Sub
     With UserList(UserIndex)
         obj.ObjIndex = .invent.EquippedWorkingToolObjIndex
         caniaOld = .invent.EquippedWorkingToolObjIndex
@@ -8377,6 +8332,16 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
 HandleRomperCania_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
 End Sub
+
+#If UNIT_TEST = 1 Then
+Public Sub SpecialFishingTestTerminal(ByVal UserIndex As Integer, ByVal complete As Boolean)
+    If complete Then
+        Call HandleFinalizarPescaEspecial(UserIndex)
+    Else
+        Call HandleRomperCania(UserIndex)
+    End If
+End Sub
+#End If
 
 Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     On Error GoTo HandleFinalizarPescaEspecial_Err:
@@ -8501,6 +8466,8 @@ Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Not .Grupo.EnGrupo Then Exit Sub
         If Not IsFeatureEnabled("target_group_frames") Then Exit Sub
+        If PartyLeaderIndex(UserIndex) = 0 Then Exit Sub
+        If TargetGroupMember < 1 Or TargetGroupMember > 6 Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
         If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub
@@ -8623,7 +8590,19 @@ Public Function IsInMapCarcelRestrictedArea(ByRef position As t_WorldPos) As Boo
     End If
 End Function
 
-Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
+Private Sub HandleGatheringStart(ByVal UserIndex As Integer)
+    On Error GoTo Failed
+    If reader.GetAvailable() <> 7 Then Exit Sub
+    Dim request As Long
+    request = reader.ReadInt32()
+    If request <= 0 Then Exit Sub
+    Call HandleStartAutomatedAction(UserIndex, request)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGatheringStart", Erl)
+End Sub
+
+Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer, Optional ByVal feedbackRequest As Long = 0)
     On Error GoTo HandleStartAutomatedAction_Err
     Dim x     As Byte
     Dim y     As Byte
@@ -8631,32 +8610,47 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
     x = reader.ReadInt8()
     y = reader.ReadInt8()
     skill = reader.ReadInt8()
+    Dim reason As e_GatheringReason
+    reason = GatheringRestriction
+    If feedbackRequest > 0 Then
+        If skill <> e_Skill.Talar And skill <> e_Skill.Mineria And skill <> e_Skill.Pescar Then Exit Function
+        If Not IsValidMapPosition(UserList(UserIndex).pos.Map, x, y) Then
+            Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, GatheringTarget)
+            Exit Function
+        End If
+    End If
     Select Case skill
         Case e_Skill.Pescar
-            If Not CanUserFish(UserIndex, x, y) Then
+            If Not CanUserFish(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Talar
-            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y) Then
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otTrees, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
-            If Not CanUserExtractWood(UserIndex, x, y) Then
+            If Not CanUserExtractWood(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Mineria
-            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y) Then
+            If Not CanUserExtractResource(UserIndex, e_OBJType.otOreDeposit, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
-            If Not CanUserExtractMinerals(UserIndex, x, y) Then
+            If Not CanUserExtractMinerals(UserIndex, x, y, reason) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
         Case e_Skill.Smelting
             If Not CanUserSmelt(UserIndex, e_OBJType.otMinerals, x, y) Then
+                If feedbackRequest > 0 Then Call RejectGatheringRequest(UserIndex, feedbackRequest, skill, reason)
                 Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
@@ -8664,7 +8658,10 @@ Public Function HandleStartAutomatedAction(ByVal UserIndex As Integer)
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Function
     End Select
+    Call SendGatheringFeedback(UserIndex, GatheringStopped)
     Call StartAutomatedAction(x, y, skill, UserIndex)
+    Call BeginGatheringFeedback(UserIndex, feedbackRequest, skill)
+    Call SendGatheringFeedback(UserIndex, GatheringStarted)
     Call WriteMacroTrabajoToggle(UserIndex, True)
     Exit Function
 HandleStartAutomatedAction_Err:

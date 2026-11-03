@@ -1122,6 +1122,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_NO_PODES_TENER_NIVEL_SUPERIOR, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja, STAT_MAXELV)  ' Msg1484=No podÃ©s tener un nivel superior a Â¬1.
                 End If
                 UserList(tUser.ArrayIndex).Stats.ELV = val(Arg1)
+                Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 Call WriteUpdateUserStats(UserIndex)
             Case e_EditOptions.eo_Class
                 For LoopC = 1 To NUMCLASES
@@ -1132,6 +1133,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
                     Call WriteLocaleMsg(UserIndex, MSG_CLASE_DESCONOCIDA_INTENTE_NUEVAMENTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     UserList(tUser.ArrayIndex).clase = LoopC
+                    Call SendQuestTurnInSnapshot(tUser.ArrayIndex)
                 End If
             Case e_EditOptions.eo_Skills
                 If (.flags.Privilegios And (e_PlayerType.User Or e_PlayerType.Consejero)) Then Exit Sub

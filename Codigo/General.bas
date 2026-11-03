@@ -1193,6 +1193,7 @@ UnitTest_ReportError:
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeRunUserAutoSave")
         Call RunAutomatedActions
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
+        Call UpdateNpcInspections(GlobalFrameTime)
         Call UpdateAdjacentNpcVisibility(GlobalFrameTime)
         #If PYMMO = 1 Then
             Call UpdateAdjacentPlayerVisibility(GlobalFrameTime)

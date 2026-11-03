@@ -245,6 +245,7 @@ Private Sub ClearAdjacentCapture(Optional ByVal failAttempt As Long = 0, Optiona
 End Sub
 
 Private Function AdjacentPacketReader(ByVal index As Long, ByVal packetId As Integer, ByVal length As Long) As Network.reader
+    If packetId = ServerPacketID.eAdjacentNpcUpsert Then length = length + 1
     Dim reader As New Network.reader
     ' Aurora readers borrow their input; retain bytes after this helper returns.
     adjacentReaderBytes = adjacentPackets(index)
@@ -314,6 +315,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt16() = 1038 And reader.ReadInt16() = 1295, "helmet/cart widths")
             Call AdjacentExpect(reader.ReadReal32() = 1 And reader.ReadBool(), "speed and idle")
             Call AdjacentExpect(reader.ReadInt16() = 1543 And reader.ReadString8() = vbNullString, "definition and empty display text")
+            Call AdjacentExpect(reader.ReadBool(), "unowned NPC is kill-credit eligible")
             Call AdjacentExpect(reader.GetAvailable() = 0, "complete payload consumed")
             #If PYMMO = 1 Then
                 Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 214 And ServerPacketID.eAdjacentNpcUpsert = 215 And ServerPacketID.eAdjacentNpcRemove = 216, "HOO literal packet IDs")
@@ -653,8 +655,8 @@ Private Sub CheckRespawnCase(ByVal group As Long)
             Call ExpectAdjacentActor(2, ServerPacketID.eAdjacentNpcUpsert, adjacentNpc, 3, True)
             Set reader = AdjacentPacketReader(4, ServerPacketID.eNpcRespawnEffect, 20)
         Case 53
-            Call AdjacentExpect(adjacentPackets.Count = 2, "active create then effect")
-            Set reader = AdjacentPacketReader(2, ServerPacketID.eNpcRespawnEffect, 20)
+            Call AdjacentExpect(adjacentPackets.Count = 3, "active create, quest eligibility, then effect")
+            Set reader = AdjacentPacketReader(3, ServerPacketID.eNpcRespawnEffect, 20)
         Case 52
             Call AdjacentExpect(adjacentPackets.Count = 2, "failed upsert suppresses effect")
         Case 57
@@ -695,6 +697,7 @@ Private Sub ExpectAdjacentAppearance(ByVal packetIndex As Long, ByVal expectedTe
         Call AdjacentExpect(reader.ReadInt16() = .Numero, "definition is not NPC slot, character index or lifetime")
         Call AdjacentExpect(reader.ReadString8() = expectedText, "authorized runtime display text")
     End With
+    Call AdjacentExpect(reader.ReadBool() = Not IsValidUserRef(NpcList(adjacentNpc).MaestroUser), "authoritative kill eligibility")
     Call AdjacentExpect(reader.GetAvailable() = 0, "no unparsed adjacent appearance bytes")
 End Sub
 
@@ -704,7 +707,7 @@ Private Sub ExpectNormalAppearance(ByVal expectedText As String)
     With NpcList(adjacentNpc)
         ' Exercise the same production creation/refresh used by ModAreas and taming.
         Call MakeNPCChar(False, 1, adjacentNpc, .pos.Map, .pos.x, .pos.y)
-        Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 1, "one normal create, no unintended effect packet")
+        Call AdjacentExpect(adjacentCaptureError = vbNullString And adjacentPackets.Count = 2, "normal create followed by quest eligibility, no effect packet")
         bytes = adjacentPackets(1)
         Call reader.SetData(bytes)
         Call AdjacentExpect(reader.ReadInt16() = ServerPacketID.eCharacterCreate, "normal create packet")
@@ -732,6 +735,9 @@ Private Sub ExpectNormalAppearance(ByVal expectedText As String)
         Call reader.ReadInt8(): Call reader.ReadInt8(): Call reader.ReadInt8()
         Call AdjacentExpect(reader.ReadInt16() = .Numero And reader.GetAvailable() = 0, "normal definition and complete payload")
     End With
+    Set reader = AdjacentPacketReader(2, ServerPacketID.eUpdateCharValue, 10)
+    Call AdjacentExpect(reader.ReadInt16() = NpcList(adjacentNpc).Char.charindex And reader.ReadInt16() = e_CharValue.eQuestKillEligible, "normal eligibility follows creation")
+    Call AdjacentExpect(CBool(reader.ReadInt32()) = Not IsValidUserRef(NpcList(adjacentNpc).MaestroUser), "normal kill eligibility value")
     Call ClearAdjacentCapture()
 End Sub
 
@@ -867,11 +873,11 @@ Private Sub CheckAdjacentAppearanceCase(ByVal group As Long)
                 Call AdjacentExpect(bytes(34) = &H80 And bytes(35) = 1, "128 UTF-8 bytes use two prefix bytes")
                 Call AdjacentExpect(bytes(162) = &HC3 And bytes(163) = &HB1, "accented ending roundtrips")
             Case 36
-                .showName = 1: .name = String$(65496, "x") & "ñ"
+                .showName = 1: .name = String$(65495, "x") & "ñ"
                 Call TickAdjacent()
-                Call ExpectAdjacentAppearance(2, .name, 65535)
+                Call ExpectAdjacentAppearance(2, .name, 65534)
                 bytes = adjacentPackets(2)
-                Call AdjacentExpect(bytes(34) = &HDA And bytes(35) = &HFF And bytes(36) = 3, "65498 UTF-8 bytes use three prefix bytes")
+                Call AdjacentExpect(bytes(34) = &HD9 And bytes(35) = &HFF And bytes(36) = 3, "65497 UTF-8 bytes use three prefix bytes")
                 Call ClearAdjacentCapture(): Call TickAdjacent()
                 Call AdjacentExpect(adjacentPackets.Count = 0, "maximum-length label is stable")
             Case 37
@@ -1520,10 +1526,13 @@ Private Function test_checked_in_manifest() As Boolean
     If placements(1).Depth <> 1 Or placements(2).Depth <> 2 Then Exit Function
     If placements(2).MapId <> 143 Or placements(2).dx <> -74 Or placements(2).dy <> -80 Then Exit Function
     If Not TryGetAdjacentVisibilityPlacements(144, placements, count) Then Exit Function
-    If count <> 2 Then Exit Function
+    ' The reviewed 143-141 edge adds map 141 at depth two from map 144.
+    If count <> 3 Then Exit Function
     If placements(1).MapId <> 143 Or placements(1).dx <> 0 Or placements(1).dy <> -80 Then Exit Function
     If placements(1).Depth <> 1 Or placements(2).Depth <> 1 Then Exit Function
-    test_checked_in_manifest = (placements(2).MapId = 145 And placements(2).dx = 74 And placements(2).dy = 0)
+    If placements(2).MapId <> 145 Or placements(2).dx <> 74 Or placements(2).dy <> 0 Then Exit Function
+    If placements(3).MapId <> 141 Or placements(3).Depth <> 2 Then Exit Function
+    test_checked_in_manifest = (placements(3).dx = -74 And placements(3).dy = -80)
 End Function
 
 Private Function test_feature_toggle() As Boolean

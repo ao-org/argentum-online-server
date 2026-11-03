@@ -137,7 +137,18 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     On Error GoTo Execute_Err
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
-    Command.ActiveConnection = Connection_async(Current_async)
+    Dim executeOptions As Long
+    executeOptions = adAsyncExecute
+#If UNIT_TEST = 1 Then
+    If Unit_PartyRewards.SynchronousPersistence Then
+        Set Command.ActiveConnection = Connection
+        executeOptions = 0
+    Else
+#End If
+        Command.ActiveConnection = Connection_async(Current_async)
+#If UNIT_TEST = 1 Then
+    End If
+#End If
     Command.CommandText = Text
     Command.CommandType = adCmdText
     Command.Prepared = True
@@ -155,7 +166,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
     End If
-    Call Command.Execute(, , adAsyncExecute)  ' @TODO: We want some operation to be async
+    Call Command.Execute(, , executeOptions)  ' @TODO: We want some operation to be async
     Current_async = Current_async + 1
     If Current_async = MAX_ASYNC Then
         Current_async = 1

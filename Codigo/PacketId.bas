@@ -255,6 +255,12 @@ Public Enum ServerPacketID
     eAdjacentPlayerUpsert
     eAdjacentPlayerRemove
     eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
+    eNpcInspection ' 221 with PYMMO=1.
+    eGatheringFeedback ' 222 with PYMMO=1.
+    eQuestObjectiveTemplates ' 223 with PYMMO=1; bounded accepted-objective projection.
+    eQuestTurnIns ' 224 with PYMMO=1; complete ready-quest replacement.
+    eQuestFeedback ' 225 with PYMMO=1; synchronized progress and actual-grant receipts.
+    eQuestDiscovery ' 226 with PYMMO=1; paged authoritative availability replacement.
     eMaxPacket
     [PacketCount]
 End Enum
@@ -585,6 +591,9 @@ Public Enum ClientPacketID
     eHooInventoryDestructionConfirm ' 314 with PYMMO=1.
     eHooBowSubscribe ' 315 with PYMMO=1.
     eHooBowAttack ' 316 with PYMMO=1.
+    eNpcInspectionSubscribe ' 317 with PYMMO=1.
+    eGatheringStart ' 318 with PYMMO=1.
+    ePartyManagement ' 319 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum
