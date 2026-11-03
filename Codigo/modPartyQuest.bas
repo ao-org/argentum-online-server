@@ -395,6 +395,11 @@ Public Sub ProposePartyQuest(ByVal userIndex As Integer, ByVal quest As Integer,
     If Not IsValidNpcRef(UserList(userIndex).flags.TargetNPC) Then GoTo Reply
     If UserList(userIndex).flags.TargetNPC.ArrayIndex <> npcIndex Then GoTo Reply
     If NpcList(npcIndex).Numero <> QuestList(quest).TalkTo Then GoTo Reply
+    Dim offered As Boolean
+    For i = 1 To NpcList(npcIndex).NumQuest
+        If NpcList(npcIndex).QuestNumber(i) = quest Then offered = True
+    Next i
+    If Not offered Then GoTo Reply
     If QuestAcceptanceFailure(userIndex, npcIndex, quest, QuestList(quest)) <> QuestAcceptAllowed Then GoTo Reply
     leader = PartyLeaderIndex(userIndex)
     If leader = 0 Then mSessions(userIndex).result = HuntNeedParty: GoTo Reply
