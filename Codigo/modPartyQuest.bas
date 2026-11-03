@@ -213,11 +213,14 @@ Private Sub ProjectRun(ByVal runSlot As Integer, ByVal userIndex As Integer, ByV
 End Sub
 
 Private Function FreeRunSlot() As Integer
-    Dim i As Integer, j As Integer, online As Boolean
+    Dim i As Integer, j As Integer, online As Boolean, userIndex As Integer
     For i = 1 To mCapacity
         online = False
         For j = 1 To mRuns(i).count
-            If OnlineCharacter(mRuns(i).members(j).characterId) > 0 Then online = True
+            userIndex = OnlineCharacter(mRuns(i).members(j).characterId)
+            If userIndex > 0 And mRuns(i).members(j).status = 0 Then
+                If mSessions(userIndex).runSlot = i Then online = True
+            End If
         Next j
         If mRuns(i).id = 0 Or Not online Then FreeRunSlot = i: Exit Function
     Next i
@@ -315,12 +318,27 @@ Public Sub RefreshPartyQuestProposal(ByVal leader As Integer)
     On Error GoTo Failed
     If leader > mCapacity Or leader < 1 Then Exit Sub
     If mProposals(leader).id = 0 Then Exit Sub
+    If Not IsValidUserRef(mProposals(leader).leader) Then
+        Call CloseProposal(leader, HuntExpired): Exit Sub
+    End If
+    If PartyLeaderIndex(leader) <> leader Or UserList(leader).Grupo.Id <> mProposals(leader).party Then
+        Call CloseProposal(leader, HuntExpired): Exit Sub
+    End If
     Dim i As Integer, userIndex As Integer
     For i = 1 To mProposals(leader).count
         With mProposals(leader).members(i)
             If IsValidUserRef(.online) Then
                 userIndex = .online.ArrayIndex
-                If Not MemberEligible(leader, userIndex, mProposals(leader).quest) Then .vote = 3
+                If Not MemberEligible(leader, userIndex, mProposals(leader).quest) Then
+                    .vote = 3
+                    If mSessions(userIndex).proposal = leader Then
+                        mSessions(userIndex).proposal = 0
+                        If UserList(userIndex).flags.pregunta = QUESTION_PARTY_QUEST Then
+                            UserList(userIndex).flags.pregunta = 0: UserList(userIndex).flags.RespondiendoPregunta = False
+                        End If
+                        Call WritePartyQuestState(userIndex)
+                    End If
+                End If
             Else
                 .vote = 3
             End If
@@ -338,12 +356,14 @@ Private Sub CloseProposal(ByVal leader As Integer, ByVal result As e_PartyQuestR
         With mProposals(leader).members(i)
             If IsValidUserRef(.online) Then
                 u = .online.ArrayIndex
+                If mSessions(u).proposal = leader Then
                 mSessions(u).proposal = 0
                 If UserList(u).flags.pregunta = QUESTION_PARTY_QUEST Then
                     UserList(u).flags.pregunta = 0: UserList(u).flags.RespondiendoPregunta = False
                 End If
                 mSessions(u).result = result: mSessions(u).dirty = True
                 mRetries(CStr(u)) = True
+                End If
             End If
         End With
     Next i
@@ -728,6 +748,7 @@ Public Sub WritePartyQuestState(ByVal userIndex As Integer)
     If cache > 0 Then
         state = 3: If mRuns(cache).progress >= mRuns(cache).required Then state = 4
         count = mRuns(cache).count: progress = mRuns(cache).progress: reward = mRuns(cache).reward
+        target = mRuns(cache).target: required = mRuns(cache).required
         leaderId = mRuns(cache).leaderId
     ElseIf proposal > 0 Then
         state = 1: If proposal <> userIndex Then state = 2

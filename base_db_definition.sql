@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
 
--- Shared party-quest state is authoritative; ordinary quest slots are projections.
+-- Shared party-quest state is authoritative. Ordinary quest slots are projections.
 CREATE TABLE party_quest_run (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     quest_id INTEGER NOT NULL,

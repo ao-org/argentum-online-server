@@ -1,5 +1,5 @@
 ALTER TABLE user ADD COLUMN party_quest_gold_total INTEGER NOT NULL DEFAULT 0;
--- Shared party-quest state is authoritative; ordinary quest slots are projections.
+-- Shared party-quest state is authoritative. Ordinary quest slots are projections.
 CREATE TABLE party_quest_run (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     quest_id INTEGER NOT NULL,

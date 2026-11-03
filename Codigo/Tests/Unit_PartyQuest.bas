@@ -29,10 +29,12 @@ Private Function Scalar(ByVal sql As String) As Long
     Call rows.Close()
 End Function
 Private Sub Fixture()
+    Call UnitTesting.Progress("Party hunt fixture world")
     Call Unit_NpcBow.InitializeTestWorld()
     Call ResetPartyQuestTests(): Call ResetTurnInTestCounters()
     Set oldConnection = Connection
     fileName = Environ$("TEMP") & "\ao-party-hunt-test-" & GetTickCountRaw() & ".db"
+    Call UnitTesting.Progress("Party hunt fixture database")
     Set database = New ADODB.Connection
     Call database.Open("Driver={SQLite3 ODBC Driver};Database=" & fileName & ";")
     Set Connection = database
@@ -40,6 +42,7 @@ Private Sub Fixture()
     Call database.Execute("CREATE TABLE quest(user_id INTEGER,number INTEGER,quest_id INTEGER,npcs TEXT,npcstarget TEXT,PRIMARY KEY(user_id,number))")
     Call database.Execute("CREATE TABLE quest_done(user_id INTEGER,quest_id INTEGER,PRIMARY KEY(user_id,quest_id))")
     ' Exercise the production migration, not a parallel test schema.
+    Call UnitTesting.Progress("Party hunt fixture migration")
     Dim f As Integer, sql As String, statement As Variant
     f = FreeFile: Open App.Path & "\ScriptsDB\20261103-01-party-quest.sql" For Binary As #f
     sql = Space$(LOF(f)): Get #f, , sql: Close #f
@@ -139,7 +142,9 @@ Private Sub RestartCache()
 End Sub
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
+    Call UnitTesting.Progress("Party hunt " & index & " start")
     Call Fixture()
+    Call UnitTesting.Progress("Party hunt " & index & " fixture ready")
     Dim i As Integer, proposal As Long, slot As Byte, rows As ADODB.Recordset
     Select Case index
     Case 1
@@ -273,6 +278,14 @@ Private Sub RunCase(ByVal index As Integer)
     Case 30
         Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
         Call Expect(QuestAcceptanceFailure(1, 1, 2, QuestList(2)) = QuestAcceptAllowed, "Alaric personal offer unaffected by party requirement")
+    Case 33
+        For i = 1 To 20
+            Call Propose(1): proposal = PartyQuestProposalForTest(1)
+            Call Action(2, i * 2, HuntAccept, proposal): Call Action(1, i * 2, HuntStart, proposal)
+            Call Expect(TieneQuest(1, 1) And TieneQuest(2, 1), "cache reuse permits a fresh hunt after abandon")
+            Call AbandonPartyQuest(1): Call AbandonPartyQuest(2)
+        Next i
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_run") = 20, "bounded cache does not discard durable history")
     Case 31, 32
         Call StartDuo()
         Dim npcIndex As Integer, petIndex As Integer, result As e_DamageResult
@@ -296,6 +309,7 @@ Private Sub RunCase(ByVal index As Integer)
     End Select
     capturing = False
     Call database.Close(): Set Connection = oldConnection: Kill fileName
+    Call UnitTesting.Progress("Party hunt " & index & " passed")
     Call UnitTesting.RunTest("Party hunt " & index, True)
     Exit Sub
 Failed:
@@ -305,12 +319,14 @@ Failed:
     If Not database Is Nothing Then Call database.Close()
     Set Connection = oldConnection
     If Len(fileName) > 0 Then Kill fileName
+    Err.Clear
+    Call UnitTesting.Progress("Party hunt " & index & " failed: " & failure)
     Call UnitTesting.RunTestError("Party hunt " & index, failure)
 End Sub
 Public Function TestSuite() As Boolean
     Dim i As Integer, before As Long
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 32: Call RunCase(i): Next i
+    For i = 1 To 33: Call RunCase(i): Next i
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If
