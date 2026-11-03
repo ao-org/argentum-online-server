@@ -29,12 +29,11 @@ Private Function Scalar(ByVal sql As String) As Long
     Call rows.Close()
 End Function
 Private Sub Fixture()
-    Call UnitTesting.Progress("Party hunt fixture world")
-    Call Unit_NpcBow.InitializeTestWorld()
+    Call InitializeNpcIndexHeap()
+    MapData(51, 50, 1).NpcIndex = 0
     Call ResetPartyQuestTests(): Call ResetTurnInTestCounters()
     Set oldConnection = Connection
     fileName = Environ$("TEMP") & "\ao-party-hunt-test-" & GetTickCountRaw() & ".db"
-    Call UnitTesting.Progress("Party hunt fixture database")
     Set database = New ADODB.Connection
     Call database.Open("Driver={SQLite3 ODBC Driver};Database=" & fileName & ";")
     Set Connection = database
@@ -42,7 +41,6 @@ Private Sub Fixture()
     Call database.Execute("CREATE TABLE quest(user_id INTEGER,number INTEGER,quest_id INTEGER,npcs TEXT,npcstarget TEXT,PRIMARY KEY(user_id,number))")
     Call database.Execute("CREATE TABLE quest_done(user_id INTEGER,quest_id INTEGER,PRIMARY KEY(user_id,quest_id))")
     ' Exercise the production migration, not a parallel test schema.
-    Call UnitTesting.Progress("Party hunt fixture migration")
     Dim f As Integer, sql As String, statement As Variant
     f = FreeFile: Open App.Path & "\ScriptsDB\20261103-01-party-quest.sql" For Binary Access Read As #f
     sql = Space$(LOF(f)): Get #f, , sql: Close #f
@@ -52,7 +50,8 @@ Private Sub Fixture()
     ReDim UserList(1 To 7): ReDim QuestList(0 To 2): ReDim NpcInfoCache(1 To 500)
     fixtureVersion = fixtureVersion + 1
     Dim i As Integer, blankNpc As t_Npc
-    i = GetNextAvailableNpc(): NpcList(i) = blankNpc
+    For i = 1 To 3: NpcList(i) = blankNpc: CharList(i) = 0: Next i
+    i = GetNextAvailableNpc()
     For i = 1 To 7
         With UserList(i)
             .AccountID = 700 + i: .Id = 700 + i: .VersionId = fixtureVersion: .name = "Hunter" & i
@@ -106,12 +105,9 @@ Private Sub Group(ByVal leader As Integer, ByVal count As Integer)
 End Sub
 Private Sub Propose(ByVal leader As Integer)
     Dim writer As New Network.Writer, data() As Byte
-    Call UnitTesting.Progress("Party hunt propose target")
     Call SetNpcRef(UserList(leader).flags.TargetNPC, 1)
     Call writer.WriteInt8(1): Call writer.GetData(data): Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(data)
-    Call UnitTesting.Progress("Party hunt propose handler")
     Call Protocol.HandleQuestAccept(leader)
-    Call UnitTesting.Progress("Party hunt propose returned")
 End Sub
 Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long)
     ' Production packet dispatcher including bounds, authentication and maintained ID.
@@ -123,16 +119,12 @@ Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As By
     Call Protocol.HandleIncomingData(1, incoming, u)
 End Sub
 Private Sub StartDuo(Optional ByVal leader As Integer = 1)
-    Call UnitTesting.Progress("Party hunt duo propose")
     Call Propose(leader)
     Dim proposal As Long: proposal = PartyQuestProposalForTest(leader)
     Call Expect(proposal > 0, "normal quest accept proposes instead of enrolling")
     Call Expect(Not TieneQuest(leader, 1), "proposal is not acceptance")
-    Call UnitTesting.Progress("Party hunt duo accept")
     Call Action(leader + 1, 1, HuntAccept, proposal)
-    Call UnitTesting.Progress("Party hunt duo start")
     Call Action(leader, 1, HuntStart, proposal)
-    Call UnitTesting.Progress("Party hunt duo started")
     Call Expect(TieneQuest(leader, 1) And TieneQuest(leader + 1, 1), "accepted roster receives ordinary quest projections")
 End Sub
 Private Sub KillWolf(Optional ByVal credited As Integer = 1)
@@ -149,9 +141,7 @@ Private Sub RestartCache()
 End Sub
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
-    Call UnitTesting.Progress("Party hunt " & index & " start")
     Call Fixture()
-    Call UnitTesting.Progress("Party hunt " & index & " fixture ready")
     Dim i As Integer, proposal As Long, slot As Byte, rows As ADODB.Recordset
     Select Case index
     Case 1
@@ -354,7 +344,9 @@ Private Sub CleanupFixture()
     Err.Clear
 End Sub
 Public Function TestSuite() As Boolean
-    Dim i As Integer, before As Long
+    Dim i As Integer, before As Long, started As Long
+    Call Unit_NpcBow.InitializeTestWorld()
+    started = GetTickCountRaw()
     before = UnitTesting.GetFailedTests()
     #If PYMMO = 1 Then
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=1")
@@ -362,6 +354,7 @@ Public Function TestSuite() As Boolean
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
     For i = 1 To 33: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 33 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If
