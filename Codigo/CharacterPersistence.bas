@@ -333,6 +333,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
     LoadCharacterFromDB = True
     Exit Function
 ErrorHandler:
+    failureReason = CStr(Err.Number) & ": " & Err.Description
     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 

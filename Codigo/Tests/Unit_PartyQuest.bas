@@ -20,7 +20,7 @@ Public Function CapturePacket(ByVal recipient As Integer, ByRef queued As Boolea
     queued = True: CapturePacket = True
 End Function
 Private Sub Expect(ByVal value As Boolean, ByVal label As String)
-    If Not value Then Err.Raise vbObjectError + 861, "Party quest", label
+    If Not value Then Err.Raise vbObjectError + 861, "Party quest", label & "; save=" & LastPartySaveFailureForTest
 End Sub
 Private Function Scalar(ByVal sql As String) As Long
     Dim rows As ADODB.Recordset
@@ -29,6 +29,16 @@ Private Function Scalar(ByVal sql As String) As Long
     Call rows.Close()
 End Function
 Private Sub Fixture()
+    ' The production loop delivers ADO completion events at DoEvents. Drain prior
+    ' suites' real legacy writes before requiring an immediate isolated save.
+    Dim waitStarted As Long
+    waitStarted = GetTickCountRaw()
+    Do While Not PartyQuestLegacyWritesComplete()
+        DoEvents
+        If TicksElapsed(waitStarted, GetTickCountRaw()) > 1000 Then Err.Raise vbObjectError + 861, , "Legacy write fence did not drain"
+    Loop
+    Set Builder = New cStringBuilder
+    Set UserNameCache = New Dictionary
     Call InitializeNpcIndexHeap()
     MapData(51, 50, 1).NpcIndex = 0
     Call ResetPartyQuestTests(): Call ResetTurnInTestCounters()

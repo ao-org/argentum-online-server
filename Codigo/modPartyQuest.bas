@@ -109,6 +109,7 @@ Private mFlushing As Boolean
 Public PartyQuestSqlCount As Long
 Public FailPartyRosterRead As Boolean
 Public HoldPartySaves As Boolean
+Public LastPartySaveFailureForTest As String
 Private mHeldBatch As HuntSaveBatch
 #End If
 
@@ -913,7 +914,7 @@ Public Sub ResetPartyQuestTests()
     mCapacity = 0: mDefinition = 0: mRunIdsKnown = False: mNextRun = 0: Erase mSessions: Erase mRuns: Erase mProposals: Set mOnline = Nothing
     Set mRetries = Nothing: Set mLeaders = Nothing
     Call ResetHuntSaveOwners()
-    HoldPartySaves = False: FailPartyRosterRead = False
+    HoldPartySaves = False: FailPartyRosterRead = False: LastPartySaveFailureForTest = vbNullString
     Dim blankBatch As HuntSaveBatch
     mHeldBatch = blankBatch
 End Sub
@@ -1047,7 +1048,13 @@ End Sub
 
 Private Function CommitHuntBatch(ByRef batch As HuntSaveBatch) As Boolean
     On Error GoTo Failed
-    If mFlushing Or Not PartyQuestLegacyWritesComplete() Then Exit Function
+    If mFlushing Then Exit Function
+    If Not PartyQuestLegacyWritesComplete() Then
+        #If UNIT_TEST = 1 Then
+            LastPartySaveFailureForTest = "legacy writes pending"
+        #End If
+        Exit Function
+    End If
     #If UNIT_TEST = 1 Then
         If HoldPartySaves Then Exit Function
     #End If
@@ -1104,6 +1111,11 @@ Private Function CommitHuntBatch(ByRef batch As HuntSaveBatch) As Boolean
 Failed:
     Dim number As Long, description As String
     number = Err.Number: description = Err.Description
+    #If UNIT_TEST = 1 Then
+        LastPartySaveFailureForTest = CStr(number) & ": " & description
+        If Not command Is Nothing Then LastPartySaveFailureForTest = LastPartySaveFailureForTest & "; SQL=" & command.CommandText
+        Call UnitTesting.Progress("Party save failure: " & LastPartySaveFailureForTest)
+    #End If
     Resume Rollback
 Rollback:
     On Error Resume Next
@@ -1174,6 +1186,10 @@ Public Sub SavePartyQuestCharacter(ByVal userIndex As Integer, ByVal logout As B
     Call FlushHuntOwner(owner)
     Exit Sub
 Failed:
+    #If UNIT_TEST = 1 Then
+        LastPartySaveFailureForTest = CStr(Err.Number) & ": " & Err.Description
+        Call UnitTesting.Progress("Party capture failure: " & LastPartySaveFailureForTest)
+    #End If
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.SavePartyQuestCharacter", Erl)
 End Sub
 
