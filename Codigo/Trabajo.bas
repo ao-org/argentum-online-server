@@ -323,8 +323,7 @@ DoNavega_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 End Sub
 
-Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
-    On Error GoTo TieneObjetos_Err
+Public Function CountInventoryObjects(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Long
     Dim i     As Long
     Dim total As Long
     If (ItemIndex = GOLD_OBJ_INDEX) Then
@@ -335,6 +334,13 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
             total = total + UserList(UserIndex).invent.Object(i).amount
         End If
     Next i
+    CountInventoryObjects = total
+End Function
+
+Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer, Optional ByVal ElementalTags As Long = e_ElementalTags.Normal) As Boolean
+    On Error GoTo TieneObjetos_Err
+    Dim total As Long
+    total = CountInventoryObjects(UserIndex, ItemIndex, ElementalTags)
     If cant <= total Then
         TieneObjetos = True
         Exit Function

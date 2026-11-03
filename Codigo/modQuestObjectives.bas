@@ -85,6 +85,7 @@ Public Sub SendQuestObjectiveSnapshot(ByVal userIndex As Integer, Optional ByVal
     On Error GoTo SendQuestObjectiveSnapshot_Err
     If userIndex < 1 Or userIndex > UBound(UserList) Then Exit Sub
     If Not UserList(userIndex).flags.UserLogged Then Exit Sub
+    Call SendQuestTurnInSnapshot(userIndex, force)
     If userIndex > mCapacity Then
         mCapacity = UBound(UserList)
         ReDim Preserve mCache(1 To mCapacity)

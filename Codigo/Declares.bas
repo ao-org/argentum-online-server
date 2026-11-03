@@ -2942,6 +2942,20 @@ Public Type t_UserPersistSnapshot
     LastQuestsDone() As Integer
 End Type
 
+Public Type t_PartyRewardRecipients
+    Count As Integer
+    IsParty As Boolean
+    PartyId As Long
+    Leader As t_UserReference
+    Users(1 To 6) As t_UserReference
+End Type
+
+Public Type t_PartyXpRotation
+    PartyId As Long
+    Leader As t_UserReference
+    NextRecipient As t_UserReference
+End Type
+
 Type Tgrupo
     EnGrupo As Boolean
     CantidadMiembros As Byte
@@ -2949,6 +2963,9 @@ Type Tgrupo
     Lider As t_UserReference
     PropuestaDe As t_UserReference
     Id As Long
+    XpRotation As t_PartyXpRotation
+    RosterRevision As Long
+    ProposalPartyId As Long
 End Type
 
 Public Type t_LastNetworkUssage
@@ -3512,6 +3529,7 @@ Public Type t_NpcInfoCache
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
+    HealthFieldsOmitted As Boolean
     StatsMaxHp As Long
     StatsMinHp As Long
     StatsMaxHit As Long

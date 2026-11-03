@@ -171,6 +171,8 @@ Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
 End Sub
 
 Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    Call ClearPartyProposal(UserIndex)
+    Call ClearPartyXpRotation(UserIndex)
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)
@@ -965,6 +967,7 @@ End Sub
 
 Sub RefreshCharStatus(ByVal UserIndex As Integer)
     On Error GoTo RefreshCharStatus_Err
+    Call SendQuestTurnInSnapshot(UserIndex)
     '*************************************************
     'Author: Tararira
     'Last modified: 6/04/2007
@@ -1022,7 +1025,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                 .Char.charindex = charindex
                 CharList(charindex) = UserIndex
                 If .Grupo.EnGrupo Then
-                    Call modSendData.SendData(ToGroup, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+                    Call PublishManagedParty(PartyLeaderIndex(UserIndex))
                 End If
             End If
             'Place character on map if needed
@@ -1707,6 +1710,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
     If Aumenta >= cutoff Then Exit Sub
     UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     UserList(UserIndex).Stats.SkillDirty(Skill) = True
+    Call SendQuestTurnInSnapshot(UserIndex)
     Call WriteLocaleMsg(UserIndex, MSG_SKILL_IMPROVED_BY_ONE_POINT, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, SkillsNames(skill) & Chr$(172) & UserList(UserIndex).Stats.UserSkills(skill))
 
     With UserList(UserIndex)

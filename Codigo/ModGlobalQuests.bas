@@ -47,6 +47,8 @@ Private Const SUM_TOTAL_AMOUNT_FROM_USER_CONTRIBUTION As String = "SELECT SUM(am
 
 Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQuestIndex As Integer)
     Dim i As Integer
+    Dim changed As Boolean
+    changed = Amount <> 0
 
     With GlobalQuestInfo(GlobalQuestIndex)
         .GatheringGlobalCounter = .GatheringGlobalCounter + Amount
@@ -60,10 +62,12 @@ Public Sub ContributeToGlobalQuestCounter(ByVal Amount As Long, ByVal GlobalQues
                 For i = LBound(.BossIndexes) To UBound(.BossIndexes)
                     Call SpawnNpc(.BossIndexes(i), RandomizedSpawnPosition, False, False, True, 0)
                     .IsBossAlive(i) = True
+                    changed = True
                 Next i
             End If
         End If
     End With
+    If changed Then Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Public Function IsAnyGlobalQuestBossAlive(ByVal GlobalQuestIndex As Integer) As Boolean
@@ -86,6 +90,7 @@ Public Sub MarkGlobalQuestBossAsDead(ByVal GlobalQuestIndex As Integer, ByVal Bo
         For i = LBound(.BossIndexes) To UBound(.BossIndexes)
             If .BossIndexes(i) = BossIndex And .IsBossAlive(i) Then
                 .IsBossAlive(i) = False
+                Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
                 Exit Sub
             End If
         Next i
@@ -208,6 +213,7 @@ Public Sub FinishGlobalQuest(ByVal UserIndex As Integer, ByVal ContributionAmoun
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_CONTRIBUTION_UPDATE, UserList(UserIndex).Name & "¬" & ContributionAmount & "¬" & GlobalQuestInfo(GlobalQuestIndex).ObjectIndex & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter & "¬" & GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         If GlobalQuestInfo(GlobalQuestIndex).FinishOnThresholdReach Then
             If GlobalQuestInfo(GlobalQuestIndex).GatheringGlobalCounter >= GlobalQuestInfo(GlobalQuestIndex).GatheringThreshold Then
+                If GlobalQuestInfo(GlobalQuestIndex).IsActive Then Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
                 GlobalQuestInfo(GlobalQuestIndex).IsActive = False
                 Call UpdateGlobalQuestActiveStateIntoDatabase(False, GlobalQuestIndex)
             End If
@@ -268,6 +274,7 @@ Public Sub FinalizeGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_FINISHED, .Name & "¬" & .GatheringGlobalCounter & "¬" & .GatheringThreshold, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
@@ -284,6 +291,7 @@ Public Sub StartGlobalQuest(ByVal GlobalQuestIndex As Integer)
         Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_GLOBAL_QUEST_STARTED, .Name & "¬" & .GatheringThreshold & "¬" & .ObjectIndex, e_TextChannel.TEXTCHANNEL_EVENT, e_FontTypeNames.FONTTYPE_New_Eventos))
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_SoundEffects.BAOLegionHorn, NO_3D_SOUND, NO_3D_SOUND))
     End With
+    Call RefreshGlobalQuestTurnIns(GlobalQuestIndex)
 End Sub
 
 Function SQLiteToDate(strDate As String) As Date

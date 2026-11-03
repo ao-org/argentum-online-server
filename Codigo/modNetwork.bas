@@ -110,6 +110,7 @@ Public Sub Tick(ByVal Delta As Single)
         Call Server.Poll
     End If
     Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork Poll, packets: " & FramePacketCount & " new connections: " & NewFrameConnections, 200)
+    Call ProcessQuestTurnInUpdates()
     If (Time(1) >= TIME_SEND_FREQUENCY) Then
         Time(1) = 0
         Call Server.Flush

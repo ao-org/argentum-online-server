@@ -46,7 +46,7 @@ Option Explicit
     Private TamingRecipients As Collection
     Private TamingRoutesValid As Boolean
 
-        Private Const SUITE_COUNT As Integer = 47
+        Private Const SUITE_COUNT As Integer = 51
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -339,6 +339,10 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 45: RunSuite = Unit_NpcInspection.TestSuite()
         Case 46: RunSuite = Unit_GatheringFeedback.TestSuite()
         Case 47: RunSuite = Unit_QuestObjectives.TestSuite()
+        Case 48: RunSuite = Unit_QuestTurnIn.TestSuite()
+        Case 49: RunSuite = Unit_QuestDiscovery.TestSuite()
+        Case 50: RunSuite = Unit_PartyRewards.TestSuite()
+        Case 51: RunSuite = Unit_PartyManagement.TestSuite()
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False
@@ -387,6 +391,9 @@ Public Sub WriteResultsToFile(ByVal filePath As String)
         Next i
     End If
     
+    #If UNIT_TEST = 1 Then
+        If Len(Unit_QuestTurnIn.Measurements()) > 0 Then Print #f, Unit_QuestTurnIn.Measurements()
+    #End If
     Print #f, "Total time: " & Format$(TotalElapsed, "0.00") & " ms"
     
     If FailedTests = 0 Then
