@@ -47,9 +47,9 @@ Private Sub Fixture()
         If Len(Trim$(statement)) > 0 Then Call database.Execute(CStr(statement))
     Next statement
     ReDim UserList(1 To 7): ReDim QuestList(0 To 2): ReDim NpcInfoCache(1 To 500)
-    ReDim NpcList(1 To 2)
     fixtureVersion = fixtureVersion + 1
-    Dim i As Integer
+    Dim i As Integer, blankNpc As t_Npc
+    i = GetNextAvailableNpc(): NpcList(i) = blankNpc
     For i = 1 To 7
         With UserList(i)
             .Id = 700 + i: .VersionId = fixtureVersion: .name = "Hunter" & i
@@ -273,6 +273,26 @@ Private Sub RunCase(ByVal index As Integer)
     Case 30
         Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
         Call Expect(QuestAcceptanceFailure(1, 1, 2, QuestList(2)) = QuestAcceptAllowed, "Alaric personal offer unaffected by party requirement")
+    Case 31, 32
+        Call StartDuo()
+        Dim npcIndex As Integer, petIndex As Integer, result As e_DamageResult
+        npcIndex = GetNextAvailableNpc(): petIndex = GetNextAvailableNpc()
+        NpcList(npcIndex) = victim
+        With NpcList(npcIndex)
+            .flags.NPCActive = True: .VersionId = fixtureVersion
+            .Char.charindex = npcIndex: .Stats.MinHp = 1: .Stats.MaxHp = 1
+            .pos.x = 51: .flags.ExpCount = 0
+            ReDim .Char.Animation(0 To 0)
+        End With
+        CharList(npcIndex) = npcIndex: MapData(51, 50, 1).NpcIndex = npcIndex
+        NpcList(petIndex).flags.NPCActive = True
+        If index = 31 Then Call SetUserRef(NpcList(petIndex).MaestroUser, 1)
+        result = NPCs.DoDamageOrHeal(npcIndex, petIndex, eNpc, -1, e_pet, 0)
+        If index = 31 Then
+            Call Expect(PartyQuestProgressForTest(1) = 1 And PartyQuestProgressForTest(2) = 1, "pet owner attributes one shared kill through real death path")
+        Else
+            Call Expect(PartyQuestProgressForTest(1) = 0, "unowned NPC kill does not credit party hunt")
+        End If
     End Select
     capturing = False
     Call database.Close(): Set Connection = oldConnection: Kill fileName
@@ -290,7 +310,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim i As Integer, before As Long
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 30: Call RunCase(i): Next i
+    For i = 1 To 32: Call RunCase(i): Next i
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If
