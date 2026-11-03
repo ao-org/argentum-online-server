@@ -143,3 +143,32 @@ Seneca/Alaric session has confirmed the reported login case. Collect the server
 trace and matching `HOO_TRACE_QUEST_MARKERS=1` client page/commit/actor trace before
 opening the quest dialog to identify the exact failing stage. No protocol or
 coordinated deployment is required for this optional diagnostic addition.
+
+
+## Fresh quest-NPC health initialization
+
+NPC432's authored definition omits both `MinHP` and `MaxHP`. The production
+`LoadNpcInfoIntoCache` reads these through `Val("")`, retaining zero in the
+immutable template cache. It now separately records whether **both keys are
+absent**, so explicitly authored zero, positive, or partial values remain distinct.
+`OpenNPC` calls the shared `InitializeNpcFromInfo`; only at that fresh-spawn
+boundary, `e_NPCType.Quest` with `Attackable=0`, `Hostile=0`, and both HP fields
+omitted receives current/max **1/1**. `CrearNPC`, respawns and other ordinary
+allocations share that initializer. No live health mutation or serializer applies
+the default. `ModifyHealth` and `PrepareMessageNpcUpdateHP` can still report **0/1**.
+Attackability, hostility, movement and quest relationships are not changed.
+
+Discovery cases16–22 load the complete audited NPC432 section through the real
+INI reader/cache builder and place it with `CrearNPC`. They assert runtime and
+outgoing `eCharUpdateHP` values, unchanged Alaric noncombat/provider identity,
+explicit5/9 and0/0, attackable/hostile exclusions, ordinary NPCs, a partialHP
+field, and a later health mutation/serialization to0/1. The authored section is
+embedded as controlled test data, not read from a developer resource path.
+
+The companion client uses one known-dead health predicate across quest markers,
+hover, interaction bounds, directions and suppression diagnostics. A decoded
+page rejected outside EnteringWorld/InGame is now logged before the existing
+screen guard returns. These changes do **not** establish a fix for the reported
+initial-login symptom: live eligible-character validation before selecting Alaric
+or opening his dialog remains required. No packet layout or deployment migration
+changes are involved.
