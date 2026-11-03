@@ -1822,3 +1822,10 @@ Public Function LoadPartyQuestRewardsForTest(ByVal userIndex As Integer) As Bool
     LoadPartyQuestRewardsForTest = LoadCharacterInventory(userIndex)
 End Function
 #End If
+
+#If UNIT_TEST = 1 Then
+Public Sub SavePartyQuestGoldSnapshotForTest(ByRef snapshot As t_User)
+    Dim breakdown As String
+    Call SaveCharacterMainDB(snapshot, breakdown, False)
+End Sub
+#End If

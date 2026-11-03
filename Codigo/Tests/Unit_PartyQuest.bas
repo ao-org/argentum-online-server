@@ -187,7 +187,10 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(PartyQuestReady(1, 1) And PartyQuestReady(2, 1), "both participating members ready")
         Call ClaimPartyQuest(1, 1): Call ClaimPartyQuest(1, 1)
         Call Expect(UserList(1).Stats.GLD = 370 And UserList(2).Stats.GLD = 10, "independent exactly-once first claim")
-        If index = 7 Then Call RestartCache()
+        If index = 7 Then
+            Call RestartCache()
+            Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "claimed gold survives actual database reopen")
+        End If
         Call SetNpcRef(UserList(2).flags.TargetNPC, 1)
         Call ClaimPartyQuest(2, 1): Call ClaimPartyQuest(2, 1)
         Call Expect(UserList(2).Stats.GLD = 370 And Scalar("SELECT count(*) FROM party_quest_member WHERE status=1") = 2, "second claim survives partial-claim restart")
@@ -253,12 +256,24 @@ Private Sub RunCase(ByVal index As Integer)
     Case 25
         Call StartDuo()
         For i = 1 To 6: Call KillWolf(): Next i
+        Dim savedSnapshot As t_User, assignments As String, assignment As Variant, column As String
+        savedSnapshot = UserList(1)
         Call ClaimPartyQuest(1, 1)
-        ' An async snapshot captured BEFORE the claim must retain the committed gold.
-        Call database.Execute("UPDATE user SET gold=10+party_quest_gold_total-0 WHERE id=701")
-        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "pre-claim save cannot overwrite reward")
-        Call database.Execute("UPDATE user SET gold=365+party_quest_gold_total-360 WHERE id=701")
-        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 365, "post-claim spending snapshot does not duplicate reward")
+        Call Contruir_Querys()
+        assignments = Mid$(QUERY_UPDATE_MAINPJ, InStr(QUERY_UPDATE_MAINPJ, "SET ") + 4)
+        assignments = Left$(assignments, InStr(assignments, "WHERE ") - 1)
+        For Each assignment In Split(assignments, ",")
+            column = Trim$(Left$(CStr(assignment), InStr(CStr(assignment), "=") - 1))
+            If column <> "gold" Then Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] TEXT DEFAULT 0")
+        Next assignment
+        Unit_PartyRewards.SynchronousPersistence = True
+        ' Execute the actual production save builder/parameters using a pre-claim snapshot.
+        Call SavePartyQuestGoldSnapshotForTest(savedSnapshot)
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "production pre-claim save cannot overwrite reward")
+        UserList(1).Stats.GLD = 365
+        Call SavePartyQuestGoldSnapshotForTest(UserList(1))
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 365, "production post-claim save does not duplicate reward")
+        Unit_PartyRewards.SynchronousPersistence = False
     Case 26
         Call StartDuo()
         For i = 1 To 6: Call KillWolf(): Next i
@@ -330,6 +345,7 @@ Private Sub CleanupFixture()
     ' A pooled ODBC file handle must not mask the actual assertion failure.
     On Error Resume Next
     capturing = False
+    Unit_PartyRewards.SynchronousPersistence = False
     If Not database Is Nothing Then
         If database.State <> adStateClosed Then Call database.Close()
     End If

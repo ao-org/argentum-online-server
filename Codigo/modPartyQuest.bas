@@ -27,6 +27,7 @@ Public Enum e_PartyQuestResult
     HuntClaimed = 10
     HuntStorageError = 11
     HuntExpired = 12
+    HuntEnrollmentClosed = 13
 End Enum
 Private Type HuntMember
     characterId As Long
@@ -355,7 +356,7 @@ Failed:
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.RefreshPartyQuestProposal", Erl)
 End Sub
 
-Private Sub CloseProposal(ByVal leader As Integer, ByVal result As e_PartyQuestResult)
+Private Sub CloseProposal(ByVal leader As Integer, ByVal result As e_PartyQuestResult, Optional ByVal startedRun As Integer = 0)
     Dim i As Integer, u As Integer
     For i = 1 To mProposals(leader).count
         With mProposals(leader).members(i)
@@ -366,7 +367,14 @@ Private Sub CloseProposal(ByVal leader As Integer, ByVal result As e_PartyQuestR
                 If UserList(u).flags.pregunta = QUESTION_PARTY_QUEST Then
                     UserList(u).flags.pregunta = 0: UserList(u).flags.RespondiendoPregunta = False
                 End If
-                mSessions(u).result = result: mSessions(u).dirty = True
+                mSessions(u).result = result
+                If result = HuntStarted Then
+                    mSessions(u).result = HuntEnrollmentClosed
+                    If startedRun > 0 Then
+                        If RunMember(startedRun, UserList(u).Id) > 0 Then mSessions(u).result = HuntStarted
+                    End If
+                End If
+                mSessions(u).dirty = True
                 mRetries(CStr(u)) = True
                 End If
             End If
@@ -391,6 +399,7 @@ Public Sub ProposePartyQuest(ByVal userIndex As Integer, ByVal quest As Integer,
     If leader <> userIndex Then mSessions(userIndex).result = HuntNotLeader: GoTo Reply
     If mSessions(userIndex).runSlot > 0 Then mSessions(userIndex).result = HuntAlreadyActive: GoTo Reply
     If Not CanEnroll(userIndex, quest) Then GoTo Reply
+    If UserList(userIndex).flags.RespondiendoPregunta Then mSessions(userIndex).result = HuntBusy: GoTo Reply
     If mProposals(leader).id > 0 Then Call CloseProposal(leader, HuntExpired)
     Call CollectPartyRewardRecipients(userIndex, recipients)
     If Not recipients.IsParty Or recipients.count < 2 Then mSessions(userIndex).result = HuntNeedParty: GoTo Reply
@@ -490,7 +499,7 @@ Private Sub StartHunt(ByVal leader As Integer)
     Next i
     Call Connection.CommitTrans(): inTransaction = False
     mRuns(cache) = run
-    Call CloseProposal(leader, HuntStarted)
+    Call CloseProposal(leader, HuntStarted, cache)
     For i = 1 To run.count
         u = run.members(i).online.ArrayIndex
         Call ProjectRun(cache, u, True)
@@ -577,6 +586,14 @@ Public Sub ClaimPartyQuest(ByVal userIndex As Integer, ByVal quest As Integer)
         UserList(userIndex).Stats.GLD = recovery!gold
         UserList(userIndex).PartyQuestGoldSeen = recovery!party_quest_gold_total
         Call CloseHuntRows(recovery)
+        Dim previousCache As Integer, previousMember As Integer
+        previousCache = mSessions(userIndex).runSlot
+        If previousCache > 0 Then
+            previousMember = RunMember(previousCache, UserList(userIndex).Id)
+            Set recovery = HuntSql("SELECT status FROM party_quest_member WHERE run_id=? AND character_id=?", mRuns(previousCache).id, UserList(userIndex).Id)
+            If Not recovery.EOF And previousMember > 0 Then mRuns(previousCache).members(previousMember).status = recovery.Fields(0).value
+            Call CloseHuntRows(recovery)
+        End If
         If Not LoadPartyQuest(userIndex) Then Exit Sub
         UserList(userIndex).PartyQuestSaveBlocked = False
         Call WriteUpdateGold(userIndex): Call WriteQuestListSend(userIndex): Call WritePartyQuestState(userIndex)
