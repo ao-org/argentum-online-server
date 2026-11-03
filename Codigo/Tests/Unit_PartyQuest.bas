@@ -38,7 +38,6 @@ Private Sub Fixture()
         If TicksElapsed(waitStarted, GetTickCountRaw()) > 1000 Then Err.Raise vbObjectError + 861, , "Legacy write fence did not drain"
     Loop
     Set Builder = New cStringBuilder
-    Set UserNameCache = New Dictionary
     Call InitializeNpcIndexHeap()
     MapData(51, 50, 1).NpcIndex = 0
     Call ResetPartyQuestTests(): Call ResetTurnInTestCounters()
