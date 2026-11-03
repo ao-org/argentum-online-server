@@ -497,6 +497,31 @@ Private Sub RunCase(ByVal index As Integer)
             DoEvents
         Loop
         Call Expect(fence.Started > 0 And fence.Completed > 0 And fence.Pending = 0, "real ADO command completion fence fires")
+    Case 44
+        Call StartDuo()
+        For i = 1 To 4: Call KillWolf(): Next i
+        HoldPartySaves = True: Call SaveCharacterDB(2): Call HoldPartySnapshotForTest(2)
+        Call KillWolf(): HoldPartySaves = False
+        Call Expect(CompleteHeldPartySnapshotForTest(), "old snapshot can commit before latest save")
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 4 And PartyQuestDirtyForTest(1), "old commit cannot clear newer dirty revision")
+        Call SaveChangesInUser(1)
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 5 And Not PartyQuestDirtyForTest(1), "latest normal save acknowledges5/6")
+    Case 45
+        Call StartDuo()
+        For i = 1 To 6: Call KillWolf(): Next i
+        Call ClaimPartyQuest(1, 1)
+        UserList(1).Stats.GLD = UserList(1).Stats.GLD + 25
+        UserList(2).Stats.GLD = UserList(2).Stats.GLD + 7
+        Call database.Execute("CREATE TRIGGER deny_claim_wallet BEFORE UPDATE ON user WHEN NEW.id=701 BEGIN SELECT RAISE(ABORT,'fixture'); END")
+        Call SaveChangesInUser(2)
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_run") = 0 And Scalar("SELECT gold FROM user WHERE id=702") = 10, "teammate save rolls back with claimant wallet")
+        Call Expect(UserList(1).Stats.GLD = 395 And Not PartyQuestReady(1, 1), "failed save never reopens claim or replaces live wallet")
+        Call database.Execute("DROP TRIGGER deny_claim_wallet")
+        Call RetryPartyQuestSaves(7)
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_member WHERE status=1") = 1 And Scalar("SELECT gold FROM user WHERE id=701") = 395, "teammate save commits claimant and wallet together")
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=702") = 17, "teammate unrelated wallet is preserved")
+        Call RestartCache(): Call ReloadCharacter(1)
+        Call Expect(UserList(1).Stats.GLD = 395 And Not PartyQuestReady(1, 1), "claim remains once after full reload")
     End Select
     Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " passed")
@@ -533,8 +558,8 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
-    For i = 1 To 43: Call RunCase(i): Next i
-    Call UnitTesting.Progress("Party hunt 43 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
+    For i = 1 To 45: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 45 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If

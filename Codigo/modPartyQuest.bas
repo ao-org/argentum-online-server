@@ -112,8 +112,8 @@ Public HoldPartySaves As Boolean
 Private mHeldBatch As HuntSaveBatch
 #End If
 
-' All writes here use the synchronous connection and propagate errors. Query/Execute
-' intentionally swallow errors / dispatch asynchronously and cannot own a claim.
+' Load/save-boundary SQL propagates errors. Gameplay mutations never call this
+' helper; they dirty the shared owner for the next character save.
 Private Function HuntSql(ByVal sql As String, ParamArray values() As Variant) As ADODB.Recordset
     Dim command As New ADODB.Command, value As Variant, parameter As ADODB.Parameter
     Set command.ActiveConnection = Connection
@@ -341,6 +341,7 @@ Failed:
     Resume Cleanup
 Cleanup:
     Call CloseHuntRows(rows)
+    On Error GoTo 0
     Err.Raise number, "modPartyQuest.ReadCompleteRun", description
 End Sub
 
@@ -681,7 +682,7 @@ Public Sub ClaimPartyQuest(ByVal userIndex As Integer, ByVal quest As Integer)
     On Error GoTo Failed
     If Not PartyQuestReady(userIndex, quest) Then Exit Sub
     If Not IsValidNpcRef(UserList(userIndex).flags.TargetNPC) Then Exit Sub
-    Dim npcIndex As Integer, cache As Integer, member As Integer, slot As Byte, rows As ADODB.Recordset, inTransaction As Boolean
+    Dim npcIndex As Integer, cache As Integer, member As Integer, slot As Byte
     npcIndex = UserList(userIndex).flags.TargetNPC.ArrayIndex
     If NpcList(npcIndex).Numero <> QuestList(quest).TalkTo Then Exit Sub
     If NpcList(npcIndex).pos.Map <> UserList(userIndex).pos.Map Then Exit Sub
@@ -713,7 +714,7 @@ End Sub
 Public Sub AbandonPartyQuest(ByVal userIndex As Integer)
     On Error GoTo Failed
     Call EnsureHuntSession(userIndex)
-    Dim cache As Integer, rows As ADODB.Recordset, member As Integer, slot As Byte, quest As Integer, inTransaction As Boolean
+    Dim cache As Integer, member As Integer, slot As Byte, quest As Integer
     cache = mSessions(userIndex).runSlot
     If cache = 0 Then
         If mSessions(userIndex).proposal > 0 Then
@@ -1008,6 +1009,17 @@ Private Sub CaptureHuntBatch(ByVal owner As Integer, ByVal logout As Boolean, Op
                 Next j
             End If
         End If
+    Next i
+    ' Persist historical runs before a newer acceptance for the same character,
+    ' so its partial unique active-membership index sees the final old status.
+    Dim ordered As HuntRun, position As Integer
+    For i = 2 To batch.count
+        ordered = batch.runs(i): position = i
+        Do While position > 1
+            If batch.runs(position - 1).id < ordered.id Then Exit Do
+            batch.runs(position) = batch.runs(position - 1): position = position - 1
+        Loop
+        batch.runs(position) = ordered
     Next i
     mBatches(owner) = batch
     mPendingSaves(CStr(owner)) = True
