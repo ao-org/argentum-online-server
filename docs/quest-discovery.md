@@ -113,3 +113,62 @@ check availability clears. Also test a prerequisite-locked/non-repeatable quest,
 level/skill/faction changes, reconnect and another character. In HOO check both
 UI modes, adjacent maps, hidden/roof-covered NPCs, clipping/HUD occlusion, marker
 setting, hover names and prepared magic/bow press/release safety.
+
+## Targeted missing-marker diagnosis
+
+Set `AO_TRACE_QUEST_DISCOVERY_NPC=432` before server startup to trace a specific
+provider template. The environment is read once. At most64 log records cover index
+construction, matching quest IDs, the shared acceptance failure enum/free slot,
+failed enqueue and final committed sequence/row count. IDs only are logged; no
+extra player packets, DB reads, subscriptions or global scans are introduced.
+Unset and restart to disable/reset the budget. Diagnostics do not change eligibility.
+
+Authored assets at `78d1253e6e662a53a78e58389bd4514cd58d0c77`: Alaric NPC432 offers
+231 (minimum1) and230 (minimum1, completed231 prerequisite); Heather415 offers38
+(minimum13); NPC408 (Romina in Spanish, Makrom in current English) offers427
+(level1..8). No HP fields are authored for these noncombat providers. Controlled
+fixtures use those exact acceptance/provider fields, not inferred subtitles.
+The current dialog Available calculation is partial; actual acceptance and discovery
+also enforce all shared eligibility checks and available accepted-quest capacity.
+
+New tests cover initial publication with zero accepted quests, eligible231 alongside
+blocked230, Heather/Romina level limits, production HandleQuestAccept invalidation,
+failed-enqueue retry and reconnect. Native source `1c8085b5` passes **1013/1013**
+full validator tests (71,012.87 ms), including all15 discovery cases. Local VB6
+compilation and an independent conditional-build matrix are unavailable.
+
+The companion HOO fix addresses a reproduced client-only 0/0-health update being
+misclassified as death. Initial creation alone does not reproduce it; no live
+Seneca/Alaric session has confirmed the reported login case. Collect the server
+trace and matching `HOO_TRACE_QUEST_MARKERS=1` client page/commit/actor trace before
+opening the quest dialog to identify the exact failing stage. No protocol or
+coordinated deployment is required for this optional diagnostic addition.
+
+
+## Fresh quest-NPC health initialization
+
+NPC432's authored definition omits both `MinHP` and `MaxHP`. The production
+`LoadNpcInfoIntoCache` reads these through `Val("")`, retaining zero in the
+immutable template cache. It now separately records whether **both keys are
+absent**, so explicitly authored zero, positive, or partial values remain distinct.
+`OpenNPC` calls the shared `InitializeNpcFromInfo`; only at that fresh-spawn
+boundary, `e_NPCType.Quest` with `Attackable=0`, `Hostile=0`, and both HP fields
+omitted receives current/max **1/1**. `CrearNPC`, respawns and other ordinary
+allocations share that initializer. No live health mutation or serializer applies
+the default. `ModifyHealth` and `PrepareMessageNpcUpdateHP` can still report **0/1**.
+Attackability, hostility, movement and quest relationships are not changed.
+
+Discovery cases16–22 load the complete audited NPC432 section through the real
+INI reader/cache builder and place it with `CrearNPC`. They assert runtime and
+outgoing `eCharUpdateHP` values, unchanged Alaric noncombat/provider identity,
+explicit5/9 and0/0, attackable/hostile exclusions, ordinary NPCs, a partialHP
+field, and a later health mutation/serialization to0/1. The authored section is
+embedded as controlled test data, not read from a developer resource path.
+
+The companion client uses one known-dead health predicate across quest markers,
+hover, interaction bounds, directions and suppression diagnostics. A decoded
+page rejected outside EnteringWorld/InGame is now logged before the existing
+screen guard returns. These changes do **not** establish a fix for the reported
+initial-login symptom: live eligible-character validation before selecting Alaric
+or opening his dialog remains required. No packet layout or deployment migration
+changes are involved.

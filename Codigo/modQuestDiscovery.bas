@@ -34,6 +34,29 @@ Private mCapacity As Long
 Public DiscoveryEvaluationCount As Long
 #End If
 
+Private Function TraceDiscoveryNpc() As Long
+    On Error GoTo Disabled
+    Static initialized As Boolean, target As Long
+    If Not initialized Then
+        initialized = True
+        Dim value As Double
+        value = Val(Environ$("AO_TRACE_QUEST_DISCOVERY_NPC"))
+        If value >= 1 And value <= 32767 Then target = CLng(value)
+    End If
+    TraceDiscoveryNpc = target
+Disabled:
+End Function
+Private Sub TraceDiscovery(ByVal message As String)
+    On Error GoTo Failed
+    Static count As Integer
+    If TraceDiscoveryNpc() = 0 Or count >= 64 Then Exit Sub
+    count = count + 1
+    Call LogInfoServidor("QuestDiscoveryTrace " & message)
+    Exit Sub
+Failed:
+    ' Optional diagnostics cannot change publication or eligibility.
+End Sub
+
 Public Sub ResetQuestDiscoveryIndex()
     On Error GoTo Failed
     Set mOffers = Nothing
@@ -109,6 +132,7 @@ Private Sub BuildIndex()
     For Each index In mGlobals.Keys
         mGlobalGates(index) = GlobalEligibilityGates(CInt(index))
     Next index
+    If TraceDiscoveryNpc() > 0 Then Call TraceDiscovery("index npc=" & TraceDiscoveryNpc() & " quests=" & mOffers.Count & " overflow=" & mIndexOverflow)
     Exit Sub
 Failed:
     ' Incomplete source definitions never publish a guessed partial index.
@@ -214,6 +238,10 @@ Public Function PublishQuestDiscovery(ByVal userIndex As Integer, Optional ByVal
             overflow = mIndexOverflow
             If Not overflow And FreeQuestSlot(userIndex) > 0 Then
                 For Each key In mOffers.Keys
+                    If TraceDiscoveryNpc() > 0 Then
+                        Set providers = mOffers(key)
+                        If providers.Exists(CStr(TraceDiscoveryNpc())) Then Call TraceDiscovery("eligibility user=" & userIndex & " npc=" & TraceDiscoveryNpc() & " quest=" & key & " failure=" & QuestAcceptanceFailure(userIndex, 0, CInt(key), QuestList(CInt(key))) & " free-slot=" & FreeQuestSlot(userIndex))
+                    End If
                     If IsQuestDiscoverable(userIndex, CInt(key)) Then
                         Set providers = mOffers(key)
                         For Each npc In providers.Keys
@@ -263,13 +291,17 @@ Public Function PublishQuestDiscovery(ByVal userIndex As Integer, Optional ByVal
                 Call writer.WriteString8(Left$(QuestList(CInt(row(1))).nombre, 128))
             Next i
             Call modSendData.SendData(ToIndex, userIndex, , False, queued, True)
-            If Not queued Then Exit Function
+            If Not queued Then
+                If TraceDiscoveryNpc() > 0 Then Call TraceDiscovery("enqueue-failed user=" & userIndex & " sequence=" & .sequence & " page=" & .nextPage)
+                Exit Function
+            End If
             .nextRow = last + 1: .nextPage = .nextPage + 1: pages = pages + 1
             If .nextRow > .pendingRows.Count Then Exit Do
             If pages >= MAX_PAGES_PER_DRAIN Then Exit Function
         Loop
         If .pendingUnavailable Then Call TraceError(6, "Discovery capacity exceeded; unavailable replacement sent", "modQuestDiscovery.PublishQuestDiscovery", 0)
         .inputs = .pendingInputs: .fingerprint = .pendingFingerprint: .known = True
+        If TraceDiscoveryNpc() > 0 Then Call TraceDiscovery("committed user=" & userIndex & " sequence=" & .sequence & " rows=" & .pendingRows.Count & " unavailable=" & .pendingUnavailable & " free-slot=" & FreeQuestSlot(userIndex))
         Set .pendingRows = Nothing
         .pendingInputs = "": .pendingFingerprint = ""
     End With

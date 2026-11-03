@@ -3522,6 +3522,7 @@ Public Type t_NpcInfoCache
     MinTameLevel As Integer
     OnlyForGuilds As Integer
     ShowKillerConsole As Integer
+    HealthFieldsOmitted As Boolean
     StatsMaxHp As Long
     StatsMinHp As Long
     StatsMaxHit As Long

@@ -54,6 +54,151 @@ Private Sub Fixture()
     Set packets = New Collection
     attempts = 0: rejectAt = 0: capturing = True
 End Sub
+Private Sub AuthoredProvidersFixture()
+    ' Eligibility/relationships copied from assets Dat/NPCs.dat and Quests.DAT;
+    ' no subtitle/name matching. Item requirements affect turn-in, not acceptance.
+    ReDim NpcInfoCache(1 To 432)
+    ReDim QuestList(0 To 427)
+    NpcInfoCache(432).Exists = True: NpcInfoCache(432).NumQuest = 2
+    ReDim NpcInfoCache(432).QuestNumber(1 To 2)
+    NpcInfoCache(432).QuestNumber(1) = 231: NpcInfoCache(432).QuestNumber(2) = 230
+    QuestList(231).nombre = "La Aguja y la Garra": QuestList(231).RequiredLevel = 1
+    QuestList(231).RequiredOBJs = 1: ReDim QuestList(231).RequiredOBJ(1 To 1)
+    QuestList(231).RequiredOBJ(1).ObjIndex = 538: QuestList(231).RequiredOBJ(1).amount = 1
+    QuestList(230).nombre = "El Rugido de Bruin": QuestList(230).RequiredLevel = 1: QuestList(230).RequiredQuest = 231
+    NpcInfoCache(415).Exists = True: NpcInfoCache(415).NumQuest = 1
+    ReDim NpcInfoCache(415).QuestNumber(1 To 1): NpcInfoCache(415).QuestNumber(1) = 38
+    QuestList(38).nombre = "Comienza la Aventura": QuestList(38).RequiredLevel = 13
+    NpcInfoCache(408).Exists = True: NpcInfoCache(408).NumQuest = 1
+    ReDim NpcInfoCache(408).QuestNumber(1 To 1): NpcInfoCache(408).QuestNumber(1) = 427
+    QuestList(427).nombre = "Un pequeno problema con las ratas": QuestList(427).RequiredLevel = 1: QuestList(427).LimitLevel = 8
+    UserList(1).Stats.ELV = 1
+    Call ResetQuestDiscoveryIndex()
+End Sub
+Private Function LastSnapshotOffers(ByVal npc As Integer, ByVal quest As Integer) As Boolean
+    Dim reader As New Network.Reader, bytes() As Byte, count As Integer, i As Integer, n As Integer, q As Integer
+    bytes = packets(packets.Count): Call reader.SetData(bytes)
+    Call Expect(reader.ReadInt16() = ServerPacketID.eQuestDiscovery, "discovery packet")
+    Call reader.ReadInt32(): Call reader.ReadInt16()
+    Call Expect(reader.ReadInt8() = 1, "atomic final snapshot")
+    count = reader.ReadInt16()
+    For i = 1 To count
+        n = reader.ReadInt16(): q = reader.ReadInt16(): Call reader.ReadString8()
+        If n = npc And q = quest Then LastSnapshotOffers = True
+    Next i
+    Call Expect(reader.GetAvailable() = 0, "exact discovery snapshot boundary")
+End Function
+Private Sub CheckQuestNpcSpawnHealth(ByVal caseIndex As Integer)
+    On Error GoTo Failed
+    Dim previousReader As clsIniManager, definitionPath As String, handle As Integer
+    Dim opened As Boolean, npcIndex As Integer, origin As t_WorldPos
+    Dim expectedCurrent As Long, expectedMaximum As Long, expectedType As e_NPCType
+    Dim bytes() As Byte, reader As New Network.Reader, writer As Network.Writer
+    Set previousReader = LeerNPCs
+    definitionPath = Environ$("TEMP") & "\ao-quest-npc-health-test.ini"
+    handle = FreeFile
+    Open definitionPath For Output As #handle
+    opened = True
+    ' Exact NPC432 section at assets 78d1253e6e662a53a78e58389bd4514cd58d0c77.
+    Print #handle, "[NPC432]"
+    Print #handle, "Name=Alaric von Nix <Quest de Pieles>"
+    Print #handle, "Desc=¡Ah.. un nuevo rostro entre los copos de esta ciudad! Bienvenido a mi taller, viajero."
+    Print #handle, "NpcType=17"
+    Print #handle, "Head=0"
+    Print #handle, "Body=6174"
+    Print #handle, "BodyIdle=6174"
+    Print #handle, "Ataque1=6174"
+    Print #handle, "Heading=3"
+    Print #handle, "NpcFaceGrh=32286"
+    Print #handle, "Movement=1"
+    Print #handle, "ShowName=1"
+    Print #handle, "NumQuest=2"
+    Print #handle, "QuestNumber1=231"
+    Print #handle, "QuestNumber2=230"
+    Print #handle, "SoundOpen=964"
+    Print #handle, "CollectibleCardIndex=312"
+    Print #handle, "DropCount=1"
+    Print #handle, "Drop1=1173-10000-1-1"
+    Print #handle, "en_Name=Alaric von Nix <Quest>"
+    Print #handle, "en_Desc=Ah... a new face among the flakes of this city! Welcome to my workshop, traveler."
+    Print #handle, "pt_Name=Alaric von Nix <Missão>"
+    Print #handle, "pt_Desc=Ah... um novo rosto entre os flocos desta cidade! Bem-vindo à minha oficina, viajante."
+    Print #handle, "fr_Name=Alaric von Nix <Quête>"
+    Print #handle, "fr_Desc=Ah... un nouveau visage parmi les flocons de cette ville! Bienvenue dans mon atelier, voyageur."
+    Print #handle, "it_Name=Alaric von Nix <Missione>"
+    Print #handle, "it_Desc=Ah... un nuovo volto tra i fiocchi di questa città! Benvenuto nel mio laboratorio, viaggiatore."
+    Print #handle, "NoWiki=1"
+    expectedCurrent = 1: expectedMaximum = 1: expectedType = e_NPCType.Quest
+    Select Case caseIndex
+    Case 17
+        Print #handle, "MinHP=5": Print #handle, "MaxHP=9"
+        expectedCurrent = 5: expectedMaximum = 9
+    Case 18
+        Print #handle, "MinHP=0": Print #handle, "MaxHP=0"
+        expectedCurrent = 0: expectedMaximum = 0
+    Case 19
+        Print #handle, "Attackable=1"
+        expectedCurrent = 0: expectedMaximum = 0
+    Case 20
+        ' A separate ordinary definition, also without HP, must not get this default.
+        Print #handle, "[NPC433]": Print #handle, "NpcType=0": Print #handle, "Body=6174"
+        expectedCurrent = 0: expectedMaximum = 0: expectedType = e_NPCType.Comun
+    Case 21
+        Print #handle, "Hostile=1"
+        expectedCurrent = 0: expectedMaximum = 0
+    Case 22
+        Print #handle, "MaxHP=4"
+        expectedCurrent = 0: expectedMaximum = 4
+    End Select
+    Close #handle
+    opened = False
+    Set LeerNPCs = New clsIniManager
+    Call LeerNPCs.Initialize(definitionPath, True)
+    Call BuildNpcInfoCache()
+    Call Expect(NpcInfoCacheInitialized And NpcInfoCache(432).Exists, "production template loader")
+    Call Expect(NpcInfoCache(432).StatsMinHp = IIf(caseIndex = 17, 5, 0), "cache preserves authored current HP")
+    origin.Map = 1: origin.x = 50: origin.y = 50
+    If caseIndex = 20 Then
+        npcIndex = CrearNPC(433, 1, origin, 0, True)
+    Else
+        npcIndex = CrearNPC(432, 1, origin, 0, True)
+    End If
+    Call Expect(npcIndex > 0, "production CrearNPC allocates and places fresh spawn")
+    Call Expect(NpcList(npcIndex).Char.charindex > 0 And MapData(50, 50, 1).NpcIndex = npcIndex, "spawn placement and character identity")
+    Call Expect(NpcList(npcIndex).Stats.MinHp = expectedCurrent And NpcList(npcIndex).Stats.MaxHp = expectedMaximum, "fresh runtime health")
+    Call Expect(NpcList(npcIndex).npcType = expectedType, "NPC classification unchanged")
+    If caseIndex = 16 Then
+        Call Expect(NpcList(npcIndex).Attackable = 0 And NpcList(npcIndex).Hostile = 0, "Alaric remains noncombat")
+        Call Expect(NpcList(npcIndex).NumQuest = 2 And NpcList(npcIndex).QuestNumber(1) = 231 And NpcList(npcIndex).QuestNumber(2) = 230, "Alaric provider identity retained")
+    End If
+    Set writer = Protocol_Writes.GetWriterBuffer()
+    Call writer.Clear()
+    Call PrepareMessageNpcUpdateHP(npcIndex)
+    Call writer.GetData(bytes): Call writer.Clear(): Call reader.SetData(bytes)
+    Call Expect(reader.ReadInt16() = ServerPacketID.eCharUpdateHP And reader.ReadInt16() = NpcList(npcIndex).Char.charindex, "production health update identity")
+    Call Expect(reader.ReadInt32() = expectedCurrent And reader.ReadInt32() = expectedMaximum, "production health update values")
+    Call Expect(reader.ReadInt32() = 0 And reader.GetAvailable() = 0, "exact health packet boundary")
+    If caseIndex = 16 Then
+        Call Expect(NPCs.ModifyHealth(npcIndex, -1), "subsequent health mutation can reach zero")
+        Call writer.Clear(): Call PrepareMessageNpcUpdateHP(npcIndex)
+        Call writer.GetData(bytes): Call writer.Clear(): Call reader.SetData(bytes)
+        Call reader.ReadInt16(): Call reader.ReadInt16()
+        Call Expect(reader.ReadInt32() = 0 And reader.ReadInt32() = 1, "dead 0/1 never normalized by update or serialization")
+        Call Expect(NpcList(npcIndex).Stats.MinHp = 0 And NpcList(npcIndex).Stats.MaxHp = 1, "health serialization does not revive actor")
+    End If
+    Set LeerNPCs = previousReader: NpcInfoCacheInitialized = False
+    Kill definitionPath
+    Exit Sub
+Failed:
+    Dim failureNumber As Long, failureText As String
+    failureNumber = Err.Number: failureText = Err.Description
+    If opened Then Close #handle
+    Set LeerNPCs = previousReader: NpcInfoCacheInitialized = False
+    If Len(definitionPath) > 0 Then
+        If FileExist(definitionPath) Then Kill definitionPath
+    End If
+    Err.Raise failureNumber, "CheckQuestNpcSpawnHealth", failureText
+End Sub
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
     Call Fixture()
@@ -195,6 +340,41 @@ Private Sub RunCase(ByVal index As Integer)
         GlobalQuestInfo(1).IsBossAlive(1) = False
         Call RefreshGlobalQuestTurnIns(1): Call ProcessQuestTurnInUpdates()
         Call Expect(packets.Count = 2, "boss-state change refreshes discovery")
+    Case 12
+        Call AuthoredProvidersFixture()
+        Call Expect(QuestAcceptanceFailure(1, 0, 231, QuestList(231)) = QuestAcceptAllowed, "Alaric 231 is genuinely acceptable in controlled level-one fixture")
+        Call Expect(QuestAcceptanceFailure(1, 0, 230, QuestList(230)) = QuestAcceptPrerequisite, "Alaric 230 requires completed 231")
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        Call Expect(LastSnapshotOffers(432, 231) And Not LastSnapshotOffers(432, 230), "zero accepted quests still publish Alaric eligible offer without dialog")
+        Call Expect(LastSnapshotOffers(408, 427) And Not LastSnapshotOffers(415, 38), "Romina level-one eligible; Heather requires 13")
+    Case 13
+        Call AuthoredProvidersFixture(): UserList(1).Stats.ELV = 13
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        Call Expect(LastSnapshotOffers(415, 38) And Not LastSnapshotOffers(408, 427), "Heather eligibility and Romina maximum level are preserved")
+    Case 14
+        Call AuthoredProvidersFixture()
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates()
+        NpcList(1).flags.NPCActive = True: NpcList(1).Numero = 432
+        NpcList(1).pos = UserList(1).pos: NpcList(1).NumQuest = 2
+        ReDim NpcList(1).QuestNumber(1 To 2)
+        NpcList(1).QuestNumber(1) = 231: NpcList(1).QuestNumber(2) = 230
+        Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
+        Dim acceptBytes(0 To 0) As Byte: acceptBytes(0) = 1
+        Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(acceptBytes)
+        Call Protocol.HandleQuestAccept(1): Call ProcessQuestTurnInUpdates()
+        Call Expect(TieneQuest(1, 231) > 0, "production acceptance retains actual quest ID")
+        Call Expect(Not LastSnapshotOffers(432, 231), "confirmed acceptance removes available marker")
+    Case 15
+        Call AuthoredProvidersFixture(): rejectAt = 1
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates(1000)
+        Call Expect(packets.Count = 0, "failed login enqueue is not cached as sent")
+        rejectAt = 0: Call ProcessQuestTurnInUpdates(1250)
+        Call Expect(LastSnapshotOffers(432, 231), "bounded retry publishes initial Alaric snapshot")
+        Call ResetQuestDiscoveryUser(1): Call IncreaseVersionId(1)
+        Call SendQuestObjectiveSnapshot(1, True): Call ProcessQuestTurnInUpdates(1500)
+        Call Expect(LastSnapshotOffers(432, 231), "reconnect republishes eligible offer")
+    Case 16 To 22
+        Call CheckQuestNpcSpawnHealth(index)
     End Select
     capturing = False
     Call UnitTesting.Progress("Quest discovery " & index & " passed")
@@ -210,7 +390,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    For i = 1 To 11
+    For i = 1 To 22
         Call RunCase(i)
     Next i
     TestSuite = UnitTesting.GetFailedTests() = before
