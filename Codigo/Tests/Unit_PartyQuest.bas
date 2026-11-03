@@ -101,6 +101,16 @@ Private Sub Fixture()
     Call Group(1, 2)
     Call Expect(InitializePartyQuestPersistence(), "initialize durable run ID range on login/startup, not kill")
 End Sub
+Private Function FixtureColumnType(ByVal column As String) As String
+    ' Match production text affinity. Declaring names/descriptions NUMERIC makes
+    ' SQLite ODBC expose valid text as NULL during the actual character loader.
+    Select Case LCase$(column)
+        Case "name", "alias", "description", "message_info", "banned_by", "ban_reason", "spouse", "guild_rejected_because"
+            FixtureColumnType = "TEXT NOT NULL DEFAULT ''"
+        Case Else
+            FixtureColumnType = "NUMERIC DEFAULT 0"
+    End Select
+End Function
 Private Sub BuildCharacterSaveSchema()
     Call Contruir_Querys()
     Dim fields As Object, text As String, item As Variant, column As String
@@ -111,7 +121,7 @@ Private Sub BuildCharacterSaveSchema()
     For Each item In Split(text, ",")
         column = Trim$(CStr(item))
         If Not fields.Exists(column) Then
-            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] NUMERIC DEFAULT 0")
+            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] " & FixtureColumnType(column))
             fields(column) = True
         End If
     Next item
@@ -120,7 +130,7 @@ Private Sub BuildCharacterSaveSchema()
     For Each item In Split(text, ",")
         column = Trim$(Left$(CStr(item), InStr(CStr(item), "=") - 1))
         If Not fields.Exists(column) Then
-            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] NUMERIC DEFAULT 0")
+            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] " & FixtureColumnType(column))
             fields(column) = True
         End If
     Next item

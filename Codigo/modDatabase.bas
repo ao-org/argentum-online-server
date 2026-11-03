@@ -364,11 +364,6 @@ Private Function CreateParameter(ByVal value As Variant, ByVal Direction As ADOD
         Case VbVarType.vbString
             CreateParameter.Type = adBSTR
             CreateParameter.Size = Len(value)
-            If PartyQuestCaptureActive() And Len(value) = 0 Then
-                ' ODBC must bind an empty text value, not a zero-sized BSTR/NULL.
-                CreateParameter.Type = adVarWChar
-                CreateParameter.Size = 1
-            End If
             CreateParameter.value = CStr(value)
         Case VbVarType.vbDecimal
             CreateParameter.Type = adInteger
