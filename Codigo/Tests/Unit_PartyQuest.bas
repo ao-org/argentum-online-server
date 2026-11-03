@@ -158,6 +158,12 @@ Private Sub ReloadCharacter(ByVal userIndex As Integer)
     With UserList(userIndex)
         .Id = id: .AccountID = account: .VersionId = fixtureVersion + 1
     End With
+    Dim rows As ADODB.Recordset, field As ADODB.Field
+    Set rows = database.Execute("SELECT * FROM user WHERE id=" & id)
+    For Each field In rows.Fields
+        If IsNull(field.value) Then Call UnitTesting.Progress("Party reload NULL field: " & field.name)
+    Next field
+    Call rows.Close()
     Call Expect(LoadCharacterFromDB(userIndex, why), "production full character load: " & why)
     UserList(userIndex).flags.UserLogged = True: UserList(userIndex).ConnectionDetails.ConnIDValida = True
     UserList(userIndex).CurrentInventorySlots = 3
@@ -490,15 +496,15 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(FlushPartyQuestShutdown(), "orderly shutdown flushes owned work")
         Call Expect(Scalar("SELECT progress FROM party_quest_run") = 1, "shutdown persisted latest dirty run")
     Case 43
-        Dim fence As New clsHuntAsyncFence, probe As New ADODB.Command, deadline As Long
-        Call fence.Attach(database)
+        Dim probe As New ADODB.Command, deadline As Long
         Set probe.ActiveConnection = database: probe.CommandText = "SELECT 1": probe.CommandType = adCmdText
+        Call TrackPartyQuestLegacyWrite(probe)
         Call probe.Execute(, , adAsyncExecute)
         deadline = GetTickCountRaw()
         ' Test-only bounded provider wait, WITHOUT dispatching unrelated game timers.
         Do While (probe.State And adStateExecuting) <> 0 And TicksElapsed(deadline, GetTickCountRaw()) < 1000
         Loop
-        Call Expect(fence.Started > 0 And fence.Pending = 0, "real ADO completion state clears fence without callback pumping")
+        Call Expect(PartyQuestLegacyWritesComplete(), "real ADO completion state clears fence without callback pumping")
     Case 44
         Call StartDuo()
         For i = 1 To 4: Call KillWolf(): Next i
@@ -524,6 +530,11 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(Scalar("SELECT gold FROM user WHERE id=702") = 17, "teammate unrelated wallet is preserved")
         Call RestartCache(): Call ReloadCharacter(1)
         Call Expect(UserList(1).Stats.GLD = 395 And Not PartyQuestReady(1, 1), "claim remains once after full reload")
+    Case 46
+        Call StartDuo(): Call SaveCharacterDB(1)
+        Call Expect(Scalar("SELECT description IS NOT NULL AND message_info IS NOT NULL FROM user WHERE id=701") = 1, "empty text must not serialize as NULL")
+        Call ReloadCharacter(1)
+        Call Expect(UserList(1).Desc = vbNullString And UserList(1).MENSAJEINFORMACION = vbNullString, "empty text survives full production reload")
     End Select
     Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " passed")
@@ -560,8 +571,8 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
-    For i = 1 To 45: Call RunCase(i): Next i
-    Call UnitTesting.Progress("Party hunt 45 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
+    For i = 1 To 46: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 46 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If

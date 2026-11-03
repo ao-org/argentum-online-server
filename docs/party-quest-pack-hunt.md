@@ -66,9 +66,11 @@ main, inventory, bank, spells, skills, pets, skins and quest serializers build
 immutable commands against a working copy, without clearing live dirty flags.
 Account card changes use the same transaction. Unrelated characters retain their
 existing persistence path. A save is successful only after `CommitTrans` returns;
-ADO dispatch is not completion. Connection event fences wait for pre-existing
-pooled writes to finish before the party transaction starts (without a busy loop).
-See [ADO ExecuteComplete](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/executecomplete-event-ado).
+ADO dispatch is not completion. The existing write helpers retain outstanding
+commands and inspect ADO execution state before the party transaction starts.
+Completed commands are pruned on the next submission/save; no event observer,
+message-pumping wait or busy loop is needed. See
+[ADO State](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/state-property-ado).
 
 Run revisions prevent older snapshots overwriting newer progress. A monotonic
 `user.party_quest_save_revision` guards the whole captured character batch, rather

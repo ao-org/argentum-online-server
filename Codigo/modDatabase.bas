@@ -34,7 +34,7 @@ Private BankSaveCmd()   As ADODB.Command
 ' Party-only save capture: immutable commands owned until transaction completion.
 Private mPartyCapture As Collection
 Private mPartyCaptureFailed As Boolean
-Private mPartyFences(1 To MAX_ASYNC) As clsHuntAsyncFence
+Private mLegacyWrites As Collection
 Public Function PartyQuestCaptureActive() As Boolean
     PartyQuestCaptureActive = Not mPartyCapture Is Nothing
 End Function
@@ -56,14 +56,27 @@ Public Function EndPartyQuestCapture() As Collection
     If failed Then Err.Raise vbObjectError + 862, , "Incomplete party character snapshot"
 End Function
 Public Function PartyQuestLegacyWritesComplete() As Boolean
-    Dim i As Integer
-    For i = 1 To MAX_ASYNC
-        If Not mPartyFences(i) Is Nothing Then
-            If mPartyFences(i).Pending <> 0 Then Exit Function
+    Dim i As Long, command As ADODB.Command
+    PartyQuestLegacyWritesComplete = True
+    If mLegacyWrites Is Nothing Then Exit Function
+    For i = mLegacyWrites.count To 1 Step -1
+        Set command = mLegacyWrites(i)
+        If (command.State And (adStateExecuting Or adStateFetching Or adStateConnecting)) = 0 Then
+            Call mLegacyWrites.Remove(i)
+        Else
+            PartyQuestLegacyWritesComplete = False
         End If
     Next i
-    PartyQuestLegacyWritesComplete = True
 End Function
+Public Sub TrackPartyQuestLegacyWrite(ByVal command As ADODB.Command)
+    Dim completed As Boolean, pending As ADODB.Command
+    If mLegacyWrites Is Nothing Then Set mLegacyWrites = New Collection
+    completed = PartyQuestLegacyWritesComplete()
+    For Each pending In mLegacyWrites
+        If pending Is command Then Exit Sub
+    Next pending
+    Call mLegacyWrites.Add(command)
+End Sub
 
 ' Opens the async ADO connection pool used by non-blocking Execute operations.
 ' These are real ADODB connections (Connection_async), not VB6-managed worker threads/queues.
@@ -84,8 +97,6 @@ Public Sub Database_Connect_Async()
         Call Connection_async(i).Open
         ' SQLite enforces foreign keys per connection, so enable cascades immediately after opening each ADO connection.
         Call Connection_async(i).Execute("PRAGMA foreign_keys = ON")
-        Set mPartyFences(i) = New clsHuntAsyncFence
-        Call mPartyFences(i).Attach(Connection_async(i))
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
@@ -213,6 +224,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
         Call GetElapsedTime
     End If
     Call CountPartyQuestSql()
+    If executeOptions = adAsyncExecute Then Call TrackPartyQuestLegacyWrite(Command)
     Call Command.Execute(, , executeOptions)  ' @TODO: We want some operation to be async
     Current_async = Current_async + 1
     If Current_async = MAX_ASYNC Then
@@ -289,6 +301,7 @@ Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
         cmd.Parameters(i).Value = Params(i)
     Next i
 
+    Call TrackPartyQuestLegacyWrite(cmd)
     Call cmd.Execute(, , adAsyncExecute)
 
     Current_async = Current_async + 1
@@ -351,6 +364,11 @@ Private Function CreateParameter(ByVal value As Variant, ByVal Direction As ADOD
         Case VbVarType.vbString
             CreateParameter.Type = adBSTR
             CreateParameter.Size = Len(value)
+            If PartyQuestCaptureActive() And Len(value) = 0 Then
+                ' ODBC must bind an empty text value, not a zero-sized BSTR/NULL.
+                CreateParameter.Type = adVarWChar
+                CreateParameter.Size = 1
+            End If
             CreateParameter.value = CStr(value)
         Case VbVarType.vbDecimal
             CreateParameter.Type = adInteger
