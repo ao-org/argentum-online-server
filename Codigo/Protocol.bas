@@ -932,6 +932,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionPrepare(UserIndex, reader)
         Case ClientPacketID.eHooInventoryDestructionConfirm
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.ePartyQuestAction
+            Call HandlePartyQuestAction(UserIndex)
         Case ClientPacketID.ePartyManagement
             Call HandlePartyManagement(UserIndex, reader)
         Case ClientPacketID.eNpcInspectionSubscribe
@@ -7149,6 +7151,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
         Dim respuesta As Boolean
         Dim DeDonde   As String
         respuesta = reader.ReadBool()
+        If .flags.pregunta = 64 Then Exit Sub ' Party hunt answers carry their proposal token.
         Dim Log As String
         Log = "Repuesta "
         UserList(UserIndex).flags.RespondiendoPregunta = False
@@ -7538,6 +7541,10 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         tmpIndex = UserList(UserIndex).flags.QuestNumber
         tmpQuest = QuestList(tmpIndex)
     End If
+    If tmpQuest.PartyMinimum > 0 Then
+        Call ProposePartyQuest(UserIndex, tmpIndex, NpcIndex)
+        Exit Sub
+    End If
     If Not ModQuest.CanUserAcceptQuest(UserIndex, NpcIndex, tmpIndex, tmpQuest) Then
         Exit Sub
     End If
@@ -7602,7 +7609,13 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim Slot As Byte
         Slot = reader.ReadInt8
-        If Slot > MAXUSERQUESTS Then Exit Sub
+        If Slot < 1 Or Slot > MAXUSERQUESTS Then Exit Sub
+        If .QuestStats.Quests(Slot).QuestIndex > 0 Then
+            If QuestList(.QuestStats.Quests(Slot).QuestIndex).PartyMinimum > 0 Then
+                Call AbandonPartyQuest(UserIndex)
+                Exit Sub
+            End If
+        End If
 
         Call LogQuestEvent(.Id, .name, .QuestStats.Quests(Slot).QuestIndex, QuestList(.QuestStats.Quests(Slot).QuestIndex).nombre, "Abandoned")
         'Le avisamos que abandono la quest

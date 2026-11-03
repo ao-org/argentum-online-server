@@ -3155,6 +3155,7 @@ End Sub
 
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     On Error GoTo WriteNpcQuestListSend_Err
+    Call WritePartyQuestState(UserIndex)
 
     Dim i As Integer
     Dim j As Integer

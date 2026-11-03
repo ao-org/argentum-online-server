@@ -128,6 +128,7 @@ End Sub
 
 Public Sub PublishManagedParty(ByVal leader As Integer)
     On Error GoTo PublishManagedParty_Err
+    Call RefreshPartyQuestProposal(leader)
     Dim i As Integer, member As Integer
     For i = 1 To UserList(leader).Grupo.CantidadMiembros
         If IsValidUserRef(UserList(leader).Grupo.Miembros(i)) Then

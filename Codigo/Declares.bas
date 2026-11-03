@@ -2146,6 +2146,7 @@ End Type
 Public QuestList() As t_Quest
 
 Public Type t_Quest
+    PartyMinimum As Byte
     nombre As String
     Desc As String
     NextQuest As String
@@ -3186,6 +3187,8 @@ End Type
 
 'Tipo de los Usuarios
 Public Type t_User
+    PartyQuestGoldSeen As Long
+    PartyQuestSaveBlocked As Boolean
     name As String
     Alias As String
     PreviousLogoutUtc As String

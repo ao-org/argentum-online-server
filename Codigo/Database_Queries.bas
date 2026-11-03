@@ -68,6 +68,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
     QueryBuilder.Append "home_id,"
     QueryBuilder.Append "description,"
     QueryBuilder.Append "gold,"
+    QueryBuilder.Append "party_quest_gold_total,"
     QueryBuilder.Append "bank_gold,"
     QueryBuilder.Append "free_skillpoints,"
     QueryBuilder.Append "pos_map,"
@@ -248,7 +249,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "exp = ?, "
     QueryBuilder.Append "home_id = ?, "
     QueryBuilder.Append "description = ?, "
-    QueryBuilder.Append "gold = ?, "
+    ' A pre-claim asynchronous save adds credits committed since its snapshot.
+    QueryBuilder.Append "gold = ? + party_quest_gold_total - ?, "
     QueryBuilder.Append "bank_gold = ?, "
     QueryBuilder.Append "free_skillpoints = ?, "
     QueryBuilder.Append "pets_saved = ?, "

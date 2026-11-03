@@ -93,6 +93,10 @@ End Function
 Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte)
     On Error GoTo FinishQuest_Err
     'Maneja el evento de terminar una quest.
+    If QuestList(QuestIndex).PartyMinimum > 0 Then
+        Call ClaimPartyQuest(UserIndex, QuestIndex)
+        Exit Sub
+    End If
     Dim i, j           As Integer
     Dim InvSlotsLibres As Byte
     Dim NpcIndex       As Integer
@@ -402,6 +406,7 @@ Public Sub LoadQuests()
             .nombre = reader.GetValue("QUEST" & i, "Nombre")
             .Desc = reader.GetValue("QUEST" & i, "Desc")
             .RequiredLevel = val(reader.GetValue("QUEST" & i, "RequiredLevel"))
+            .PartyMinimum = val(reader.GetValue("QUEST" & i, "PartyMinimum"))
             .RequiredQuest = val(reader.GetValue("QUEST" & i, "RequiredQuest"))
             .LimitLevel = val(reader.GetValue("QUEST" & i, "LimitLevel"))
             .DescFinal = reader.GetValue("QUEST" & i, "DescFinal")
@@ -609,6 +614,9 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
        QuestSlot > UBound(UserList(UserIndex).QuestStats.Quests) Then Exit Function
 
     With QuestList(QuestIndex)
+        If .PartyMinimum > 0 Then
+            If Not PartyQuestReady(UserIndex, QuestIndex) Then Exit Function
+        End If
 
         ' --- Required objects ---
         If .RequiredOBJs > 0 Then

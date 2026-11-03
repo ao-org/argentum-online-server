@@ -327,6 +327,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
             Call db_load_house_key(UserList(UserIndex))
         End If
     End With
+    If Not LoadPartyQuest(UserIndex) Then Exit Function
     Call InitUserPersistSnapshot(UserIndex)
     LoadCharacterFromDB = True
     Exit Function
@@ -351,6 +352,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Hogar = RS!home_id
         .Desc = RS!Description
         .Stats.GLD = RS!gold
+        .PartyQuestGoldSeen = RS!party_quest_gold_total
         .Stats.Banco = RS!bank_gold
         .Stats.SkillPts = RS!free_skillpoints
         .pos.Map = RS!pos_map
@@ -625,6 +627,7 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer, Optional ByVal Logout As 
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
+        If .PartyQuestSaveBlocked Then Exit Sub ' An ambiguous claim must be reconciled before any save.
         Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown, Logout)
         Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
@@ -658,15 +661,17 @@ ErrorHandler:
 End Sub
 
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, Optional ByVal Logout As Boolean = False)
+    If U.PartyQuestSaveBlocked Then Exit Sub
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(62)
+    ReDim Params(63)
     Dim i As Integer
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
     Params(post_increment(i)) = U.Hogar
     Params(post_increment(i)) = U.Desc
     Params(post_increment(i)) = U.Stats.GLD
+    Params(post_increment(i)) = U.PartyQuestGoldSeen
     Params(post_increment(i)) = U.Stats.Banco
     Params(post_increment(i)) = U.Stats.SkillPts
     Params(post_increment(i)) = U.flags.MascotasGuardadas

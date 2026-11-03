@@ -2630,6 +2630,7 @@ Public Sub AwardNpcPartyQuests(ByVal credited As Integer, ByRef npc As t_Npc)
     If npc.npcType = DummyTarget Or npc.MaestroUser.ArrayIndex <> 0 Then Exit Sub
     Dim recipients As t_PartyRewardRecipients, i As Integer, userIndex As Integer
     Call CollectPartyRewardRecipients(credited, recipients, npc.pos.Map)
+    Call PartyQuestNpcDeath(credited, npc, recipients)
     For i = 1 To recipients.Count
         If IsValidUserRef(recipients.Users(i)) Then
             userIndex = recipients.Users(i).ArrayIndex
@@ -2652,6 +2653,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
     For i = 1 To MAXUSERQUESTS
         With UserList(UserIndex).QuestStats.Quests(i)
             If .QuestIndex > 0 Then
+                If QuestList(.QuestIndex).PartyMinimum = 0 Then
                 wasComplete = AllRequiredNPCsKilled(UserIndex, .QuestIndex, i)
                 For j = 1 To QuestList(.QuestIndex).RequiredNPCs
                     If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
@@ -2665,6 +2667,7 @@ Public Sub OnNpcKilledUpdateQuest(ByVal UserIndex As Integer, ByRef MiNPC As t_N
                 Next j
                 If Not wasComplete And AllRequiredNPCsKilled(UserIndex, .QuestIndex, i) Then
                     Call WriteLocaleMsg(UserIndex, MSG_MATADO_TODAS_CRIATURAS_MISION_REQUERIA, e_TextChannel.TEXTCHANNEL_QUEST, e_FontTypeNames.FONTTYPE_INFOBOLD, QuestList(.QuestIndex).nombre)
+                End If
                 End If
             End If
         End With

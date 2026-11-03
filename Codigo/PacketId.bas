@@ -261,6 +261,7 @@ Public Enum ServerPacketID
     eQuestTurnIns ' 224 with PYMMO=1; complete ready-quest replacement.
     eQuestFeedback ' 225 with PYMMO=1; synchronized progress and actual-grant receipts.
     eQuestDiscovery ' 226 with PYMMO=1; paged authoritative availability replacement.
+    ePartyQuestState ' 227 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum
@@ -594,6 +595,7 @@ Public Enum ClientPacketID
     eNpcInspectionSubscribe ' 317 with PYMMO=1.
     eGatheringStart ' 318 with PYMMO=1.
     ePartyManagement ' 319 with PYMMO=1.
+    ePartyQuestAction ' 320 with PYMMO=1.
     eMaxPacket
     [PacketCount]
 End Enum

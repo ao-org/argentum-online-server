@@ -728,6 +728,7 @@ Dim tStr                        As String
         End If
         Call WriteCurrentWeatherState(UserIndex)
         Call WriteLoggedMessage(UserIndex, newUser)
+    Call WritePartyQuestState(UserIndex)
         Call SendQuestObjectiveSnapshot(UserIndex, True)
         Call MaybeSendRemortState(UserIndex)
         If .Stats.ELV = 1 Then
