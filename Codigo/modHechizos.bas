@@ -937,18 +937,23 @@ HechizoTerrenoEstado_Err:
 End Sub
 
 Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
+    Dim afectaUsers                 As Boolean
+    Dim afectaNPCs                  As Boolean
+    Dim TargetMap                   As t_MapBlock
+    Dim PosCasteadaX                As Byte
+    Dim PosCasteadaY                As Byte
+    Dim h                           As Integer
+    Dim fxId                        As Integer
+    Dim x                           As Long
+    Dim y                           As Long
+
     On Error GoTo HechizoSobreArea_Err
-    Dim afectaUsers  As Boolean
-    Dim afectaNPCs   As Boolean
-    Dim TargetMap    As t_MapBlock
-    Dim PosCasteadaX As Byte
-    Dim PosCasteadaY As Byte
-    Dim h            As Integer
-    Dim x            As Long
-    Dim y            As Long
+
     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
+    fxId = ResolveSpellFx(UserIndex, h)
     PosCasteadaX = UserList(UserIndex).flags.TargetX
     PosCasteadaY = UserList(UserIndex).flags.TargetY
+
     'Envio Palabras magicas, wavs y fxs.
     If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
         Call DecirPalabrasMagicas(h, UserIndex)
@@ -970,9 +975,9 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                     If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
                         If Hechizos(h).ParticleViaje > 0 Then
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.charindex, Hechizos(h).ParticleViaje, _
-                                    Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, x, y))
+                                    fxId, 1, Hechizos(h).wav, 1, x, y))
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(TargetMap.UserIndex).pos.x, UserList( _
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(fxId, UserList(TargetMap.UserIndex).pos.x, UserList( _
                                     TargetMap.UserIndex).pos.y))
                         End If
                     End If
@@ -984,9 +989,9 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                     If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
                         If Hechizos(h).ParticleViaje > 0 Then
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.charindex, Hechizos(h).ParticleViaje, _
-                                    Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, x, y))
+                                    fxId, 1, Hechizos(h).wav, 1, x, y))
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, NpcList(TargetMap.NpcIndex).pos.x, NpcList( _
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(fxId, NpcList(TargetMap.npcIndex).pos.x, NpcList( _
                                     TargetMap.NpcIndex).pos.y))
                         End If
                     End If
@@ -2543,13 +2548,12 @@ Public Function MinorInvisibilityFxEligible(ByVal SpellId As Integer, ByVal Alre
 End Function
 
 Private Sub InfoHechizo(ByVal UserIndex As Integer)
+    Dim Slot                        As Integer
+    Dim h                           As Integer
+
     On Error GoTo InfoHechizo_Err
 
-    Dim slot As Integer
-    Dim h As Integer            ' id de hechizo
-    Dim skin As Integer
-
-    ' Slot ? id (bounds-safe)
+    ' Slot -> id de hechizo (bounds-safe)
     If Not IsArrayInitialized(UserList(UserIndex).Stats.UserHechizos) Then Exit Sub
     slot = UserList(UserIndex).flags.Hechizo
     If slot < LBound(UserList(UserIndex).Stats.UserHechizos) Or _
@@ -2564,20 +2568,16 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
         Exit Sub
     End If
 
-    skin = GetSkinSpellSafe(UserIndex, h)
-
     If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
         Call DecirPalabrasMagicas(h, UserIndex)
     End If
 
     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
-        Call CastOnUser(UserIndex, h, skin, UserList(UserIndex).flags.TargetUser.ArrayIndex)
-        
+        Call CastOnUser(UserIndex, h, UserList(UserIndex).flags.targetUser.ArrayIndex)
     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-    
-        Call CastOnNpc(UserIndex, h, skin, UserList(UserIndex).flags.TargetNPC.ArrayIndex)
+        Call CastOnNpc(UserIndex, h, UserList(UserIndex).flags.TargetNPC.ArrayIndex)
     Else
-        Call CastOnTerrain(UserIndex, h, skin)
+        Call CastOnTerrain(UserIndex, h)
     End If
 
     Exit Sub
@@ -2602,10 +2602,32 @@ GetSkinSpellSafe_Err:
     GetSkinSpellSafe = 0
 End Function
 
+' Devuelve el FX a mostrar para un hechizo, aplicando la skin equipada si existe.
+Private Function ResolveSpellFx(ByVal UserIndex As Integer, ByVal SpellIndex As Integer) As Integer
+    Dim skinFx As Integer
+
+    On Error GoTo ResolveSpellFx_Err
+
+    skinFx = GetSkinSpellSafe(UserIndex, SpellIndex)
+    If skinFx > 0 Then
+        ResolveSpellFx = skinFx
+    Else
+        ResolveSpellFx = Hechizos(SpellIndex).FXgrh
+    End If
+    Exit Function
+
+ResolveSpellFx_Err:
+    ResolveSpellFx = Hechizos(SpellIndex).FXgrh
+End Function
+
 ' --- Helper 1: Target USER ---
-Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin As Integer, ByVal TargetIndex As Integer)
+Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal TargetIndex As Integer)
+    Dim fxId                        As Integer
+
     On Error GoTo CastOnUser_Err
-    Dim fxId As Integer
+
+    fxId = ResolveSpellFx(UserIndex, h)
+
     ' FX
     If Hechizos(h).FXgrh > 0 Then
         UserList(TargetIndex).Counters.timeFx = 3
@@ -2615,15 +2637,10 @@ Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal ski
                PrepareMessageParticleFXWithDestino( _
                UserList(UserIndex).Char.charindex, _
                UserList(TargetIndex).Char.charindex, _
-               Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, _
+               Hechizos(h).ParticleViaje, fxId, _
                Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
                UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         Else
-            If skin > 0 Then
-                fxId = skin
-            Else
-                fxId = Hechizos(h).FXgrh
-            End If
             Call SendData( _
                SendTarget.ToPCAliveArea, TargetIndex, _
                PrepareMessageCreateFX( _
@@ -2631,6 +2648,7 @@ Private Sub CastOnUser(ByVal UserIndex As Integer, ByVal h As Integer, ByVal ski
                UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
         End If
     End If
+
     ' Partículas
     If Hechizos(h).Particle > 0 Then
         UserList(TargetIndex).Counters.timeFx = 3
@@ -2676,23 +2694,19 @@ CastOnUser_Err:
 End Sub
 
 ' --- Helper 2: Target NPC ---
-Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin As Integer, ByVal TargetIndex As Integer)
+Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal TargetIndex As Integer)
+    Dim isDead                      As Boolean
+    Dim fxId                        As Integer
+
     On Error GoTo CastOnNpc_Err
 
-    Dim dead As Boolean
-    Dim fxId As Integer
-
-    dead = (NpcList(TargetIndex).Stats.MinHp < 1)
+    isDead = (NpcList(TargetIndex).Stats.MinHp < 1)
+    fxId = ResolveSpellFx(UserIndex, h)
 
     ' FX
     If Hechizos(h).FXgrh > 0 Then
-        If dead Then
+        If isDead Then
             If Hechizos(h).ParticleViaje > 0 Then
-                If skin > 0 Then
-                    fxId = skin
-                Else
-                    fxId = Hechizos(h).FXgrh
-                End If
                 Call SendData( _
                     SendTarget.ToNPCAliveArea, TargetIndex, _
                     PrepareMessageParticleFXWithDestinoXY( _
@@ -2701,11 +2715,6 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
                         Hechizos(h).TimeParticula, Hechizos(h).wav, 1, _
                         UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
             Else
-                If skin > 0 Then
-                    fxId = skin
-                Else
-                    fxId = Hechizos(h).FXgrh
-                End If
                 Call SendData( _
                     SendTarget.ToNPCAliveArea, TargetIndex, _
                     PrepareMessageFxPiso( _
@@ -2713,11 +2722,6 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
             End If
         Else
             If Hechizos(h).ParticleViaje > 0 Then
-                If skin > 0 Then
-                    fxId = skin
-                Else
-                    fxId = Hechizos(h).FXgrh
-                End If
                 Call SendData( _
                     SendTarget.ToNPCAliveArea, TargetIndex, _
                     PrepareMessageParticleFXWithDestino( _
@@ -2726,11 +2730,6 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
                         Hechizos(h).ParticleViaje, fxId, _
                         Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
             Else
-                If skin > 0 Then
-                    fxId = skin
-                Else
-                    fxId = Hechizos(h).FXgrh
-                End If
                 Call SendData( _
                     SendTarget.ToNPCAliveArea, TargetIndex, _
                     PrepareMessageCreateFX( _
@@ -2741,7 +2740,7 @@ Private Sub CastOnNpc(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin
 
     ' Partículas
     If Hechizos(h).Particle > 0 Then
-        If dead Then
+        If isDead Then
             Call SendData( _
                 SendTarget.ToNPCAliveArea, TargetIndex, _
                 PrepareMessageParticleFXWithDestinoXY( _
@@ -2782,19 +2781,16 @@ CastOnNpc_Err:
 End Sub
 
 ' --- Helper 3: Target Terreno ---
-Private Sub CastOnTerrain(ByVal UserIndex As Integer, ByVal h As Integer, ByVal skin As Integer)
+Private Sub CastOnTerrain(ByVal UserIndex As Integer, ByVal h As Integer)
+    Dim fxId                        As Integer
+    Dim targetNpcIndex              As Integer
+
     On Error GoTo CastOnTerrain_Err
 
-    Dim fxId As Integer
-
     With UserList(UserIndex)
-        ' FX piso (sin duplicar)
+        ' FX piso
         If Hechizos(h).FXgrh > 0 Then
-            If skin > 0 Then
-                fxId = skin
-            Else
-                fxId = Hechizos(h).FXgrh
-            End If
+            fxId = ResolveSpellFx(UserIndex, h)
             Call modSendData.SendToAreaByPos( _
                 .pos.Map, .flags.TargetX, .flags.TargetY, _
                 PrepareMessageFxPiso(fxId, .flags.TargetX, .flags.TargetY))
@@ -2818,12 +2814,11 @@ Private Sub CastOnTerrain(ByVal UserIndex As Integer, ByVal h As Integer, ByVal 
 
         ' Sonido a NPC (solo si hay NPC válido y no hay viaje)
         If Hechizos(h).ParticleViaje = 0 And IsValidNpcRef(.flags.TargetNPC) Then
-            Dim n As Integer
-            n = .flags.TargetNPC.ArrayIndex
+            targetNpcIndex = .flags.TargetNPC.ArrayIndex
             Call SendData( _
-                SendTarget.ToNPCAliveArea, n, _
+                SendTarget.ToNPCAliveArea, targetNpcIndex, _
                 PrepareMessagePlayWave(Hechizos(h).wav, _
-                    NpcList(n).pos.x, NpcList(n).pos.y))
+                    NpcList(targetNpcIndex).pos.x, NpcList(targetNpcIndex).pos.y))
         End If
     End With
 
