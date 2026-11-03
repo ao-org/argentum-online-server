@@ -3189,6 +3189,11 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Next j
     End If
 
+    ' Publish each supported offer independently, using the existing hunt packet.
+    For j = 1 To validQuestCount
+        If IsSupportedPartyKillQuest(validQuestIndexes(j)) Then Call WritePartyQuestState(UserIndex, validQuestIndexes(j))
+    Next j
+
     ' ===== Packet header =====
     Call Writer.WriteInt16(ServerPacketID.eNpcQuestListSend)
     Call Writer.WriteInt8(validQuestCount)

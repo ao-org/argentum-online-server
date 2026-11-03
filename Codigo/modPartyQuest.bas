@@ -3,7 +3,7 @@ Attribute VB_Name = "modPartyQuest"
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
 Private Const MAX_MEMBERS As Integer = 6
-Private Const MAX_KILLS As Integer = 6
+Private Const MAX_KILLS As Long = 32767
 Private Const QUESTION_PARTY_QUEST As Integer = 64
 Private Const PROPOSAL_LIFETIME As Long = 90000
 Public Enum e_PartyQuestAction
@@ -42,7 +42,7 @@ End Type
 Private Type HuntRun
     revision As Long
     savedRevision As Long
-    killMasks(1 To MAX_KILLS) As Long
+    killMasks() As Long
     id As Long
     quest As Integer
     leaderId As Long
@@ -69,6 +69,7 @@ Private Type HuntSession
     proposal As Integer
     request As Long
     requestKey As String
+    quest As Integer
     result As e_PartyQuestResult
     revision As Long
     dirty As Boolean
@@ -80,7 +81,6 @@ Private mSessions() As HuntSession
 Private mOnline As Object
 Private mCapacity As Integer
 Private mNextProposal As Long
-Private mDefinition As Integer
 Private mRetries As Object
 Private mLeaders As Object
 Private mNextRun As Long
@@ -154,7 +154,7 @@ Private Sub EnsureHuntSession(ByVal userIndex As Integer)
             End If
             If mRetries.Exists(CStr(userIndex)) Then Call mRetries.Remove(CStr(userIndex))
             .characterId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
-            .runSlot = 0: .proposal = 0: .request = 0: .revision = 0: .dirty = False
+            .quest = 0: .runSlot = 0: .proposal = 0: .request = 0: .revision = 0: .dirty = False
             .requestKey = vbNullString: .result = HuntState: .retryAt = 0
         End If
     End With
@@ -188,23 +188,43 @@ Private Function QuestSlotFor(ByVal userIndex As Integer, ByVal quest As Integer
     Next i
 End Function
 
-Private Function HuntDefinition() As Integer
-    ' Deliberately one authored party quest in the first delivery, no ID/name heuristic.
-    If mDefinition > 0 Then HuntDefinition = mDefinition: Exit Function
-    Dim q As Integer
-    For q = 1 To UBound(QuestList)
-        If QuestList(q).PartyMinimum > 0 Then
-            If QuestList(q).PartyMinimum = 2 And QuestList(q).RequiredNPCs = 1 And _
-               QuestList(q).RequiredOBJs = 0 And QuestList(q).RewardOBJs = 0 And _
-               QuestList(q).RewardEXP = 0 And QuestList(q).RewardSpellCount = 0 And QuestList(q).RequiredNPC(1).amount = MAX_KILLS Then
-                HuntDefinition = q: mDefinition = q
-            End If
-            Exit Function
-        End If
-    Next q
+Public Function IsSupportedPartyKillQuest(ByVal quest As Integer) As Boolean
+    On Error GoTo InvalidDefinition
+    If quest < 1 Or quest > UBound(QuestList) Then Exit Function
+    With QuestList(quest)
+        ' Supported data shape: one shared kill objective, two-player minimum,
+        ' gold reward. Ordinary entry requirements still use QuestAcceptanceFailure.
+        If .PartyMinimum <> 2 Or .RequiredNPCs <> 1 Then Exit Function
+        If .RequiredTargetNPCs <> 0 Or .RequiredOBJs <> 0 Or .RequiredSpellCount <> 0 Then Exit Function
+        If .RewardOBJs <> 0 Or .RewardEXP <> 0 Or .RewardSpellCount <> 0 Then Exit Function
+        If .GlobalQuestIndex <> 0 Then Exit Function
+        If .RequiredNPC(1).NpcIndex < 1 Or .RequiredNPC(1).amount < 1 Then Exit Function
+        If .RequiredNPC(1).amount > MAX_KILLS Or .RewardGLD < 1 Or .RewardGLD > MAXORO Or .TalkTo < 1 Then Exit Function
+    End With
+    IsSupportedPartyKillQuest = True
+    Exit Function
+InvalidDefinition:
+    IsSupportedPartyKillQuest = False
+End Function
+
+Private Function NpcOffersPartyQuest(ByVal npcIndex As Integer, ByVal quest As Integer) As Boolean
+    If Not IsSupportedPartyKillQuest(quest) Then Exit Function
+    If npcIndex < 1 Or npcIndex > UBound(NpcList) Then Exit Function
+    Dim i As Integer
+    For i = 1 To NpcList(npcIndex).NumQuest
+        If NpcList(npcIndex).QuestNumber(i) = quest Then NpcOffersPartyQuest = True: Exit Function
+    Next i
+End Function
+
+Private Function HuntReward(ByVal quest As Integer) As Long
+    Dim reward As Double
+    reward = CDbl(QuestList(quest).RewardGLD) * SvrConfig.GetValue("GoldMult")
+    If reward < 1 Or reward > MAXORO Then Err.Raise vbObjectError + 860, , "Invalid hunt reward"
+    HuntReward = CLng(reward)
 End Function
 
 Private Function CanEnroll(ByVal userIndex As Integer, ByVal quest As Integer) As Boolean
+    If Not IsSupportedPartyKillQuest(quest) Then Exit Function
     If Not IsRewardUser(userIndex) Then Exit Function
     Call EnsureHuntSession(userIndex)
     If mSessions(userIndex).runSlot <> 0 Then Exit Function
@@ -245,7 +265,7 @@ Private Sub ProjectRun(ByVal runSlot As Integer, ByVal userIndex As Integer, ByV
         .NPCsKilled(1) = mRuns(runSlot).progress: .Dirty = True
     End With
     UserList(userIndex).flags.ModificoQuests = True
-    mSessions(userIndex).runSlot = runSlot
+    mSessions(userIndex).runSlot = runSlot: mSessions(userIndex).quest = quest
     Call SetUserRef(mRuns(runSlot).members(member).online, userIndex)
     If newAcceptance Then
         Call BeginQuestFeedbackLifecycle(userIndex, slot)
@@ -284,7 +304,7 @@ End Function
 
 Private Sub ReadCompleteRun(ByVal runId As Long, ByRef loaded As HuntRun)
     On Error GoTo Failed
-    Dim rows As ADODB.Recordset, i As Integer, j As Integer, leaderFound As Boolean, mask As Long
+    Dim rows As ADODB.Recordset, i As Long, j As Integer, leaderFound As Boolean, mask As Long
     Set rows = HuntSql("SELECT * FROM party_quest_run WHERE id=?", runId)
     If rows.EOF Then Err.Raise vbObjectError + 862, , "Missing party run"
     With loaded
@@ -292,9 +312,10 @@ Private Sub ReadCompleteRun(ByVal runId As Long, ByRef loaded As HuntRun)
         .target = rows!target_npc: .required = rows!required: .progress = rows!progress
         .reward = rows!reward_gold: .revision = rows!revision: .savedRevision = .revision
         If .quest < 1 Or .quest > UBound(QuestList) Then Err.Raise vbObjectError + 862, , "Invalid hunt definition"
-        If .required <> MAX_KILLS Or .progress < 0 Or .progress > .required Or .revision < 1 Or .target < 1 Or .reward < 1 Or .reward > MAXORO Then Err.Raise vbObjectError + 862, , "Invalid hunt state"
+        If .required < 1 Or .required > MAX_KILLS Or .progress < 0 Or .progress > .required Or .revision < 1 Or .target < 1 Or .reward < 1 Or .reward > MAXORO Then Err.Raise vbObjectError + 862, , "Invalid hunt state"
     End With
     Call CloseHuntRows(rows)
+    ReDim loaded.killMasks(1 To loaded.required)
     #If UNIT_TEST = 1 Then
         If FailPartyRosterRead Then
             FailPartyRosterRead = False
@@ -508,15 +529,11 @@ Public Sub ProposePartyQuest(ByVal userIndex As Integer, ByVal quest As Integer,
     Call EnsureHuntSession(userIndex)
     Dim leader As Integer, recipients As t_PartyRewardRecipients, i As Integer, j As Integer, u As Integer
     mSessions(userIndex).result = HuntUnavailable
-    If quest <> HuntDefinition() Or npcIndex < 1 Then GoTo Reply
+    If Not NpcOffersPartyQuest(npcIndex, quest) Then GoTo Reply
     If Not IsValidNpcRef(UserList(userIndex).flags.TargetNPC) Then GoTo Reply
     If UserList(userIndex).flags.TargetNPC.ArrayIndex <> npcIndex Then GoTo Reply
     If NpcList(npcIndex).Numero <> QuestList(quest).TalkTo Then GoTo Reply
-    Dim offered As Boolean
-    For i = 1 To NpcList(npcIndex).NumQuest
-        If NpcList(npcIndex).QuestNumber(i) = quest Then offered = True
-    Next i
-    If Not offered Then GoTo Reply
+    mSessions(userIndex).quest = quest
     If QuestAcceptanceFailure(userIndex, npcIndex, quest, QuestList(quest)) <> QuestAcceptAllowed Then GoTo Reply
     leader = PartyLeaderIndex(userIndex)
     If leader = 0 Then mSessions(userIndex).result = HuntNeedParty: GoTo Reply
@@ -578,6 +595,7 @@ Failed:
 End Sub
 
 Private Function ProposalCanStart(ByVal leader As Integer) As Boolean
+    If Not IsSupportedPartyKillQuest(mProposals(leader).quest) Then Exit Function
     If Not IsValidUserRef(mProposals(leader).leader) Then Exit Function
     If PartyLeaderIndex(leader) <> leader Then Exit Function
     If UserList(leader).Grupo.Id <> mProposals(leader).party Then Exit Function
@@ -605,7 +623,8 @@ Private Sub StartHunt(ByVal leader As Integer)
     run.quest = mProposals(leader).quest: run.leaderId = UserList(leader).Id
     run.target = QuestList(run.quest).RequiredNPC(1).NpcIndex
     run.required = QuestList(run.quest).RequiredNPC(1).amount
-    run.reward = QuestList(run.quest).RewardGLD * SvrConfig.GetValue("GoldMult")
+    ReDim run.killMasks(1 To run.required)
+    run.reward = HuntReward(run.quest)
     If run.reward < 1 Or run.reward > MAXORO Then Err.Raise vbObjectError + 860, , "Invalid hunt reward"
     For i = 1 To mProposals(leader).count
         If mProposals(leader).members(i).vote = 1 Then
@@ -761,7 +780,7 @@ Public Sub ExecutePartyQuestAction(ByVal userIndex As Integer, ByVal request As 
     Select Case action
         Case HuntRefresh
         Case HuntPropose
-            If quest <> HuntDefinition() Then Exit Sub
+            If Not IsSupportedPartyKillQuest(quest) Then GoTo Stale
             If IsValidNpcRef(UserList(userIndex).flags.TargetNPC) Then Call ProposePartyQuest(userIndex, quest, UserList(userIndex).flags.TargetNPC.ArrayIndex)
         Case HuntAccept, HuntDecline, HuntStart
             leader = mSessions(userIndex).proposal
@@ -788,7 +807,7 @@ Public Sub ExecutePartyQuestAction(ByVal userIndex As Integer, ByVal request As 
             End If
         Case HuntAbandon
             If mSessions(userIndex).runSlot > 0 Then
-                If mRuns(mSessions(userIndex).runSlot).id <> identity Then GoTo Stale
+                If mRuns(mSessions(userIndex).runSlot).id <> identity Or mRuns(mSessions(userIndex).runSlot).quest <> quest Then GoTo Stale
             ElseIf mSessions(userIndex).proposal > 0 Then
                 If mProposals(mSessions(userIndex).proposal).id <> identity Then GoTo Stale
             Else
@@ -805,15 +824,26 @@ Failed:
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.ExecutePartyQuestAction", Erl)
 End Sub
 
-Public Sub WritePartyQuestState(ByVal userIndex As Integer)
+Public Sub WritePartyQuestState(ByVal userIndex As Integer, Optional ByVal offeredQuest As Integer = 0)
     On Error GoTo Failed
     Call EnsureHuntSession(userIndex)
     Dim quest As Integer, cache As Integer, proposal As Integer, state As Byte, i As Integer, count As Integer, member As Integer
     Dim writer As Network.Writer, queued As Boolean, reward As Long, target As Integer, required As Integer, progress As Integer, leaderId As Long, localVote As Byte
-    quest = HuntDefinition(): If quest = 0 Then Exit Sub
     cache = mSessions(userIndex).runSlot: proposal = mSessions(userIndex).proposal
+    quest = mSessions(userIndex).quest
+    If offeredQuest > 0 Then
+        ' Independent offer metadata. Never replaces the active run/proposal.
+        If Not IsSupportedPartyKillQuest(offeredQuest) Then Exit Sub
+        quest = offeredQuest: cache = 0: proposal = 0
+        If mSessions(userIndex).quest = 0 Then mSessions(userIndex).quest = quest
+    ElseIf cache > 0 Then
+        quest = mRuns(cache).quest
+    ElseIf proposal > 0 Then
+        quest = mProposals(proposal).quest
+    End If
+    If quest < 1 Or quest > UBound(QuestList) Then Exit Sub
     target = QuestList(quest).RequiredNPC(1).NpcIndex: required = QuestList(quest).RequiredNPC(1).amount
-    reward = QuestList(quest).RewardGLD * SvrConfig.GetValue("GoldMult")
+    reward = HuntReward(quest)
     If cache > 0 Then
         state = 3: If mRuns(cache).progress >= mRuns(cache).required Then state = 4
         count = mRuns(cache).count: progress = mRuns(cache).progress: reward = mRuns(cache).reward
@@ -827,8 +857,11 @@ Public Sub WritePartyQuestState(ByVal userIndex As Integer)
     mSessions(userIndex).revision = mSessions(userIndex).revision + 1
     Call writer.WriteInt16(ServerPacketID.ePartyQuestState)
     Call writer.WriteInt32(mSessions(userIndex).revision)
-    Call writer.WriteInt32(mSessions(userIndex).request)
-    Call writer.WriteInt8(mSessions(userIndex).result)
+    If offeredQuest > 0 Then
+        Call writer.WriteInt32(0): Call writer.WriteInt8(HuntState)
+    Else
+        Call writer.WriteInt32(mSessions(userIndex).request): Call writer.WriteInt8(mSessions(userIndex).result)
+    End If
     Call writer.WriteInt8(state)
     If proposal > 0 Then Call writer.WriteInt32(mProposals(proposal).id) Else Call writer.WriteInt32(0)
     If cache > 0 Then Call writer.WriteInt32(mRuns(cache).id) Else Call writer.WriteInt32(0)
@@ -911,7 +944,7 @@ End Sub
 
 #If UNIT_TEST = 1 Then
 Public Sub ResetPartyQuestTests()
-    mCapacity = 0: mDefinition = 0: mRunIdsKnown = False: mNextRun = 0: Erase mSessions: Erase mRuns: Erase mProposals: Set mOnline = Nothing
+    mCapacity = 0: mRunIdsKnown = False: mNextRun = 0: Erase mSessions: Erase mRuns: Erase mProposals: Set mOnline = Nothing
     Set mRetries = Nothing: Set mLeaders = Nothing
     Call ResetHuntSaveOwners()
     HoldPartySaves = False: FailPartyRosterRead = False: LastPartySaveFailureForTest = vbNullString
@@ -1027,7 +1060,7 @@ Private Sub CaptureHuntBatch(ByVal owner As Integer, ByVal logout As Boolean, Op
 End Sub
 
 Private Sub PersistHuntSnapshot(ByRef snapshot As HuntRun)
-    Dim rows As ADODB.Recordset, i As Integer, stored As Long
+    Dim rows As ADODB.Recordset, i As Long, stored As Long
     Set rows = HuntSql("SELECT revision FROM party_quest_run WHERE id=?", snapshot.id)
     If Not rows.EOF Then stored = rows.Fields(0).value
     Call CloseHuntRows(rows)

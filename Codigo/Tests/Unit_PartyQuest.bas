@@ -193,17 +193,17 @@ Private Sub Group(ByVal leader As Integer, ByVal count As Integer)
         For i = 1 To count: Call SetUserRef(.Miembros(i), leader + i - 1): Next i
     End With
 End Sub
-Private Sub Propose(ByVal leader As Integer)
+Private Sub Propose(ByVal leader As Integer, Optional ByVal offer As Byte = 1)
     Dim writer As New Network.Writer, data() As Byte
     Call SetNpcRef(UserList(leader).flags.TargetNPC, 1)
-    Call writer.WriteInt8(1): Call writer.GetData(data): Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(data)
+    Call writer.WriteInt8(offer): Call writer.GetData(data): Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(data)
     Call Protocol.HandleQuestAccept(leader)
 End Sub
-Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long, Optional ByVal trailing As Boolean = False)
+Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long, Optional ByVal trailing As Boolean = False, Optional ByVal quest As Integer = 1)
     ' Production packet dispatcher including bounds, authentication and maintained ID.
     Dim writer As New Network.Writer, data() As Byte, incoming As New Network.Reader
     Call writer.WriteInt16(ClientPacketID.ePartyQuestAction): Call writer.WriteInt32(request)
-    Call writer.WriteInt8(action): Call writer.WriteInt32(identity): Call writer.WriteInt16(1)
+    Call writer.WriteInt8(action): Call writer.WriteInt32(identity): Call writer.WriteInt16(quest)
     If trailing Then Call writer.WriteInt8(99)
     Call writer.GetData(data): Call incoming.SetData(data)
     Mapping(1).PacketCount = 0
@@ -229,6 +229,35 @@ Private Sub RestartCache()
     For i = 1 To 7
         If UserList(i).flags.UserLogged Then Call Expect(LoadPartyQuest(i), "restart reloads durable projection")
     Next i
+End Sub
+Private Sub AddSecondHunt()
+    ReDim Preserve QuestList(0 To 4): ReDim Preserve NpcInfoCache(1 To 501)
+    QuestList(3) = QuestList(1)
+    QuestList(3).nombre = "Second test hunt": QuestList(3).RewardGLD = 777
+    QuestList(3).RequiredNPC(1).NpcIndex = 501: QuestList(3).RequiredNPC(1).amount = 8
+    QuestList(4) = QuestList(3): QuestList(4).nombre = "Not offered"
+    NpcInfoCache(501).Exists = True: NpcInfoCache(501).Name = "Second target"
+    NpcList(1).NumQuest = 3: ReDim Preserve NpcList(1).QuestNumber(1 To 3)
+    NpcList(1).QuestNumber(3) = 3
+End Sub
+Private Sub ExpectHuntIdentity(ByVal userIndex As Integer, ByVal expectedProgress As Integer)
+    Dim i As Long, data() As Byte, packet As New Network.Reader, ignored As Long
+    For i = packets.count To 1 Step -1
+        If packetUsers(i) = userIndex Then
+            data = packets(i): Call packet.SetData(data)
+            If packet.ReadInt16() = ServerPacketID.ePartyQuestState Then
+                ignored = packet.ReadInt32(): ignored = packet.ReadInt32()
+                ignored = packet.ReadInt8(): ignored = packet.ReadInt8()
+                ignored = packet.ReadInt32(): ignored = packet.ReadInt32()
+                Call Expect(packet.ReadInt16() = 3, "selected second hunt identity in actual packet")
+                Call Expect(packet.ReadInt16() = 432 And packet.ReadInt16() = 501, "selected provider and target")
+                Call Expect(packet.ReadInt16() = 8 And packet.ReadInt16() = expectedProgress, "authored count and shared progress")
+                Call Expect(packet.ReadInt32() = 777, "selected reward in actual packet")
+                Exit Sub
+            End If
+        End If
+    Next i
+    Call Expect(False, "missing selected hunt packet")
 End Sub
 Private Sub RunCase(ByVal index As Integer)
     On Error GoTo Failed
@@ -547,6 +576,43 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(Scalar("SELECT description IS NOT NULL AND message_info IS NOT NULL FROM user WHERE id=701") = 1, "empty text must not serialize as NULL")
         Call ReloadCharacter(1)
         Call Expect(UserList(1).Desc = vbNullString And UserList(1).MENSAJEINFORMACION = vbNullString, "empty text survives full production reload")
+    Case 47
+        Call AddSecondHunt()
+        Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
+        Call WriteNpcQuestListSend(1, 1)
+        Call Propose(1, 3): proposal = PartyQuestProposalForTest(1)
+        Call Expect(proposal > 0, "second hunt offered through actual quest dialog")
+        Call ExpectHuntIdentity(2, 0)
+        Call Action(2, 1, HuntAccept, proposal, False, 3)
+        Call Action(1, 1, HuntStart, proposal, False, 3)
+        Call Expect(TieneQuest(1, 3) And Not TieneQuest(1, 1), "second selected hunt, never first cached definition")
+        Call KillWolf(): Call Expect(PartyQuestProgressForTest(1) = 0, "first hunt target cannot advance second hunt")
+        victim.Numero = 501
+        For i = 1 To 7: Call KillWolf(): Next i
+        Call SaveCharacterDB(1, True): Call SaveCharacterDB(2, True)
+        Call PartyQuestBeforeSlotReset(1): UserList(1).flags.UserLogged = False
+        Call PartyQuestBeforeSlotReset(2): UserList(2).flags.UserLogged = False
+        Call RestartCache(): Call ReloadCharacter(1): Call ReloadCharacter(2): Call Group(1, 2)
+        Call Expect(PartyQuestProgressForTest(1) = 7 And TieneQuest(2, 3), "second hunt survives logout/full reload")
+        Call WritePartyQuestState(1): Call ExpectHuntIdentity(1, 7)
+        Call KillWolf(): Call Expect(PartyQuestReady(1, 3) And PartyQuestReady(2, 3), "authored eighth kill completes second hunt")
+        Call WritePartyQuestState(2): Call ExpectHuntIdentity(2, 8)
+        Call SetNpcRef(UserList(1).flags.TargetNPC, 1): Call ClaimPartyQuest(1, 3): Call SaveCharacterDB(1)
+        Call Expect(UserList(1).Stats.GLD = 787 And Scalar("SELECT quest_id FROM party_quest_run") = 3, "selected hunt reward/identity persist through claim")
+    Case 48
+        Call AddSecondHunt(): Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
+        Call WriteNpcQuestListSend(1, 1)
+        Call Action(1, 1, HuntPropose, 0, False, 4)
+        Call Expect(PartyQuestProposalForTest(1) = 0 And Not TieneQuest(1, 4), "supported quest ID not actually offered is rejected")
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_run") = 0, "unoffered ID never enrolls or saves")
+    Case 49
+        Call AddSecondHunt(): Call Group(3, 2): Call StartDuo(1)
+        Call Propose(3, 3): proposal = PartyQuestProposalForTest(3)
+        Call Action(4, 1, HuntAccept, proposal, False, 3): Call Action(3, 1, HuntStart, proposal, False, 3)
+        Call KillWolf(1): Call KillWolf(3)
+        Call Expect(PartyQuestProgressForTest(1) = 1 And PartyQuestProgressForTest(3) = 0, "different selected definitions keep independent targets and runs")
+        victim.Numero = 501: Call KillWolf(3)
+        Call Expect(PartyQuestProgressForTest(1) = 1 And PartyQuestProgressForTest(3) = 1, "second party progresses only its selected target")
     End Select
     Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " passed")
@@ -583,8 +649,8 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
-    For i = 1 To 46: Call RunCase(i): Next i
-    Call UnitTesting.Progress("Party hunt 46 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
+    For i = 1 To 49: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 49 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If
