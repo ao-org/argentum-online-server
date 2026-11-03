@@ -90,7 +90,7 @@ Private Type HuntSaveOwner
     characterId As Long
     nextSequence As Long
     committedSequence As Long
-    latest As clsPartyQuestCharacterSave
+    latest As clsHuntCharacterSave
 End Type
 Private Type HuntSaveBatch
     characterId As Long
@@ -961,8 +961,8 @@ Public Function PartyQuestOwnsCharacter(ByVal characterId As Long) As Boolean
     PartyQuestOwnsCharacter = mSaveOwners.Exists(CStr(characterId))
 End Function
 
-Private Function CaptureHuntCharacter(ByVal userIndex As Integer, ByVal logout As Boolean) As clsPartyQuestCharacterSave
-    Dim owner As Integer, job As New clsPartyQuestCharacterSave
+Private Function CaptureHuntCharacter(ByVal userIndex As Integer, ByVal logout As Boolean) As clsHuntCharacterSave
+    Dim owner As Integer, job As New clsHuntCharacterSave
     owner = mSaveOwners(CStr(UserList(userIndex).Id))
     If mOwners(owner).nextSequence = &H7FFFFFFF Then Err.Raise vbObjectError + 862, , "Hunt save sequence exhausted"
     mOwners(owner).nextSequence = mOwners(owner).nextSequence + 1
@@ -973,7 +973,7 @@ End Function
 
 Private Sub CaptureHuntBatch(ByVal owner As Integer, ByVal logout As Boolean, Optional ByVal refresh As Boolean = False)
     Dim batch As HuntSaveBatch, i As Integer, j As Integer, userIndex As Integer
-    Dim job As clsPartyQuestCharacterSave, characterId As Long, included As Object
+    Dim job As clsHuntCharacterSave, characterId As Long, included As Object
     Set included = CreateObject("Scripting.Dictionary")
     characterId = mOwners(owner).characterId
     userIndex = OnlineCharacter(characterId)
@@ -1039,7 +1039,7 @@ Private Function CommitHuntBatch(ByRef batch As HuntSaveBatch) As Boolean
     #If UNIT_TEST = 1 Then
         If HoldPartySaves Then Exit Function
     #End If
-    Dim inTransaction As Boolean, rows As ADODB.Recordset, job As clsPartyQuestCharacterSave, command As ADODB.Command
+    Dim inTransaction As Boolean, rows As ADODB.Recordset, job As clsHuntCharacterSave, command As ADODB.Command
     Dim i As Integer, j As Integer, owner As Integer, stored As Long, exists As Boolean
     mFlushing = True
     Call Connection.BeginTrans(): inTransaction = True
@@ -1154,7 +1154,7 @@ End Function
 
 Public Sub SavePartyQuestCharacter(ByVal userIndex As Integer, ByVal logout As Boolean)
     On Error GoTo Failed
-    Dim owner As Integer, job As clsPartyQuestCharacterSave
+    Dim owner As Integer, job As clsHuntCharacterSave
     owner = mSaveOwners(CStr(UserList(userIndex).Id))
     ' Capture even after connection loss: identity is persistent, not the slot.
     Set job = CaptureHuntCharacter(userIndex, logout)
@@ -1207,7 +1207,7 @@ End Function
 Public Sub PartyQuestBeforeSlotReset(ByVal userIndex As Integer)
     On Error GoTo Failed
     If PartyQuestOwnsCharacter(UserList(userIndex).Id) Then
-        Dim owner As Integer, job As clsPartyQuestCharacterSave
+        Dim owner As Integer, job As clsHuntCharacterSave
         owner = mSaveOwners(CStr(UserList(userIndex).Id))
         If Not mOwners(owner).latest Is Nothing Or CharacterHasDirtyHunt(UserList(userIndex).Id) Then
             Set job = CaptureHuntCharacter(userIndex, True)

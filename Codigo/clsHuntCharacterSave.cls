@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior = 0
   MTSTransactionMode = 0
 END
-Attribute VB_Name = "clsPartyQuestCharacterSave"
+Attribute VB_Name = "clsHuntCharacterSave"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
