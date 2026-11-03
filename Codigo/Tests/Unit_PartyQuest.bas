@@ -67,7 +67,7 @@ Private Sub Fixture()
             .pos.Map = 1: .pos.x = 50: .pos.y = 50: .Char.charindex = i
             .CurrentInventorySlots = 3
         End With
-        Call database.Execute("INSERT INTO user(id,account_id,name,gold) VALUES(" & UserList(i).Id & "," & UserList(i).AccountID & ",'Hunter" & i & "',10)")
+        Call database.Execute("INSERT INTO user(id,account_id,name,gold,level,max_hp,min_hp,pos_map,pos_x,pos_y) VALUES(" & UserList(i).Id & "," & UserList(i).AccountID & ",'Hunter" & i & "',10,10,100,100,1,50,50)")
         Call database.Execute("INSERT INTO account(id) VALUES(" & UserList(i).AccountID & ")")
     Next i
     Call database.CommitTrans()
