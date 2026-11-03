@@ -1220,6 +1220,9 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .MinTameLevel = Val(LeerNPCs.GetValue(SectionName, "MinTameLevel", 1))
         .OnlyForGuilds = Val(LeerNPCs.GetValue(SectionName, "OnlyForGuilds", 0))
         .ShowKillerConsole = Val(LeerNPCs.GetValue(SectionName, "ShowKillerConsole", 0))
+        ' Preserve the distinction between absent fields and explicitly authored zero.
+        .HealthFieldsOmitted = (LeerNPCs.GetValue(SectionName, "MaxHP", vbNullChar) = vbNullChar And _
+                               LeerNPCs.GetValue(SectionName, "MinHP", vbNullChar) = vbNullChar)
         .StatsMaxHp = Val(LeerNPCs.GetValue(SectionName, "MaxHP"))
         .StatsMinHp = Val(LeerNPCs.GetValue(SectionName, "MinHP"))
         .StatsMaxHit = Val(LeerNPCs.GetValue(SectionName, "MaxHIT"))
@@ -1613,6 +1616,11 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         End If
         .Stats.MaxHp = Info.StatsMaxHp
         .Stats.MinHp = Info.StatsMinHp
+        ' Fresh spawns only. Never revive an existing actor or normalize wire health.
+        If .npcType = e_NPCType.Quest And .Attackable = 0 And .Hostile = 0 And Info.HealthFieldsOmitted Then
+            .Stats.MaxHp = 1
+            .Stats.MinHp = 1
+        End If
         .Stats.MaxHit = Info.StatsMaxHit
         .Stats.MinHIT = Info.StatsMinHit
         .Stats.def = Info.StatsDef
