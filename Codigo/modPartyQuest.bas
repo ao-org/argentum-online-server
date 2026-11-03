@@ -701,6 +701,7 @@ Public Sub HandlePartyQuestAction(ByVal userIndex As Integer)
     On Error GoTo Failed
     Dim request As Long, action As Byte, identity As Long, quest As Integer
     request = reader.ReadInt32(): action = reader.ReadInt8(): identity = reader.ReadInt32(): quest = reader.ReadInt16()
+    If reader.GetAvailable() <> 0 Or identity < 0 Or quest <= 0 Then Exit Sub
     Call ExecutePartyQuestAction(userIndex, request, action, identity, quest)
     Exit Sub
 Failed:

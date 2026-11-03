@@ -109,11 +109,12 @@ Private Sub Propose(ByVal leader As Integer)
     Call writer.WriteInt8(1): Call writer.GetData(data): Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(data)
     Call Protocol.HandleQuestAccept(leader)
 End Sub
-Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long)
+Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long, Optional ByVal trailing As Boolean = False)
     ' Production packet dispatcher including bounds, authentication and maintained ID.
     Dim writer As New Network.Writer, data() As Byte, incoming As New Network.Reader
     Call writer.WriteInt16(ClientPacketID.ePartyQuestAction): Call writer.WriteInt32(request)
     Call writer.WriteInt8(action): Call writer.WriteInt32(identity): Call writer.WriteInt16(1)
+    If trailing Then Call writer.WriteInt8(99)
     Call writer.GetData(data): Call incoming.SetData(data)
     Mapping(1).PacketCount = 0
     Call Protocol.HandleIncomingData(1, incoming, u)
@@ -292,6 +293,10 @@ Private Sub RunCase(ByVal index As Integer)
     Case 30
         Call SetNpcRef(UserList(1).flags.TargetNPC, 1)
         Call Expect(QuestAcceptanceFailure(1, 1, 2, QuestList(2)) = QuestAcceptAllowed, "Alaric personal offer unaffected by party requirement")
+    Case 34
+        Call Propose(1): proposal = PartyQuestProposalForTest(1)
+        Call Action(2, 1, HuntAccept, proposal, True): Call Action(1, 1, HuntStart, proposal)
+        Call Expect(Not TieneQuest(1, 1), "trailing action bytes do not enroll a player")
     Case 33
         For i = 1 To 20
             Call Propose(1): proposal = PartyQuestProposalForTest(1)
@@ -355,8 +360,8 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
-    For i = 1 To 33: Call RunCase(i): Next i
-    Call UnitTesting.Progress("Party hunt 33 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
+    For i = 1 To 34: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 34 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If
