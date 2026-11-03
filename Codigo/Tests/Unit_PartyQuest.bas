@@ -178,7 +178,9 @@ Private Sub RunCase(ByVal index As Integer)
         Call ClaimPartyQuest(1, 1): Call ClaimPartyQuest(1, 1)
         Call Expect(UserList(1).Stats.GLD = 370 And UserList(2).Stats.GLD = 10, "independent exactly-once first claim")
         If index = 7 Then
+            Call database.Execute("DELETE FROM quest_done WHERE user_id=701")
             Call RestartCache()
+            Call Expect(Scalar("SELECT count(*) FROM quest_done WHERE user_id=701") = 1, "durable claim repairs stale async completion projection")
             Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "claimed gold survives actual database reopen")
         End If
         Call SetNpcRef(UserList(2).flags.TargetNPC, 1)

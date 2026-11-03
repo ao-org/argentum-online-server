@@ -248,6 +248,8 @@ Public Function LoadPartyQuest(ByVal userIndex As Integer) As Boolean
             End If
         End If
     Next slot
+    Set rows = HuntSql("INSERT OR IGNORE INTO quest_done(user_id,quest_id) SELECT m.character_id,r.quest_id FROM party_quest_run r JOIN party_quest_member m ON m.run_id=r.id WHERE m.character_id=? AND m.status=1", UserList(userIndex).Id)
+    Call CloseHuntRows(rows)
     Set rows = HuntSql("SELECT DISTINCT r.quest_id FROM party_quest_run r JOIN party_quest_member m ON m.run_id=r.id WHERE m.character_id=? AND m.status=1", UserList(userIndex).Id)
     Do While Not rows.EOF
         quest = rows.Fields(0).value

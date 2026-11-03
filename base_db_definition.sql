@@ -320,6 +320,7 @@ CREATE TABLE party_quest_member (
     UNIQUE(run_id, ordinal)
 );
 CREATE UNIQUE INDEX party_quest_one_active ON party_quest_member(character_id) WHERE status=0;
+CREATE INDEX party_quest_character ON party_quest_member(character_id,status);
 CREATE TABLE party_quest_kill (
     run_id INTEGER NOT NULL REFERENCES party_quest_run(id),
     ordinal INTEGER NOT NULL,
