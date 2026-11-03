@@ -29,14 +29,7 @@ Private Function Scalar(ByVal sql As String) As Long
     Call rows.Close()
 End Function
 Private Sub Fixture()
-    ' The production loop delivers ADO completion events at DoEvents. Drain prior
-    ' suites' real legacy writes before requiring an immediate isolated save.
-    Dim waitStarted As Long
-    waitStarted = GetTickCountRaw()
-    Do While Not PartyQuestLegacyWritesComplete()
-        DoEvents
-        If TicksElapsed(waitStarted, GetTickCountRaw()) > 1000 Then Err.Raise vbObjectError + 861, , "Legacy write fence did not drain"
-    Loop
+    Call Expect(PartyQuestLegacyWritesComplete(), "previous suites completed legacy SQL")
     Set Builder = New cStringBuilder
     Call InitializeNpcIndexHeap()
     MapData(51, 50, 1).NpcIndex = 0
@@ -502,10 +495,10 @@ Private Sub RunCase(ByVal index As Integer)
         Set probe.ActiveConnection = database: probe.CommandText = "SELECT 1": probe.CommandType = adCmdText
         Call probe.Execute(, , adAsyncExecute)
         deadline = GetTickCountRaw()
-        Do While fence.Pending <> 0 And TicksElapsed(deadline, GetTickCountRaw()) < 1000
-            DoEvents
+        ' Test-only bounded provider wait, WITHOUT dispatching unrelated game timers.
+        Do While (probe.State And adStateExecuting) <> 0 And TicksElapsed(deadline, GetTickCountRaw()) < 1000
         Loop
-        Call Expect(fence.Started > 0 And fence.Completed > 0 And fence.Pending = 0, "real ADO command completion fence fires")
+        Call Expect(fence.Started > 0 And fence.Pending = 0, "real ADO completion state clears fence without callback pumping")
     Case 44
         Call StartDuo()
         For i = 1 To 4: Call KillWolf(): Next i
