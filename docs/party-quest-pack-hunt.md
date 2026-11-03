@@ -7,8 +7,10 @@ capability negotiation, PYMMO subsystem or database service is added.
 
 The companion assets change adds quest **428**, `PartyMinimum=2`, offered by
 **Alaric von Nix (NPC432)** after his unchanged personal offers **231** (The Needle
-and the Claw) and **230** (The Roar of Bruin). The objective is **NPC500 (Wolf), six**.
-These are authored template IDs, not name matching. Quest428 uses the ordinary
+and the Claw) and **230** (The Roar of Bruin). The objective is **NPC558 (Wild Wolf), six**.
+These are authored template IDs, not name matching. The new hunt requires level7,
+matching existing wolf quest166’s entry level. Wild wolves already spawn on map35
+immediately north of Nix, at(65,26) and(48,33). Quest428 uses the ordinary
 Quests.DAT loader, NPC432's QuestNumber list and the existing world wolf spawns.
 
 Reward: **360 wallet gold per eligible enrolled character**, multiplied by GoldMult
