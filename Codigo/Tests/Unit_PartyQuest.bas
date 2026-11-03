@@ -77,8 +77,8 @@ Private Sub Fixture()
         .pos = UserList(1).pos: .NumQuest = 2: ReDim .QuestNumber(1 To 2)
         .QuestNumber(1) = 1: .QuestNumber(2) = 2: .Char.charindex = 50
     End With
-    Dim empty As t_Npc
-    victim = empty: victim.Numero = 500: victim.pos = UserList(1).pos: victim.Name = "Lobo"
+    Dim blankState As t_Npc
+    victim = blankState: victim.Numero = 500: victim.pos = UserList(1).pos: victim.Name = "Lobo"
     Call SetFeatureToggle("collectible_cards", False)
     LastUser = 7
     Dim config As New clsIniManager

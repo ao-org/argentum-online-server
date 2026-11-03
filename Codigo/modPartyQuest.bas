@@ -255,8 +255,8 @@ Public Function LoadPartyQuest(ByVal userIndex As Integer) As Boolean
         Next i
         If cache = 0 Then
             cache = FreeRunSlot(): If cache = 0 Then Err.Raise vbObjectError + 860, , "Party quest cache full"
-            Dim empty As HuntRun
-            mRuns(cache) = empty
+            Dim blankState As HuntRun
+            mRuns(cache) = blankState
             Set rows = HuntSql("SELECT * FROM party_quest_run WHERE id=?", runId)
             With mRuns(cache)
                 .id = runId: .quest = rows!quest_id: .leaderId = rows!leader_id
@@ -369,8 +369,8 @@ Public Sub ProposePartyQuest(ByVal userIndex As Integer, ByVal quest As Integer,
     If mProposals(leader).id > 0 Then Call CloseProposal(leader, HuntExpired)
     Call CollectPartyRewardRecipients(userIndex, recipients)
     If Not recipients.IsParty Or recipients.count < 2 Then mSessions(userIndex).result = HuntNeedParty: GoTo Reply
-    Dim empty As HuntProposal, candidate As HuntMember
-    mProposals(leader) = empty
+    Dim blankState As HuntProposal, candidate As HuntMember
+    mProposals(leader) = blankState
     With mProposals(leader)
         mNextProposal = mNextProposal + 1: .id = mNextProposal: .quest = quest
         .party = recipients.PartyId: .created = GetTickCountRaw(): Call SetUserRef(.leader, leader)
@@ -788,8 +788,8 @@ Public Sub PartyQuestLogout(ByVal userIndex As Integer)
     If Not mOnline Is Nothing Then
         If mOnline.Exists(CStr(UserList(userIndex).Id)) Then Call mOnline.Remove(CStr(UserList(userIndex).Id))
     End If
-    Dim empty As HuntSession
-    mSessions(userIndex) = empty
+    Dim blankState As HuntSession
+    mSessions(userIndex) = blankState
     If mRetries.Exists(CStr(userIndex)) Then Call mRetries.Remove(CStr(userIndex))
     Exit Sub
 Failed:
