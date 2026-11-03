@@ -55,7 +55,7 @@ Private Sub Fixture()
     i = GetNextAvailableNpc(): NpcList(i) = blankNpc
     For i = 1 To 7
         With UserList(i)
-            .Id = 700 + i: .VersionId = fixtureVersion: .name = "Hunter" & i
+            .AccountID = 700 + i: .Id = 700 + i: .VersionId = fixtureVersion: .name = "Hunter" & i
             .flags.UserLogged = True: .ConnectionDetails.ConnIDValida = True
             .flags.Privilegios = e_PlayerType.User: .Stats.ELV = 10
             .Stats.MinHp = 100: .Stats.MaxHp = 100: .Stats.GLD = 10
@@ -314,28 +314,37 @@ Private Sub RunCase(ByVal index As Integer)
             Call Expect(PartyQuestProgressForTest(1) = 0, "unowned NPC kill does not credit party hunt")
         End If
     End Select
-    capturing = False
-    Call database.Close(): Set Connection = oldConnection: Set database = Nothing
-    Kill fileName
+    Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " passed")
     Call UnitTesting.RunTest("Party hunt " & index, True)
     Exit Sub
 Failed:
     Dim failure As String: failure = Err.Description
-    Call UnitTesting.Progress("Party hunt case error " & index & ": " & failure)
-    On Error Resume Next
-    capturing = False
-    If Not database Is Nothing Then Call database.Close()
-    Set database = Nothing
-    Set Connection = oldConnection
-    If Len(fileName) > 0 Then Kill fileName
-    Err.Clear
+    Resume ReportFailure
+ReportFailure:
+    Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " failed: " & failure)
     Call UnitTesting.RunTestError("Party hunt " & index, failure)
+End Sub
+Private Sub CleanupFixture()
+    ' A pooled ODBC file handle must not mask the actual assertion failure.
+    On Error Resume Next
+    capturing = False
+    If Not database Is Nothing Then
+        If database.State <> adStateClosed Then Call database.Close()
+    End If
+    Set Connection = oldConnection: Set database = Nothing
+    If Len(fileName) > 0 Then Kill fileName
+    Err.Clear
 End Sub
 Public Function TestSuite() As Boolean
     Dim i As Integer, before As Long
     before = UnitTesting.GetFailedTests()
+    #If PYMMO = 1 Then
+        Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=1")
+    #Else
+        Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
+    #End If
     For i = 1 To 33: Call RunCase(i): Next i
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
