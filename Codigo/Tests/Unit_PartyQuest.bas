@@ -488,7 +488,7 @@ Private Sub RunCase(ByVal index As Integer)
         Call Expect(FlushPartyQuestShutdown(), "orderly shutdown flushes owned work")
         Call Expect(Scalar("SELECT progress FROM party_quest_run") = 1, "shutdown persisted latest dirty run")
     Case 43
-        Dim fence As New clsPartyQuestAsyncFence, probe As New ADODB.Command, deadline As Long
+        Dim fence As New clsHuntAsyncFence, probe As New ADODB.Command, deadline As Long
         Call fence.Attach(database)
         Set probe.ActiveConnection = database: probe.CommandText = "SELECT 1": probe.CommandType = adCmdText
         Call probe.Execute(, , adAsyncExecute)

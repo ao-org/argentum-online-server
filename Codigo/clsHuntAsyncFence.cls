@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior = 0
   MTSTransactionMode = 0
 END
-Attribute VB_Name = "clsPartyQuestAsyncFence"
+Attribute VB_Name = "clsHuntAsyncFence"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False

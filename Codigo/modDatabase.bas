@@ -34,7 +34,7 @@ Private BankSaveCmd()   As ADODB.Command
 ' Party-only save capture: immutable commands owned until transaction completion.
 Private mPartyCapture As Collection
 Private mPartyCaptureFailed As Boolean
-Private mPartyFences(1 To MAX_ASYNC) As clsPartyQuestAsyncFence
+Private mPartyFences(1 To MAX_ASYNC) As clsHuntAsyncFence
 Public Function PartyQuestCaptureActive() As Boolean
     PartyQuestCaptureActive = Not mPartyCapture Is Nothing
 End Function
@@ -84,7 +84,7 @@ Public Sub Database_Connect_Async()
         Call Connection_async(i).Open
         ' SQLite enforces foreign keys per connection, so enable cascades immediately after opening each ADO connection.
         Call Connection_async(i).Execute("PRAGMA foreign_keys = ON")
-        Set mPartyFences(i) = New clsPartyQuestAsyncFence
+        Set mPartyFences(i) = New clsHuntAsyncFence
         Call mPartyFences(i).Attach(Connection_async(i))
     Next i
     Current_async = 1
