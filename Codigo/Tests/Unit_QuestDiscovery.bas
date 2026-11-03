@@ -179,7 +179,7 @@ Private Sub CheckQuestNpcSpawnHealth(ByVal caseIndex As Integer)
     Call Expect(reader.ReadInt32() = expectedCurrent And reader.ReadInt32() = expectedMaximum, "production health update values")
     Call Expect(reader.ReadInt32() = 0 And reader.GetAvailable() = 0, "exact health packet boundary")
     If caseIndex = 16 Then
-        Call Expect(ModifyHealth(npcIndex, -1), "subsequent health mutation can reach zero")
+        Call Expect(NPCs.ModifyHealth(npcIndex, -1), "subsequent health mutation can reach zero")
         Call writer.Clear(): Call PrepareMessageNpcUpdateHP(npcIndex)
         Call writer.GetData(bytes): Call writer.Clear(): Call reader.SetData(bytes)
         Call reader.ReadInt16(): Call reader.ReadInt16()
