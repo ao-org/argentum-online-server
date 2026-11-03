@@ -113,8 +113,13 @@ Private Sub EnsureHuntSession(ByVal userIndex As Integer)
     If mLeaders Is Nothing Then Set mLeaders = CreateObject("Scripting.Dictionary")
     With mSessions(userIndex)
         If .characterId <> UserList(userIndex).Id Or .version <> UserList(userIndex).VersionId Then
+            If mOnline.Exists(CStr(.characterId)) Then
+                If mOnline(CStr(.characterId)) = userIndex Then Call mOnline.Remove(CStr(.characterId))
+            End If
+            If mRetries.Exists(CStr(userIndex)) Then Call mRetries.Remove(CStr(userIndex))
             .characterId = UserList(userIndex).Id: .version = UserList(userIndex).VersionId
             .runSlot = 0: .proposal = 0: .request = 0: .revision = 0: .dirty = False
+            .requestKey = vbNullString: .result = HuntState: .retryAt = 0
         End If
     End With
     mOnline(CStr(UserList(userIndex).Id)) = userIndex

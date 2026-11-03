@@ -44,7 +44,7 @@ Private Sub Fixture()
     ' Exercise the production migration, not a parallel test schema.
     Call UnitTesting.Progress("Party hunt fixture migration")
     Dim f As Integer, sql As String, statement As Variant
-    f = FreeFile: Open App.Path & "\ScriptsDB\20261103-01-party-quest.sql" For Binary As #f
+    f = FreeFile: Open App.Path & "\ScriptsDB\20261103-01-party-quest.sql" For Binary Access Read As #f
     sql = Space$(LOF(f)): Get #f, , sql: Close #f
     For Each statement In Split(sql, ";")
         If Len(Trim$(statement)) > 0 Then Call database.Execute(CStr(statement))
@@ -106,9 +106,12 @@ Private Sub Group(ByVal leader As Integer, ByVal count As Integer)
 End Sub
 Private Sub Propose(ByVal leader As Integer)
     Dim writer As New Network.Writer, data() As Byte
+    Call UnitTesting.Progress("Party hunt propose target")
     Call SetNpcRef(UserList(leader).flags.TargetNPC, 1)
     Call writer.WriteInt8(1): Call writer.GetData(data): Set Protocol.reader = New Network.Reader: Call Protocol.reader.SetData(data)
+    Call UnitTesting.Progress("Party hunt propose handler")
     Call Protocol.HandleQuestAccept(leader)
+    Call UnitTesting.Progress("Party hunt propose returned")
 End Sub
 Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As Byte, ByVal identity As Long)
     ' Production packet dispatcher including bounds, authentication and maintained ID.
@@ -120,12 +123,16 @@ Private Sub Action(ByVal u As Integer, ByVal request As Long, ByVal action As By
     Call Protocol.HandleIncomingData(1, incoming, u)
 End Sub
 Private Sub StartDuo(Optional ByVal leader As Integer = 1)
+    Call UnitTesting.Progress("Party hunt duo propose")
     Call Propose(leader)
     Dim proposal As Long: proposal = PartyQuestProposalForTest(leader)
     Call Expect(proposal > 0, "normal quest accept proposes instead of enrolling")
     Call Expect(Not TieneQuest(leader, 1), "proposal is not acceptance")
+    Call UnitTesting.Progress("Party hunt duo accept")
     Call Action(leader + 1, 1, HuntAccept, proposal)
+    Call UnitTesting.Progress("Party hunt duo start")
     Call Action(leader, 1, HuntStart, proposal)
+    Call UnitTesting.Progress("Party hunt duo started")
     Call Expect(TieneQuest(leader, 1) And TieneQuest(leader + 1, 1), "accepted roster receives ordinary quest projections")
 End Sub
 Private Sub KillWolf(Optional ByVal credited As Integer = 1)
@@ -308,15 +315,18 @@ Private Sub RunCase(ByVal index As Integer)
         End If
     End Select
     capturing = False
-    Call database.Close(): Set Connection = oldConnection: Kill fileName
+    Call database.Close(): Set Connection = oldConnection: Set database = Nothing
+    Kill fileName
     Call UnitTesting.Progress("Party hunt " & index & " passed")
     Call UnitTesting.RunTest("Party hunt " & index, True)
     Exit Sub
 Failed:
     Dim failure As String: failure = Err.Description
+    Call UnitTesting.Progress("Party hunt case error " & index & ": " & failure)
     On Error Resume Next
     capturing = False
     If Not database Is Nothing Then Call database.Close()
+    Set database = Nothing
     Set Connection = oldConnection
     If Len(fileName) > 0 Then Kill fileName
     Err.Clear
