@@ -105,8 +105,10 @@ Private Function FixtureColumnType(ByVal column As String) As String
     ' Match production text affinity. Declaring names/descriptions NUMERIC makes
     ' SQLite ODBC expose valid text as NULL during the actual character loader.
     Select Case LCase$(column)
-        Case "name", "alias", "description", "message_info", "banned_by", "ban_reason", "spouse", "guild_rejected_because"
+        Case "name", "alias", "description", "message_info", "banned_by", "ban_reason", "guild_rejected_because"
             FixtureColumnType = "TEXT NOT NULL DEFAULT ''"
+        Case "spouse"
+            FixtureColumnType = "TEXT NOT NULL DEFAULT '0'" ' Numeric identity stored as text in the production schema.
         Case Else
             FixtureColumnType = "NUMERIC DEFAULT 0"
     End Select
