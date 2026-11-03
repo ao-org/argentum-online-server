@@ -53,36 +53,53 @@ intact. An unfinished duo can always abandon if it cannot regroup.
 
 ## Persistence and claim boundary
 
-Migration `20261103-01-party-quest.sql` adds `party_quest_run`, fixed
-`party_quest_member` records and bounded per-run `party_quest_kill` records. An
-active partial unique index enforces one active run per character. A transaction
-commits enrollment before acceptance is announced; each kill commits its counter,
-mask and participation before publishing progress. Login rebuilds normal quest
-slots from these authoritative records, even if ordinary asynchronous quest saves
-lagged. Claimed membership also restores completed-quest history if an older
-asynchronous save removed its normal projection.
+The unshipped draft migration `20261103-01-party-quest.sql` and base schema add
+run revisions, fixed roster ordinals and bounded kill masks. Enrollment, kills,
+claims and abandonment mutate one cached run and increment its dirty revision.
+**Kills perform no SQL**; both clients receive the new counter immediately. The
+journal is a projection, rebuilt from the shared run on login. Unexpected crashes
+may roll back changes since the last successfully committed character save.
 
-Claim revalidates Alaric, distance/map, completion, enrollment and participation.
-One synchronous transaction conditionally claims that member, credits user gold,
-records quest_done and removes the accepted projection. Only after commit does
-memory/HOO receive success and the actual reward receipt. Another member's claim
-is untouched. Full wallet capacity leaves the claim available for retry.
+`SaveCharacterDB` (logout/full save) and `SaveChangesInUser` (periodic save) capture
+a consistent run and whole-character batch for party-quest characters. Existing
+main, inventory, bank, spells, skills, pets, skins and quest serializers build
+immutable commands against a working copy, without clearing live dirty flags.
+Account card changes use the same transaction. Unrelated characters retain their
+existing persistence path. A save is successful only after `CommitTrans` returns;
+ADO dispatch is not completion. Connection event fences wait for pre-existing
+pooled writes to finish before the party transaction starts (without a busy loop).
+See [ADO ExecuteComplete](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/executecomplete-event-ado).
 
-The existing character-save path dispatches asynchronous writes; it is not an
-atomic reward boundary. `user.party_quest_gold_total` and the loaded
-`t_User.PartyQuestGoldSeen` fence older snapshots: normal save SQL stores
-`snapshotGold + committedCreditTotal - snapshotSeenTotal`. A queued pre-claim
-snapshot therefore cannot erase committed hunt gold, and a post-claim snapshot
-does not add it twice. This does not attempt to redesign unrelated async save
-ordering. If a commit/rollback outcome is ambiguous, main character saving is
-blocked until a subsequent claim interaction reconciles persisted gold/run state;
-it must not overwrite a possibly committed credit with stale memory.
+Run revisions prevent older snapshots overwriting newer progress. A monotonic
+`user.party_quest_save_revision` guards the whole captured character batch, rather
+than adjusting or replacing gold. Only committed matching revisions acknowledge
+saved baselines; later mutations stay dirty. Two members share one run identity.
+New IDs are reserved from the database maximum once during initialization, not on
+a kill. This assumes the existing single world-server writer for this database.
 
-No DB work occurs during rendering/hover, and no periodic quest/player scan is
-added. Only pending proposal expirations and failed enqueues are visited at the
-network update boundary. Failed publication retries at most once per500ms per
-session, invalidated by logout/reuse. Run cache storage is bounded by user capacity;
-only runs without an online member may be evicted and later reloaded from storage.
+Claim validates the existing requirements and grants gold once in memory, marking
+the member claimed and the run dirty. A save containing an unsaved claim includes
+that claimant's captured character batch, even when another member initiates the
+save. Wallet, ordinary character changes and claim status therefore commit or
+roll back together. Subsequent earnings/spending remain in the next snapshot.
+There is no save-blocked flag, wallet recovery assignment or claim watermark.
+Full wallet capacity leaves the claim available for retry.
+
+Failed/deferred saves retain immutable batches under persistent character identity,
+independent of connection slots. The existing autosave cadence retries a bounded
+number, coalescing to the latest run revision and online character state. Offline
+snapshots survive logout; reconnect flushes retained work before reading the main
+character row. Orderly shutdown retries remaining batches before closing the DB
+and refuses to finish while a save remains pending. No new timer, database polling
+loop, protocol field or general persistence framework is added.
+
+Loading validates the complete run, roster and kill history in temporary state
+before publishing to the cache; read failure allows a clean retry. Historical
+`character_id` and ordinals are immutable. A separate nullable `user_id` foreign
+key uses `ON DELETE SET NULL`, so character deletion preserves other members'
+progress, participation masks and claim rights. Deleted active members become
+abandoned tombstones on load. Dirty runs cannot be evicted. Storage is bounded by
+user capacity; a full dirty cache rejects enrollment rather than losing progress.
 
 ## Required protocol
 

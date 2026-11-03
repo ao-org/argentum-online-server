@@ -265,6 +265,7 @@ Public Function LoadCharacterFromDB(ByVal UserIndex As Integer, Optional ByRef f
     LoadCharacterFromDB = False
     With UserList(UserIndex)
         Debug.Assert .id > 0
+        If Not PreparePartyQuestLogin(.Id) Then Exit Function
         ' Load main character data using the user name.
         Set RS = Query(QUERY_LOAD_MAINPJ, .id)
         If RS Is Nothing Then Exit Function
@@ -352,7 +353,7 @@ Private Sub SetupUserBasicInfo(ByRef User As t_User, ByRef RS As ADODB.Recordset
         .Hogar = RS!home_id
         .Desc = RS!Description
         .Stats.GLD = RS!gold
-        .PartyQuestGoldSeen = RS!party_quest_gold_total
+        .PartyQuestSaveRevision = RS!party_quest_save_revision
         .Stats.Banco = RS!bank_gold
         .Stats.SkillPts = RS!free_skillpoints
         .pos.Map = RS!pos_map
@@ -617,6 +618,10 @@ End Sub
 
 Public Sub SaveCharacterDB(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
     On Error GoTo ErrorHandler
+    If PartyQuestOwnsCharacter(UserList(UserIndex).Id) Then
+        Call SavePartyQuestCharacter(UserIndex, Logout)
+        Exit Sub
+    End If
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
     Dim QueryBreakdown As String
@@ -627,7 +632,6 @@ Public Sub SaveCharacterDB(ByVal UserIndex As Integer, Optional ByVal Logout As 
             Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
             Exit Sub
         End If
-        If .PartyQuestSaveBlocked Then Exit Sub ' An ambiguous claim must be reconciled before any save.
         Call SaveCharacterMainDB(UserList(UserIndex), QueryBreakdown, Logout)
         Call SaveCharacterSpellsDB(UserList(UserIndex), QueryBreakdown)
         Call SaveCharacterInventoryDB(UserList(UserIndex), QueryBreakdown)
@@ -661,17 +665,15 @@ ErrorHandler:
 End Sub
 
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, Optional ByVal Logout As Boolean = False)
-    If U.PartyQuestSaveBlocked Then Exit Sub
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(63)
+    ReDim Params(62)
     Dim i As Integer
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
     Params(post_increment(i)) = U.Hogar
     Params(post_increment(i)) = U.Desc
     Params(post_increment(i)) = U.Stats.GLD
-    Params(post_increment(i)) = U.PartyQuestGoldSeen
     Params(post_increment(i)) = U.Stats.Banco
     Params(post_increment(i)) = U.Stats.SkillPts
     Params(post_increment(i)) = U.flags.MascotasGuardadas
@@ -1453,6 +1455,10 @@ End Sub
 
 Public Sub SaveChangesInUser(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
+    If PartyQuestOwnsCharacter(UserList(UserIndex).Id) Then
+        Call SavePartyQuestCharacter(UserIndex, False)
+        Exit Sub
+    End If
 
     Dim PerformanceTimer As Long
     Dim TotalPerformanceTimer As Long
@@ -1711,6 +1717,10 @@ ErrHandler:
 End Function
 
 Function SaveInventorySkins(ByVal UserIndex As Integer) As Boolean
+    SaveInventorySkins = SaveInventorySkinsSnapshot(UserList(UserIndex))
+End Function
+
+Private Function SaveInventorySkinsSnapshot(ByRef snapshot As t_User) As Boolean
 
 Dim i                           As Integer
 Dim UpsertCount                 As Long
@@ -1725,7 +1735,7 @@ Dim DeleteParamIndex            As Long
 
     On Error GoTo SaveInventorySkins_Error
 
-    With UserList(UserIndex)
+    With snapshot
         If .Id > 0 And .Invent_Skins.count > 0 Then
             For i = 1 To .Invent_Skins.count
                 SkinId = .Invent_Skins.Object(i).ObjIndex
@@ -1795,9 +1805,9 @@ Dim DeleteParamIndex            As Long
                 Set DeleteSql = Nothing
             End If
 
-            SaveInventorySkins = True
+            SaveInventorySkinsSnapshot = True
         Else
-            SaveInventorySkins = False
+            SaveInventorySkinsSnapshot = False
         End If
     End With
 
@@ -1805,8 +1815,9 @@ Dim DeleteParamIndex            As Long
     Exit Function
 
 SaveInventorySkins_Error:
-    SaveInventorySkins = False
-    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & UserList(UserIndex).name, Erl())
+    If PartyQuestCaptureActive() Then Call FailPartyQuestCapture()
+    SaveInventorySkinsSnapshot = False
+    Call Logging.TraceError(Err.Number, Err.Description, "CharacterPersistence.SaveInventorySkins Nick: " & snapshot.name, Erl())
 
 End Function
 
@@ -1823,9 +1834,63 @@ Public Function LoadPartyQuestRewardsForTest(ByVal userIndex As Integer) As Bool
 End Function
 #End If
 
-#If UNIT_TEST = 1 Then
-Public Sub SavePartyQuestGoldSnapshotForTest(ByRef snapshot As t_User)
-    Dim breakdown As String
-    Call SaveCharacterMainDB(snapshot, breakdown, False)
+
+
+' Build the normal serializers against an owned copy. No live dirty flag is cleared
+' and no command executes until the party save transaction commits.
+Public Function CapturePartyQuestCharacterCommands(ByRef snapshot As t_User, ByVal logout As Boolean) As Collection
+    On Error GoTo Failed
+    Dim sql As New cStringBuilder, breakdown As String, i As Integer
+    Call BeginPartyQuestCapture()
+    Call SaveCharacterMainDB(snapshot, breakdown, logout)
+    Call SaveCharacterSpellsDB(snapshot, breakdown)
+    Call SaveCharacterInventoryDB(snapshot, breakdown)
+    Call SaveCharacterBankInventoryDB(snapshot, breakdown)
+    For i = 1 To NUMSKILLS: snapshot.Stats.SkillDirty(i) = True: Next i
+    Call SaveCharacterSkillsDB(snapshot, breakdown)
+    Call SaveCharacterPetsDB(snapshot, breakdown)
+    For i = 1 To MAXUSERQUESTS: snapshot.QuestStats.Quests(i).Dirty = True: Next i
+    Call SaveCharacterQuestsDB(snapshot, breakdown, sql)
+    Call SaveCharacterQuestsDoneDB(snapshot, breakdown, sql)
+    Call SaveInventorySkinsSnapshot(snapshot)
+    If IsFeatureEnabled("collectible_cards") And snapshot.flags.DirtyCollectibleCardCollection Then
+        Call CapturePartyQuestCommand(PrepareCollectibleCardsSnapshot(snapshot))
+    End If
+    Set CapturePartyQuestCharacterCommands = EndPartyQuestCapture()
+    Exit Function
+Failed:
+    Dim number As Long, description As String
+    number = Err.Number: description = Err.Description
+    Resume Cleanup
+Cleanup:
+    On Error Resume Next
+    Dim ignored As Collection
+    If PartyQuestCaptureActive() Then Set ignored = EndPartyQuestCapture()
+    On Error GoTo 0
+    Err.Raise number, "CapturePartyQuestCharacterCommands", description
+End Function
+
+Public Sub ApplyPartyQuestCharacterSave(ByVal userIndex As Integer, ByVal revision As Long, ByRef saved As t_UserPersistSnapshot)
+    Dim i As Integer, j As Integer, q As Integer, same As Boolean
+    With UserList(userIndex)
+        .PartyQuestSaveRevision = revision
+        .Persist = saved
+        For i = 1 To NUMSKILLS
+            .Stats.SkillDirty(i) = .Stats.UserSkills(i) <> saved.LastSkills(i)
+        Next i
+        For i = 1 To MAXUSERQUESTS
+            q = .QuestStats.Quests(i).QuestIndex
+            same = q = saved.LastQuests(i).QuestIndex
+            If q > 0 And same Then
+                For j = 1 To QuestList(q).RequiredNPCs
+                    If GetIntegerArrayValue(.QuestStats.Quests(i).NPCsKilled, j) <> GetIntegerArrayValue(saved.LastQuests(i).NPCsKilled, j) Then same = False
+                Next j
+                For j = 1 To QuestList(q).RequiredTargetNPCs
+                    If GetIntegerArrayValue(.QuestStats.Quests(i).NPCsTarget, j) <> GetIntegerArrayValue(saved.LastQuests(i).NPCsTarget, j) Then same = False
+                Next j
+            End If
+            .QuestStats.Quests(i).Dirty = Not same
+        Next i
+        .Counters.LastSave = GetTickCountRaw()
+    End With
 End Sub
-#End If

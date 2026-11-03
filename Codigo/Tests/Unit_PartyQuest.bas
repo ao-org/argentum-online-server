@@ -35,11 +35,14 @@ Private Sub Fixture()
     Set oldConnection = Connection
     fileName = Environ$("TEMP") & "\ao-party-hunt-test-" & GetTickCountRaw() & ".db"
     Set database = New ADODB.Connection
+    database.CursorLocation = adUseClient
     Call database.Open("Driver={SQLite3 ODBC Driver};Database=" & fileName & ";")
     Set Connection = database
-    Call database.Execute("CREATE TABLE user(id INTEGER PRIMARY KEY,gold INTEGER NOT NULL DEFAULT 0)")
-    Call database.Execute("CREATE TABLE quest(user_id INTEGER,number INTEGER,quest_id INTEGER,npcs TEXT,npcstarget TEXT,PRIMARY KEY(user_id,number))")
-    Call database.Execute("CREATE TABLE quest_done(user_id INTEGER,quest_id INTEGER,PRIMARY KEY(user_id,quest_id))")
+    Call database.Execute("PRAGMA foreign_keys=ON")
+    Call database.BeginTrans()
+    Call database.Execute("CREATE TABLE user(id INTEGER PRIMARY KEY AUTOINCREMENT,gold INTEGER NOT NULL DEFAULT 0)")
+    Call database.Execute("CREATE TABLE quest(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,quest_id INTEGER,npcs TEXT,npcstarget TEXT,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE quest_done(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,quest_id INTEGER,PRIMARY KEY(user_id,quest_id))")
     ' Exercise the production migration, not a parallel test schema.
     Dim f As Integer, sql As String, statement As Variant
     f = FreeFile: Open App.Path & "\ScriptsDB\20261103-01-party-quest.sql" For Binary Access Read As #f
@@ -47,6 +50,7 @@ Private Sub Fixture()
     For Each statement In Split(sql, ";")
         If Len(Trim$(statement)) > 0 Then Call database.Execute(CStr(statement))
     Next statement
+    Call BuildCharacterSaveSchema()
     ReDim UserList(1 To 7): ReDim QuestList(0 To 2): ReDim NpcInfoCache(1 To 500)
     fixtureVersion = fixtureVersion + 1
     Dim i As Integer, blankNpc As t_Npc
@@ -61,8 +65,11 @@ Private Sub Fixture()
             .pos.Map = 1: .pos.x = 50: .pos.y = 50: .Char.charindex = i
             .CurrentInventorySlots = 3
         End With
-        Call database.Execute("INSERT INTO user(id,gold) VALUES(" & UserList(i).Id & ",10)")
+        Call database.Execute("INSERT INTO user(id,account_id,name,gold) VALUES(" & UserList(i).Id & "," & UserList(i).AccountID & ",'Hunter" & i & "',10)")
+        Call database.Execute("INSERT INTO account(id) VALUES(" & UserList(i).AccountID & ")")
     Next i
+    Call database.CommitTrans()
+    Unit_PartyRewards.SynchronousPersistence = True
     For i = 1 To 2
         With QuestList(i)
             .nombre = "The Pack Hunt": .RequiredLevel = 1: .TalkTo = 432
@@ -90,7 +97,70 @@ Private Sub Fixture()
     Call SvrConfig.LoadSettings(App.Path & "\Example.Configuracion.ini", config)
     Set packets = New Collection: Set packetUsers = New Collection: capturing = True
     Call Group(1, 2)
+    Call Expect(InitializePartyQuestPersistence(), "initialize durable run ID range on login/startup, not kill")
 End Sub
+Private Sub BuildCharacterSaveSchema()
+    Call Contruir_Querys()
+    Dim fields As Object, text As String, item As Variant, column As String
+    Set fields = CreateObject("Scripting.Dictionary")
+    fields.CompareMode = vbTextCompare
+    fields("id") = True: fields("gold") = True: fields("party_quest_save_revision") = True
+    text = Mid$(QUERY_LOAD_MAINPJ, 8): text = Left$(text, InStr(text, " FROM ") - 1)
+    For Each item In Split(text, ",")
+        column = Trim$(CStr(item))
+        If Not fields.Exists(column) Then
+            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] NUMERIC DEFAULT 0")
+            fields(column) = True
+        End If
+    Next item
+    text = Mid$(QUERY_UPDATE_MAINPJ, InStr(QUERY_UPDATE_MAINPJ, "SET ") + 4)
+    text = Left$(text, InStr(text, "WHERE ") - 1)
+    For Each item In Split(text, ",")
+        column = Trim$(Left$(CStr(item), InStr(CStr(item), "=") - 1))
+        If Not fields.Exists(column) Then
+            Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] NUMERIC DEFAULT 0")
+            fields(column) = True
+        End If
+    Next item
+    Call database.Execute("CREATE TABLE account(id INTEGER PRIMARY KEY,last_ip TEXT,is_active_patron INTEGER DEFAULT 0,offline_patron_credits INTEGER DEFAULT 0)")
+    Call database.Execute("CREATE TABLE spell(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,spell_id INTEGER,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE inventory_item(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,item_id INTEGER,amount INTEGER,is_equipped INTEGER,elemental_tags TEXT,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE bank_item(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,item_id INTEGER,amount INTEGER,elemental_tags TEXT,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE skillpoint(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,value INTEGER,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE pet(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,number INTEGER,pet_id INTEGER,PRIMARY KEY(user_id,number))")
+    Call database.Execute("CREATE TABLE inventory_item_skins(user_id INTEGER REFERENCES user(id) ON DELETE CASCADE,skin_id INTEGER,type_skin INTEGER,skin_equipped INTEGER,PRIMARY KEY(user_id,skin_id))")
+End Sub
+
+Private Function LastSharedCount(ByVal userIndex As Integer) As Integer
+    Dim i As Long, bytes() As Byte, packet As New Network.Reader, ignored As Long
+    LastSharedCount = -1
+    For i = packets.count To 1 Step -1
+        If packetUsers(i) = userIndex Then
+            bytes = packets(i): Call packet.SetData(bytes)
+            If packet.ReadInt16() = ServerPacketID.ePartyQuestState Then
+                ignored = packet.ReadInt32(): ignored = packet.ReadInt32()
+                ignored = packet.ReadInt8(): ignored = packet.ReadInt8()
+                ignored = packet.ReadInt32(): ignored = packet.ReadInt32()
+                ignored = packet.ReadInt16(): ignored = packet.ReadInt16(): ignored = packet.ReadInt16(): ignored = packet.ReadInt16()
+                LastSharedCount = packet.ReadInt16(): Exit Function
+            End If
+        End If
+    Next i
+End Function
+
+Private Sub ReloadCharacter(ByVal userIndex As Integer)
+    Dim id As Long, account As Long, blankState As t_User, why As String
+    id = UserList(userIndex).Id: account = UserList(userIndex).AccountID
+    Call PartyQuestLogout(userIndex)
+    UserList(userIndex) = blankState
+    With UserList(userIndex)
+        .Id = id: .AccountID = account: .VersionId = fixtureVersion + 1
+    End With
+    Call Expect(LoadCharacterFromDB(userIndex, why), "production full character load: " & why)
+    UserList(userIndex).flags.UserLogged = True: UserList(userIndex).ConnectionDetails.ConnIDValida = True
+    UserList(userIndex).CurrentInventorySlots = 3
+End Sub
+
 Private Sub Group(ByVal leader As Integer, ByVal count As Integer)
     Dim i As Integer
     For i = leader To leader + count - 1
@@ -146,17 +216,28 @@ Private Sub RunCase(ByVal index As Integer)
     Dim i As Integer, proposal As Long, slot As Byte, rows As ADODB.Recordset
     Select Case index
     Case 1
-        Call StartDuo(): Call KillWolf()
-        Call Expect(PartyQuestProgressForTest(1) = 1 And PartyQuestProgressForTest(2) = 1, "fighter and zero-damage healer share 1/6")
-        Call Expect(Scalar("SELECT qualified_mask FROM party_quest_kill") = 3, "qualified persistent roster recorded")
+        Call StartDuo()
+        With UserList(1).QuestStats.Quests(2)
+            .QuestIndex = 2: ReDim .NPCsKilled(1 To 1)
+        End With
+        For i = 1 To 3: Call KillWolf(): Next i
+        PartyQuestSqlCount = 0: Call KillWolf()
+        Call Expect(PartyQuestProgressForTest(1) = 4 And PartyQuestProgressForTest(2) = 4, "fighter and zero-damage healer share4/6")
+        Call Expect(PartyQuestMaskForTest(1, 4) = 3, "qualified roster mask recorded in memory")
+        Call Expect(PartyQuestSqlCount = 0, "kill and personal progress perform zero SQL")
+        Call Expect(LastSharedCount(1) = 4 And LastSharedCount(2) = 4, "both clients receive immediate authoritative counter4")
+        Call Expect(UserList(1).QuestStats.Quests(2).NPCsKilled(1) = 4, "personal wolf quest still progresses independently")
     Case 2
         Call Group(1, 3): Call Propose(1): proposal = PartyQuestProposalForTest(1)
         Call Action(2, 1, HuntAccept, proposal): Call Action(3, 1, HuntAccept, proposal): Call Action(1, 1, HuntStart, proposal)
         Call KillWolf()
-        Call Expect(PartyQuestProgressForTest(3) = 1 And Scalar("SELECT count(*) FROM party_quest_kill") = 1, "three witnesses increment exactly once")
+        Call Expect(PartyQuestProgressForTest(3) = 1 And PartyQuestMaskForTest(1, 1) = 7, "three witnesses increment exactly once")
+        Call SaveCharacterDB(1)
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_kill") = 1, "normal save persists one kill")
     Case 3
         Call StartDuo()
         For i = 1 To 4: Call KillWolf(): Next i
+        Call SaveCharacterDB(2, True)
         Call PartyQuestLogout(2): UserList(2).flags.UserLogged = False
         Call KillWolf(): Call Expect(PartyQuestProgressForTest(1) = 4, "solo cannot advance after healer disconnect")
         UserList(2).VersionId = UserList(2).VersionId + 1: UserList(2).flags.UserLogged = True
@@ -179,16 +260,17 @@ Private Sub RunCase(ByVal index As Integer)
         Call ClaimPartyQuest(1, 1): Call ClaimPartyQuest(1, 1)
         Call Expect(UserList(1).Stats.GLD = 370 And UserList(2).Stats.GLD = 10, "independent exactly-once first claim")
         If index = 7 Then
-            Call database.Execute("DELETE FROM quest_done WHERE user_id=701")
+            Call SaveCharacterDB(1, True)
             Call RestartCache()
             Call Expect(Scalar("SELECT count(*) FROM quest_done WHERE user_id=701") = 1, "durable claim repairs stale async completion projection")
             Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "claimed gold survives actual database reopen")
         End If
         Call SetNpcRef(UserList(2).flags.TargetNPC, 1)
         Call ClaimPartyQuest(2, 1): Call ClaimPartyQuest(2, 1)
+        Call SaveCharacterDB(2, True)
         Call Expect(UserList(2).Stats.GLD = 370 And Scalar("SELECT count(*) FROM party_quest_member WHERE status=1") = 2, "second claim survives partial-claim restart")
     Case 8
-        Call StartDuo(): Call KillWolf(): Call RestartCache()
+        Call StartDuo(): Call KillWolf(): Call SaveCharacterDB(1, True): Call RestartCache()
         Call Expect(PartyQuestProgressForTest(1) = 1 And PartyQuestProgressForTest(2) = 1, "active counter survives actual database close/reopen")
     Case 9
         Call StartDuo()
@@ -213,6 +295,7 @@ Private Sub RunCase(ByVal index As Integer)
     Case 13
         Call StartDuo(): Call AbandonPartyQuest(1): Call KillWolf(2)
         Call Expect(Not TieneQuest(1, 1) And PartyQuestProgressForTest(2) = 0, "abandon removes eligibility without blocking future enrollment")
+        Call SaveCharacterDB(1, True)
         Call RestartCache(): Call Expect(Not TieneQuest(1, 1), "abandon persists")
     Case 14 To 18
         Call StartDuo()
@@ -238,43 +321,46 @@ Private Sub RunCase(ByVal index As Integer)
     Case 22
         Call StartDuo()
         For i = 1 To 7: Call KillWolf(): Next i
-        Call Expect(PartyQuestProgressForTest(1) = 6 And Scalar("SELECT count(*) FROM party_quest_kill") = 6, "counter capped at requirement")
+        Call Expect(PartyQuestProgressForTest(1) = 6, "counter capped at requirement in memory")
+        Call SaveCharacterDB(1)
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_kill") = 6, "save persists exactly six counted kills")
     Case 23
         Call StartDuo(): Call ClaimPartyQuest(1, 1)
         Call Expect(UserList(1).Stats.GLD = 10 And Scalar("SELECT count(*) FROM party_quest_member WHERE status=1") = 0, "incomplete claim rejected")
     Case 24
         Call Propose(1): proposal = PartyQuestProposalForTest(1)
         Call Action(2, 1, HuntAccept, proposal): Call Action(1, 1, HuntStart, proposal): Call Action(1, 1, HuntStart, proposal)
+        Call SaveCharacterDB(1)
         Call Expect(Scalar("SELECT count(*) FROM party_quest_run") = 1, "duplicate start does not allocate run")
     Case 25
         Call StartDuo()
+        HoldPartySaves = True: Call SaveCharacterDB(1)
+        Call HoldPartySnapshotForTest(1)
         For i = 1 To 6: Call KillWolf(): Next i
-        Dim savedSnapshot As t_User, assignments As String, assignment As Variant, column As String
-        savedSnapshot = UserList(1)
         Call ClaimPartyQuest(1, 1)
-        Call Contruir_Querys()
-        assignments = Mid$(QUERY_UPDATE_MAINPJ, InStr(QUERY_UPDATE_MAINPJ, "SET ") + 4)
-        assignments = Left$(assignments, InStr(assignments, "WHERE ") - 1)
-        For Each assignment In Split(assignments, ",")
-            column = Trim$(Left$(CStr(assignment), InStr(CStr(assignment), "=") - 1))
-            If column <> "gold" Then Call database.Execute("ALTER TABLE user ADD COLUMN [" & column & "] TEXT DEFAULT 0")
-        Next assignment
-        Unit_PartyRewards.SynchronousPersistence = True
-        ' Execute the actual production save builder/parameters using a pre-claim snapshot.
-        Call SavePartyQuestGoldSnapshotForTest(savedSnapshot)
-        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 370, "production pre-claim save cannot overwrite reward")
-        UserList(1).Stats.GLD = 365
-        Call SavePartyQuestGoldSnapshotForTest(UserList(1))
-        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 365, "production post-claim save does not duplicate reward")
-        Unit_PartyRewards.SynchronousPersistence = False
+        UserList(1).Stats.GLD = UserList(1).Stats.GLD + 40 - 15
+        Call ClaimPartyQuest(1, 1)
+        HoldPartySaves = False: Call SaveCharacterDB(1)
+        Call Expect(CompleteHeldPartySnapshotForTest(), "older production snapshot completes harmlessly")
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 395 And UserList(1).Stats.GLD = 395, "stale save cannot erase claim or unrelated gold")
+        Call RestartCache()
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_member WHERE character_id=701 AND status=1") = 1, "one persisted claim")
     Case 26
         Call StartDuo()
         For i = 1 To 6: Call KillWolf(): Next i
-        Call database.Execute("CREATE TRIGGER deny_claim BEFORE UPDATE OF status ON party_quest_member WHEN NEW.status=1 BEGIN SELECT RAISE(ABORT,'fixture'); END")
         Call ClaimPartyQuest(1, 1)
-        Call Expect(UserList(1).Stats.GLD = 10 And PartyQuestReady(1, 1), "failed transaction leaves retryable unclaimed state")
-        Call database.Execute("DROP TRIGGER deny_claim")
-        Call ClaimPartyQuest(1, 1): Call Expect(UserList(1).Stats.GLD = 370, "retry grants exactly once")
+        ObjData(50).name = "Fixture item"
+        UserList(1).invent.Object(1).ObjIndex = 50: UserList(1).invent.Object(1).amount = 7
+        UserList(1).Stats.Exp = 123
+        Call database.Execute("CREATE TRIGGER deny_save BEFORE UPDATE ON user WHEN OLD.id=701 BEGIN SELECT RAISE(ABORT,'fixture'); END")
+        Call SaveCharacterDB(1, True)
+        Call Expect(UserList(1).Stats.GLD = 370 And HasPendingPartySaveForTest(701), "failed save retains claim and whole character snapshot")
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 10 And Scalar("SELECT count(*) FROM party_quest_run") = 0, "claim, wallet and run roll back atomically")
+        Call ClaimPartyQuest(1, 1): UserList(1).Stats.GLD = UserList(1).Stats.GLD - 13 + 9
+        Call database.Execute("DROP TRIGGER deny_save")
+        Call RetryPartyQuestSaves()
+        Call Expect(Scalar("SELECT gold FROM user WHERE id=701") = 366, "retry captures latest unrelated spending and earnings")
+        Call Expect(Scalar("SELECT exp FROM user WHERE id=701") = 123 And Scalar("SELECT amount FROM inventory_item WHERE user_id=701 AND number=1") = 7, "inventory and unrelated character changes recover")
     Case 27
         Call Group(1, 3): Call Propose(1): proposal = PartyQuestProposalForTest(1)
         Call Action(2, 1, HuntAccept, proposal): Call Action(3, 1, HuntAccept, proposal): Call Action(1, 1, HuntStart, proposal)
@@ -303,6 +389,7 @@ Private Sub RunCase(ByVal index As Integer)
             Call Action(2, i * 2, HuntAccept, proposal): Call Action(1, i * 2, HuntStart, proposal)
             Call Expect(TieneQuest(1, 1) And TieneQuest(2, 1), "cache reuse permits a fresh hunt after abandon")
             Call AbandonPartyQuest(1): Call AbandonPartyQuest(2)
+            Call SaveCharacterDB(1): Call SaveCharacterDB(2)
         Next i
         Call Expect(Scalar("SELECT count(*) FROM party_quest_run") = 20, "bounded cache does not discard durable history")
     Case 31, 32
@@ -325,6 +412,91 @@ Private Sub RunCase(ByVal index As Integer)
         Else
             Call Expect(PartyQuestProgressForTest(1) = 0, "unowned NPC kill does not credit party hunt")
         End If
+    Case 35
+        Call StartDuo()
+        For i = 1 To 4: Call KillWolf(): Next i
+        HoldPartySaves = True: Call SaveCharacterDB(2, True): Call HoldPartySnapshotForTest(2)
+        Call PartyQuestBeforeSlotReset(2): UserList(2).flags.UserLogged = False
+        Call KillWolf(): Call Expect(PartyQuestProgressForTest(1) = 4, "solo kill after logout cannot advance")
+        HoldPartySaves = False: Call ReloadCharacter(2): Call Group(1, 2)
+        UserList(1).Grupo.Id = 999: UserList(2).Grupo.Id = 999
+        Call KillWolf(): Call SaveChangesInUser(1)
+        Call Expect(CompleteHeldPartySnapshotForTest(), "old4/6 save completes after newer5/6")
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 5, "old run write cannot overwrite5/6")
+        Call RestartCache(): Call ReloadCharacter(1): Call ReloadCharacter(2)
+        Call Expect(PartyQuestProgressForTest(1) = 5 And PartyQuestProgressForTest(2) = 5, "production reload restores shared5/6")
+    Case 36
+        Call StartDuo()
+        For i = 1 To 4: Call KillWolf(): Next i
+        Call SaveCharacterDB(1, True): Call PartyQuestBeforeSlotReset(1): UserList(1).flags.UserLogged = False
+        Call SaveCharacterDB(2, True): Call PartyQuestBeforeSlotReset(2): UserList(2).flags.UserLogged = False
+        Call RestartCache(): Call ReloadCharacter(1): Call ReloadCharacter(2)
+        Call Expect(PartyQuestProgressForTest(1) = 4 And PartyQuestProgressForTest(2) = 4, "all offline, database reopen, full character reload preserves run")
+    Case 37
+        Call StartDuo()
+        For i = 1 To 4: Call KillWolf(): Next i
+        Call database.Execute("CREATE TRIGGER deny_run BEFORE INSERT ON party_quest_run BEGIN SELECT RAISE(ABORT,'fixture'); END")
+        Call SaveCharacterDB(2, True): Call PartyQuestBeforeSlotReset(2): UserList(2).flags.UserLogged = False
+        Call SaveCharacterDB(1, True): Call PartyQuestBeforeSlotReset(1): UserList(1).flags.UserLogged = False
+        Call Expect(HasPendingPartySaveForTest(701) And HasPendingPartySaveForTest(702), "last member failure retains owned snapshots")
+        Dim replacement As t_User
+        UserList(1) = replacement
+        UserList(1).Id = 999: UserList(1).VersionId = fixtureVersion + 10: UserList(1).Stats.GLD = 77
+        UserList(1).flags.UserLogged = True: UserList(1).ConnectionDetails.ConnIDValida = True
+        Call database.Execute("INSERT INTO user(id,gold) VALUES(999,77)")
+        Call database.Execute("DROP TRIGGER deny_run")
+        Call RetryPartyQuestSaves(7)
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 4, "offline retry persists correct run")
+        Call Expect(UserList(1).Stats.GLD = 77 And Scalar("SELECT gold FROM user WHERE id=999") = 77, "reused connection slot untouched")
+        UserList(3).Id = 701: UserList(3).AccountID = 701
+        Call ReloadCharacter(3): Call Expect(PartyQuestProgressForTest(3) = 4, "original character resumes in another slot")
+    Case 38
+        Call StartDuo(): Call KillWolf(): Call SaveCharacterDB(1)
+        Call ResetPartyQuestTests()
+        FailPartyRosterRead = True
+        Call Expect(Not LoadPartyQuest(1), "first roster read fails")
+        Call Expect(PartyQuestCacheCountForTest() = 0, "partial run was never published")
+        Call Expect(LoadPartyQuest(1) And PartyQuestProgressForTest(1) = 1, "same-process retry restores full run")
+        Call Expect(PartyQuestMemberCountForTest(1) = 2, "complete roster survives failed read")
+    Case 39, 40
+        Call StartDuo()
+        For i = 1 To 6: Call KillWolf(): Next i
+        If index = 39 Then Call ClaimPartyQuest(1, 1) Else Call AbandonPartyQuest(1)
+        Call SaveCharacterDB(1, True): Call PartyQuestBeforeSlotReset(1): UserList(1).flags.UserLogged = False
+        Call database.Execute("DELETE FROM user WHERE id=701")
+        Call Expect(Scalar("SELECT count(*) FROM user WHERE id=701") = 0, "character deletion works with foreign keys enforced")
+        Call Expect(Scalar("SELECT count(*) FROM party_quest_member WHERE character_id=701 AND ordinal=1 AND user_id IS NULL") = 1, "tombstone preserves ordinal1")
+        Call Expect(Scalar("SELECT qualified_mask FROM party_quest_kill WHERE ordinal=1") = 3, "participation mask is unchanged")
+        Call RestartCache(): Call ReloadCharacter(2)
+        Call Expect(PartyQuestReady(2, 1) And PartyQuestMemberCountForTest(2) = 2, "teammate retains progress and claim rights")
+        Call SetNpcRef(UserList(2).flags.TargetNPC, 1): Call ClaimPartyQuest(2, 1): Call SaveCharacterDB(2)
+        Call Expect(UserList(2).Stats.GLD = 370, "teammate claims independently after deletion")
+    Case 41
+        Call StartDuo()
+        For i = 1 To 4: Call KillWolf(): Next i
+        HoldPartySaves = True: Call SaveCharacterDB(2, True)
+        PartyQuestSqlCount = 0: Call KillWolf()
+        Call Expect(PartyQuestSqlCount = 0 And PartyQuestProgressForTest(1) = 5, "queued save never sends kill SQL")
+        Call PartyQuestBeforeSlotReset(2): UserList(2).flags.UserLogged = False
+        HoldPartySaves = False: Call RetryPartyQuestSaves()
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 5, "pending save coalesces to latest run at retry boundary")
+    Case 42
+        Call StartDuo(): Call KillWolf()
+        HoldPartySaves = True: Call SaveCharacterDB(1, True)
+        Call Expect(Not FlushPartyQuestShutdown(), "shutdown cannot report success while save pending")
+        HoldPartySaves = False
+        Call Expect(FlushPartyQuestShutdown(), "orderly shutdown flushes owned work")
+        Call Expect(Scalar("SELECT progress FROM party_quest_run") = 1, "shutdown persisted latest dirty run")
+    Case 43
+        Dim fence As New clsPartyQuestAsyncFence, probe As New ADODB.Command, deadline As Long
+        Call fence.Attach(database)
+        Set probe.ActiveConnection = database: probe.CommandText = "SELECT 1": probe.CommandType = adCmdText
+        Call probe.Execute(, , adAsyncExecute)
+        deadline = GetTickCountRaw()
+        Do While fence.Pending <> 0 And TicksElapsed(deadline, GetTickCountRaw()) < 1000
+            DoEvents
+        Loop
+        Call Expect(fence.Started > 0 And fence.Completed > 0 And fence.Pending = 0, "real ADO command completion fence fires")
     End Select
     Call CleanupFixture()
     Call UnitTesting.Progress("Party hunt " & index & " passed")
@@ -343,6 +515,7 @@ Private Sub CleanupFixture()
     On Error Resume Next
     capturing = False
     Unit_PartyRewards.SynchronousPersistence = False
+    HoldPartySaves = False
     If Not database Is Nothing Then
         If database.State <> adStateClosed Then Call database.Close()
     End If
@@ -360,8 +533,8 @@ Public Function TestSuite() As Boolean
     #Else
         Call UnitTesting.Progress("Party hunt native validator configuration PYMMO=0")
     #End If
-    For i = 1 To 34: Call RunCase(i): Next i
-    Call UnitTesting.Progress("Party hunt 34 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
+    For i = 1 To 43: Call RunCase(i): Next i
+    Call UnitTesting.Progress("Party hunt 43 cases duration ms=" & TicksElapsed(started, GetTickCountRaw()))
     TestSuite = UnitTesting.GetFailedTests() = before
 End Function
 #End If

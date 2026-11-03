@@ -3187,8 +3187,7 @@ End Type
 
 'Tipo de los Usuarios
 Public Type t_User
-    PartyQuestGoldSeen As Long
-    PartyQuestSaveBlocked As Boolean
+    PartyQuestSaveRevision As Long
     name As String
     Alias As String
     PreviousLogoutUtc As String

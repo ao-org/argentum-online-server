@@ -31,8 +31,6 @@ End Sub
 Public Sub MaybeRunUserAutoSave()
     On Error GoTo Handler
 
-    If Not IsFeatureEnabled("auto_save_chars") Then Exit Sub
-
     Dim nowRaw As Long
     nowRaw = GetTickCountRaw()
 
@@ -44,6 +42,8 @@ Public Sub MaybeRunUserAutoSave()
     If TicksElapsed(m_LastAutoSaveAttempt, nowRaw) < IntervaloTimerGuardarUsuarios Then Exit Sub
 
     m_LastAutoSaveAttempt = nowRaw
+    Call RetryPartyQuestSaves()
+    If Not IsFeatureEnabled("auto_save_chars") Then Exit Sub
 
     Dim UserIndex                         As Integer
     Dim UserGuardados                     As Integer

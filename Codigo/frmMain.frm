@@ -1163,6 +1163,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     Call CerrarServidor
+    Cancel = True ' CerrarServidor ends only after party save completion.
 End Sub
 
 Private Sub HoraFantasia_Timer()

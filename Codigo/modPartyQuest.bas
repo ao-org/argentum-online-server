@@ -3,6 +3,7 @@ Attribute VB_Name = "modPartyQuest"
 ' Licensed under the GNU Affero General Public License, version 3 or later.
 Option Explicit
 Private Const MAX_MEMBERS As Integer = 6
+Private Const MAX_KILLS As Integer = 6
 Private Const QUESTION_PARTY_QUEST As Integer = 64
 Private Const PROPOSAL_LIFETIME As Long = 90000
 Public Enum e_PartyQuestAction
@@ -36,8 +37,12 @@ Private Type HuntMember
     vote As Byte ' 0 unanswered, 1 accepted, 2 declined, 3 no longer eligible
     participated As Boolean
     status As Byte ' 0 enrolled, 1 claimed, 2 abandoned
+    savedStatus As Byte
 End Type
 Private Type HuntRun
+    revision As Long
+    savedRevision As Long
+    killMasks(1 To MAX_KILLS) As Long
     id As Long
     quest As Integer
     leaderId As Long
@@ -78,6 +83,34 @@ Private mNextProposal As Long
 Private mDefinition As Integer
 Private mRetries As Object
 Private mLeaders As Object
+Private mNextRun As Long
+Private mRunIdsKnown As Boolean
+
+Private Type HuntSaveOwner
+    characterId As Long
+    nextSequence As Long
+    committedSequence As Long
+    latest As clsPartyQuestCharacterSave
+End Type
+Private Type HuntSaveBatch
+    characterId As Long
+    sequence As Long
+    count As Integer
+    runs() As HuntRun
+    characters As Collection
+End Type
+Private mSaveOwners As Object
+Private mPendingSaves As Object
+Private mOwners() As HuntSaveOwner
+Private mBatches() As HuntSaveBatch
+Private mSaveCapacity As Integer
+Private mFlushing As Boolean
+#If UNIT_TEST = 1 Then
+Public PartyQuestSqlCount As Long
+Public FailPartyRosterRead As Boolean
+Public HoldPartySaves As Boolean
+Private mHeldBatch As HuntSaveBatch
+#End If
 
 ' All writes here use the synchronous connection and propagate errors. Query/Execute
 ' intentionally swallow errors / dispatch asynchronously and cannot own a claim.
@@ -93,6 +126,7 @@ Private Function HuntSql(ByVal sql As String, ParamArray values() As Variant) As
         End If
         Call command.Parameters.Append(parameter)
     Next value
+    Call CountPartyQuestSql()
     Set HuntSql = command.Execute()
 End Function
 
@@ -161,7 +195,7 @@ Private Function HuntDefinition() As Integer
         If QuestList(q).PartyMinimum > 0 Then
             If QuestList(q).PartyMinimum = 2 And QuestList(q).RequiredNPCs = 1 And _
                QuestList(q).RequiredOBJs = 0 And QuestList(q).RewardOBJs = 0 And _
-               QuestList(q).RewardEXP = 0 And QuestList(q).RewardSpellCount = 0 Then
+               QuestList(q).RewardEXP = 0 And QuestList(q).RewardSpellCount = 0 And QuestList(q).RequiredNPC(1).amount = MAX_KILLS Then
                 HuntDefinition = q: mDefinition = q
             End If
             Exit Function
@@ -228,16 +262,134 @@ Private Function FreeRunSlot() As Integer
                 If mSessions(userIndex).runSlot = i Then online = True
             End If
         Next j
-        If mRuns(i).id = 0 Or Not online Then FreeRunSlot = i: Exit Function
+        If mRuns(i).id = 0 Then FreeRunSlot = i: Exit Function
+        If Not online And mRuns(i).revision = mRuns(i).savedRevision Then FreeRunSlot = i: Exit Function
     Next i
 End Function
+
+Public Function InitializePartyQuestPersistence() As Boolean
+    On Error GoTo Failed
+    If mRunIdsKnown Then InitializePartyQuestPersistence = True: Exit Function
+    Dim rows As ADODB.Recordset
+    Set rows = HuntSql("SELECT COALESCE(MAX(id),0) FROM party_quest_run")
+    mNextRun = rows.Fields(0).value
+    Call CloseHuntRows(rows)
+    mRunIdsKnown = True: InitializePartyQuestPersistence = True
+    Exit Function
+Failed:
+    Call CloseHuntRows(rows)
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.InitializePartyQuestPersistence", Erl)
+End Function
+
+Private Sub ReadCompleteRun(ByVal runId As Long, ByRef loaded As HuntRun)
+    On Error GoTo Failed
+    Dim rows As ADODB.Recordset, i As Integer, j As Integer, leaderFound As Boolean, mask As Long
+    Set rows = HuntSql("SELECT * FROM party_quest_run WHERE id=?", runId)
+    If rows.EOF Then Err.Raise vbObjectError + 862, , "Missing party run"
+    With loaded
+        .id = runId: .quest = rows!quest_id: .leaderId = rows!leader_id
+        .target = rows!target_npc: .required = rows!required: .progress = rows!progress
+        .reward = rows!reward_gold: .revision = rows!revision: .savedRevision = .revision
+        If .quest < 1 Or .quest > UBound(QuestList) Then Err.Raise vbObjectError + 862, , "Invalid hunt definition"
+        If .required <> MAX_KILLS Or .progress < 0 Or .progress > .required Or .revision < 1 Or .target < 1 Or .reward < 1 Or .reward > MAXORO Then Err.Raise vbObjectError + 862, , "Invalid hunt state"
+    End With
+    Call CloseHuntRows(rows)
+    #If UNIT_TEST = 1 Then
+        If FailPartyRosterRead Then
+            FailPartyRosterRead = False
+            Err.Raise vbObjectError + 862, , "Injected roster read failure"
+        End If
+    #End If
+    Set rows = HuntSql("SELECT * FROM party_quest_member WHERE run_id=? ORDER BY ordinal", runId)
+    Do While Not rows.EOF
+        loaded.count = loaded.count + 1: i = loaded.count
+        If i > MAX_MEMBERS Then Err.Raise vbObjectError + 862, , "Hunt roster overflow"
+        If rows!ordinal <> i Then Err.Raise vbObjectError + 862, , "Non-contiguous hunt ordinals"
+        With loaded.members(i)
+            .characterId = rows!character_id: .name = rows!name
+            .participated = rows!participated <> 0: .status = rows!status: .savedStatus = .status: .vote = 1
+            If .characterId <= 0 Or Len(.name) = 0 Or .status > 2 Then Err.Raise vbObjectError + 862, , "Invalid hunt member"
+            If .characterId = loaded.leaderId Then leaderFound = True
+            For j = 1 To i - 1
+                If loaded.members(j).characterId = .characterId Then Err.Raise vbObjectError + 862, , "Duplicate hunt identity"
+            Next j
+            ' Retain tombstone identity and ordinal after user deletion.
+            If IsNull(rows!user_id) And .status = 0 Then
+                .status = 2: loaded.revision = loaded.revision + 1
+            End If
+        End With
+        Call rows.MoveNext()
+    Loop
+    Call CloseHuntRows(rows)
+    If loaded.count < 2 Or Not leaderFound Then Err.Raise vbObjectError + 862, , "Incomplete hunt roster"
+    Set rows = HuntSql("SELECT ordinal,qualified_mask FROM party_quest_kill WHERE run_id=? ORDER BY ordinal", runId)
+    i = 0
+    Do While Not rows.EOF
+        i = i + 1
+        If i > loaded.progress Or rows!ordinal <> i Then Err.Raise vbObjectError + 862, , "Invalid hunt kill history"
+        mask = rows!qualified_mask
+        If mask < 1 Or mask >= 2 ^ loaded.count Then Err.Raise vbObjectError + 862, , "Invalid hunt participation mask"
+        loaded.killMasks(i) = mask
+        Call rows.MoveNext()
+    Loop
+    Call CloseHuntRows(rows)
+    If i <> loaded.progress Then Err.Raise vbObjectError + 862, , "Incomplete hunt kill history"
+    Exit Sub
+Failed:
+    Dim number As Long, description As String
+    number = Err.Number: description = Err.Description
+    Resume Cleanup
+Cleanup:
+    Call CloseHuntRows(rows)
+    Err.Raise number, "modPartyQuest.ReadCompleteRun", description
+End Sub
 
 Public Function LoadPartyQuest(ByVal userIndex As Integer) As Boolean
     On Error GoTo Failed
     Call EnsureHuntSession(userIndex)
+    If Not InitializePartyQuestPersistence() Then Exit Function
+    Dim rows As ADODB.Recordset, runId As Long, cache As Integer, i As Integer, j As Integer, slot As Byte, quest As Integer
+    Dim loaded As HuntRun, history As Boolean
+    ' A retained owner is newer than storage after a failed save / while a teammate plays.
+    For i = 1 To mCapacity
+        If mRuns(i).id > 0 Then
+            j = RunMember(i, UserList(userIndex).Id)
+            If j > 0 Then
+                history = True
+                If mRuns(i).members(j).status = 0 Then cache = i: Exit For
+            End If
+        End If
+    Next i
+    Set rows = HuntSql("SELECT r.quest_id,m.status,m.run_id FROM party_quest_run r JOIN party_quest_member m ON m.run_id=r.id WHERE m.character_id=?", UserList(userIndex).Id)
+    Dim done As New Collection
+    Do While Not rows.EOF
+        history = True
+        If rows!status = 1 Then Call done.Add(CInt(rows!quest_id))
+        If rows!status = 0 Then runId = rows!run_id
+        Call rows.MoveNext()
+    Loop
+    Call CloseHuntRows(rows)
+    If cache = 0 And runId > 0 Then
+        For i = 1 To mCapacity
+            If mRuns(i).id = runId Then
+                j = RunMember(i, UserList(userIndex).Id)
+                If j > 0 Then
+                    If mRuns(i).members(j).status = 0 Then cache = i
+                    runId = 0: Exit For
+                End If
+            End If
+        Next i
+        If cache = 0 And runId > 0 Then
+            ' Publish nothing until every read and validation has succeeded.
+            Call ReadCompleteRun(runId, loaded)
+            cache = FreeRunSlot(): If cache = 0 Then Err.Raise vbObjectError + 862, , "Hunt cache capacity reached"
+        End If
+    End If
+    If history Or UserList(userIndex).PartyQuestSaveRevision > 0 Then
+        If Not RegisterHuntSaveOwner(userIndex) Then Err.Raise vbObjectError + 862, , "Hunt save capacity reached"
+    End If
+    If loaded.id > 0 Then mRuns(cache) = loaded
     mSessions(userIndex).runSlot = 0
-    Dim rows As ADODB.Recordset, runId As Long, cache As Integer, i As Integer, slot As Byte, quest As Integer
-    ' Quest rows can lag behind their durable run. Rebuild only this content type.
     For slot = 1 To MAXUSERQUESTS
         quest = UserList(userIndex).QuestStats.Quests(slot).QuestIndex
         If quest > 0 Then
@@ -248,48 +400,11 @@ Public Function LoadPartyQuest(ByVal userIndex As Integer) As Boolean
             End If
         End If
     Next slot
-    Set rows = HuntSql("INSERT OR IGNORE INTO quest_done(user_id,quest_id) SELECT m.character_id,r.quest_id FROM party_quest_run r JOIN party_quest_member m ON m.run_id=r.id WHERE m.character_id=? AND m.status=1", UserList(userIndex).Id)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("SELECT DISTINCT r.quest_id FROM party_quest_run r JOIN party_quest_member m ON m.run_id=r.id WHERE m.character_id=? AND m.status=1", UserList(userIndex).Id)
-    Do While Not rows.EOF
-        quest = rows.Fields(0).value
-        If Not UserDoneQuest(userIndex, quest) Then Call AddDoneQuest(userIndex, quest)
-        Call rows.MoveNext()
-    Loop
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("SELECT run_id FROM party_quest_member WHERE character_id=? AND status=0", UserList(userIndex).Id)
-    If Not rows.EOF Then runId = rows.Fields(0).value
-    Call CloseHuntRows(rows)
-    If runId > 0 Then
-        For i = 1 To mCapacity
-            If mRuns(i).id = runId Then cache = i: Exit For
-        Next i
-        If cache = 0 Then
-            cache = FreeRunSlot(): If cache = 0 Then Err.Raise vbObjectError + 860, , "Party quest cache full"
-            Dim blankState As HuntRun
-            mRuns(cache) = blankState
-            Set rows = HuntSql("SELECT * FROM party_quest_run WHERE id=?", runId)
-            With mRuns(cache)
-                .id = runId: .quest = rows!quest_id: .leaderId = rows!leader_id
-                .target = rows!target_npc: .required = rows!required: .progress = rows!progress: .reward = rows!reward_gold
-            End With
-            Call CloseHuntRows(rows)
-            Set rows = HuntSql("SELECT * FROM party_quest_member WHERE run_id=? ORDER BY ordinal", runId)
-            Do While Not rows.EOF
-                With mRuns(cache)
-                    .count = .count + 1
-                    If .count > MAX_MEMBERS Then Err.Raise vbObjectError + 860, , "Invalid persisted hunt roster"
-                    With .members(.count)
-                        .characterId = rows!character_id: .name = rows!name
-                        .participated = rows!participated <> 0: .status = rows!status: .vote = 1
-                    End With
-                End With
-                Call rows.MoveNext()
-            Loop
-            Call CloseHuntRows(rows)
-        End If
-        Call ProjectRun(cache, userIndex, False)
-    End If
+    Dim completed As Variant
+    For Each completed In done
+        If Not UserDoneQuest(userIndex, CInt(completed)) Then Call AddDoneQuest(userIndex, CInt(completed))
+    Next completed
+    If cache > 0 Then Call ProjectRun(cache, userIndex, False)
     LoadPartyQuest = True
     Exit Function
 Failed:
@@ -483,7 +598,7 @@ Private Sub StartHunt(ByVal leader As Integer)
     On Error GoTo Failed
     Call RefreshPartyQuestProposal(leader)
     If Not ProposalCanStart(leader) Then mSessions(leader).result = HuntNeedParty: Exit Sub
-    Dim run As HuntRun, i As Integer, u As Integer, cache As Integer, inTransaction As Boolean, rows As ADODB.Recordset
+    Dim run As HuntRun, i As Integer, u As Integer, cache As Integer
     cache = FreeRunSlot(): If cache = 0 Then mSessions(leader).result = HuntBusy: Exit Sub
     run.quest = mProposals(leader).quest: run.leaderId = UserList(leader).Id
     run.target = QuestList(run.quest).RequiredNPC(1).NpcIndex
@@ -495,16 +610,12 @@ Private Sub StartHunt(ByVal leader As Integer)
             run.count = run.count + 1: run.members(run.count) = mProposals(leader).members(i)
         End If
     Next i
-    Call Connection.BeginTrans(): inTransaction = True
-    Set rows = HuntSql("INSERT INTO party_quest_run(quest_id,leader_id,target_npc,required,reward_gold) VALUES(?,?,?,?,?)", run.quest, run.leaderId, run.target, run.required, run.reward)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("SELECT last_insert_rowid()")
-    run.id = rows.Fields(0).value: Call CloseHuntRows(rows)
+    If Not mRunIdsKnown Or mNextRun = &H7FFFFFFF Then mSessions(leader).result = HuntBusy: Exit Sub
+    If Not CanReserveHuntOwners(run) Then mSessions(leader).result = HuntBusy: Exit Sub
     For i = 1 To run.count
-        Set rows = HuntSql("INSERT INTO party_quest_member(run_id,ordinal,character_id,name) VALUES(?,?,?,?)", run.id, i, run.members(i).characterId, run.members(i).name)
-        Call CloseHuntRows(rows)
+        If Not RegisterHuntSaveOwner(run.members(i).online.ArrayIndex) Then Err.Raise vbObjectError + 862, , "Hunt owner capacity"
     Next i
-    Call Connection.CommitTrans(): inTransaction = False
+    mNextRun = mNextRun + 1: run.id = mNextRun: run.revision = 1
     mRuns(cache) = run
     Call CloseProposal(leader, HuntStarted, cache)
     For i = 1 To run.count
@@ -515,8 +626,6 @@ Private Sub StartHunt(ByVal leader As Integer)
     Next i
     Exit Sub
 Failed:
-    If inTransaction Then Call Connection.RollbackTrans()
-    Call CloseHuntRows(rows)
     mSessions(leader).result = HuntStorageError
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.StartHunt", Erl)
 End Sub
@@ -545,23 +654,8 @@ Public Sub PartyQuestNpcDeath(ByVal credited As Integer, ByRef npc As t_Npc, ByR
             End If
         Next i
         If count < 2 Then Exit Sub
-        Dim rows As ADODB.Recordset, inTransaction As Boolean
-        Call Connection.BeginTrans(): inTransaction = True
-        Set rows = HuntSql("UPDATE party_quest_run SET progress=progress+1 WHERE id=? AND progress=? AND progress<required", .id, .progress)
-        Call CloseHuntRows(rows)
-        Set rows = HuntSql("SELECT changes()")
-        If rows.Fields(0).value <> 1 Then Err.Raise vbObjectError + 860, , "Stale hunt counter"
-        Call CloseHuntRows(rows)
-        Set rows = HuntSql("INSERT INTO party_quest_kill(run_id,ordinal,qualified_mask) VALUES(?,?,?)", .id, .progress + 1, mask)
-        Call CloseHuntRows(rows)
-        For member = 1 To .count
-            If (mask And (2 ^ (member - 1))) <> 0 Then
-                Set rows = HuntSql("UPDATE party_quest_member SET participated=1 WHERE run_id=? AND character_id=? AND status=0", .id, .members(member).characterId)
-                Call CloseHuntRows(rows)
-            End If
-        Next member
-        Call Connection.CommitTrans(): inTransaction = False
         .progress = .progress + 1
+        .killMasks(.progress) = mask: .revision = .revision + 1
         For member = 1 To .count
             If (mask And (2 ^ (member - 1))) <> 0 Then .members(member).participated = True
         Next member
@@ -569,8 +663,6 @@ Public Sub PartyQuestNpcDeath(ByVal credited As Integer, ByRef npc As t_Npc, ByR
     Call PublishRun(cache)
     Exit Sub
 Failed:
-    If inTransaction Then Call Connection.RollbackTrans()
-    Call CloseHuntRows(rows)
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.PartyQuestNpcDeath", Erl)
 End Sub
 
@@ -587,25 +679,6 @@ End Function
 
 Public Sub ClaimPartyQuest(ByVal userIndex As Integer, ByVal quest As Integer)
     On Error GoTo Failed
-    If UserList(userIndex).PartyQuestSaveBlocked Then
-        Dim recovery As ADODB.Recordset
-        Set recovery = HuntSql("SELECT gold,party_quest_gold_total FROM user WHERE id=?", UserList(userIndex).Id)
-        UserList(userIndex).Stats.GLD = recovery!gold
-        UserList(userIndex).PartyQuestGoldSeen = recovery!party_quest_gold_total
-        Call CloseHuntRows(recovery)
-        Dim previousCache As Integer, previousMember As Integer
-        previousCache = mSessions(userIndex).runSlot
-        If previousCache > 0 Then
-            previousMember = RunMember(previousCache, UserList(userIndex).Id)
-            Set recovery = HuntSql("SELECT status FROM party_quest_member WHERE run_id=? AND character_id=?", mRuns(previousCache).id, UserList(userIndex).Id)
-            If Not recovery.EOF And previousMember > 0 Then mRuns(previousCache).members(previousMember).status = recovery.Fields(0).value
-            Call CloseHuntRows(recovery)
-        End If
-        If Not LoadPartyQuest(userIndex) Then Exit Sub
-        UserList(userIndex).PartyQuestSaveBlocked = False
-        Call WriteUpdateGold(userIndex): Call WriteQuestListSend(userIndex): Call WritePartyQuestState(userIndex)
-        Exit Sub
-    End If
     If Not PartyQuestReady(userIndex, quest) Then Exit Sub
     If Not IsValidNpcRef(UserList(userIndex).flags.TargetNPC) Then Exit Sub
     Dim npcIndex As Integer, cache As Integer, member As Integer, slot As Byte, rows As ADODB.Recordset, inTransaction As Boolean
@@ -621,25 +694,9 @@ Public Sub ClaimPartyQuest(ByVal userIndex As Integer, ByVal quest As Integer)
         mSessions(userIndex).result = HuntBusy: Call WritePartyQuestState(userIndex): Exit Sub
     End If
     cycle = CaptureQuestFeedbackLifecycle(userIndex, slot, quest)
-    UserList(userIndex).PartyQuestSaveBlocked = True
-    Call Connection.BeginTrans(): inTransaction = True
-    Set rows = HuntSql("UPDATE party_quest_member SET status=1 WHERE run_id=? AND character_id=? AND status=0 AND participated=1", mRuns(cache).id, UserList(userIndex).Id)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("SELECT changes()")
-    If rows.Fields(0).value <> 1 Then Err.Raise vbObjectError + 860, , "Hunt already claimed"
-    Call CloseHuntRows(rows)
-    ' Cumulative credit fences asynchronous pre-claim character snapshots.
-    Set rows = HuntSql("UPDATE user SET party_quest_gold_total=party_quest_gold_total+?,gold=?+party_quest_gold_total+?-? WHERE id=?", reward, UserList(userIndex).Stats.GLD, reward, UserList(userIndex).PartyQuestGoldSeen, UserList(userIndex).Id)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("INSERT OR IGNORE INTO quest_done(user_id,quest_id) VALUES(?,?)", UserList(userIndex).Id, quest)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("DELETE FROM quest WHERE user_id=? AND quest_id=?", UserList(userIndex).Id, quest)
-    Call CloseHuntRows(rows)
-    Call Connection.CommitTrans(): inTransaction = False
     UserList(userIndex).Stats.GLD = UserList(userIndex).Stats.GLD + reward
-    UserList(userIndex).PartyQuestGoldSeen = UserList(userIndex).PartyQuestGoldSeen + reward
-    UserList(userIndex).PartyQuestSaveBlocked = False
-    mRuns(cache).members(member).status = 1: mSessions(userIndex).runSlot = 0
+    mRuns(cache).members(member).status = 1: mRuns(cache).revision = mRuns(cache).revision + 1
+    mSessions(userIndex).runSlot = 0
     Call CleanQuestSlot(userIndex, slot): Call ArrangeUserQuests(userIndex)
     If Not UserDoneQuest(userIndex, quest) Then Call AddDoneQuest(userIndex, quest)
     Call AddGrantedQuestReward(granted, 2, 0, reward)
@@ -650,18 +707,7 @@ Public Sub ClaimPartyQuest(ByVal userIndex As Integer, ByVal quest As Integer)
     Call WritePartyQuestState(userIndex): Call WriteQuestListSend(userIndex)
     Exit Sub
 Failed:
-    Dim failureNumber As Long, failureText As String
-    failureNumber = Err.Number: failureText = Err.Description
-    On Error Resume Next
-    If inTransaction Then
-        Err.Clear
-        Call Connection.RollbackTrans()
-        UserList(userIndex).PartyQuestSaveBlocked = Err.Number <> 0
-    End If
-    Call CloseHuntRows(rows)
-    mSessions(userIndex).result = HuntStorageError
-    Call WritePartyQuestState(userIndex)
-    Call TraceError(failureNumber, failureText, "modPartyQuest.ClaimPartyQuest", Erl)
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.ClaimPartyQuest", Erl)
 End Sub
 
 Public Sub AbandonPartyQuest(ByVal userIndex As Integer)
@@ -676,13 +722,8 @@ Public Sub AbandonPartyQuest(ByVal userIndex As Integer)
         Call WritePartyQuestState(userIndex): Exit Sub
     End If
     quest = mRuns(cache).quest: member = RunMember(cache, UserList(userIndex).Id)
-    Call Connection.BeginTrans(): inTransaction = True
-    Set rows = HuntSql("UPDATE party_quest_member SET status=2 WHERE run_id=? AND character_id=? AND status=0", mRuns(cache).id, UserList(userIndex).Id)
-    Call CloseHuntRows(rows)
-    Set rows = HuntSql("DELETE FROM quest WHERE user_id=? AND quest_id=?", UserList(userIndex).Id, quest)
-    Call CloseHuntRows(rows)
-    Call Connection.CommitTrans(): inTransaction = False
-    mRuns(cache).members(member).status = 2: mSessions(userIndex).runSlot = 0
+    mRuns(cache).members(member).status = 2: mRuns(cache).revision = mRuns(cache).revision + 1
+    mSessions(userIndex).runSlot = 0
     slot = QuestSlotFor(userIndex, quest)
     If slot > 0 Then Call CleanQuestSlot(userIndex, slot)
     Call ArrangeUserQuests(userIndex)
@@ -690,10 +731,6 @@ Public Sub AbandonPartyQuest(ByVal userIndex As Integer)
     Call WriteQuestListSend(userIndex): Call WritePartyQuestState(userIndex): Call PublishRun(cache)
     Exit Sub
 Failed:
-    If inTransaction Then Call Connection.RollbackTrans()
-    Call CloseHuntRows(rows)
-    mSessions(userIndex).result = HuntStorageError
-    Call WritePartyQuestState(userIndex)
     Call TraceError(Err.Number, Err.Description, "modPartyQuest.AbandonPartyQuest", Erl)
 End Sub
 
@@ -872,13 +909,358 @@ End Sub
 
 #If UNIT_TEST = 1 Then
 Public Sub ResetPartyQuestTests()
-    mCapacity = 0: mDefinition = 0: Erase mSessions: Erase mRuns: Erase mProposals: Set mOnline = Nothing
+    mCapacity = 0: mDefinition = 0: mRunIdsKnown = False: mNextRun = 0: Erase mSessions: Erase mRuns: Erase mProposals: Set mOnline = Nothing
     Set mRetries = Nothing: Set mLeaders = Nothing
+    Call ResetHuntSaveOwners()
+    HoldPartySaves = False: FailPartyRosterRead = False
+    Dim blankBatch As HuntSaveBatch
+    mHeldBatch = blankBatch
 End Sub
 Public Function PartyQuestProgressForTest(ByVal userIndex As Integer) As Integer
     If mSessions(userIndex).runSlot > 0 Then PartyQuestProgressForTest = mRuns(mSessions(userIndex).runSlot).progress
 End Function
 Public Function PartyQuestProposalForTest(ByVal userIndex As Integer) As Long
     If mSessions(userIndex).proposal > 0 Then PartyQuestProposalForTest = mProposals(mSessions(userIndex).proposal).id
+End Function
+#End If
+
+Private Function RegisterHuntSaveOwner(ByVal userIndex As Integer) As Boolean
+    If mSaveOwners Is Nothing Then
+        Set mSaveOwners = CreateObject("Scripting.Dictionary")
+        Set mPendingSaves = CreateObject("Scripting.Dictionary")
+    End If
+    If mSaveCapacity < mCapacity Then
+        mSaveCapacity = mCapacity
+        ReDim Preserve mOwners(1 To mSaveCapacity)
+        ReDim Preserve mBatches(1 To mSaveCapacity)
+    End If
+    Dim key As String, i As Integer
+    key = CStr(UserList(userIndex).Id)
+    If mSaveOwners.Exists(key) Then RegisterHuntSaveOwner = True: Exit Function
+    For i = 1 To mSaveCapacity
+        If mOwners(i).characterId = 0 Then
+            mOwners(i).characterId = UserList(userIndex).Id
+            mOwners(i).nextSequence = UserList(userIndex).PartyQuestSaveRevision
+            mOwners(i).committedSequence = mOwners(i).nextSequence
+            mSaveOwners(key) = i: RegisterHuntSaveOwner = True: Exit Function
+        End If
+    Next i
+End Function
+
+Private Function CanReserveHuntOwners(ByRef run As HuntRun) As Boolean
+    Dim i As Integer, needed As Integer, used As Integer
+    If Not mSaveOwners Is Nothing Then used = mSaveOwners.count
+    For i = 1 To run.count
+        If Not PartyQuestOwnsCharacter(run.members(i).characterId) Then needed = needed + 1
+    Next i
+    CanReserveHuntOwners = used + needed <= mCapacity
+End Function
+
+Public Function PartyQuestOwnsCharacter(ByVal characterId As Long) As Boolean
+    If mSaveOwners Is Nothing Then Exit Function
+    PartyQuestOwnsCharacter = mSaveOwners.Exists(CStr(characterId))
+End Function
+
+Private Function CaptureHuntCharacter(ByVal userIndex As Integer, ByVal logout As Boolean) As clsPartyQuestCharacterSave
+    Dim owner As Integer, job As New clsPartyQuestCharacterSave
+    owner = mSaveOwners(CStr(UserList(userIndex).Id))
+    If mOwners(owner).nextSequence = &H7FFFFFFF Then Err.Raise vbObjectError + 862, , "Hunt save sequence exhausted"
+    mOwners(owner).nextSequence = mOwners(owner).nextSequence + 1
+    Call job.Capture(userIndex, mOwners(owner).nextSequence, logout)
+    Set mOwners(owner).latest = job
+    Set CaptureHuntCharacter = job
+End Function
+
+Private Sub CaptureHuntBatch(ByVal owner As Integer, ByVal logout As Boolean, Optional ByVal refresh As Boolean = False)
+    Dim batch As HuntSaveBatch, i As Integer, j As Integer, userIndex As Integer
+    Dim job As clsPartyQuestCharacterSave, characterId As Long, included As Object
+    Set included = CreateObject("Scripting.Dictionary")
+    characterId = mOwners(owner).characterId
+    userIndex = OnlineCharacter(characterId)
+    Set job = mOwners(owner).latest
+    If refresh And userIndex > 0 Then Set job = CaptureHuntCharacter(userIndex, logout)
+    If job Is Nothing Then Err.Raise vbObjectError + 862, , "Missing owned character snapshot"
+    batch.characterId = characterId: batch.sequence = job.Sequence
+    Set batch.characters = New Collection
+    Call batch.characters.Add(job, CStr(characterId))
+    included(CStr(characterId)) = True
+    ReDim batch.runs(1 To mCapacity)
+    For i = 1 To mCapacity
+        If mRuns(i).id > 0 And mRuns(i).revision > mRuns(i).savedRevision Then
+            If RunMember(i, characterId) > 0 Then
+                batch.count = batch.count + 1: batch.runs(batch.count) = mRuns(i)
+                For j = 1 To mRuns(i).count
+                    With mRuns(i).members(j)
+                        If .status = 1 And .savedStatus <> 1 And Not included.Exists(CStr(.characterId)) Then
+                            ' Committing someone else's pending claim also commits their
+                            ' latest whole character snapshot in the SAME transaction.
+                            userIndex = OnlineCharacter(.characterId)
+                            If userIndex > 0 Then
+                                Set job = CaptureHuntCharacter(userIndex, False)
+                            Else
+                                Set job = mOwners(mSaveOwners(CStr(.characterId))).latest
+                            End If
+                            If job Is Nothing Then Err.Raise vbObjectError + 862, , "Pending claim has no wallet snapshot"
+                            Call batch.characters.Add(job, CStr(.characterId))
+                            included(CStr(.characterId)) = True
+                        End If
+                    End With
+                Next j
+            End If
+        End If
+    Next i
+    mBatches(owner) = batch
+    mPendingSaves(CStr(owner)) = True
+End Sub
+
+Private Sub PersistHuntSnapshot(ByRef snapshot As HuntRun)
+    Dim rows As ADODB.Recordset, i As Integer, stored As Long
+    Set rows = HuntSql("SELECT revision FROM party_quest_run WHERE id=?", snapshot.id)
+    If Not rows.EOF Then stored = rows.Fields(0).value
+    Call CloseHuntRows(rows)
+    If stored >= snapshot.revision Then Exit Sub
+    With snapshot
+        Set rows = HuntSql("INSERT INTO party_quest_run(id,revision,quest_id,leader_id,target_npc,required,progress,reward_gold) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,progress=excluded.progress WHERE party_quest_run.revision<excluded.revision", .id, .revision, .quest, .leaderId, .target, .required, .progress, .reward)
+        Call CloseHuntRows(rows)
+        For i = 1 To .count
+            Set rows = HuntSql("INSERT INTO party_quest_member(run_id,ordinal,character_id,user_id,name,participated,status) VALUES(?,?,?,(SELECT id FROM user WHERE id=?),?,?,?) ON CONFLICT(run_id,character_id) DO UPDATE SET user_id=excluded.user_id,participated=excluded.participated,status=excluded.status", .id, i, .members(i).characterId, .members(i).characterId, .members(i).name, Abs(CInt(.members(i).participated)), .members(i).status)
+            Call CloseHuntRows(rows)
+        Next i
+        For i = 1 To .progress
+            Set rows = HuntSql("INSERT OR IGNORE INTO party_quest_kill(run_id,ordinal,qualified_mask) VALUES(?,?,?)", .id, i, .killMasks(i))
+            Call CloseHuntRows(rows)
+        Next i
+    End With
+End Sub
+
+Private Function CommitHuntBatch(ByRef batch As HuntSaveBatch) As Boolean
+    On Error GoTo Failed
+    If mFlushing Or Not PartyQuestLegacyWritesComplete() Then Exit Function
+    #If UNIT_TEST = 1 Then
+        If HoldPartySaves Then Exit Function
+    #End If
+    Dim inTransaction As Boolean, rows As ADODB.Recordset, job As clsPartyQuestCharacterSave, command As ADODB.Command
+    Dim i As Integer, j As Integer, owner As Integer, stored As Long, exists As Boolean
+    mFlushing = True
+    Call Connection.BeginTrans(): inTransaction = True
+    For i = 1 To batch.count: Call PersistHuntSnapshot(batch.runs(i)): Next i
+    For Each job In batch.characters
+        Set rows = HuntSql("SELECT party_quest_save_revision FROM user WHERE id=?", job.CharacterId)
+        exists = Not rows.EOF
+        If exists Then stored = rows.Fields(0).value
+        Call CloseHuntRows(rows)
+        If exists Then
+            If stored < job.Sequence Then
+                For Each command In job.Commands
+                    Set command.ActiveConnection = Connection
+                    Call CountPartyQuestSql()
+                    Call command.Execute()
+                Next command
+                Set rows = HuntSql("UPDATE user SET party_quest_save_revision=? WHERE id=? AND party_quest_save_revision<?", job.Sequence, job.CharacterId, job.Sequence)
+                Call CloseHuntRows(rows)
+            End If
+        End If
+    Next job
+    Call Connection.CommitTrans(): inTransaction = False
+    ' Only a completed transaction acknowledges immutable revisions. Never clear
+    ' a newer run mutation or a newer pending character snapshot.
+    For i = 1 To batch.count
+        For j = 1 To mCapacity
+            If mRuns(j).id = batch.runs(i).id Then
+                If mRuns(j).savedRevision <= batch.runs(i).revision Then
+                    mRuns(j).savedRevision = batch.runs(i).revision
+                    Dim member As Integer
+                    For member = 1 To mRuns(j).count
+                        mRuns(j).members(member).savedStatus = batch.runs(i).members(member).status
+                    Next member
+                End If
+            End If
+        Next j
+    Next i
+    For Each job In batch.characters
+        If mSaveOwners.Exists(CStr(job.CharacterId)) Then
+            owner = mSaveOwners(CStr(job.CharacterId))
+            If mOwners(owner).committedSequence < job.Sequence Then mOwners(owner).committedSequence = job.Sequence
+            If mOwners(owner).nextSequence = job.Sequence Then
+                Call job.Acknowledge()
+                Set mOwners(owner).latest = Nothing
+            End If
+        End If
+    Next job
+    CommitHuntBatch = True: mFlushing = False
+    Exit Function
+Failed:
+    Dim number As Long, description As String
+    number = Err.Number: description = Err.Description
+    Resume Rollback
+Rollback:
+    On Error Resume Next
+    If inTransaction Then Call Connection.RollbackTrans()
+    Call CloseHuntRows(rows)
+    mFlushing = False
+    Call TraceError(number, description, "modPartyQuest.CommitHuntBatch", Erl)
+End Function
+
+Private Sub RetireCompletedHuntSaves()
+    Dim key As Variant, owner As Integer, i As Integer, j As Integer, saved As Boolean
+    For Each key In mPendingSaves.Keys
+        owner = CInt(key): saved = mBatches(owner).sequence <= mOwners(owner).committedSequence
+        For i = 1 To mBatches(owner).count
+            For j = 1 To mCapacity
+                If mRuns(j).id = mBatches(owner).runs(i).id Then
+                    If mRuns(j).savedRevision < mBatches(owner).runs(i).revision Then saved = False
+                End If
+            Next j
+        Next i
+        If saved Then
+            Call mPendingSaves.Remove(key)
+            Dim blankState As HuntSaveBatch
+            mBatches(owner) = blankState
+            Call ReleaseHuntOwnerIfClean(owner)
+        End If
+    Next key
+End Sub
+
+Private Function FlushHuntOwner(ByVal owner As Integer) As Boolean
+    If Not mPendingSaves.Exists(CStr(owner)) Then FlushHuntOwner = True: Exit Function
+    ' Immutable even if an ADO completion event causes another save request.
+    Dim snapshot As HuntSaveBatch
+    snapshot = mBatches(owner)
+    If CommitHuntBatch(snapshot) Then
+        Call RetireCompletedHuntSaves()
+        FlushHuntOwner = True
+    End If
+End Function
+
+Private Sub ReleaseHuntOwnerIfClean(ByVal owner As Integer)
+    If mOwners(owner).characterId = 0 Then Exit Sub
+    If Not mOwners(owner).latest Is Nothing Then Exit Sub
+    If mPendingSaves.Exists(CStr(owner)) Then Exit Sub
+    If OnlineCharacter(mOwners(owner).characterId) > 0 Then Exit Sub
+    If CharacterHasDirtyHunt(mOwners(owner).characterId) Then Exit Sub
+    Call mSaveOwners.Remove(CStr(mOwners(owner).characterId))
+    Dim blankState As HuntSaveOwner
+    mOwners(owner) = blankState
+End Sub
+
+Private Function CharacterHasDirtyHunt(ByVal characterId As Long) As Boolean
+    Dim i As Integer
+    For i = 1 To mCapacity
+        If mRuns(i).revision > mRuns(i).savedRevision Then
+            If RunMember(i, characterId) > 0 Then CharacterHasDirtyHunt = True: Exit Function
+        End If
+    Next i
+End Function
+
+Public Sub SavePartyQuestCharacter(ByVal userIndex As Integer, ByVal logout As Boolean)
+    On Error GoTo Failed
+    Dim owner As Integer, job As clsPartyQuestCharacterSave
+    owner = mSaveOwners(CStr(UserList(userIndex).Id))
+    ' Capture even after connection loss: identity is persistent, not the slot.
+    Set job = CaptureHuntCharacter(userIndex, logout)
+    Call CaptureHuntBatch(owner, logout)
+    Call FlushHuntOwner(owner)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.SavePartyQuestCharacter", Erl)
+End Sub
+
+Public Function PreparePartyQuestLogin(ByVal characterId As Long) As Boolean
+    On Error GoTo Failed
+    PreparePartyQuestLogin = True
+    If Not PartyQuestOwnsCharacter(characterId) Then Exit Function
+    Dim owner As Integer
+    owner = mSaveOwners(CStr(characterId))
+    ' Do not load an old wallet while a retained logout save still owns its claim.
+    If mPendingSaves.Exists(CStr(owner)) Or Not mOwners(owner).latest Is Nothing Then
+        Call CaptureHuntBatch(owner, True, True)
+        PreparePartyQuestLogin = FlushHuntOwner(owner)
+    End If
+    Exit Function
+Failed:
+    PreparePartyQuestLogin = False
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.PreparePartyQuestLogin", Erl)
+End Function
+
+Public Sub RetryPartyQuestSaves(Optional ByVal limit As Integer = 2)
+    On Error GoTo Failed
+    If mPendingSaves Is Nothing Or mFlushing Then Exit Sub
+    Dim key As Variant, owner As Integer, attempted As Integer
+    For Each key In mPendingSaves.Keys
+        owner = CInt(key)
+        ' A queued, not-yet-dispatched save coalesces to the latest shared state.
+        Call CaptureHuntBatch(owner, False, True)
+        Call FlushHuntOwner(owner)
+        attempted = attempted + 1: If attempted >= limit Then Exit For
+    Next key
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.RetryPartyQuestSaves", Erl)
+End Sub
+
+Public Function FlushPartyQuestShutdown() As Boolean
+    Call RetryPartyQuestSaves(mSaveCapacity)
+    If mPendingSaves Is Nothing Then FlushPartyQuestShutdown = True: Exit Function
+    FlushPartyQuestShutdown = mPendingSaves.count = 0
+End Function
+
+Public Sub PartyQuestBeforeSlotReset(ByVal userIndex As Integer)
+    On Error GoTo Failed
+    If PartyQuestOwnsCharacter(UserList(userIndex).Id) Then
+        Dim owner As Integer, job As clsPartyQuestCharacterSave
+        owner = mSaveOwners(CStr(UserList(userIndex).Id))
+        If Not mOwners(owner).latest Is Nothing Or CharacterHasDirtyHunt(UserList(userIndex).Id) Then
+            Set job = CaptureHuntCharacter(userIndex, True)
+            Call CaptureHuntBatch(owner, True)
+        End If
+    End If
+    Call PartyQuestLogout(userIndex)
+    If owner > 0 Then Call ReleaseHuntOwnerIfClean(owner)
+    Exit Sub
+Failed:
+    Call TraceError(Err.Number, Err.Description, "modPartyQuest.PartyQuestBeforeSlotReset", Erl)
+End Sub
+
+Private Sub ResetHuntSaveOwners()
+    Set mSaveOwners = Nothing: Set mPendingSaves = Nothing
+    Erase mOwners: Erase mBatches: mSaveCapacity = 0: mFlushing = False
+End Sub
+
+Public Sub CountPartyQuestSql()
+    #If UNIT_TEST = 1 Then
+        PartyQuestSqlCount = PartyQuestSqlCount + 1
+    #End If
+End Sub
+
+#If UNIT_TEST = 1 Then
+Public Function PartyQuestMaskForTest(ByVal userIndex As Integer, ByVal kill As Integer) As Long
+    PartyQuestMaskForTest = mRuns(mSessions(userIndex).runSlot).killMasks(kill)
+End Function
+Public Function HasPendingPartySaveForTest(ByVal characterId As Long) As Boolean
+    If Not PartyQuestOwnsCharacter(characterId) Then Exit Function
+    HasPendingPartySaveForTest = mPendingSaves.Exists(CStr(mSaveOwners(CStr(characterId))))
+End Function
+Public Sub HoldPartySnapshotForTest(ByVal userIndex As Integer)
+    mHeldBatch = mBatches(mSaveOwners(CStr(UserList(userIndex).Id)))
+End Sub
+Public Function CompleteHeldPartySnapshotForTest() As Boolean
+    CompleteHeldPartySnapshotForTest = CommitHuntBatch(mHeldBatch)
+End Function
+Public Function PartyQuestDirtyForTest(ByVal userIndex As Integer) As Boolean
+    Dim cache As Integer
+    cache = mSessions(userIndex).runSlot
+    If cache > 0 Then PartyQuestDirtyForTest = mRuns(cache).revision > mRuns(cache).savedRevision
+End Function
+#End If
+
+#If UNIT_TEST = 1 Then
+Public Function PartyQuestCacheCountForTest() As Integer
+    Dim i As Integer
+    For i = 1 To mCapacity
+        If mRuns(i).id > 0 Then PartyQuestCacheCountForTest = PartyQuestCacheCountForTest + 1
+    Next i
+End Function
+Public Function PartyQuestMemberCountForTest(ByVal userIndex As Integer) As Integer
+    PartyQuestMemberCountForTest = mRuns(mSessions(userIndex).runSlot).count
 End Function
 #End If

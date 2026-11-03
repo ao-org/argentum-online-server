@@ -31,6 +31,40 @@ Public Const DatabaseFileName = "Database.db"
 Private BankSaveCmdInit As Boolean
 Private BankSaveCmd()   As ADODB.Command
 
+' Party-only save capture: immutable commands owned until transaction completion.
+Private mPartyCapture As Collection
+Private mPartyCaptureFailed As Boolean
+Private mPartyFences(1 To MAX_ASYNC) As clsPartyQuestAsyncFence
+Public Function PartyQuestCaptureActive() As Boolean
+    PartyQuestCaptureActive = Not mPartyCapture Is Nothing
+End Function
+Public Sub BeginPartyQuestCapture()
+    If Not mPartyCapture Is Nothing Then Err.Raise vbObjectError + 862, , "Nested party save capture"
+    Set mPartyCapture = New Collection: mPartyCaptureFailed = False
+End Sub
+Public Sub FailPartyQuestCapture()
+    mPartyCaptureFailed = True
+End Sub
+Public Sub CapturePartyQuestCommand(ByVal command As ADODB.Command)
+    Call mPartyCapture.Add(command)
+End Sub
+Public Function EndPartyQuestCapture() As Collection
+    Dim failed As Boolean
+    failed = mPartyCaptureFailed
+    Set EndPartyQuestCapture = mPartyCapture
+    Set mPartyCapture = Nothing
+    If failed Then Err.Raise vbObjectError + 862, , "Incomplete party character snapshot"
+End Function
+Public Function PartyQuestLegacyWritesComplete() As Boolean
+    Dim i As Integer
+    For i = 1 To MAX_ASYNC
+        If Not mPartyFences(i) Is Nothing Then
+            If mPartyFences(i).Pending <> 0 Then Exit Function
+        End If
+    Next i
+    PartyQuestLegacyWritesComplete = True
+End Function
+
 ' Opens the async ADO connection pool used by non-blocking Execute operations.
 ' These are real ADODB connections (Connection_async), not VB6-managed worker threads/queues.
 ' Execute dispatches work to this pool with adAsyncExecute so the caller can avoid blocking.
@@ -50,6 +84,8 @@ Public Sub Database_Connect_Async()
         Call Connection_async(i).Open
         ' SQLite enforces foreign keys per connection, so enable cascades immediately after opening each ADO connection.
         Call Connection_async(i).Execute("PRAGMA foreign_keys = ON")
+        Set mPartyFences(i) = New clsPartyQuestAsyncFence
+        Call mPartyFences(i).Attach(Connection_async(i))
     Next i
     Current_async = 1
     Set Builder = New cStringBuilder
@@ -116,6 +152,7 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
     End If
+    Call CountPartyQuestSql()
     Set Query = Command.Execute()
     ' Statistics
     If frmMain.chkLogDbPerfomance.value = 1 Then
@@ -139,6 +176,9 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Dim Argument As Variant
     Dim executeOptions As Long
     executeOptions = adAsyncExecute
+    If Not mPartyCapture Is Nothing Then
+        Set Command.ActiveConnection = Connection
+    Else
 #If UNIT_TEST = 1 Then
     If Unit_PartyRewards.SynchronousPersistence Then
         Set Command.ActiveConnection = Connection
@@ -149,6 +189,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
 #If UNIT_TEST = 1 Then
     End If
 #End If
+    End If
     Command.CommandText = Text
     Command.CommandType = adCmdText
     Command.Prepared = True
@@ -162,10 +203,16 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
             Command.Parameters.Append CreateParameter(Argument, adParamInput)
         End If
     Next Argument
+    If Not mPartyCapture Is Nothing Then
+        Call CapturePartyQuestCommand(Command)
+        Execute = True
+        Exit Function
+    End If
     ' Statistics
     If frmMain.chkLogDbPerfomance.value = 1 Then
         Call GetElapsedTime
     End If
+    Call CountPartyQuestSql()
     Call Command.Execute(, , executeOptions)  ' @TODO: We want some operation to be async
     Current_async = Current_async + 1
     If Current_async = MAX_ASYNC Then
@@ -178,6 +225,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Execute = (Err.Number = 0)
     Exit Function
 Execute_Err:
+    If Not mPartyCapture Is Nothing Then mPartyCaptureFailed = True
     Debug.Assert False
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
@@ -221,7 +269,7 @@ End Sub
 Public Function ExecutePreparedBankSave(ByRef Params() As Variant) As Boolean
     On Error GoTo ExecutePreparedBankSaveErr
 
-    If Not BankSaveCmdInit Then
+    If Not BankSaveCmdInit Or PartyQuestCaptureActive() Then
         ExecutePreparedBankSave = Execute(QUERY_SAVE_BANCOINV, Params)
         Exit Function
     End If

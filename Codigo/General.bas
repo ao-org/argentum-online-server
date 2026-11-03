@@ -2087,6 +2087,7 @@ Sub GuardarUsuarios()
             Call SaveUser(i)
         End If
     Next i
+    Call RetryPartyQuestSaves(MaxUsers)
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MSG_SERVIDOR_PERSONAJES_GRABADOS, vbNullString, e_TextChannel.TEXTCHANNEL_SERVER_STAFF, e_FontTypeNames.FONTTYPE_SERVER)) 'Msg1658=Servidor » Personajes Grabados
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     haciendoBK = False
@@ -2218,6 +2219,12 @@ Public Sub CerrarServidor()
             Call CloseSocket(LoopC)
         End If
     Next
+    ' A failed/pending party save still owns its character snapshot. Do not End
+    ' the process or close its connection until that normal save work commits.
+    If Not FlushPartyQuestShutdown() Then
+        Call LogDatabaseError("Party quest shutdown save pending; shutdown deferred")
+        Exit Sub
+    End If
     Call UnloadAntiCheat
     If Database_Enabled Then Database_Close
     End

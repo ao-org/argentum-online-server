@@ -1,7 +1,8 @@
-ALTER TABLE user ADD COLUMN party_quest_gold_total INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE user ADD COLUMN party_quest_save_revision INTEGER NOT NULL DEFAULT 0;
 -- Shared party-quest state is authoritative. Ordinary quest slots are projections.
 CREATE TABLE party_quest_run (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    revision INTEGER NOT NULL CHECK(revision>0),
     quest_id INTEGER NOT NULL,
     leader_id INTEGER NOT NULL,
     target_npc INTEGER NOT NULL,
@@ -12,7 +13,8 @@ CREATE TABLE party_quest_run (
 CREATE TABLE party_quest_member (
     run_id INTEGER NOT NULL REFERENCES party_quest_run(id),
     ordinal INTEGER NOT NULL CHECK(ordinal BETWEEN 1 AND 6),
-    character_id INTEGER NOT NULL REFERENCES user(id),
+    character_id INTEGER NOT NULL,
+    user_id INTEGER REFERENCES user(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     participated INTEGER NOT NULL DEFAULT 0 CHECK(participated IN (0,1)),
     status INTEGER NOT NULL DEFAULT 0 CHECK(status IN (0,1,2)),

@@ -111,15 +111,14 @@ GetUserCollectibleCards_Err:
     Set Cmd = Nothing
 End Function
 
-Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVal QueryBreakDown As String)
-    On Error GoTo SaveUserAccountCollectibleCards_Err
+Public Function PrepareCollectibleCardsSnapshot(ByRef snapshot As t_User) As ADODB.Command
     Dim Cmd As ADODB.Command
     Dim QuantityData(0 To 1023) As Byte
     Dim i As Integer
     
     ' Copy user's quantity array to 0-based array for database (1024 bytes)
     For i = 1 To MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE
-        QuantityData(i - 1) = UserList(UserIndex).AccountCollectibleCardQuantities(i)
+        QuantityData(i - 1) = snapshot.AccountCollectibleCardQuantities(i)
     Next i
     
     ' Create command to upsert the blob
@@ -130,15 +129,22 @@ Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVa
         .CommandType = adCmdText
         
         ' Add account_id parameter
-        .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , UserList(UserIndex).AccountID)
+        .Parameters.Append .CreateParameter("@AccountID", adInteger, adParamInput, , snapshot.AccountID)
         
         ' Add quantity blob parameter (1024 bytes)
         .Parameters.Append .CreateParameter("@QuantityData", adVarBinary, adParamInput, MAX_COLLECTIBLE_CARDS_QUANTITY_SIZE, QuantityData)
         
         ' Execute the upsert
-        .Execute
     End With
     
+    Set PrepareCollectibleCardsSnapshot = Cmd
+End Function
+
+Public Function SaveUserAccountCollectibleCards(ByVal UserIndex As Integer, ByVal QueryBreakDown As String)
+    On Error GoTo SaveUserAccountCollectibleCards_Err
+    Dim Cmd As ADODB.Command
+    Set Cmd = PrepareCollectibleCardsSnapshot(UserList(UserIndex))
+    Call Cmd.Execute()
     Set Cmd = Nothing
     Exit Function
 

@@ -436,7 +436,6 @@ End Sub
 
 Sub CloseSocketSL(ByVal UserIndex As Integer, Optional ByVal Reason As String = vbNullString, Optional ByVal Source As String = "TCP.CloseSocketSL", Optional ByVal PacketId As Long = -1, Optional ByVal PacketName As String = vbNullString, Optional ByVal PacketCount As Long = -1, Optional ByVal Extra As String = vbNullString)
     On Error GoTo CloseSocketSL_Err
-    Call PartyQuestLogout(UserIndex)
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
@@ -1116,6 +1115,7 @@ End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSlot_Err
+    Call PartyQuestBeforeSlotReset(UserIndex)
     #If PYMMO = 1 Then
         Call ResetAdjacentPlayerSlot(UserIndex)
     #End If

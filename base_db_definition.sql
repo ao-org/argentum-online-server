@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"description"	varchar(255) DEFAULT NULL,
 	"gold"	integer NOT NULL,
 	"bank_gold"	integer NOT NULL DEFAULT '0',
-	"party_quest_gold_total" integer NOT NULL DEFAULT 0,
+	"party_quest_save_revision" integer NOT NULL DEFAULT 0,
 	"free_skillpoints"	integer NOT NULL,
 	"pets_saved"	integer NOT NULL DEFAULT '0',
 	"votes_amount"	integer DEFAULT '0',
@@ -302,6 +302,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 -- Shared party-quest state is authoritative. Ordinary quest slots are projections.
 CREATE TABLE party_quest_run (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    revision INTEGER NOT NULL CHECK(revision>0),
     quest_id INTEGER NOT NULL,
     leader_id INTEGER NOT NULL,
     target_npc INTEGER NOT NULL,
@@ -312,7 +313,8 @@ CREATE TABLE party_quest_run (
 CREATE TABLE party_quest_member (
     run_id INTEGER NOT NULL REFERENCES party_quest_run(id),
     ordinal INTEGER NOT NULL CHECK(ordinal BETWEEN 1 AND 6),
-    character_id INTEGER NOT NULL REFERENCES user(id),
+    character_id INTEGER NOT NULL,
+    user_id INTEGER REFERENCES user(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     participated INTEGER NOT NULL DEFAULT 0 CHECK(participated IN (0,1)),
     status INTEGER NOT NULL DEFAULT 0 CHECK(status IN (0,1,2)),
