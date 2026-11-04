@@ -46,7 +46,7 @@ Option Explicit
     Private TamingRecipients As Collection
     Private TamingRoutesValid As Boolean
 
-        Private Const SUITE_COUNT As Integer = 51
+        Private Const SUITE_COUNT As Integer = 52
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -343,6 +343,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 49: RunSuite = Unit_QuestDiscovery.TestSuite()
         Case 50: RunSuite = Unit_PartyRewards.TestSuite()
         Case 51: RunSuite = Unit_PartyManagement.TestSuite()
+        Case 52: RunSuite = Unit_GmSupportHistory.test_suite_gm_support_history()
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False

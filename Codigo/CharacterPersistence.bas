@@ -660,7 +660,7 @@ End Sub
 Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As String, Optional ByVal Logout As Boolean = False)
     Dim QueryTimer As Long
     Dim Params() As Variant
-    ReDim Params(62)
+    ReDim Params(61)
     Dim i As Integer
     Params(post_increment(i)) = U.Stats.ELV
     Params(post_increment(i)) = U.Stats.Exp
@@ -673,7 +673,6 @@ Private Sub SaveCharacterMainDB(ByRef U As t_User, ByRef QueryBreakdown As Strin
     Params(post_increment(i)) = U.pos.Map
     Params(post_increment(i)) = U.pos.x
     Params(post_increment(i)) = U.pos.y
-    Params(post_increment(i)) = U.MENSAJEINFORMACION
     Params(post_increment(i)) = U.Char.body
     Params(post_increment(i)) = U.OrigChar.originalhead
     Params(post_increment(i)) = U.Char.WeaponAnim
