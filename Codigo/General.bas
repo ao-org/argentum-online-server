@@ -2212,12 +2212,16 @@ Public Sub CerrarServidor()
     Call frmMain.QuitarIconoSystray
     ' Limpieza del socket del servidor.
     Call modNetwork.Disconnect
+#If UNIT_TEST = 0 Then
     Dim LoopC As Long
     For LoopC = 1 To MaxUsers
         If UserList(LoopC).ConnectionDetails.ConnIDValida Then
             Call CloseSocket(LoopC)
         End If
     Next
+#Else
+    ' Unit-test fixtures mark synthetic users as connected but own no live sockets.
+#End If
     Call UnloadAntiCheat
     If Database_Enabled Then Database_Close
     End
