@@ -674,13 +674,15 @@ Sub Main()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER LoadPacketRatePolicy")
     #End If
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("BEFORE LoadPrivateKey")
-        #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE InitializePrivateKey")
+        PrivateKey = "000102030405060708090A0B0C0D0E0F"
+    #Else
         Call LoadPrivateKey
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("AFTER LoadPrivateKey")
-        #End If
+    #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializePrivateKey")
+    #End If
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LoadMainConfigFile")
     #End If
