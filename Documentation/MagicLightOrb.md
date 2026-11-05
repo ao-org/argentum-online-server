@@ -56,13 +56,14 @@ The dated validation records below predate transport removal. Their transport
 flags are historical; current builds use Aurora.Network unconditionally. See
 [NetworkTransport.md](NetworkTransport.md) for current build commands.
 
-Validation (2026-10-14): native Windows VB6 builds passed with DIRECT_PLAY=0,
-PYMMO=0/1 and UNIT_TEST=0/1. Focused runs passed 25/25 in both test builds;
-the full isolated server suite passed 421/421 in both PYMMO configurations,
+Historical validation (2026-10-14): native Windows VB6 builds passed with
+DIRECT_PLAY=0, PYMMO=0/1 and UNIT_TEST=0/1. Focused runs passed 25/25 in both
+test builds; the full isolated server suite passed 421/421 in both historical
+PYMMO configurations,
 including the loaded spell-data contract. No live client/server gameplay test
 or production deployment was performed.
 
-Review validation (2026-10-15): all four native build configurations passed
+Historical review validation (2026-10-15): all four native build configurations passed
 again. Focused suites passed 25/25, ordinary full suites 420/420, and explicit
 `--validate-light-orb-resources` full suites 421/421 in both PYMMO modes. A
 negative run with AutoLanzar=0 / Target=4 failed only the resource contract,
@@ -101,7 +102,7 @@ All tracing is compiled out with UNIT_TEST=0. Initialization, anti-cheat policy,
 test selection and orb gameplay are unchanged. No Jenkins changes are included.
 Retain this instrumentation until the Jenkins startup failure is understood.
 
-Diagnostics validation (2026-10-15): native builds passed with PYMMO=0/1 and
+Historical diagnostics validation (2026-10-15): native builds passed with PYMMO=0/1 and
 UNIT_TEST=0/1. The exact Jenkins override `DEBUGGING=1:PYMMO=0:UNIT_TEST=1`
 passed 420/420 using the updated local assets at d7d21868, example configs,
 isolated paths/binding and legacy anti-cheat disabled. All 41 suite boundaries
@@ -134,10 +135,10 @@ restores only initialized snapshots and reports restoration errors without
 retrying cleanup. The explicit deployment-resource check still fails for missing
 spell 352 or incompatible authored data. No production resource loading changed.
 
-The separate Init error 9 came from encrypting the test token with an empty key:
-PYMMO=0 does not call LoadPrivateKey, cipherEncryptBytes returns an empty array,
-and cnvB64StrFromBytes dereferences abData(0). Only the PYMMO=0 test fixture now
-uses a fixed test key, without changing the production PrivateKey. A regression
+The separate historical Init error 9 came from the former local-account mode
+not calling LoadPrivateKey, leaving cipherEncryptBytes an empty key and causing
+cnvB64StrFromBytes to dereference abData(0). At that time the local-mode test
+fixture used a fixed test key without changing production PrivateKey. A regression
 checks the initialized token's encryption/decryption roundtrip. Genuine Init
 failures are recorded after runner initialization rather than erased by a reset.
 
@@ -150,12 +151,14 @@ UNIT_TEST=0 orb gameplay, protocol, costs, cooldowns or bindability.
 
 Native validation of the fix (2026-10-15):
 
-- Exact Jenkins override: `VB6.EXE /make Server.VBP /d
-  DEBUGGING=1:PYMMO=0:UNIT_TEST=1 /out build.log /outdir <isolated-build>`:
+- Exact Jenkins override, recorded historically; the current command omits the
+  removed PYMMO define: `VB6.EXE /make Server.VBP /d
+  DEBUGGING=1:UNIT_TEST=1 /out build.log /outdir <isolated-build>`:
   build succeeded and the complete suite passed 424/424.
-- Explicit `DEBUGGING=1:UNLOCK_CPU=1:UNIT_TEST=0/1:PYMMO=0/1:
-  DIRECT_PLAY=0:BATTLESERVER=0`: all four native builds succeeded; full test
-  runs passed 424/424 in each PYMMO configuration.
+- The historical matrix used `DEBUGGING=1:UNLOCK_CPU=1`, `UNIT_TEST=0/1`, and
+  `DIRECT_PLAY=0`; current build commands do not define PYMMO. All four native
+  builds succeeded; full test runs passed 424/424 in each historical
+  authentication configuration.
 - Short-table reproduction (351 spells): all 424 tests passed, including all
   original orb assertions and the setup-exception/restoration regressions.
 - Strict resource validation with that short table: 424 passed, 1 expected

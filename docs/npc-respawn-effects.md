@@ -17,7 +17,7 @@ deferred initial population is explicitly excluded. Only a nonzero successful
 Pets/summons are excluded. Generic creation, visibility refresh, reveal, crossing,
 login and resynchronisation never trigger the presentation.
 
-Notification 220 (`PYMMO=1`) is required protocol, without a capability flag.
+Notification 220 is required protocol, without a capability flag.
 All integers are little endian. The existing reliable frame contains:
 
 | Field | Type |
@@ -143,7 +143,7 @@ Server base: `add6a089335de6c9575c8b39e0d1ebc4dc6b31d7`.
 - Server: thirteen native regression cases were added, including queue provenance,
   visibility, active/adjacent ordering and failed-send suppression. They were not
   run: the documented VB6 compiler is absent from this Windows installation.
-  Run a `UNIT_TEST=1, PYMMO=1` server with `--test-npc-respawn` in a disposable
+  Run a `UNIT_TEST=1` server with `--test-npc-respawn` in a disposable
   environment. Production notification call-site guards were audited separately.
 - macOS compilation, multiplayer integration, the manual visual matrix and
   measured simultaneous-respawn frame-time validation remain outstanding.

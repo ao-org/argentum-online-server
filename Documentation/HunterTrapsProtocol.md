@@ -30,7 +30,7 @@ C0 00 01 04 03 02 01 34 12 63 58 02 08 07 06 05
 
 The fixture uses deliberately distinctive values to verify byte order. Normal
 lifetimes come from EOT configuration, not this example. No packet IDs shift;
-the packet has the same ordinal/layout with `PYMMO=0` and `PYMMO=1`.
+the packet retains its fixed ordinal and layout.
 
 ## Events and ownership
 
@@ -85,12 +85,13 @@ must handle its own map/session visibility lifecycle; snapshots do not constitut
 a global list of every trap on the server. A client receiving a terminal event
 for an unknown ID should tolerate it without inventing ownership or gameplay.
 
-## Owner-only packet 208 (PYMMO=1)
+## Owner-only packet 208
 
 `ServerPacketID.eHooOwnedTrap` is appended after mandatory taming result 207.
 Reserved 206, taming 207 and every earlier live packet keep their IDs. The
-supported HOO deployment and validation configuration is **PYMMO=1**. This is
-not an owner field added to packet 192: the area packet remains exactly 16 bytes.
+server's only authentication mode is PYMMO account authentication; there is no
+corresponding compile-time symbol. This is not an owner field added to packet
+192: the area packet remains exactly 16 bytes.
 
 Packet 208 is also fixed **16 bytes**, little-endian:
 
@@ -146,10 +147,9 @@ effects, not persisted ownership records.
 
 ## Correlated item-use result: packet 209 (Phase 3.1)
 
-`eHooTrapUseResult` is appended after 208 without renumbering existing packets.
-It is **209 with PYMMO=1**, and 210 with PYMMO=0 because of the existing
-conditional account-character-list entry. HOO uses PYMMO=1 only. This is a
-required message, not a capability, fallback or changed client request layout.
+`eHooTrapUseResult` is packet **209**, appended after 208 without renumbering
+existing packets. This is a required message, not a capability, fallback or
+changed client request layout.
 
 Exactly **9 bytes**, little-endian, including the ID:
 
@@ -266,9 +266,11 @@ Idle user/NPC slots, touched map tiles, configuration and effect definitions are
 saved/restored. Capture and helpers are excluded from `UNIT_TEST=0` binaries.
 Live matching-client combat/area delivery remains an integration check.
 
-The dated validation records below predate transport removal. Their former
-transport flags are historical, not supported build options. Current commands
-and the unchanged 41-suite registration are in [NetworkTransport.md](NetworkTransport.md).
+The dated validation records below predate removal of local-account support
+and transport removal. Their former authentication modes and transport flags
+are historical, not supported build options. Current commands use the fixed
+PYMMO-authenticated path and Aurora.Network. See
+[NetworkTransport.md](NetworkTransport.md) for current build commands.
 
 Phase 3.1 native validation (2026-10-13):
 
@@ -329,11 +331,10 @@ Native Windows review validation (2026-10-13, separate temporary directories):
   The full suite is **blocked**, not passed; no existing database was modified.
 - Matching-HOO live gameplay/socket delivery has not been validated.
 
-Commands:
+Current commands omit the retired local-account compile-time symbol:
 
 ```text
-VB6.EXE /make Server.VBP /d DEBUGGING=0:UNLOCK_CPU=1:UNIT_TEST=<0|1>:PYMMO=1:DIRECT_PLAY=0:BATTLESERVER=0 /out <log> /outdir <temporary-output>
-VB6.EXE /make Server.VBP /d DEBUGGING=0:UNLOCK_CPU=1:UNIT_TEST=1:PYMMO=1:DIRECT_PLAY=1:BATTLESERVER=0 /out <log> /outdir <temporary-output>
+VB6.EXE /make Server.VBP /d DEBUGGING=0:UNLOCK_CPU=1:UNIT_TEST=<0|1>:BATTLESERVER=0 /out <log> /outdir <temporary-output>
 server.exe --test-traps
 server.exe --test-managed-config
 ```

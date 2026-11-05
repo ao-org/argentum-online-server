@@ -169,11 +169,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    #If PYMMO = 1 Then
         Call UnitTesting.RunTest("Quest objective packet ID", ServerPacketID.eQuestObjectiveTemplates = 223)
-    #Else
-        Call UnitTesting.RunTest("Quest objective conditional packet ID", ServerPacketID.eQuestObjectiveTemplates = 224)
-    #End If
     For i = 1 To 12
         Call RunCase(i)
     Next i

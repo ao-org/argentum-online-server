@@ -1,7 +1,7 @@
 Attribute VB_Name = "DisconnectDiagnostics"
 ' Argentum 20 Game Server
 '
-' Lightweight disconnect diagnostics gated by PYMMO and debug_disconnects.
+' Lightweight disconnect diagnostics gated by debug_disconnects.
 
 Option Explicit
 
@@ -18,9 +18,6 @@ Public Sub LogDisconnectDiag( _
 
     On Error Resume Next
 
-    #If PYMMO = 0 Then
-        Exit Sub
-    #End If
 
     If Not IsFeatureEnabled("debug_disconnects") Then Exit Sub
 

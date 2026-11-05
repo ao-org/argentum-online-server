@@ -1,6 +1,6 @@
 # Authoritative quest feedback
 
-Companion HOO consumes `eQuestFeedback` (225 with PYMMO=1, 226 with PYMMO=0).
+Companion HOO consumes `eQuestFeedback` (server packet 225).
 Coordinate client/server release; include `OGG/quest_ready.ogg` from the assets
 companion in the normal audio pack. No capability flags, negotiation, protocol
 generation or version-enforcement changes.

@@ -6,6 +6,10 @@ DirectX type-library reference and bundled DX8VB.DLL have been removed.
 Historical dated validation records and the retired-client command in Agents.md
 are not supported server build instructions.
 
+The server supports PYMMO account authentication and token-based character
+login only. The former local-account mode and the `PYMMO` compile-time symbol
+have been removed. Existing HOO packet IDs therefore have one fixed mapping.
+
 ## Dependencies and configuration
 
 Keep Aurora.Network.dll, its existing COM reference and RegistrarAurora.bat.
@@ -22,7 +26,7 @@ mapping, callbacks, packet accounting, throttling, authentication, dispatch,
 fan-out, visibility, buffer clearing, send ordering, disconnect diagnostics or
 timeouts. Auxiliary writer initialization remains before castle initialization
 and network startup; the main loop still ticks the same network server.
-PYMMO, UNIT_TEST, DEBUGGING, LOGIN_STRESS_TEST and UNLOCK_CPU remain independent
+UNIT_TEST, DEBUGGING, LOGIN_STRESS_TEST and UNLOCK_CPU remain independent
 compiler options. No packet IDs, fields or encoding have changed.
 
 The existing runner has 41 contiguous suites: Aurora is 33, orbs 39, taming 40
@@ -33,10 +37,11 @@ production. Binary-buffer helpers used elsewhere are retained.
 ## Native validation commands
 
 Use Windows VB6, registered existing dependencies, and separate output paths.
-Substitute each PYMMO and UNIT_TEST combination from 0/0, 1/0, 0/1, 1/1:
+The supported authentication path is unconditional; vary only the test and
+debugging symbols:
 
 ```text
-VB6.EXE /make Server.VBP /d DEBUGGING=<0|1>:PYMMO=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1:BATTLESERVER=0 /out <build.log> /outdir <output>
+VB6.EXE /make Server.VBP /d DEBUGGING=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1:BATTLESERVER=0 /out <build.log> /outdir <output>
 server.exe --test-traps
 server.exe --test-managed-config
 server.exe
@@ -55,7 +60,10 @@ clean shutdown. Check disconnect diagnostics and startup logs. Do not use
 production accounts or data. Reverting the transport-removal commit restores
 the prior build layout if necessary; no database/protocol rollback is needed.
 
-## Validation recorded 2026-10-19
+## Historical validation recorded 2026-10-19
+
+The PYMMO=0 rows below document tests run before local-account support was
+removed. They are historical evidence only; PYMMO=0 is not a supported build.
 
 Base: `5d8135929e904863e551ede55f707438efe25191` (includes the current trap,
 orb, taming ownership-refresh and startup/test-runner fixes).
@@ -65,7 +73,7 @@ All builds used the command above without any transport compiler argument,
 UNLOCK_CPU=1 and BATTLESERVER=0. No COM registration or dependency change was
 needed. Existing local COM path corrections were used but are not in the PR.
 
-| PYMMO | UNIT_TEST | DEBUGGING | Native build | Full suite |
+| Historical PYMMO setting | UNIT_TEST | DEBUGGING | Native build | Full suite |
 | --- | --- | --- | --- | --- |
 | 0 | 0 | 0 | Passed | Not compiled |
 | 1 | 0 | 0 | Passed | Not compiled |

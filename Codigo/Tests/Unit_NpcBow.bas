@@ -344,11 +344,7 @@ Private Sub TestCase(ByVal index As Integer)
             Call Expect(UBound(data) = 18 And data(14) = BowAccepted, "19 byte accepted result; upper=" & CStr(UBound(data)) & "; code=" & CStr(data(14)) & "; request=" & CStr(UserList(u).NpcBow.LastRequest))
             Call ExpectLong(data, 2, req.Context.Low): Call ExpectLong(data, 6, req.Context.High)
             Call ExpectLong(data, 10, req.RequestId)
-            #If PYMMO = 1 Then
                 Call Expect(ClientPacketID.eHooBowSubscribe = 315 And ClientPacketID.eHooBowAttack = 316 And ServerPacketID.eHooBowResult = 213, "HOO IDs")
-            #Else
-                Call Expect(ClientPacketID.eHooBowSubscribe = 318 And ClientPacketID.eHooBowAttack = 319 And ServerPacketID.eHooBowResult = 214, "conditional IDs")
-            #End If
         Case 29
             Set reader = AttackReader(req)
             Call HandleNpcBowAttack(u, reader)

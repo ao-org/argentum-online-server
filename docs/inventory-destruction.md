@@ -18,11 +18,11 @@ changes exist.
 
 All numbers are little endian. No strings or array length prefixes appear.
 
-| Message | PYMMO=1 ID | PYMMO=0 ordinal | Total bytes |
-| --- | ---: | ---: | ---: |
-| Client prepare | 313 | 316 | 20 |
-| Client confirm | 314 | 317 | 18 |
-| Server result | 210 | 211 | 40 |
+| Message | Packet ID | Total bytes |
+| --- | ---: | ---: |
+| Client prepare | 313 | 20 |
+| Client confirm | 314 | 18 |
+| Server result | 210 | 40 |
 
 Prepare, in order:
 
@@ -143,7 +143,7 @@ The existing suite runner includes suite 42, `Unit_InventoryDestruction`.
 For isolated native checks without account/database/world connections:
 
 ```text
-VB6.EXE /make /d DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1 /out build.log Server.VBP
+VB6.EXE /make /d DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1 /out build.log Server.VBP
 server.exe --test-inventory-destruction
 ```
 
@@ -154,19 +154,18 @@ move/change paths. It captures outgoing
 packets only under UNIT_TEST=1. The fixture restores the chosen idle user's
 state and object definitions before returning to the full suite.
 
-Native Windows validation on 2026-10-20:
+Historical native Windows validation on 2026-10-20, before the unsupported
+local-account mode was removed:
 
-| PYMMO | DEBUGGING | UNIT_TEST | UNLOCK_CPU | Build | Focused tests | Full suite |
+| Historical PYMMO setting | DEBUGGING | UNIT_TEST | UNLOCK_CPU | Build | Focused tests | Full suite |
 | ---: | ---: | ---: | ---: | --- | --- | --- |
 | 1 | 0 | 0 | 1 | Passed | Not applicable | Not applicable |
 | 1 | 1 | 1 | 1 | Passed | 41/41 | 479/479 |
-| 0 | 0 | 0 | 1 | Passed | Not applicable | Not applicable |
-| 0 | 1 | 1 | 1 | Passed | 41/41 | 479/479 |
 
 The full suites ran from disposable Windows temporary directories with copied
 resources, fresh copies of `Empty_db.db`, loopback networking and a nonproduction
-port. An initial PYMMO=0 startup exceeded a 120-second map-load window; rerunning
-with a 300-second startup window completed successfully. No production database
+port. An initial legacy-mode startup exceeded a 120-second map-load window;
+rerunning with a 300-second startup window completed successfully. No production database
 was used. Production builds were compiled, not deployed or exercised live.
 
 Manual coordinated HOO/server checks still required: modal confirmation and

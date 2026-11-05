@@ -104,9 +104,13 @@ When compiled with `UNIT_TEST = 1`, the server runs all test suites on startup, 
 
 #### Compile and run tests from CLI
 
+The supported server uses PYMMO account authentication and token-based character
+login. The former local-account mode is removed; no PYMMO compilation define is
+needed or supported.
+
 ```bash
 # Compile with tests enabled
-"C:\Program Files (x86)\Microsoft Visual Studio\VB98\vb6.exe" /make Server.VBP /out vb6build.log /d DEBUGGING=1:PYMMO=0:UNIT_TEST=1
+"C:\Program Files (x86)\Microsoft Visual Studio\VB98\vb6.exe" /make Server.VBP /out vb6build.log /d DEBUGGING=1:UNIT_TEST=1
 
 # Run tests (writes test_results.txt and exits)
 .\Server.exe

@@ -13,13 +13,13 @@ All fields are fixed-width little endian. Identity words are opaque unsigned
 32-bit bit patterns stored in VB6 Longs; neither word is a GUID. A pair of zero
 words is never issued. Existing packet IDs and layouts are unchanged.
 
-| Direction / message | PYMMO=1 | PYMMO=0 | Bytes including ID |
-| --- | ---: | ---: | ---: |
-| Client Subscribe | 315 | 318 | 2 |
-| Client Attack | 316 | 319 | 24 |
-| Server Context | 211 | 212 | 11 |
-| Server Binding | 212 | 213 | 21 |
-| Server Result | 213 | 214 | 19 |
+| Direction / message | Packet ID | Bytes including ID |
+| --- | ---: | ---: |
+| Client Subscribe | 315 | 2 |
+| Client Attack | 316 | 24 |
+| Server Context | 211 | 11 |
+| Server Binding | 212 | 21 |
+| Server Result | 213 | 19 |
 
 - Subscribe: `int16 id`.
 - Attack: `int16 id, uint32 context_low, uint32 context_high, int32 request_id,
@@ -152,14 +152,13 @@ invalidation, exact-payload replay, malformed packets, abuse limits, range and
 equipment restrictions, real NPC attack outcomes, resource charging, remaining
 cooldown arithmetic and context teardown/recovery.
 
-Native Windows validation (2026-10-20):
+Historical native Windows validation (2026-10-20), including builds of the
+now-unsupported local-account mode:
 
 | Configuration | Native build | Focused NPC bow | Full existing runner |
 | --- | --- | ---: | ---: |
-| `DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 62/62 | 541/541 |
-| `DEBUGGING=1:PYMMO=0:UNIT_TEST=1:UNLOCK_CPU=1` | Passed | 62/62 | 541/541 |
-| `DEBUGGING=0:PYMMO=1:UNIT_TEST=0:UNLOCK_CPU=1` | Passed | Not applicable | Not applicable |
-| `DEBUGGING=0:PYMMO=0:UNIT_TEST=0:UNLOCK_CPU=1` | Passed | Not applicable | Not applicable |
+| `DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1` (recorded PYMMO=1 build) | Passed | 62/62 | 541/541 |
+| `DEBUGGING=0:UNIT_TEST=0:UNLOCK_CPU=1` (recorded PYMMO=1 build) | Passed | Not applicable | Not applicable |
 
 All four builds were made with the installed VB6 compiler using
 `/make /d <configuration> /out <build-log> Server.VBP`. Focused runs used

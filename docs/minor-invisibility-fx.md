@@ -48,7 +48,7 @@ retain mana/stamina costs, sound 16, and the 11–16 second duration.
 The AO Server PR Validator passed **823/823 tests** on code commit
 `8239e43d8c695524f4988edc537fa69932c67dd6` (2026-10-27). This is CI evidence,
 not local native execution. The documented native VB6 compiler is unavailable
-locally. Separate PYMMO=0/PYMMO=1 builds were not independently run here; the
+locally. Separate authentication-mode builds were not independently run here; the
 validator does not expose a configuration matrix in its result.
 
 Source encoding remains Windows-1252/CRLF; `git diff --check` passed.

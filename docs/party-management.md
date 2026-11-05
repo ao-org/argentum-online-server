@@ -6,7 +6,7 @@ invitation safety, party ID/roster revision, explicit leader identity, and up to
 versioned member identities, names, character/head IDs and HP/MP values. Empty
 snapshots clear membership. Values are Int32 for HP/MP; zero maxima mean unavailable.
 
-Client request319 (production PYMMO=1): Int32 positive request ID, Byte action
+Client request319: Int32 positive request ID, Byte action
 (0 refresh,1 create,2 invite by name,3 kick,4 leave,5 disband), Int32 party ID,
 Int32 roster revision, Int16 target user slot/version, String8 name <=30 characters.
 String8 uses the existing variable-length prefix/UTF-8 codec. State response uses
@@ -39,9 +39,9 @@ optimistically applied by HOO. Live party/member combat targeting remains separa
 The AO Server PR Validator built/tested source commit `19457183`: **1004/1004
 passed**, including all 31 new management cases and the existing 53 party reward
 cases (67,220.88 ms total). This includes production packet dispatcher and
-Accept/Decline integration. The documented local VB6 compiler is unavailable;
-this is native CI evidence, not a claimed local build. Separate PYMMO=0/1 and
-UNIT_TEST=0/1 matrix builds are not exposed independently by this validator.
+Accept/Decline integration. The documented local VB6 compiler was unavailable
+for that earlier validation; this is native CI evidence, not a claimed local
+build. The report did not expose a unit-test configuration matrix.
 Windows-1252/CRLF and `git diff --check` pass locally. No live gameplay has been
 verified. Client draft: https://github.com/morgolock/heroes-of-old/pull/853.
 

@@ -52,13 +52,8 @@ End Type
 
 Public Const USER_NUEVO               As Byte = 255
 Private Const AREA_DIM                As Byte = 12
-#If PYMMO = 1 Then
     Private Const AREA_RADIUS_X       As Byte = 4
     Private Const AREA_RADIUS_Y       As Byte = 3
-#Else
-    Private Const AREA_RADIUS_X       As Byte = 1
-    Private Const AREA_RADIUS_Y       As Byte = 1
-#End If
 Private Const AREA_CELLS_X            As Byte = AREA_RADIUS_X * 2 + 1
 Private Const AREA_CELLS_Y            As Byte = AREA_RADIUS_Y * 2 + 1
 Private Const AREA_TILE_WIDTH         As Integer = AREA_DIM * AREA_CELLS_X

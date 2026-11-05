@@ -12,10 +12,7 @@ does not send the forgiveness request unless that toggle was advertised.
 Version 1 capability masks and bits are unchanged. Older clients ignore the
 unknown toggle, and the server continues accepting protocol version 1.
 
-With the HOO-supported `PYMMO=1` build, client packet 320,
-`eHooPriestForgiveness`, is 13 bytes total. The server's `PYMMO=0` compile
-retains its historical conditional ordinal shift, so this message is packet 323
-there; HOO does not target that account-entry protocol variant.
+Client packet 320, `eHooPriestForgiveness`, is 13 bytes total.
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -25,9 +22,7 @@ there; HOO does not target that account-entry protocol variant.
 | Priest character index | Int16 | Must match the server-selected NPC |
 | Offer token | Int32 | Zero for request; positive for confirmation |
 
-With `PYMMO=1`, server packet 227, `eHooPriestForgivenessResult`, is 15 bytes
-total. The legacy `PYMMO=0` server build uses packet 228 due to its existing
-account-character-list insertion.
+Server packet 227, `eHooPriestForgivenessResult`, is 15 bytes total.
 
 | Field | Type | Meaning |
 | --- | --- | --- |

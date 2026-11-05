@@ -168,11 +168,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, index As Integer
     before = UnitTesting.GetFailedTests()
-    #If PYMMO = 1 Then
         Call UnitTesting.RunTest("Gathering protocol IDs", ServerPacketID.eGatheringFeedback = 222 And ClientPacketID.eGatheringStart = 318)
-    #Else
-        Call UnitTesting.RunTest("Gathering conditional protocol IDs", ServerPacketID.eGatheringFeedback = 223 And ClientPacketID.eGatheringStart = 321)
-    #End If
     For index = 1 To 18
         Call RunCase(index)
     Next index

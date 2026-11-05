@@ -235,13 +235,8 @@ Private Sub TestCase(ByVal index As Integer)
             Call Expect(inputReader.ReadInt8() = 0 And inputReader.ReadInt8() = 0, "stage/code")
             Call Expect(inputReader.ReadInt8() = 1 And inputReader.ReadInt16() = 1 And inputReader.ReadInt16() = 10, "slot/object/original amount")
             Call Expect(inputReader.ReadInt8() = 0 And inputReader.ReadInt32() = 0 And inputReader.ReadInt32() = 3 And inputReader.ReadInt16() = 30, "equipped/tags/quantity/expiry")
-            #If PYMMO = 1 Then
                 Call Expect(ServerPacketID.eHooInventoryDestructionResult = 210, "production result ID")
                 Call Expect(ClientPacketID.eHooInventoryDestructionPrepare = 313 And ClientPacketID.eHooInventoryDestructionConfirm = 314, "production request IDs")
-            #Else
-                Call Expect(ServerPacketID.eHooInventoryDestructionResult = 211, "legacy enum result ordinal")
-                Call Expect(ClientPacketID.eHooInventoryDestructionPrepare = 316 And ClientPacketID.eHooInventoryDestructionConfirm = 317, "conditional request ordinals")
-            #End If
         Case 29
             Call inputWriter.WriteInt32(123)
             Call inputWriter.WriteInt8(1)

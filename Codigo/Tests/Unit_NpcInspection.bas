@@ -207,11 +207,7 @@ End Sub
 Public Function TestSuite() As Boolean
     Dim before As Long, i As Integer
     before = UnitTesting.GetFailedTests()
-    #If PYMMO = 1 Then
         Call UnitTesting.RunTest("NPC inspection packet IDs", ServerPacketID.eNpcInspection = 221 And ClientPacketID.eNpcInspectionSubscribe = 317)
-    #Else
-        Call UnitTesting.RunTest("NPC inspection conditional packet IDs", ServerPacketID.eNpcInspection = 222 And ClientPacketID.eNpcInspectionSubscribe = 320)
-    #End If
     Call UnitTesting.RunTest("NPC threat missing data", InspectionThreatBand(0, 10, 2000) = 0 And InspectionThreatBand(100, 0, 2000) = 0)
     Call UnitTesting.RunTest("NPC threat thresholds", InspectionThreatBand(100, 5, 2000) = 1 And InspectionThreatBand(100, 6, 2000) = 2 And InspectionThreatBand(100, 15, 2000) = 3 And InspectionThreatBand(100, 30, 2000) = 4)
     Call UnitTesting.RunTest("NPC threat attack interval", InspectionThreatBand(100, 15, 1000) = 4)

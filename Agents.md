@@ -10,13 +10,16 @@
 
 ```cmd
 "C:\Program Files (x86)\Microsoft Visual Studio\VB98\vb6.exe" /make ^
-/d UsarQueSocket=1:ConUpTime=1:AntiExternos=0:Lac=1:DEBUGGING=0:PYMMO=1:UNLOCK_CPU=1 ^
+/d UsarQueSocket=1:ConUpTime=1:AntiExternos=0:Lac=1:DEBUGGING=0:UNLOCK_CPU=1 ^
 /out vb6build.log ^
 Server.VBP
 ```
 
 Aurora.Network is the server's only supported transport. See
 `Documentation/NetworkTransport.md` for dependencies and validation commands.
+The server supports PYMMO account authentication and token-based character login
+only. Do not pass a PYMMO compiler define; the former local-account mode is not
+supported.
 
 ### Client (retired; historical command only)
 
@@ -37,7 +40,7 @@ advertisements. Retired clients and older servers are unsupported. Coordinate
 HOO and server deployment; ProtocolGenerator is retired, not an active protocol
 source or deployment dependency. Preserve unrelated existing
 capability infrastructure until separately audited. See
-`docs/taming-presentation-results.md` for mandatory packet 207 (`PYMMO=1`).
+`docs/taming-presentation-results.md` for mandatory taming result packet 207.
 
 ---
 
