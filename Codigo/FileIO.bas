@@ -1316,6 +1316,7 @@ Sub LoadOBJData()
     End With
     ReDim Preserve ObjData(1 To NumObjDatas) As t_ObjData
     ReDim ObjShop(1 To 1) As t_ObjData
+    Call ResetNpcResaleableCache
     Dim ObjKey  As String
     Dim str     As String, Field() As String
     Dim Crafteo As clsCrafteo
@@ -1357,6 +1358,7 @@ Sub LoadOBJData()
             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
             .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
             .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
+            .NPCResaleable = val(Leer.GetValue(ObjKey, "NPCResaleable")) > 0
             .JineteLevel = val(Leer.GetValue(ObjKey, "JineteLevel"))
             .FactionScore = val(Leer.GetValue(ObjKey, "FactionScore"))
             .ElementalTags = val(Leer.GetValue(ObjKey, "ElementalTags"))

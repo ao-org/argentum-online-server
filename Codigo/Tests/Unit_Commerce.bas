@@ -8,7 +8,55 @@ Public Function test_suite_commerce() As Boolean
     Call UnitTesting.RunTest("test_sale_price_non_trabajador", test_sale_price_non_trabajador())
     Call UnitTesting.RunTest("test_sale_price_trabajador_clamp", test_sale_price_trabajador_clamp())
     Call UnitTesting.RunTest("test_sale_price_invalid_obj", test_sale_price_invalid_obj())
+    Call UnitTesting.RunTest("test_npc_resaleable_item_is_kept", test_npc_resaleable_item_is_kept())
+    Call UnitTesting.RunTest("test_unflagged_item_is_destroyed", test_unflagged_item_is_destroyed())
     test_suite_commerce = True
+End Function
+
+Private Function test_npc_resaleable_item_is_kept() As Boolean
+    On Error GoTo Err_Handler
+    Dim ObjIndex As Integer
+    Dim originalNPCResaleable As Boolean
+    Dim originalToggle As Boolean
+    ObjIndex = 1
+    originalNPCResaleable = ObjData(ObjIndex).NPCResaleable
+    originalToggle = IsFeatureEnabled("destroy_npc_bought_items")
+    Call SetFeatureToggle("destroy_npc_bought_items", True)
+    ObjData(ObjIndex).NPCResaleable = True
+    test_npc_resaleable_item_is_kept = NpcKeepsBoughtItem(ObjIndex)
+Cleanup:
+    ObjData(ObjIndex).NPCResaleable = originalNPCResaleable
+    Call SetFeatureToggle("destroy_npc_bought_items", originalToggle)
+    Exit Function
+Err_Handler:
+    test_npc_resaleable_item_is_kept = False
+    Resume Cleanup
+End Function
+
+Private Function test_unflagged_item_is_destroyed() As Boolean
+    On Error GoTo Err_Handler
+    Dim ObjIndex As Integer
+    Dim originalNPCResaleable As Boolean
+    Dim originalToggle As Boolean
+    Dim originalDatPath As String
+    ObjIndex = 1
+    originalNPCResaleable = ObjData(ObjIndex).NPCResaleable
+    originalToggle = IsFeatureEnabled("destroy_npc_bought_items")
+    originalDatPath = DatPath
+    Call SetFeatureToggle("destroy_npc_bought_items", True)
+    ObjData(ObjIndex).NPCResaleable = False
+    DatPath = App.Path & "\Fixtures\missing-npc-resale\"
+    Call ResetNpcResaleableCache
+    test_unflagged_item_is_destroyed = Not NpcKeepsBoughtItem(ObjIndex)
+Cleanup:
+    ObjData(ObjIndex).NPCResaleable = originalNPCResaleable
+    Call SetFeatureToggle("destroy_npc_bought_items", originalToggle)
+    DatPath = originalDatPath
+    Call ResetNpcResaleableCache
+    Exit Function
+Err_Handler:
+    test_unflagged_item_is_destroyed = False
+    Resume Cleanup
 End Function
 
 ' SalePrice with no user (UserIndex=0) must return Valor / REDUCTOR_PRECIOVENTA.
