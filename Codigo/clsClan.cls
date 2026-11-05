@@ -470,6 +470,10 @@ End Function
 Public Sub SetTestLevel(ByVal level As Byte)
     p_GuildLevel = level
 End Sub
+
+Public Sub SetTestAlignment(ByVal alignment As e_ALINEACION_GUILD)
+    p_Alineacion = alignment
+End Sub
 #End If
 
 Public Function GetStoredClanLevel() As Byte

@@ -174,6 +174,7 @@ Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
     Call ClearPartyProposal(UserIndex)
     Call ClearPartyXpRotation(UserIndex)
     Call ClearNpcBow(UserIndex)
+    Call ClearHooForgivenessOffer(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     With UserList(UserIndex)
         If .VersionId > 32760 Then
