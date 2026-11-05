@@ -33,6 +33,9 @@ End Enum
 
 Public Const REDUCTOR_PRECIOVENTA As Byte = 3
 
+Private NpcResaleableCache() As Byte ' 0=unknown, 1=no, 2=yes
+Private NpcResaleableCacheInitialized As Boolean
+
 Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Slot As Integer, ByVal Cantidad As Integer)
     On Error GoTo Comercio_Err
     Dim precio           As Long
@@ -146,7 +149,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + precio
         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
         Call WriteUpdateGold(UserIndex)
-        If Not IsFeatureEnabled("destroy_npc_bought_items") Then
+        If NpcKeepsBoughtItem(Objeto.ObjIndex) Then
             NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.Amount)
             If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
                 ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
@@ -187,6 +190,41 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
 IniciarComercioNPC_Err:
     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
 End Sub
+
+Public Sub ResetNpcResaleableCache()
+    Erase NpcResaleableCache
+    NpcResaleableCacheInitialized = False
+End Sub
+
+Public Function NpcKeepsBoughtItem(ByVal ObjIndex As Integer) As Boolean
+    On Error GoTo NpcKeepsBoughtItem_Err
+    If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function
+    If Not IsFeatureEnabled("destroy_npc_bought_items") Then
+        NpcKeepsBoughtItem = True
+        Exit Function
+    End If
+    If ObjData(ObjIndex).NPCResaleable Then
+        NpcKeepsBoughtItem = True
+        Exit Function
+    End If
+    If Not NpcResaleableCacheInitialized Then
+        ReDim NpcResaleableCache(1 To UBound(ObjData)) As Byte
+        NpcResaleableCacheInitialized = True
+    ElseIf UBound(NpcResaleableCache) <> UBound(ObjData) Then
+        ReDim NpcResaleableCache(1 To UBound(ObjData)) As Byte
+    End If
+    If NpcResaleableCache(ObjIndex) = 0 Then
+        If val(GetVar(DatPath & "Obj.dat", "OBJ" & ObjIndex, "NPCResaleable")) > 0 Then
+            NpcResaleableCache(ObjIndex) = 2
+        Else
+            NpcResaleableCache(ObjIndex) = 1
+        End If
+    End If
+    NpcKeepsBoughtItem = (NpcResaleableCache(ObjIndex) = 2)
+    Exit Function
+NpcKeepsBoughtItem_Err:
+    Call TraceError(Err.Number, Err.Description, "modSistemaComercio.NpcKeepsBoughtItem", Erl)
+End Function
 
 Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer, ByVal Cantidad As Integer) As Integer
     '*************************************************

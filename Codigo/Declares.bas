@@ -2453,6 +2453,7 @@ Public Type t_ObjData
     WeaponType As e_WeaponType
     ProjectileType As Integer
     ObjFlags As Long 'use bitmask from enum e_ObjFlags
+    NPCResaleable As Boolean
     JineteLevel As Byte
     FactionScore As Integer
     ElementalTags As Long
