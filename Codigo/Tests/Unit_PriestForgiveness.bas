@@ -23,7 +23,7 @@ Public Function TestSuite() As Boolean
     Dim oldMaxUsers As Integer
     oldMaxUsers = MaxUsers
     MaxUsers = 4
-    Call Unit_NpcBow.InitializeTestWorld()
+    Call Unit_NpcBow.InitializeTestWorld(1)
     Dim price As Long
     Call UnitTesting.RunTest("pardon price without citizen kills", _
         CalculateHooForgivenessPrice(0, price) And _
@@ -96,7 +96,7 @@ Private Function LastResult(ByRef RequestId As Long, ByRef Result As e_HooForgiv
 End Function
 
 Private Sub SetupRequestFixture()
-    Call Unit_NpcBow.InitializeTestWorld()
+    Call Unit_NpcBow.InitializeTestWorld(1)
     MaxUsers = 4
     Set packets = New Collection
     capturing = True

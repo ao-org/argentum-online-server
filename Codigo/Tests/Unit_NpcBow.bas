@@ -21,18 +21,19 @@ Public Function ForceMiss(ByVal userIndex As Integer, ByVal npcIndex As Integer)
     ForceMiss = capturing And forceMissRoll And userIndex = u And npcIndex = n
 End Function
 
-Public Sub InitializeTestWorld()
+Public Sub InitializeTestWorld(Optional ByVal mapCount As Integer = 300)
+    ' Keep the default for scenario tests; focused suites allocate only their maps.
     Call InitializeCircularLogBuffer()
     Set SvrConfig = New ServerConfig
     Call SvrConfig.LoadSettings(App.Path & "\Example.Configuracion.ini")
     Call LoadFeatureToggles()
     ReDim UserList(1 To 4)
     ReDim ObjData(0 To 4000)
-    ReDim MapInfo(1 To 300)
-    ReDim MapData(1 To 100, 1 To 100, 1 To 300)
+    ReDim MapInfo(1 To mapCount)
+    ReDim MapData(1 To 100, 1 To 100, 1 To mapCount)
     ReDim QuestList(0 To 0)
     ReDim EffectOverTime(1 To 1)
-    NumMaps = 300
+    NumMaps = mapCount
     Call InitializeNpcIndexHeap()
     Call InitAreas()
     MinXBorder = XMinMapSize + (XWindow \ 2)
