@@ -35,8 +35,9 @@ there is no runtime production capture or test behavior.
 Historical validation before transport removal (2026-10-19; see
 [NetworkTransport.md](NetworkTransport.md) for current commands):
 
-- DEBUGGING=1:PYMMO=1:UNIT_TEST=1:DIRECT_PLAY=0: build passed; full suite 427/427.
-- DEBUGGING=0:PYMMO=1:UNIT_TEST=0:DIRECT_PLAY=0: build passed.
+- DEBUGGING=1:UNIT_TEST=1:DIRECT_PLAY=0: build passed; full suite 427/427
+  (historical PYMMO=1 configuration).
+- DEBUGGING=0:UNIT_TEST=0:DIRECT_PLAY=0: build passed (historical PYMMO=1 configuration).
 
 Tests ran in an isolated runtime directory with a fresh local DB, existing
 public encryption fixture and localhost-only test port. The user's live/local

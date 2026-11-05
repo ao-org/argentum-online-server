@@ -437,11 +437,7 @@ End Sub
 
 Private Sub TestOwnedWire()
     Dim owner As t_AnyReference, bytes As Variant, expected As Variant, eventType As Integer, i As Integer
-    #If PYMMO = 1 Then
         Call Expect(ServerPacketID.eHooTamingResult = 207 And ServerPacketID.eHooOwnedTrap = 208, "HOO production packet IDs")
-    #Else
-        Call Expect(ServerPacketID.eHooTamingResult = 208 And ServerPacketID.eHooOwnedTrap = 209, "account-list configuration packet IDs")
-    #End If
     Call SetRef(owner, mUser, eUser)
     For eventType = 1 To 3
         Call WriteOwnedTrapState(owner, eventType, &H1020304, &H1234, 99, 88, 3, &H5060708)
@@ -634,11 +630,7 @@ End Sub
 
 Private Sub TestUseWire()
     Dim source As Byte, result As Byte, bytes As Variant, expected As Variant, i As Integer
-    #If PYMMO = 1 Then
         Call Expect(ServerPacketID.eHooTrapUseResult = 209, "HOO required result id 209")
-    #Else
-        Call Expect(ServerPacketID.eHooTrapUseResult = 210, "conditional non-HOO ordinal")
-    #End If
     For source = 0 To 1
         For result = 0 To 2
             Call WriteHooTrapUseResult(mUser, &H1020304, 7, source, result)

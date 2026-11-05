@@ -317,11 +317,7 @@ Private Sub CheckAdjacentCase(ByVal group As Long)
             Call AdjacentExpect(reader.ReadInt16() = 1543 And reader.ReadString8() = vbNullString, "definition and empty display text")
             Call AdjacentExpect(reader.ReadBool(), "unowned NPC is kill-credit eligible")
             Call AdjacentExpect(reader.GetAvailable() = 0, "complete payload consumed")
-            #If PYMMO = 1 Then
                 Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 214 And ServerPacketID.eAdjacentNpcUpsert = 215 And ServerPacketID.eAdjacentNpcRemove = 216, "HOO literal packet IDs")
-            #Else
-                Call AdjacentExpect(ServerPacketID.eAdjacentNpcReset = 215 And ServerPacketID.eAdjacentNpcUpsert = 216 And ServerPacketID.eAdjacentNpcRemove = 217, "PYMMO=0 ordinals")
-            #End If
             bytes = adjacentPackets(2)
             Call AdjacentExpect(bytes(10) = 35 And bytes(11) = 0 And bytes(16) = 11 And bytes(17) = 1, "little endian fields")
             Call AdjacentExpect(bytes(27) = 0 And bytes(28) = 0 And bytes(29) = 128 And bytes(30) = 63 And bytes(31) = 1, "Single and Boolean representation")

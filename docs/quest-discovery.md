@@ -43,8 +43,7 @@ same dirty entry. Gameplay acceptance is still immediate and revalidated.
 
 ## Required coordinated protocol
 
-New `eQuestDiscovery` is ID **226 with PYMMO=1**, 227 with PYMMO=0's existing
-legacy enum insertion. HOO production integration uses PYMMO=1.
+New `eQuestDiscovery` is server packet ID **226** in the supported protocol.
 
 ```text
 Int16 packetId
@@ -95,7 +94,7 @@ The documented native VB6 compiler is unavailable locally. The existing native
 PR validator compiled and passed **920/920 tests** at code commit
 `bf8656559968c08ae56d188244c39e86e76e4274` (36,637.43 ms), including all eleven
 new discovery cases and broader quest/turn-in regressions. The job does not expose
-an independent PYMMO=0/1 native matrix; that matrix and live gameplay remain
+an independent native configuration matrix; that matrix and live gameplay remain
 outstanding. Do not read source checks as a separate native configuration pass.
 
 Companion HOO PR: https://github.com/morgolock/heroes-of-old/pull/850.

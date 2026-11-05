@@ -106,7 +106,6 @@ Module=PacketId; PacketId.bas
 Startup="Sub Main"
 Name="TamingProtocolRegression"
 ExeName32="TamingHarness.exe"
-CondComp="PYMMO = 1"
 CompilationType=0
 OptimizationType=0
 "@

@@ -388,11 +388,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, _
         UltimoChar = UCase$(name)
         Call SaveNewUser(UserIndex)
         ConnectNewUser = True
-        #If PYMMO = 1 Then
             Call ConnectUser(UserIndex, name, True)
-        #ElseIf PYMMO = 0 Then
-            Call ConnectUser(UserIndex, name, False)
-        #End If
     End With
     Exit Function
 ConnectNewUser_Err:
@@ -1115,9 +1111,7 @@ End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
     On Error GoTo ResetUserSlot_Err
-    #If PYMMO = 1 Then
         Call ResetAdjacentPlayerSlot(UserIndex)
-    #End If
     Call ClearNpcBow(UserIndex)
     Call ClearInventoryDestruction(UserIndex)
     Call RemoveMagicLightOrb(UserIndex)

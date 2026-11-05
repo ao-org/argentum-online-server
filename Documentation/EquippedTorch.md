@@ -32,7 +32,7 @@ relog, map/area entry, stealth and reappearance with a local two-client session.
 ## Native Validation
 
 Windows VB6 was invoked with `/make Server.VBP /d
-DEBUGGING=<UNIT_TEST>:PYMMO=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1:BATTLESERVER=0
+DEBUGGING=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1:BATTLESERVER=0
 /out <build.log> /outdir <isolated-output>`. All four combinations built.
 Both test-enabled executables ran in disposable local directories/databases:
 438/438 full tests, 33/33 trap tests, 106/106 managed-configuration checks.

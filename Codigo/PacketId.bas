@@ -230,9 +230,6 @@ Public Enum ServerPacketID
     eAntiCheatMessage
     eAntiCheatStartSession
     eReportLobbyList
-    #If PYMMO = 0 Then
-        eAccountCharacterList
-    #End If
     eChangeSkinSlot
     eGuildConfig
     eShowPickUpObj
@@ -242,25 +239,25 @@ Public Enum ServerPacketID
     eHooHouseDoorActionResult
     eReservedHooMagicLightOrb ' Retired wire ID, never sent or reused.
     eHooTamingResult
-    eHooOwnedTrap ' 208 with PYMMO=1; mandatory owner-only trap lifecycle.
-    eHooTrapUseResult ' 209 with PYMMO=1; correlated inventory-use outcome.
-    eHooInventoryDestructionResult ' 210 with PYMMO=1.
-    eHooBowContext ' 211 with PYMMO=1.
-    eHooBowBinding ' 212 with PYMMO=1.
-    eHooBowResult ' 213 with PYMMO=1.
+    eHooOwnedTrap ' 208; mandatory owner-only trap lifecycle.
+    eHooTrapUseResult ' 209; correlated inventory-use outcome.
+    eHooInventoryDestructionResult ' 210.
+    eHooBowContext ' 211.
+    eHooBowBinding ' 212.
+    eHooBowResult ' 213.
     eAdjacentNpcReset
     eAdjacentNpcUpsert
     eAdjacentNpcRemove
     eAdjacentPlayerReset
     eAdjacentPlayerUpsert
     eAdjacentPlayerRemove
-    eNpcRespawnEffect ' 220 with PYMMO=1; one-shot death respawn only.
-    eNpcInspection ' 221 with PYMMO=1.
-    eGatheringFeedback ' 222 with PYMMO=1.
-    eQuestObjectiveTemplates ' 223 with PYMMO=1; bounded accepted-objective projection.
-    eQuestTurnIns ' 224 with PYMMO=1; complete ready-quest replacement.
-    eQuestFeedback ' 225 with PYMMO=1; synchronized progress and actual-grant receipts.
-    eQuestDiscovery ' 226 with PYMMO=1; paged authoritative availability replacement.
+    eNpcRespawnEffect ' 220; one-shot death respawn only.
+    eNpcInspection ' 221.
+    eGatheringFeedback ' 222.
+    eQuestObjectiveTemplates ' 223; bounded accepted-objective projection.
+    eQuestTurnIns ' 224; complete ready-quest replacement.
+    eQuestFeedback ' 225; synchronized progress and actual-grant receipts.
+    eQuestDiscovery ' 226; paged authoritative availability replacement.
     eHooPriestForgivenessResult ' 227; structured priest pardon offer/result.
     eMaxPacket
     [PacketCount]
@@ -574,11 +571,6 @@ Public Enum ClientPacketID
     eUseHKeySlot
     eAntiCheatMessage
     eRequestLobbyList
-    #If PYMMO = 0 Then
-        eCreateAccount
-        eLoginAccount
-        eDeleteCharacter
-    #End If
     eChangeSkinSlot
     eStartAutomatedAction
     ePetFollowAll
@@ -588,13 +580,13 @@ Public Enum ClientPacketID
     eRequestRemort
     eHooTargetedSpellCast
     eHooHouseDoorAction
-    eHooInventoryDestructionPrepare ' 313 with PYMMO=1.
-    eHooInventoryDestructionConfirm ' 314 with PYMMO=1.
-    eHooBowSubscribe ' 315 with PYMMO=1.
-    eHooBowAttack ' 316 with PYMMO=1.
-    eNpcInspectionSubscribe ' 317 with PYMMO=1.
-    eGatheringStart ' 318 with PYMMO=1.
-    ePartyManagement ' 319 with PYMMO=1.
+    eHooInventoryDestructionPrepare ' 313.
+    eHooInventoryDestructionConfirm ' 314.
+    eHooBowSubscribe ' 315.
+    eHooBowAttack ' 316.
+    eNpcInspectionSubscribe ' 317.
+    eGatheringStart ' 318.
+    ePartyManagement ' 319.
     eHooPriestForgiveness ' 320; request/confirm server-priced priest pardon.
     eMaxPacket
     [PacketCount]

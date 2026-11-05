@@ -36,38 +36,6 @@ Public Function GetWriterBuffer() As Network.Writer
     Set GetWriterBuffer = Writer
 End Function
 
-#If PYMMO = 0 Then
-    Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personajes() As t_PersonajeCuenta, ByVal count As Long)
-        On Error GoTo WriteAccountCharacterList_Err
-        Call Writer.WriteInt16(ServerPacketID.eAccountCharacterList)
-        Call Writer.WriteInt(count)
-        Dim i As Long
-        For i = 1 To count
-            With Personajes(i)
-                Call Writer.WriteInt(.id)
-                Call Writer.WriteString8(.nombre)
-                Call Writer.WriteInt(.cuerpo)
-                Call Writer.WriteInt(.Cabeza)
-                Call Writer.WriteInt(.clase)
-                Call Writer.WriteInt(.Mapa)
-                Call Writer.WriteInt(.PosX)
-                Call Writer.WriteInt(.PosY)
-                Call Writer.WriteInt(.nivel)
-                Call Writer.WriteInt(.Status)
-                Call Writer.WriteInt(.Casco)
-                Call Writer.WriteInt(.Escudo)
-                Call Writer.WriteInt(.Arma)
-                Call Writer.WriteInt(.BackPack)
-            End With
-        Next i
-        Call modSendData.SendData(ToIndex, UserIndex)
-        Exit Sub
-WriteAccountCharacterList_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAccountCharacterList", Erl)
-    End Sub
-
-#End If
 ' \Begin: [Writes]
 Public Function PrepareConnected()
     On Error GoTo WriteConnected_Err
@@ -716,9 +684,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
     On Error GoTo WriteChangeMap_Err
     Call SuspendNpcBow(UserIndex)
     Call InvalidateAdjacentNpcViewer(UserIndex)
-    #If PYMMO = 1 Then
         Call InvalidateAdjacentPlayerViewer(UserIndex)
-    #End If
     Call ClearPendingTargetableItem(UserIndex)
     Call Writer.WriteInt16(ServerPacketID.eChangeMap)
     Call Writer.WriteInt16(Map)
@@ -1136,15 +1102,11 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, _
     On Error GoTo WriteCharacterCreate_Err
     Queued = False
     Dim confirmQueue As Boolean
-    #If PYMMO = 1 Then
         confirmQueue = True
-    #End If
     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(body, head, Heading, charindex, x, y, weapon, shield, Cart, BackPack, FX, FXLoops, helmet, name, _
             Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, clan_index, _
             clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, NpcNum), False, Queued, confirmQueue)
-    #If PYMMO = 1 Then
         If Queued Then Call RecordAdjacentPlayerActive(UserIndex, charindex, EsNPC <> 0)
-    #End If
     Exit Sub
 WriteCharacterCreate_Err:
     Call Writer.Clear

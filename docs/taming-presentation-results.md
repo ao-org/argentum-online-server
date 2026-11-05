@@ -45,12 +45,12 @@ all three outcomes, missing NPC and unresolved-result suppression. It does not
 open sockets, start the server, load resources or touch a database.
 
 Native Windows validation (2026-10-13): all five harness checks passed. Full
-server builds with `PYMMO=1`, `UNIT_TEST=0` and `UNIT_TEST=1` passed. The full
+server builds with `UNIT_TEST=0` and `UNIT_TEST=1` passed. The full
 server executable was not started; live success/failure/following/save-relog
 remain manual validation, not claims of the isolated harness.
 
 `Codigo/PacketId.bas` reserves ID 206 and assigns taming 207 in the supported
-HOO `PYMMO=1` build, without renumbering earlier packets. `PYMMO=0` retains its
+HOO build, without renumbering earlier packets. The former local-account mode had
 existing extra account packet and shifted tail; it is not HOO's wire layout.
 The authoritative server enum and HOO decoder are verified directly, including
 the exact native-writer byte fixture. No generator regeneration is required.

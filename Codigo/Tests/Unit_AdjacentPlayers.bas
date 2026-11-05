@@ -134,11 +134,7 @@ Private Sub CheckCase(ByVal id As Long)
             Call AdjacentPlayerTestCounters(&H11223343, &H55667788, 0)
             Call Sample()
             Call Expect(packets.Count = 2 And AdjacentPlayerTestCount(1) = 1, "direct reset/upsert")
-            #If PYMMO = 1 Then
                 Call Expect(eAdjacentNpcReset = 214 And eAdjacentNpcRemove = 216 And eAdjacentPlayerReset = 217 And eAdjacentPlayerRemove = 219, "P1 IDs")
-            #Else
-                Call Expect(eAdjacentNpcReset = 215 And eAdjacentNpcRemove = 217 And eAdjacentPlayerReset = 218 And eAdjacentPlayerRemove = 220, "P0 IDs")
-            #End If
             Set reader = PacketReader(1, eAdjacentPlayerReset)
             Call Expect(reader.ReadInt32() = 1 And reader.ReadInt16() = 34, "reset layout")
             Set reader = PacketReader(2, eAdjacentPlayerUpsert)
@@ -279,7 +275,6 @@ Private Sub CheckCase(ByVal id As Long)
             UserList(2).pos.x = 51
             Call Sample()
             Call Expect((FlagsAt(1) And 64) = 0, "one tile walk interpolates")
-            #If PYMMO = 1 Then
                 Call RelocateAdjacentPlayer(2)
                 UserList(2).pos.x = 52
                 Call Sample(1)
@@ -288,7 +283,6 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect((FlagsAt(1) And 64) = 64, "warp snap retained on retry")
                 Call Sample()
                 Call Expect(packets.Count = 0, "no redundant snap clear")
-            #End If
         Case 27
             Call Sample()
             UserList(2).flags.UserLogged = False
@@ -405,7 +399,6 @@ Private Sub CheckCase(ByVal id As Long)
             Call Sample()
             Call Expect(packets.Count = 0 And AdjacentPlayerTestCount(1) = 0, "epoch cannot wrap")
         Case 44, 45, 46, 47
-            #If PYMMO = 1 Then
                 Call Sample()
                 UserList(2).pos.Map = 34: UserList(2).pos.y = 12
                 Call ClearCapture(1)
@@ -442,9 +435,7 @@ Private Sub CheckCase(ByVal id As Long)
                         Call Expect(PacketIdAt(i) <> eCharacterCreate, "stale session/out-of-area create discarded")
                     Next i
                 End If
-            #End If
         Case 48
-            #If PYMMO = 1 Then
                 UserList(2).pos.Map = 34
                 Call ClearCapture()
                 Call MakeUserChar(False, 1, 2, 34, 50, 90)
@@ -454,11 +445,9 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect(packets.Count = 2 And PacketIdAt(2) = eCharacterRemove And AdjacentPlayerTestCount(1) = 0, "failed normal removal blocks adjacent upsert")
                 Call Sample()
                 Call Expect(packets.Count = 2 And PacketIdAt(1) = eCharacterRemove And PacketIdAt(2) = eAdjacentPlayerUpsert, "reverse handoff accepted barrier")
-            #End If
         Case 49
             Call ClearCapture()
             Call UpdateAdjacentPlayerVisibility(1000)
-            #If PYMMO = 1 Then
                 Call Expect(packets.Count >= 2, "production tick")
                 Call ClearCapture()
                 UserList(2).Char.head = 21
@@ -466,9 +455,6 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect(packets.Count = 0, "100 ms throttle")
                 Call UpdateAdjacentPlayerVisibility(1100)
                 Call Expect(packets.Count = 1, "100 ms refresh")
-            #Else
-                Call Expect(packets.Count = 0, "P0 production stream disabled")
-            #End If
         Case 50
             CharList(2) = 0
             Call Sample()
@@ -497,7 +483,6 @@ Private Sub CheckCase(ByVal id As Long)
             Call Expect((value(15) And 28) = 0, "gameplay transport flags are reserved; displayed body is authoritative")
             Call Expect(value(5) = iTrajeAltoNw, "authorized rubber appearance retained")
         Case 54, 55
-            #If PYMMO = 1 Then
                 Call Sample()
                 oldValue = AdjacentPlayerTestValue(1, 2)
                 i = 2
@@ -515,9 +500,7 @@ Private Sub CheckCase(ByVal id As Long)
                     Set reader = PacketReader(1, eAdjacentPlayerReset)
                     Call Expect(reader.ReadInt32() = 2, "real viewer reset starts new scene")
                 End If
-            #End If
         Case 56
-            #If PYMMO = 1 Then
                 Call Sample()
                 UserList(2).pos.Map = 34: UserList(2).pos.y = 12
                 Call ClearCapture(2)
@@ -527,7 +510,6 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect(packets.Count >= 1 And PacketIdAt(1) = eCharacterCreate, "failed active create retried without replaying remove")
                 Call Sample()
                 Call Expect(packets.Count = 0, "successful deferred create retired")
-            #End If
         Case 57
             Call Sample()
             UserList(2).Char.speeding = CSng(1.00000011920929)
@@ -543,7 +525,6 @@ Private Sub CheckCase(ByVal id As Long)
             value = AdjacentPlayerTestValue(1, 2)
             Call Expect(value(21) = "ally disguise" And (value(15) And 128) = 0, "dead admission does not leak disguised clan identity")
         Case 59, 60
-            #If PYMMO = 1 Then
                 UserList(2).pos.Map = 34
                 Call ClearCapture()
                 Call MakeUserChar(False, 1, 2, 34, 50, 90)
@@ -558,9 +539,7 @@ Private Sub CheckCase(ByVal id As Long)
                 Else
                     Call Expect(packets.Count = 2 And PacketIdAt(2) = eAdjacentPlayerUpsert, "accepted NPC replacement protects reused index from remove")
                 End If
-            #End If
         Case 61
-            #If PYMMO = 1 Then
                 NumChars = 2: LastChar = 2
                 Call Sample()
                 oldValue = AdjacentPlayerTestValue(1, 2)
@@ -572,9 +551,7 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect(packets.Count = 1 And (FlagsAt(1) And 64) = 64, "real WarpUserChar forces snap")
                 Call Sample()
                 Call Expect(packets.Count = 0, "real warp has no redundant followup")
-            #End If
         Case 62
-            #If PYMMO = 1 Then
                 UserList(2).pos.Map = 34
                 Call ClearCapture()
                 Call MakeUserChar(False, 1, 2, 34, 50, 90)
@@ -595,11 +572,8 @@ Private Sub CheckCase(ByVal id As Long)
                 Call Expect(reader.ReadInt16() = 3, "retry only remaining normal index")
                 Call Sample()
                 Call Expect(packets.Count = 0, "reverse handoff settled")
-            #End If
         Case 63 To 90
-            #If PYMMO = 1 Then
                 Call CheckDeferredCase(id)
-            #End If
         Case 91 To 104
             Call CheckAreaEntryCase(id)
     End Select
@@ -621,10 +595,8 @@ Private Sub BeginAreaEntry()
     Call AgregarUser(1, 34)
     Call AgregarUser(2, 35)
     Call Expect(UserList(1).AreasInfo.AreaPerteneceX = 2 ^ (UserList(1).pos.x \ 12) And UserList(1).AreasInfo.AreaPerteneceY = 2 ^ (UserList(1).pos.y \ 12), "real stationary viewer area initialized")
-    #If PYMMO = 1 Then
         Call Sample()
         Call Expect(AdjacentPlayerTestCount(1) = 1, "subject accepted in adjacent scene before entry")
-    #End If
     Call ClearCapture()
 End Sub
 
@@ -633,25 +605,17 @@ Private Sub CheckAreaEntryCase(ByVal id As Long)
     If id = 91 Then
         Call BeginAreaEntry()
         Call EnterSubjectMap(34, 50, 12)
-        #If PYMMO = 1 Then
             Call Expect(packets.Count = 3, "real map entry removes adjacent and creates normal without another notification")
             Call Expect(PacketIdAt(1) = eAdjacentPlayerRemove And accepted(1), "entry retires adjacent first")
             firstCreate = 2
-        #Else
-            Call Expect(packets.Count = 2, "P0 normal entry unchanged, no adjacent packets")
-            firstCreate = 1
-        #End If
         Call ExpectReplacementCreate(firstCreate, 2)
         Call Expect(accepted(firstCreate), "normal entry accepted")
         Call ExpectTorchClear(firstCreate + 1)
         Call Expect(AdjacentPlayerTestCount(1) = 0 And AdjacentPlayerTestPendingCount(1) = 0, "entry settles handoff immediately")
-        #If PYMMO = 1 Then
             Call Sample()
             Call Expect(packets.Count = 0, "stationary entry has no duplicate create")
-        #End If
         Exit Sub
     End If
-    #If PYMMO = 1 Then
         Select Case id
             Case 92, 93
                 Call BeginAreaEntry()
@@ -781,7 +745,6 @@ Private Sub CheckAreaEntryCase(ByVal id As Long)
         Call Expect(AdjacentPlayerTestCount(1) = 0 And AdjacentPlayerTestPendingCount(1) = 0, "real area handoff settled")
         Call Sample()
         Call Expect(packets.Count = 0, "no repeated creation after completed area handoff")
-    #End If
 End Sub
 
 Private Sub EnterSubjectMap(ByVal map As Integer, ByVal x As Byte, ByVal y As Byte)

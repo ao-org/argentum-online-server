@@ -96,7 +96,7 @@ Configured drop probability 1 guarantees test rolls without modifying production
 
 The documented VB6 compiler is absent locally. The result above is the remote
 native validator, not a local build. The validator does not expose independent
-PYMMO=0/1 and UNIT_TEST=0/1 build results; that separate native matrix remains
+UNIT_TEST=0/1 build results; that separate native matrix remains
 unverified. Windows-1252 and CRLF were checked for all 13 changed VB6 paths;
 `git diff --check origin/master...HEAD` passed. No live HOO checks were performed.
 

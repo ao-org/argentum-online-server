@@ -430,53 +430,6 @@ ErrorHandler:
     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
-    On Error GoTo GetPersonajesCuentaDatabase_Err
-    Dim RS As ADODB.Recordset
-    Set RS = Query( _
-            "SELECT id,name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index,backpack_id, is_dead, is_sailing FROM user WHERE account_id = ?;", _
-            AccountID)
-    If RS Is Nothing Then Exit Function
-    GetPersonajesCuentaDatabase = RS.RecordCount
-    Dim i As Integer
-    If GetPersonajesCuentaDatabase = 0 Then Exit Function
-    For i = 1 To GetPersonajesCuentaDatabase
-        Personaje(i).id = RS!id
-        Personaje(i).nombre = RS!name
-        Personaje(i).Cabeza = RS!head_id
-        Personaje(i).clase = RS!class_id
-        Personaje(i).cuerpo = RS!body_id
-        Personaje(i).Mapa = RS!pos_map
-        Personaje(i).PosX = RS!pos_X
-        Personaje(i).PosY = RS!pos_Y
-        Personaje(i).nivel = RS!level
-        Personaje(i).Status = RS!Status
-        Personaje(i).Casco = RS!helmet_id
-        Personaje(i).Escudo = RS!shield_id
-        Personaje(i).Arma = RS!weapon_id
-        Personaje(i).ClanIndex = RS!Guild_Index
-        Personaje(i).BackPack = RS!backpack_id
-        If EsRolesMaster(Personaje(i).nombre) Then
-            Personaje(i).Status = 3
-        ElseIf EsConsejero(Personaje(i).nombre) Then
-            Personaje(i).Status = 4
-        ElseIf EsSemiDios(Personaje(i).nombre) Then
-            Personaje(i).Status = 5
-        ElseIf EsDios(Personaje(i).nombre) Then
-            Personaje(i).Status = 6
-        ElseIf EsAdmin(Personaje(i).nombre) Then
-            Personaje(i).Status = 7
-        End If
-        If val(RS!is_dead) = 1 Or val(RS!is_sailing) = 1 Then
-            Personaje(i).Cabeza = 0
-        End If
-        RS.MoveNext
-    Next
-    Exit Function
-GetPersonajesCuentaDatabase_Err:
-    Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
-End Function
-
 Public Sub SaveUserBodyDatabase(username As String, ByVal body As Integer)
     On Error GoTo SaveUserBodyDatabase_Err
     Call SetUserValue(username, "body_id", body)

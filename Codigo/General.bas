@@ -674,14 +674,14 @@ Sub Main()
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("AFTER LoadPacketRatePolicy")
     #End If
-    #If PYMMO = 1 Then
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("BEFORE LoadPrivateKey")
-        #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("BEFORE InitializePrivateKey")
+        PrivateKey = "000102030405060708090A0B0C0D0E0F"
+    #Else
         Call LoadPrivateKey
-        #If UNIT_TEST = 1 Then
-            Call UnitTesting.Progress("AFTER LoadPrivateKey")
-        #End If
+    #End If
+    #If UNIT_TEST = 1 Then
+        Call UnitTesting.Progress("AFTER InitializePrivateKey")
     #End If
     #If UNIT_TEST = 1 Then
         Call UnitTesting.Progress("BEFORE LoadMainConfigFile")
@@ -1185,9 +1185,7 @@ UnitTest_ReportError:
         GlobalFrameTime = GetTickCountRaw()
         Dim PerformanceTimer As Long
         Call PerformanceTestStart(PerformanceTimer)
-        #If PYMMO = 1 Then
             Call modNetwork.close_not_logged_sockets_if_timeout
-        #End If
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
             Call modNetwork.Tick(GetElapsed())
         Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
@@ -1202,9 +1200,7 @@ UnitTest_ReportError:
         Call PerformTimeLimitCheck(PerformanceTimer, "General StartAutomatedAction")
         Call UpdateNpcInspections(GlobalFrameTime)
         Call UpdateAdjacentNpcVisibility(GlobalFrameTime)
-        #If PYMMO = 1 Then
             Call UpdateAdjacentPlayerVisibility(GlobalFrameTime)
-        #End If
         Call MaybeUpdateNpcAI(GlobalFrameTime)
         Call PerformTimeLimitCheck(PerformanceTimer, "General MaybeChangeGlobalQuestsState")
         Call MaybeChangeGlobalQuestsState

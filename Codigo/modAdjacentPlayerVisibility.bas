@@ -101,9 +101,6 @@ Private Function SameIdentity(ByVal first As Variant, ByVal second As Variant) A
 End Function
 
 Public Sub RelocateAdjacentPlayer(ByVal subject As Integer)
-    #If PYMMO = 0 Then
-        Exit Sub
-    #End If
     On Error GoTo Failed
     If mIdentities Is Nothing Then Exit Sub
     If Not mIdentities.Exists(CStr(subject)) Then Exit Sub
@@ -154,9 +151,6 @@ Failed:
 End Sub
 
 Public Sub UpdateAdjacentPlayerVisibility(ByVal currentTime As Long)
-    #If PYMMO = 0 Then
-        Exit Sub
-    #End If
     On Error GoTo Failed
     If mLastUpdate <> 0 Then
         If TicksElapsed(mLastUpdate, currentTime) < UPDATE_MS Then Exit Sub
@@ -488,9 +482,6 @@ End Function
 Public Function PrepareAdjacentPlayerHandoff(ByVal viewer As Integer, ByVal subject As Integer, Optional ByRef visibilityHandled As Boolean = False) As Boolean
     visibilityHandled = False
     PrepareAdjacentPlayerHandoff = True
-    #If PYMMO = 0 Then
-        Exit Function
-    #End If
     On Error GoTo Failed
     Call EnsureState()
     Dim known As Scripting.Dictionary, pending As Scripting.Dictionary, key As String, actor As String
@@ -679,9 +670,6 @@ Private Function CancelHandoff(ByVal viewer As Integer, ByVal subject As Integer
 End Function
 
 Public Sub CompleteAdjacentPlayerCreate(ByVal viewer As Integer, ByVal subject As Integer, ByVal queued As Boolean)
-    #If PYMMO = 0 Then
-        Exit Sub
-    #End If
     On Error GoTo Failed
     Call EnsureState()
     If Not queued Then Exit Sub
@@ -696,9 +684,6 @@ Failed:
 End Sub
 
 Public Sub RecordAdjacentPlayerActive(ByVal viewer As Integer, ByVal charindex As Integer, ByVal isNpc As Boolean)
-    #If PYMMO = 0 Then
-        Exit Sub
-    #End If
     On Error GoTo Failed
     If charindex < 1 Or charindex > UBound(CharList) Then Exit Sub
     Call EnsureState()

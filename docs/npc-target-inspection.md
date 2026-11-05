@@ -7,15 +7,13 @@ no adjacent-map query is admitted. Border handoff creates a fresh subscription.
 
 ## Wire
 
-Client `317` (`PYMMO=1`): Int32 positive request, Int16 viewer map,
+Client packet `317`: Int32 positive request, Int16 viewer map,
 Int16 character index, Int16 NPC template. Character zero unsubscribes.
 Server `221`: echoed request/map/character/template, Byte available (0/1),
 Byte threat (0 unknown, 1 low, 2 challenging, 3 dangerous, 4 deadly),
 Byte offensive trait bits (1 poison, 2 projectile, 4 spells), Byte entry count
 (low 7 bits, maximum 32; bit 7 flags omitted overflow), then entries: Int16 quest ID, Byte kind (1 kill, 2 ready turn-in, 3 click-to-visit),
 Int32 current, Int32 required. Turn-in counts are zero.
-The existing conditional enums supply the corresponding PYMMO=0 IDs.
-
 Deploy matching server and HOO versions together. No existing packet is resized.
 An older server cannot process the new request; old-server compatibility is not
 advertised. New server subscriptions are opt-in by request, so legacy clients
@@ -66,5 +64,5 @@ quest-chat side effects during inspection.
 The native PR validator built source commit `a572fedc7ba0c1e85743c73f260f7c69731198fc`
 and reported **857/857 passed, zero failures**. The VB6 compiler is unavailable
 locally; this is CI evidence, not a local native run. The report does not establish
-a complete PYMMO=0/PYMMO=1 configuration matrix; that remains unverified.
+a complete native configuration matrix; that remains unverified.
 Live companion-client gameplay remains outstanding.

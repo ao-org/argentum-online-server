@@ -13,7 +13,7 @@ client shows no kill markers until authoritative eligibility arrives; an older
 server cannot supply the complete projection. Older clients are unsupported:
 they cannot decode the extended adjacent snapshot from the new server.
 
-- `eQuestObjectiveTemplates`: 223 in PYMMO=1, 224 in PYMMO=0.
+- `eQuestObjectiveTemplates`: server packet 223.
 - Little-endian Int16 packet ID, Int16 count (0..2550), then count signed Int16
   requirements. Positive N means unfinished kill objective for template N;
   negative N means unfinished click-to-visit objective for template abs(N).
@@ -69,4 +69,4 @@ and create/eligibility/respawn order, including maximum transport-frame size.
 
 Local VB6 compiler is unavailable. Native PR validator results are recorded in
 the PR, separately from source inspection. The validator does not establish a
-PYMMO=0/PYMMO=1 configuration matrix or live gameplay validation.
+native configuration matrix or live gameplay validation.

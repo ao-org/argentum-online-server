@@ -67,7 +67,7 @@ state. Current interest still drives the existing observed-NPC AI during retries
 
 ## Wire contract
 
-IDs below are for PYMMO=1. VB6's existing conditional PYMMO=0 ordinal shift remains; it is not a compatibility target. All multibyte values are little endian. The existing transport frame surrounds these payloads.
+The IDs below are the server's fixed packet mapping. All multibyte values are little endian. The existing transport frame surrounds these payloads.
 
 | ID | Name | Fields after the Int16 packet ID | Payload including ID |
 |---|---|---|---|
@@ -141,11 +141,11 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
 
 ### Appearance and labels (2026-10-25)
 
-- Native Windows VB6 production and test builds passed for both `PYMMO=0` and
-  `PYMMO=1`. Each build used `VB6.exe /make /d
-  DEBUGGING=<0|1>:PYMMO=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1 /out <log> Server.VBP`,
+- Native Windows VB6 production and test builds passed for the supported server
+  configuration. Each build used `VB6.exe /make /d
+  DEBUGGING=<0|1>:UNIT_TEST=<0|1>:UNLOCK_CPU=1 /out <log> Server.VBP`,
   with DEBUGGING matching UNIT_TEST, and a fresh executable was verified.
-- The full 43-suite run passed **673/673** under each PYMMO configuration, using
+- The full 43-suite run passed **673/673** in the recorded configurations, using
   an isolated source copy, loopback server and disposable SQLite fixture.
 - The follow-up adds three production-path regression groups: stationary South
   idle transitions, NPC269's actual `NpcAI` origin/no-target path repeated with
@@ -154,7 +154,7 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
   adjacent snapshot. Restoring only the old zero-equipment call in the isolated
   copy produced exactly these three failures (670 passed); restoring the fix
   passed all 673 in both configurations. Separate old-writer reports were kept.
-  Final production builds also passed for both PYMMO values; no primary server
+  Final production builds also passed in the recorded configurations; no primary server
   executable was replaced or launched.
 - Ten new production-path groups compare normal creation and adjacent equipment
   with distinct nonzero IDs and no FX; definition/name/description refreshes;
@@ -177,7 +177,7 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
 - Changed C++ implementation translation units pass GCC C++20 syntax checks, including world rendering, event handling and the frame controller.
 - The two-hop pass executed the full native VB6 unit suite in an
   isolated loopback test environment with `DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1`:
-  **600/600 passed for PYMMO=1 and 600/600 for PYMMO=0**. This includes 11 new
+  **600/600 passed in each recorded configuration**. This includes 11 new
   two-hop groups, the previous 28 production collection/refresh groups and nine enqueue-probe groups.
   Tests capture real serialized packets and inject failed acceptance; they verify
   packet ordering, cache contents, stale lifetime handling and shared-writer cleanup.
@@ -195,7 +195,7 @@ Decoded events flow through GameEventHandler into WorldState's separate Adjacent
   close invalidation and late callbacks. They are deterministic unit tests, not a
   real-socket queue-saturation test. The callback semantics were checked against
   the installed Aurora implementation; no Aurora files or dependencies changed.
-- Native production builds passed for both `PYMMO=0` and `PYMMO=1` with
+- Native production builds passed in the recorded configurations with
   `DEBUGGING=0:UNIT_TEST=0:UNLOCK_CPU=1`. All four builds used `VB6.exe /make /d
   <definitions> /out <log> Server.VBP`; each new executable was verified. Existing
   local project reference settings were left untouched and uncommitted.

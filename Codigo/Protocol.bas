@@ -131,28 +131,9 @@ Public Enum e_TextChannel
     TEXTCHANNEL_MAX
 End Enum
 
-Public Type t_PersonajeCuenta
-    id As Long
-    nombre As String
-    nivel As Byte
-    Mapa As Integer
-    PosX As Integer
-    PosY As Integer
-    cuerpo As Integer
-    Cabeza As Integer
-    Status As Byte
-    clase As Byte
-    Arma As Integer
-    Escudo As Integer
-    Casco As Integer
-    ClanIndex As Integer
-    BackPack As Integer
-End Type
-
-
 Public reader As Network.reader
 
-#If LOGIN_STRESS_TEST = 1 And PYMMO = 1 Then
+#If LOGIN_STRESS_TEST = 1 Then
 Private mStressSeq As Long
 
 Private Function Stress_Enabled() As Boolean
@@ -257,7 +238,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
         Call KickConnection(ConnectionID, "invalid_packet", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
         Exit Function
     End If
-    #If PYMMO = 1 Then
         'Does the packet requires a logged user??
         If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
             ' All these packets require a logged user with a valid user_index
@@ -285,26 +265,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
                 Exit Function ' Don't process incoming data
             End If
         End If
-    #ElseIf PYMMO = 0 Then
-        'Does the packet requires a logged account??
-        If Not (PacketId = ClientPacketID.eCreateAccount Or PacketId = ClientPacketID.eLoginAccount) Then
-            'Is the account actually logged?
-            If UserList(UserIndex).AccountID = 0 Then
-                Call CloseSocket(UserIndex, "packet_requires_logged_account_but_account_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
-                Exit Function
-            End If
-            If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
-                'Is the user actually logged?
-                If Not UserList(UserIndex).flags.UserLogged Then
-                    Call CloseSocket(UserIndex, "packet_requires_logged_user_but_user_not_logged", "Protocol.HandleIncomingData", PacketId, PacketName, Mapping(ConnectionID).PacketCount)
-                    Exit Function
-                    'He is logged. Reset idle counter if id is valid.
-                ElseIf PacketId <= ClientPacketID.[PacketCount] Then
-                    UserList(UserIndex).Counters.IdleCount = 0
-                End If
-            End If
-        End If
-    #End If
     Select Case PacketId
         Case ClientPacketID.eLoginExistingChar
             Call HandleLoginExistingChar(ConnectionID)
@@ -942,14 +902,6 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleNpcBowSubscribe(UserIndex, reader)
         Case ClientPacketID.eHooBowAttack
             Call HandleNpcBowAttack(UserIndex, reader)
-            #If PYMMO = 0 Then
-            Case ClientPacketID.eCreateAccount
-                Call HandleCreateAccount(ConnectionID)
-            Case ClientPacketID.eLoginAccount
-                Call HandleLoginAccount(ConnectionID)
-            Case ClientPacketID.eDeleteCharacter
-                Call HandleDeleteCharacter(ConnectionID)
-            #End If
         Case Else
             Call TraceError(&HDEAD0001, "Invalid or unhandled message ID: " & PacketId, "Protocol.HandleIncomingData", Erl)
             If Not IsMissing(optional_user_index) Then
@@ -1382,99 +1334,6 @@ HandleRequestRemort_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestRemort", Erl)
 End Sub
 
-#If PYMMO = 0 Then
-    Private Sub HandleCreateAccount(ByVal ConnectionID As Long)
-        On Error GoTo HandleCreateAccount_Err:
-        Dim username As String
-        Dim Password As String
-        username = reader.ReadString8
-        Password = reader.ReadString8
-        Dim UserIndex As Integer
-        UserIndex = MapConnectionToUser(ConnectionID)
-        If UserIndex < 1 Then
-            Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR)) ', "No hay slot disponibles para el usuario."))
-            Call KickConnection(ConnectionID)
-            Exit Sub
-        End If
-        If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
-            Call WriteErrorMsg(UserIndex, "Parametros incorrectos")
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        Dim Result As ADODB.Recordset
-        Set Result = Query("INSERT INTO account (email, password, salt, validate_code) VALUES (?,?,?,?)", LCase(username), Password, Password, "123")
-        If (Result Is Nothing) Then
-            Call WriteErrorMsg(UserIndex, "Ya hay una cuenta asociada con ese email")
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        Set Result = Query("SELECT id FROM account WHERE email=?", username)
-        UserList(UserIndex).AccountID = Result!Id
-        Dim Personajes() As t_PersonajeCuenta
-        Call WriteAccountCharacterList(UserIndex, Personajes, 0)
-        Exit Sub
-HandleCreateAccount_Err:
-        Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateAccount", Erl)
-    End Sub
-
-Private Sub HandleLoginAccount(ByVal ConnectionID As Long)
-    On Error GoTo LoginAccount_Err:
-    Dim username As String
-    Dim Password As String
-    username = reader.ReadString8
-    Password = reader.ReadString8
-    Dim UserIndex As Integer
-    UserIndex = MapConnectionToUser(ConnectionID)
-    If UserIndex < 1 Then
-        Call modSendData.SendToConnection(ConnectionID, PrepareShowMessageBox(MSG_CONNECTION_SLOT_ERROR)) ', "No hay slot disponibles para el usuario."))
-        Call KickConnection(ConnectionID)
-        Exit Sub
-    End If
-    If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
-        Call WriteErrorMsg(UserIndex, "Parametros incorrectos")
-        Call CloseSocket(UserIndex)
-        Exit Sub
-    End If
-    Dim Result As ADODB.Recordset
-    Set Result = Query("SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND password=?", username, Password)
-    If (Result.EOF) Then
-        Call WriteErrorMsg(UserIndex, "Usuario o Contraseña erronea.")
-        Call CloseSocket(UserIndex)
-        Exit Sub
-    End If
-    UserList(UserIndex).AccountID = Result!Id
-    Dim Personajes(1 To 10) As t_PersonajeCuenta
-    Dim count               As Long
-    count = GetPersonajesCuentaDatabase(Result!Id, Personajes)
-    Call WriteAccountCharacterList(UserIndex, Personajes, count)
-    Exit Sub
-LoginAccount_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
-End Sub
-
-Private Sub HandleDeleteCharacter(ByVal ConnectionID As Long)
-    On Error GoTo DeleteCharacter_Err:
-DeleteCharacter_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
-End Sub
-
-Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
-    On Error GoTo ErrHandler
-    Dim user_name As String
-    Dim UserIndex As Integer
-    UserIndex = Mapping(ConnectionID).UserRef.ArrayIndex
-    Dim char_id As Long
-    char_id = reader.ReadInt32
-    user_name = reader.ReadString8
-    UserList(UserIndex).id = char_id
-    Call ConnectUser(UserIndex, user_name)
-    Exit Sub
-ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
-End Sub
-
-#End If
-#If PYMMO = 1 Then
 
 
 Private Sub HandleLoginExistingChar(ByVal ConnectionID As Long)
@@ -1853,57 +1712,6 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 
-#ElseIf PYMMO = 0 Then
-    
-
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-        Dim name As String
-        Dim race     As e_Raza
-        Dim gender   As e_Genero
-        Dim Hogar    As e_City
-        Dim Class As e_Class
-        Dim head        As Integer
-
-        name = reader.ReadString8
-110     race = reader.ReadInt()
-112     gender = reader.ReadInt()
-113     Class = reader.ReadInt()
-116     head = reader.ReadInt()
-118     Hogar = reader.ReadInt()
-
-
-132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
-134         Call WriteShowMessageBox(UserIndex, MSG_HAS_CREADO_DEMASIADOS_PERSONAJES, vbNullString) 'Msg1781=Has creado demasiados personajes.
-
-136         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
-        If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        
-        If Not ConnectNewUser(UserIndex, name, race, gender, Class, head, Hogar) Then
-            Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-        
-        
-        Exit Sub
-    
-ErrHandler:
-     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
-End Sub
-#End If
 
 ''
 ' Handles the "Talk" message.

@@ -3,13 +3,12 @@
 The required HOO protocol adds a separate, render-only player stream. There is
 no capability negotiation, ProtocolGenerator update, Aurora DLL change, or
 change to NPC packets 214-216. Coordinated server/HOO deployment is required.
-Production hooks run only under `PYMMO=1`; `PYMMO=0` retains its normal stream.
+Production hooks are part of the only supported server build.
 
 ## Wire Contract
 
 All integers/floats use the existing little-endian Network.Writer. Packet IDs
-include the existing conditional enum offset: 217/218/219 under PYMMO=1 and
-218/219/220 under PYMMO=0 (the latter are reserved, not emitted in production).
+are fixed: Reset 217, Upsert 218 and Remove 219.
 
 | Packet | Payload after Int16 packet ID |
 | --- | --- |
@@ -132,8 +131,7 @@ Publishing them after notifications could reject a valid handoff before it was
 retained, losing normal creation even with no queue failure. The scan bounds,
 receive radii and recipients are unchanged; bow pruning and AreaChanged still
 precede notifications, and AreaID remains the final completion marker. Handoff
-area validation is not weakened or bypassed for zero masks. PYMMO=0 retains its
-existing normal stream and smaller receive radius.
+area validation is not weakened or bypassed for zero masks.
 
 Same-map retries use normal `NotifyUser` admission, not adjacent render
 eligibility. Ordinary `invisible` or `Oculto` players still need a normal record
@@ -185,7 +183,7 @@ adjacent upsert, confirmed normal CharacterRemoves retire every matching index,
 committing accepted removals independently. This remains correct if WarpUserChar
 allocates a different current index. Any accepted normal
 create, including an NPC, replaces the prior tracked owner of that index;
-rejected creates cannot clear it. PYMMO=1 WriteCharacterCreate therefore requests
+rejected creates cannot clear it. WriteCharacterCreate therefore requests
 the existing transport queue-confirmation probe. Normal packet layouts are
 unchanged. Map clear and viewer reset discard both tracking namespaces.
 
@@ -221,7 +219,7 @@ remove/create and hidden stages, stationary reveal, a replacement requested
 while entry clears masks and old cleanup is pending, subject and viewer area
 crossings with stale previous masks, and obsolete/disconnected/reused identities.
 The fixture clears unrelated map objects, not area validation; AgregarUser itself
-resets and rebuilds the masks. Case 91 also checks the normal PYMMO=0 entry path.
+resets and rebuilds the masks. Case 91 checks the supported normal entry path.
 
 Before the production edit, case 91 ran against reviewed server
 `6e7de301a25013ff70dc2f795bd9b36707ea0014`. Native compilation passed, but only
@@ -257,17 +255,15 @@ archived locally under `%TEMP%\npc-cross-map-diagnostics-validation\adjacent-pla
 with the final matrix in `final`. This is automated runtime validation, not a
 two-client gameplay check. CP1252/CRLF and `git diff --check` passed.
 
-### Compiler Matrix
+### Compiler Commands
 
 Set `VB6_EXE` to the installed compiler, `ISOLATED_BUILD` to a disposable copy of
-the project, and `VALIDATION_LOGS` to the output directory. The four tested flag
-sets are:
+the project, and `VALIDATION_LOGS` to the output directory. Authentication is
+unconditional in the supported build:
 
 ```bat
-"%VB6_EXE%" /make /d DEBUGGING=1:PYMMO=1:UNIT_TEST=1:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\pymmo1-unit1-build.log" "%ISOLATED_BUILD%\Server.VBP"
-"%VB6_EXE%" /make /d DEBUGGING=1:PYMMO=0:UNIT_TEST=1:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\pymmo0-unit1-build.log" "%ISOLATED_BUILD%\Server.VBP"
-"%VB6_EXE%" /make /d DEBUGGING=0:PYMMO=0:UNIT_TEST=0:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\pymmo0-unit0-build.log" "%ISOLATED_BUILD%\Server.VBP"
-"%VB6_EXE%" /make /d DEBUGGING=0:PYMMO=1:UNIT_TEST=0:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\pymmo1-unit0-build.log" "%ISOLATED_BUILD%\Server.VBP"
+"%VB6_EXE%" /make /d DEBUGGING=1:UNIT_TEST=1:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\unit1-build.log" "%ISOLATED_BUILD%\Server.VBP"
+"%VB6_EXE%" /make /d DEBUGGING=0:UNIT_TEST=0:UNLOCK_CPU=1 /out "%VALIDATION_LOGS%\unit0-build.log" "%ISOLATED_BUILD%\Server.VBP"
 ```
 
 ### Captured Upsert

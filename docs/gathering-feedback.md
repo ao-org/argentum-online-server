@@ -1,10 +1,10 @@
 # Authoritative gathering feedback
 
-HOO companion uses two new required packets (PYMMO=1): client 318
+HOO companion uses two new required packets: client 318
 `eGatheringStart`, server 222 `eGatheringFeedback`. No capability bit and no
 ProtocolGenerator. Deploy server first, then the coordinated HOO client before
 allowing the new feature; an old server cannot process request 318. Existing
-packet layouts remain unchanged. PYMMO=0 enum ordinals are 321 and 223.
+packet layouts remain unchanged.
 
 All integers are little endian. Start payload: positive Int32 request, Byte x,
 Byte y, Byte skill (17 lumberjacking, 18 fishing, 19 mining). It enters the same
@@ -51,8 +51,8 @@ No assets are added. Auditory tuning remains a live-client check.
 Suite 46 contains packet bytes/IDs, accepted start, exact rewards, unsuccessful
 roll continuation, block/stop deduplication, late award, user lifetime reuse,
 legacy request exclusion, rejected replacement, real stamina gate, tool
-validators, ground award and zero-yield cases. Both PYMMO enum configurations
-are asserted. Native VB6 compiler is unavailable at the documented local path;
+validators, ground award and zero-yield cases. Packet assertions use the fixed
+supported enum mapping. Native VB6 compiler is unavailable at the documented local path;
 PR validator results must be reported separately from local checks.
 
 Manual: exercise all three jobs, full inventory (floor vs no award), depleted
