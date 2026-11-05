@@ -43,7 +43,7 @@ Private Sub AcceptQuest(ByVal userIndex As Integer, ByVal slot As Integer, ByVal
 End Sub
 
 Private Sub Fixture()
-    Call Unit_NpcBow.InitializeTestWorld()
+    Call Unit_NpcBow.InitializeTestWorld(2)
     Call ResetTurnInTestCounters()
     Call SetFeatureToggle("collectible_cards", False)
     ReDim QuestList(0 To 3): ReDim NpcInfoCache(1 To 20)

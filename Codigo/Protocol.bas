@@ -932,6 +932,8 @@ Public Function HandleIncomingData(ByVal ConnectionID As Long, ByVal Message As 
             Call HandleInventoryDestructionPrepare(UserIndex, reader)
         Case ClientPacketID.eHooInventoryDestructionConfirm
             Call HandleInventoryDestructionConfirm(UserIndex, reader)
+        Case ClientPacketID.eHooPriestForgiveness
+            Call HandleHooPriestForgiveness(UserIndex)
         Case ClientPacketID.ePartyManagement
             Call HandlePartyManagement(UserIndex, reader)
         Case ClientPacketID.eNpcInspectionSubscribe
@@ -1008,6 +1010,12 @@ End Function
 Public Function UserSupportsHooHouseDoorActions(ByVal UserIndex As Integer) As Boolean
     UserSupportsHooHouseDoorActions = IsFeatureEnabled(HOO_FEATURE_HOUSE_DOOR_ACTIONS_V1) And _
         UserSupportsHooCapability(UserIndex, HOO_CAP_HOUSE_DOOR_ACTIONS_V1)
+End Function
+
+Public Function UserSupportsPriestForgiveness(ByVal UserIndex As Integer) As Boolean
+    If UserIndex < 1 Or UserIndex > UBound(UserList) Then Exit Function
+    UserSupportsPriestForgiveness = UserList(UserIndex).HooCapabilities.Negotiated And _
+        UserList(UserIndex).HooCapabilities.ProtocolVersion >= HOO_PROTOCOL_V2_VERSION
 End Function
 
 Public Function ResolveHooTargetedSpellNpc(ByVal TargetCharacterIndex As Integer) As Integer
@@ -1229,7 +1237,7 @@ Public Sub MaybeSendRemortState(ByVal UserIndex As Integer)
 End Sub
 
 Public Function AcceptedHooCapabilityMask(ByVal ProtocolVersion As Byte, ByVal RequestedMask As Long) As Long
-    If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION Then Exit Function
+    If ProtocolVersion <> HOO_CAP_PROTOCOL_VERSION And ProtocolVersion <> HOO_PROTOCOL_V2_VERSION Then Exit Function
     Dim SupportedMask As Long
     If IsFeatureEnabled(HOO_FEATURE_ADJACENT_CHARACTERS_V1) Then
         SupportedMask = SupportedMask Or HOO_CAP_ADJACENT_CHARACTERS_V1
@@ -1254,7 +1262,7 @@ Private Sub HandleHooClientCapabilities(ByVal UserIndex As Integer)
     ProtocolVersion = reader.ReadInt8
     RequestedMask = reader.ReadInt32
     Call ResetHooClientCapabilities(UserIndex)
-    If ProtocolVersion = HOO_CAP_PROTOCOL_VERSION Then
+    If ProtocolVersion = HOO_CAP_PROTOCOL_VERSION Or ProtocolVersion = HOO_PROTOCOL_V2_VERSION Then
         AcceptedMask = AcceptedHooCapabilityMask(ProtocolVersion, RequestedMask)
         With UserList(UserIndex).HooCapabilities
             .Negotiated = True
@@ -6115,62 +6123,44 @@ End Sub
 
 Public Sub HandleDonateGold(ByVal UserIndex As Integer)
     On Error GoTo handle
-    With UserList(UserIndex)
-        Dim Oro As Long
-        Oro = reader.ReadInt32
-        If Oro <= 0 Then Exit Sub
-        'Se asegura que el target es un npc
-        If Not IsValidNpcRef(.flags.TargetNPC) Then
-            'Msg1217= Primero tenés que seleccionar al sacerdote.
-            Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_SACERDOTE_1217, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        Dim priest As t_Npc
-        priest = NpcList(.flags.TargetNPC.ArrayIndex)
-        'Validate NPC is an actual priest and the player is not dead
-        If (priest.npcType <> e_NPCType.Revividor And (priest.npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
-        'Make sure it's close enough
-        If Distancia(.pos, NpcList(.flags.TargetNPC.ArrayIndex).pos) > 3 Then
-            Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Sub
-        End If
-        If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or _
-                .Faccion.Status = e_Facciones.Caos Then
-            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDO_ACEPTAR_TU_DONACION_EN_ESTE_MOMENTO, "", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite) ' Msg1377=No puedo aceptar tu donación en este momento...
-            Exit Sub
-        End If
-        If .GuildIndex <> 0 Then
-            Dim ClanAlineacion As e_ALINEACION_GUILD
-            ClanAlineacion = modGuilds.Alineacion(.GuildIndex)
-            If ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL Or ClanAlineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, vbNullString, priest.Char.charindex, vbWhite) ' Msg1347=No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.
-                Exit Sub
-            End If
-        End If
-        If .Stats.GLD < Oro Then
-            'Msg1218= No tienes suficiente dinero.
-            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1218, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Sub
-        End If
-        Dim Donacion As Long
-        If .Faccion.ciudadanosMatados > 0 Then
-            Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
-        Else
-            Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
-        End If
-        If Oro < Donacion Then
-            Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_PUEDE_PERDONARTE_SI_ERES_UNA_PERSONA_AVARA, vbNullString, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)  ' Msg1405=Dios no puede perdonarte si eres una persona avara.
-            Exit Sub
-        End If
-        .Stats.GLD = .Stats.GLD - Oro
-        Call WriteUpdateGold(UserIndex)
-        'Msg1219= Has donado ¬1
-        Call WriteLocaleMsg(UserIndex, MSG_DONADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
-        Call WriteLocaleChatOverHead(UserIndex, MSG_GRACIAS_POR_TU_GENEROSA_DONACION_CON_ESTAS_PALABRAS_TE_LIBERO_DE_TODO_TIPO_DE_PECADOS_QUE_DIOS_TE_ACOMPANE, vbNullString, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)  ' Msg1406=¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 80, 100, False))
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(100, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-        Call VolverCiudadano(UserIndex)
-    End With
+    Dim Oro As Long
+    Dim Donacion As Long
+    Dim PriestRef As t_NpcReference
+    Dim eligibility As e_HooForgivenessResult
+    Oro = reader.ReadInt32
+    If Oro <= 0 Then Exit Sub
+    PriestRef = UserList(UserIndex).flags.TargetNPC
+    eligibility = GetHooForgivenessEligibility(UserIndex, PriestRef, Donacion)
+    If eligibility <> eHooForgivenessOffer Then
+        Select Case eligibility
+            Case eHooForgivenessInvalidPriest
+                Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_SACERDOTE_1217, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
+            Case eHooForgivenessTooFar
+                Call WriteLocaleMsg(UserIndex, MSG_SACERDOTE_PUEDE_CURARTE_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
+            Case eHooForgivenessAlreadyCitizen, eHooForgivenessFaction, eHooForgivenessRestrictedLocation
+                If IsValidNpcRef(PriestRef) Then Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDO_ACEPTAR_TU_DONACION_EN_ESTE_MOMENTO, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+            Case eHooForgivenessGuild
+                If IsValidNpcRef(PriestRef) Then Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+            Case eHooForgivenessInvalidPrice
+                Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1218, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+        End Select
+        Exit Sub
+    End If
+    If UserList(UserIndex).Stats.GLD < Oro Then
+        Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1218, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Exit Sub
+    End If
+    If Oro < Donacion Then
+        Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_PUEDE_PERDONARTE_SI_ERES_UNA_PERSONA_AVARA, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+        Exit Sub
+    End If
+    UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - Oro
+    Call WriteUpdateGold(UserIndex)
+    Call WriteLocaleMsg(UserIndex, MSG_DONADO, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(Oro))
+    Call WriteLocaleChatOverHead(UserIndex, MSG_GRACIAS_POR_TU_GENEROSA_DONACION_CON_ESTAS_PALABRAS_TE_LIBERO_DE_TODO_TIPO_DE_PECADOS_QUE_DIOS_TE_ACOMPANE, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbYellow)
+    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 80, 100, False))
+    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(100, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+    Call VolverCiudadano(UserIndex)
     Exit Sub
 handle:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)

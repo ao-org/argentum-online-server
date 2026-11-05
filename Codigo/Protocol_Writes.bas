@@ -102,6 +102,20 @@ WriteLoggedMessage_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLoggedMessage", Erl)
 End Sub
 
+Public Sub WriteHooPriestForgivenessResult(ByVal UserIndex As Integer, ByVal RequestId As Long, ByVal Result As e_HooForgivenessResult, ByVal Price As Long, ByVal OfferToken As Long)
+    On Error GoTo WriteHooPriestForgivenessResult_Err
+    Call Writer.WriteInt16(ServerPacketID.eHooPriestForgivenessResult)
+    Call Writer.WriteInt32(RequestId)
+    Call Writer.WriteInt8(CByte(Result))
+    Call Writer.WriteInt32(Price)
+    Call Writer.WriteInt32(OfferToken)
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteHooPriestForgivenessResult_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Protocol_Writes.WriteHooPriestForgivenessResult", Erl)
+End Sub
+
 Public Sub WriteRemortState(ByVal UserIndex As Integer, ByVal Reason As e_RemortEligibilityReason)
     On Error GoTo WriteRemortState_Err
     Call Writer.WriteInt16(ServerPacketID.eRemortState)
@@ -4793,11 +4807,12 @@ Public Function PrepareActiveToggles()
     Dim ActiveToggles()   As String
     Dim ActiveToggleCount As Integer
     ActiveToggles = GetActiveToggles(ActiveToggleCount)
-    Call Writer.WriteInt16(ActiveToggleCount)
+    Call Writer.WriteInt16(ActiveToggleCount + 1)
     Dim i As Integer
     For i = 0 To ActiveToggleCount - 1
         Call Writer.WriteString8(ActiveToggles(i))
     Next i
+    Call Writer.WriteString8("hoo-protocol-v2")
     Exit Function
 PrepareActiveToggles_Err:
     Call Writer.Clear

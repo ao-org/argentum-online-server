@@ -539,6 +539,13 @@ Sub Main()
             Call UnitTesting.Progress("AFTER RunManagedConfigTests")
             End
         End If
+        If LCase$(Trim$(Command$)) = "--test-priest-forgiveness" Then
+            Call UnitTesting.Progress("BEFORE Unit_PriestForgiveness.TestSuite")
+            Call Unit_PriestForgiveness.TestSuite()
+            Call UnitTesting.Progress("AFTER Unit_PriestForgiveness.TestSuite")
+            Call UnitTesting.WriteResultsToFile(App.Path & "\test_results.txt")
+            End
+        End If
     #End If
 
     If LCase$(Trim$(Command$)) = "--benchmark-string-builders" Then

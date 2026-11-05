@@ -3025,9 +3025,27 @@ Public Type t_ConnectionInfo
     OnConnectTimestamp As Long
 End Type
 
+Public Enum e_HooForgivenessResult
+    eHooForgivenessOffer = 0
+    eHooForgivenessSuccess = 1
+    eHooForgivenessAlreadyCitizen = 2
+    eHooForgivenessFaction = 3
+    eHooForgivenessGuild = 4
+    eHooForgivenessInsufficientGold = 5
+    eHooForgivenessDead = 6
+    eHooForgivenessInvalidPriest = 7
+    eHooForgivenessTooFar = 8
+    eHooForgivenessInvalidOffer = 9
+    eHooForgivenessPriceChanged = 10
+    eHooForgivenessInvalidPrice = 11
+    eHooForgivenessRestrictedLocation = 12
+    eHooForgivenessTransitionFailed = 13
+End Enum
+
 Public Const HotKeyCount As Integer = 10
 
 Public Const HOO_CAP_PROTOCOL_VERSION As Byte = 1
+Public Const HOO_PROTOCOL_V2_VERSION As Byte = 2
 Public Const HOO_CAP_ADJACENT_CHARACTERS_V1 As Long = &H1&
 Public Const HOO_CAP_REMORT_V1 As Long = &H2&
 Public Const HOO_CAP_TARGETED_SPELL_CAST_V1 As Long = &H4&

@@ -24,7 +24,7 @@ Private Sub Expect(ByVal value As Boolean, ByVal label As String)
     If Not value Then Err.Raise vbObjectError + 853, "Party management", label
 End Sub
 Private Sub Fixture()
-    Call Unit_NpcBow.InitializeTestWorld()
+    Call Unit_NpcBow.InitializeTestWorld(2)
     ReDim UserList(1 To 7)
     Set m_NameIndex = New Dictionary
     ' Leave one generation for cases that deliberately reconnect inside a fixture.

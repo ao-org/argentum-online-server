@@ -1645,66 +1645,35 @@ End Sub
 
 Public Sub HandleForgive(ByVal UserIndex As Integer)
     On Error GoTo HandleForgive_Err
-    'Author: Nicolas Matias Gonzalez (NIGO)
-    With UserList(UserIndex)
-        'Se asegura que el target es un npc
-        If Not IsValidNpcRef(.flags.TargetNPC) Then
-            'Msg964= Primero tenÃ©s que seleccionar al sacerdote.
+    Dim PriestRef As t_NpcReference
+    Dim Price As Long
+    Dim eligibility As e_HooForgivenessResult
+    PriestRef = UserList(UserIndex).flags.TargetNPC
+    eligibility = GetHooForgivenessEligibility(UserIndex, PriestRef, Price)
+    Select Case eligibility
+        Case eHooForgivenessInvalidPriest
             Call WriteLocaleMsg(UserIndex, MSG_PRIMERO_TENES_SELECCIONAR_SACERDOTE, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        'Validate NPC and make sure player is not dead
-        If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie( _
-                UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
-        Dim priest As t_Npc
-        priest = NpcList(.flags.TargetNPC.ArrayIndex)
-        'Make sure it's close enough
-        If Distancia(.pos, priest.pos) > 3 Then
-            'Msg965= El sacerdote no puede escuchar tus pecados debido a que estÃ¡s demasiado lejos.
+        Case eHooForgivenessTooFar
             Call WriteLocaleMsg(UserIndex, MSG_NO_SACERDOTE_PUEDE_ESCUCHAR_TUS_PECADOS_DEBIDO_DEMASIADO_LEJOS, e_TextChannel.TEXTCHANNEL_SYSTEM, e_FontTypeNames.FONTTYPE_New_Naranja)
-            Exit Sub
-        End If
-        If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, MSG_TU_ALMA_YA_ESTA_LIBRE_DE_PECADOS_HIJO_MIO, vbNullString, priest.Char.charindex, vbWhite) ' Msg1342=Tu alma ya esta libre de pecados hijo mio.
-            Exit Sub
-        End If
-        If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.consejo Then
-            Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_TE_PERDONARA_MIENTRAS_SEAS_FIEL_AL_DEMONIO, vbNullString, priest.Char.charindex, vbWhite) ' Msg1343=Â¡Â¡Dios no te perdonarÃ¡ mientras seas fiel al Demonio!!
-            Exit Sub
-        End If
-        If .GuildIndex <> 0 Then
-            If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                Call WriteLocaleChatOverHead(UserIndex, MSG_TE_ENCUENTRAS_EN_UN_CLAN_CRIMINAL_DEBES_RETIRARTE_PARA_QUE_PUEDA_PERDONARTE, vbNullString, priest.Char.charindex, vbWhite) ' Msg1344=Te encuentras en un clan criminal... debes retirarte para que pueda perdonarte.
-                Exit Sub
+        Case eHooForgivenessAlreadyCitizen
+            Call WriteLocaleChatOverHead(UserIndex, MSG_TU_ALMA_YA_ESTA_LIBRE_DE_PECADOS_HIJO_MIO, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+        Case eHooForgivenessFaction
+            Call WriteLocaleChatOverHead(UserIndex, MSG_DIOS_NO_TE_PERDONARA_MIENTRAS_SEAS_FIEL_AL_DEMONIO, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+        Case eHooForgivenessRestrictedLocation
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PUEDO_ACEPTAR_TU_DONACION_EN_ESTE_MOMENTO, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+        Case eHooForgivenessGuild
+            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, vbNullString, NpcList(PriestRef.ArrayIndex).Char.charindex, vbYellow)
+        Case eHooForgivenessDead
+            ' Preserve the legacy command's silent dead-player rejection.
+        Case eHooForgivenessInvalidPrice
+            Call WriteLocaleMsg(UserIndex, MSG_NO_TIENES_SUFICIENTE_DINERO_1218, e_TextChannel.TEXTCHANNEL_ECONOMY, e_FontTypeNames.FONTTYPE_New_Naranja)
+        Case eHooForgivenessOffer
+            If UserList(UserIndex).Faccion.ciudadanosMatados > 0 Then
+                Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_MATADO_A_CIUDADANOS_INOCENTES_DIOS_NO_PUEDE_PERDONARTE_LO_QUE_HAS_HECHO_PERO_SI_HACES_UNA_GENEROSA, Price, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
+            Else
+                Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_VOLVER_A_SER_UN_CIUDADANO_DEBERAS_DONAR_MONEDAS_DE_ORO, Price, NpcList(PriestRef.ArrayIndex).Char.charindex, vbWhite)
             End If
-        End If
-        If .Faccion.ciudadanosMatados > 0 Then
-            Dim Donacion As Long
-            Donacion = .Faccion.ciudadanosMatados * SvrConfig.GetValue("GoldMult") * SvrConfig.GetValue("CostoPerdonPorCiudadano")
-            Call WriteLocaleChatOverHead(UserIndex, MSG_HAS_MATADO_A_CIUDADANOS_INOCENTES_DIOS_NO_PUEDE_PERDONARTE_LO_QUE_HAS_HECHO_PERO_SI_HACES_UNA_GENEROSA, Donacion, priest.Char.charindex, vbWhite) ' Msg1345=Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. Pero si haces una generosa donaciÃ³n de, digamos, Â¬1 monedas de oro, tal vez cambie de opiniÃ³n...
-            Exit Sub
-        Else
-            Donacion = SvrConfig.GetValue("CostoPerdonPorCiudadano") / 2
-            Call WriteLocaleChatOverHead(UserIndex, MSG_PARA_VOLVER_A_SER_UN_CIUDADANO_DEBERAS_DONAR_MONEDAS_DE_ORO, Donacion, priest.Char.charindex, vbWhite)  ' Msg1346=Para volver a ser un ciudadano deberÃ¡s Donar Â¬1 monedas de oro.
-            Exit Sub
-        End If
-        Dim permitePerdon As Boolean
-        permitePerdon = False
-        If .GuildIndex > 0 And (GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Or GuildAlignmentIndex(.GuildIndex) = _
-                e_ALINEACION_GUILD.ALINEACION_CRIMINAL) Then
-            permitePerdon = False
-        Else
-            permitePerdon = True
-        End If
-        If Not permitePerdon Then
-            Call WriteLocaleChatOverHead(UserIndex, MSG_NO_PODRAS_SER_PERDONADO_PERTENECIENDO_A_UN_CLAN_DE_ALINEACION_CRIMINAL_O_CRIMINAL_LEGION, "", priest.Char.charindex, vbYellow) ' Msg1347=No podrÃ¡s ser perdonado perteneciendo a un clan de alineaciÃ³n Criminal o de AlineaciÃ³n Oscura.
-            Exit Sub
-        End If
-        Call WriteLocaleChatOverHead(UserIndex, MSG_CON_ESTAS_PALABRAS_TE_LIBERO_DE_TODO_TIPO_DE_PECADOS_QUE_DIOS_TE_ACOMPANE_HIJO_MIO, "", priest.Char.charindex, vbYellow) ' Msg1348=Con estas palabras, te libero de todo tipo de pecados. Â¡Que Dios te acompaÃ±e hijo mÃ­o!
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-        Call VolverCiudadano(UserIndex)
-    End With
+    End Select
     Exit Sub
 HandleForgive_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForgive", Erl)

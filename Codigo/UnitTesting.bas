@@ -46,7 +46,7 @@ Option Explicit
     Private TamingRecipients As Collection
     Private TamingRoutesValid As Boolean
 
-        Private Const SUITE_COUNT As Integer = 51
+        Private Const SUITE_COUNT As Integer = 52
 
 ' Independent of Init: startup can fail before the test runner is initialized.
 Public Sub Progress(ByVal checkpoint As String, Optional ByVal startRun As Boolean = False)
@@ -343,6 +343,7 @@ Private Function RunSuite(ByVal suiteIndex As Integer) As Boolean
         Case 49: RunSuite = Unit_QuestDiscovery.TestSuite()
         Case 50: RunSuite = Unit_PartyRewards.TestSuite()
         Case 51: RunSuite = Unit_PartyManagement.TestSuite()
+        Case 52: RunSuite = Unit_PriestForgiveness.TestSuite()
         Case Else
             Call RunTestError("suite registration " & CStr(SuiteIndex), "No registered suite")
             RunSuite = False
@@ -1047,7 +1048,7 @@ Private Function test_remort_capability_bit_and_reset() As Boolean
     Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, False)
     If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
     Call SetFeatureToggle(HOO_FEATURE_REMORT_V1, True)
-    If AcceptedHooCapabilityMask(HOO_CAP_PROTOCOL_VERSION + 1, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
+    If AcceptedHooCapabilityMask(HOO_PROTOCOL_V2_VERSION + 1, HOO_CAP_REMORT_V1) <> 0 Then GoTo TestDone
     Call ResetHooClientCapabilities(1)
     If UserSupportsHooCapability(1, HOO_CAP_REMORT_V1) Then GoTo TestDone
     UserList(1).HooCapabilities.Negotiated = True
