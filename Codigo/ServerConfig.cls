@@ -153,6 +153,13 @@ Public Function LoadSettings(ByVal Filename As String, Optional ByVal source As 
     mSettings.Add "NPC_RETREAT_DISTANCE_BUFFER", CDbl(val(reader.GetValue("AI", "NPC_RETREAT_DISTANCE_BUFFER", DEFAULT_NPC_RETREAT_DISTANCE_BUFFER)))
     mSettings.Add "NPC_ORBIT_STEP_DEGREES", CDbl(val(reader.GetValue("AI", "NPC_ORBIT_STEP_DEGREES", DEFAULT_NPC_ORBIT_STEP_DEGREES)))
     mSettings.Add "NPC_STRAFE_DURATION_MS", CLng(val(reader.GetValue("AI", "NPC_STRAFE_DURATION_MS", DEFAULT_NPC_STRAFE_DURATION_MS)))
+    mSettings.Add "NPC_WANDER_BLOCKED_ATTEMPTS", ReadBoundedNpcWanderValue(reader, "NPC_WANDER_BLOCKED_ATTEMPTS", DEFAULT_NPC_WANDER_BLOCKED_ATTEMPTS, 0, 8)
+    Call LoadNpcWanderProfile(reader, "DEFAULT", DEFAULT_NPC_WANDER_DEFAULT_MIN_STEPS, DEFAULT_NPC_WANDER_DEFAULT_MAX_STEPS, _
+                              DEFAULT_NPC_WANDER_DEFAULT_MIN_PAUSE, DEFAULT_NPC_WANDER_DEFAULT_MAX_PAUSE, DEFAULT_NPC_WANDER_DEFAULT_RADIUS)
+    Call LoadNpcWanderProfile(reader, "ANIMAL", DEFAULT_NPC_WANDER_ANIMAL_MIN_STEPS, DEFAULT_NPC_WANDER_ANIMAL_MAX_STEPS, _
+                              DEFAULT_NPC_WANDER_ANIMAL_MIN_PAUSE, DEFAULT_NPC_WANDER_ANIMAL_MAX_PAUSE, DEFAULT_NPC_WANDER_ANIMAL_RADIUS)
+    Call LoadNpcWanderProfile(reader, "GUARD", DEFAULT_NPC_WANDER_GUARD_MIN_STEPS, DEFAULT_NPC_WANDER_GUARD_MAX_STEPS, _
+                              DEFAULT_NPC_WANDER_GUARD_MIN_PAUSE, DEFAULT_NPC_WANDER_GUARD_MAX_PAUSE, DEFAULT_NPC_WANDER_GUARD_RADIUS)
     
     mSettings.Add "AUTOEVENTDAYCALENDAR_Domingo", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Domingo")))
     mSettings.Add "AUTOEVENTDAYCALENDAR_Lunes", CInt(val(reader.GetValue("AUTOEVENTDAYCALENDAR", "Lunes")))
@@ -220,6 +227,48 @@ Public Function LoadSettings(ByVal Filename As String, Optional ByVal source As 
     Set reader = Nothing
     LoadSettings = 0
     DumpSettings
+End Function
+
+Private Sub LoadNpcWanderProfile(ByRef reader As clsIniManager, _
+                                 ByVal profileName As String, _
+                                 ByVal defaultMinSteps As Long, _
+                                 ByVal defaultMaxSteps As Long, _
+                                 ByVal defaultMinPause As Long, _
+                                 ByVal defaultMaxPause As Long, _
+                                 ByVal defaultRadius As Long)
+    Dim keyPrefix As String
+    Dim minSteps As Long
+    Dim maxSteps As Long
+    Dim minPause As Long
+    Dim maxPause As Long
+
+    keyPrefix = "NPC_WANDER_" & profileName & "_"
+    minSteps = ReadBoundedNpcWanderValue(reader, keyPrefix & "MIN_STEPS", defaultMinSteps, 1, 32)
+    maxSteps = ReadBoundedNpcWanderValue(reader, keyPrefix & "MAX_STEPS", defaultMaxSteps, 1, 32)
+    minPause = ReadBoundedNpcWanderValue(reader, keyPrefix & "MIN_PAUSE_MS", defaultMinPause, 0, 60000)
+    maxPause = ReadBoundedNpcWanderValue(reader, keyPrefix & "MAX_PAUSE_MS", defaultMaxPause, 0, 60000)
+
+    If maxSteps < minSteps Then maxSteps = minSteps
+    If maxPause < minPause Then maxPause = minPause
+
+    mSettings.Add keyPrefix & "MIN_STEPS", minSteps
+    mSettings.Add keyPrefix & "MAX_STEPS", maxSteps
+    mSettings.Add keyPrefix & "MIN_PAUSE_MS", minPause
+    mSettings.Add keyPrefix & "MAX_PAUSE_MS", maxPause
+    mSettings.Add keyPrefix & "RADIUS", ReadBoundedNpcWanderValue(reader, keyPrefix & "RADIUS", defaultRadius, 1, 32)
+End Sub
+
+Private Function ReadBoundedNpcWanderValue(ByRef reader As clsIniManager, _
+                                           ByVal key As String, _
+                                           ByVal defaultValue As Long, _
+                                           ByVal minimumValue As Long, _
+                                           ByVal maximumValue As Long) As Long
+    Dim configuredValue As Long
+    configuredValue = CLng(val(reader.GetValue("AI", key, CStr(defaultValue))))
+
+    If configuredValue < minimumValue Then configuredValue = minimumValue
+    If configuredValue > maximumValue Then configuredValue = maximumValue
+    ReadBoundedNpcWanderValue = configuredValue
 End Function
 
 Private Sub Class_Initialize()

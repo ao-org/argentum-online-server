@@ -379,20 +379,208 @@ End Sub
 ' en su posicion y otros se moveran libremente cerca de su posicion de origen.
 Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
     On Error GoTo AI_CaminarSinRumboCercaDeOrigen_Err
+    Dim maxRadius As Long
+    Dim nowRaw As Long
+    Dim moved As Boolean
+    Dim pauseCompleted As Boolean
+
     With NpcList(NpcIndex)
         If Not NPCs.CanMove(.Contadores, .flags) Then
             Call AnimacionIdle(NpcIndex, True)
-        ElseIf Distancia(.pos, .Orig) > 4 Then
+            Exit Sub
+        End If
+
+        nowRaw = GetTickCountRaw()
+        If .WanderPauseUntil <> 0 Then
+            If Not DeadlinePassed(nowRaw, .WanderPauseUntil) Then
+                Call AnimacionIdle(NpcIndex, True)
+                Exit Sub
+            End If
+            .WanderPauseUntil = 0
+            pauseCompleted = True
+        End If
+
+        maxRadius = GetNpcWanderSetting(NpcIndex, "RADIUS")
+        If Distancia(.pos, .Orig) > maxRadius Then
+            Call ResetNpcWanderState(NpcIndex)
             Call AI_CaminarConRumbo(NpcIndex, .Orig)
-        ElseIf RandomNumber(1, 6) = 3 Then
-            Call MoveNPCChar(NpcIndex, CByte(RandomNumber(e_Heading.NORTH, e_Heading.WEST)))
+            Exit Sub
+        End If
+
+        If .WanderStepsRemaining <= 0 Then
+            If .WanderHeading = 0 And Not pauseCompleted Then
+                Call StartNpcWanderPause(NpcIndex)
+                Exit Sub
+            End If
+            Call StartNpcWanderSegment(NpcIndex)
+            If .WanderStepsRemaining <= 0 Then Exit Sub
+        End If
+
+        If Not NpcWanderHeadingStaysInsideRadius(NpcIndex, .WanderHeading, maxRadius) Then
+            If Not SelectNpcWanderHeading(NpcIndex, True, maxRadius) Then
+                Call StartNpcWanderPause(NpcIndex)
+                Exit Sub
+            End If
+        End If
+
+        moved = MoveNPCChar(NpcIndex, CByte(.WanderHeading))
+        If Not moved Then moved = TryNpcWanderSideStep(NpcIndex, maxRadius)
+
+        If moved Then
+            .WanderBlockedAttempts = 0
+            .WanderStepsRemaining = .WanderStepsRemaining - 1
+            If .WanderStepsRemaining <= 0 Then Call StartNpcWanderPause(NpcIndex)
         Else
-            Call AnimacionIdle(NpcIndex, True)
+            .WanderBlockedAttempts = .WanderBlockedAttempts + 1
+            If .WanderBlockedAttempts > CLng(SvrConfig.GetValue("NPC_WANDER_BLOCKED_ATTEMPTS")) Then
+                Call StartNpcWanderPause(NpcIndex)
+            ElseIf Not SelectNpcWanderHeading(NpcIndex, True, maxRadius) Then
+                Call StartNpcWanderPause(NpcIndex)
+            Else
+                Call AnimacionIdle(NpcIndex, True)
+            End If
         End If
     End With
     Exit Sub
 AI_CaminarSinRumboCercaDeOrigen_Err:
     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
+End Sub
+
+Private Sub StartNpcWanderSegment(ByVal NpcIndex As Integer)
+    Dim minSteps As Long
+    Dim maxSteps As Long
+    Dim maxRadius As Long
+
+    minSteps = GetNpcWanderSetting(NpcIndex, "MIN_STEPS")
+    maxSteps = GetNpcWanderSetting(NpcIndex, "MAX_STEPS")
+    maxRadius = GetNpcWanderSetting(NpcIndex, "RADIUS")
+
+    With NpcList(NpcIndex)
+        .WanderStepsRemaining = RandomNumber(minSteps, maxSteps)
+        .WanderBlockedAttempts = 0
+        If Not SelectNpcWanderHeading(NpcIndex, True, maxRadius) Then
+            Call StartNpcWanderPause(NpcIndex)
+        End If
+    End With
+End Sub
+
+Private Sub StartNpcWanderPause(ByVal NpcIndex As Integer)
+    Dim minPause As Long
+    Dim maxPause As Long
+    Dim pauseDuration As Long
+
+    minPause = GetNpcWanderSetting(NpcIndex, "MIN_PAUSE_MS")
+    maxPause = GetNpcWanderSetting(NpcIndex, "MAX_PAUSE_MS")
+    pauseDuration = RandomNumber(minPause, maxPause)
+
+    With NpcList(NpcIndex)
+        .WanderStepsRemaining = 0
+        .WanderBlockedAttempts = 0
+        .WanderPauseUntil = AddMod32(GetTickCountRaw(), pauseDuration)
+        If .WanderPauseUntil = 0 Then .WanderPauseUntil = 1
+    End With
+    Call AnimacionIdle(NpcIndex, True)
+End Sub
+
+Private Function SelectNpcWanderHeading(ByVal NpcIndex As Integer, _
+                                        ByVal avoidReverse As Boolean, _
+                                        ByVal maxRadius As Long) As Boolean
+    Dim attempt As Integer
+    Dim candidate As e_Heading
+    Dim reverseHeading As e_Heading
+    Dim canUseCandidate As Boolean
+
+    With NpcList(NpcIndex)
+        If .WanderHeading >= e_Heading.NORTH And .WanderHeading <= e_Heading.WEST Then
+            reverseHeading = InvertHeading(.WanderHeading)
+        End If
+
+        For attempt = 1 To 12
+            candidate = RandomNumber(e_Heading.NORTH, e_Heading.WEST)
+            canUseCandidate = True
+            If avoidReverse And reverseHeading > 0 And candidate = reverseHeading And attempt <= 8 Then
+                canUseCandidate = False
+            End If
+            If canUseCandidate Then
+                If NpcWanderHeadingStaysInsideRadius(NpcIndex, candidate, maxRadius) Then
+                    .WanderHeading = candidate
+                    SelectNpcWanderHeading = True
+                    Exit Function
+                End If
+            End If
+        Next attempt
+
+        If Distancia(.pos, .Orig) > 0 Then
+            candidate = GetHeadingFromWorldPos(.pos, .Orig)
+            If NpcWanderHeadingStaysInsideRadius(NpcIndex, candidate, maxRadius) Then
+                .WanderHeading = candidate
+                SelectNpcWanderHeading = True
+            End If
+        End If
+    End With
+End Function
+
+Private Function TryNpcWanderSideStep(ByVal NpcIndex As Integer, ByVal maxRadius As Long) As Boolean
+    Dim firstRotation As Integer
+    Dim sideHeading As e_Heading
+
+    If RandomNumber(0, 1) = 0 Then
+        firstRotation = -1
+    Else
+        firstRotation = 1
+    End If
+
+    With NpcList(NpcIndex)
+        sideHeading = Rotate_Heading(.WanderHeading, firstRotation)
+        If NpcWanderHeadingStaysInsideRadius(NpcIndex, sideHeading, maxRadius) Then
+            If MoveNPCChar(NpcIndex, CByte(sideHeading)) Then
+                .WanderHeading = sideHeading
+                TryNpcWanderSideStep = True
+                Exit Function
+            End If
+        End If
+
+        sideHeading = Rotate_Heading(.WanderHeading, -firstRotation)
+        If NpcWanderHeadingStaysInsideRadius(NpcIndex, sideHeading, maxRadius) Then
+            If MoveNPCChar(NpcIndex, CByte(sideHeading)) Then
+                .WanderHeading = sideHeading
+                TryNpcWanderSideStep = True
+            End If
+        End If
+    End With
+End Function
+
+Private Function NpcWanderHeadingStaysInsideRadius(ByVal NpcIndex As Integer, _
+                                                   ByVal Heading As e_Heading, _
+                                                   ByVal maxRadius As Long) As Boolean
+    Dim nextPos As t_WorldPos
+    nextPos = NpcList(NpcIndex).pos
+    Call HeadtoPos(Heading, nextPos)
+    NpcWanderHeadingStaysInsideRadius = (Distancia(nextPos, NpcList(NpcIndex).Orig) <= maxRadius)
+End Function
+
+Private Function GetNpcWanderSetting(ByVal NpcIndex As Integer, ByVal settingName As String) As Long
+    Dim profileName As String
+
+    Select Case NpcList(NpcIndex).WanderProfile
+        Case NpcWanderAnimal
+            profileName = "ANIMAL"
+        Case NpcWanderGuard
+            profileName = "GUARD"
+        Case Else
+            profileName = "DEFAULT"
+    End Select
+
+    GetNpcWanderSetting = CLng(SvrConfig.GetValue("NPC_WANDER_" & profileName & "_" & settingName))
+End Function
+
+Private Sub ResetNpcWanderState(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        .WanderHeading = 0
+        .WanderStepsRemaining = 0
+        .WanderBlockedAttempts = 0
+        .WanderPauseUntil = 0
+    End With
 End Sub
 
 ' Cuando un NPC no tiene target y se tiene que mover libremente
@@ -757,6 +945,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         If UsuarioAtacableConMagia(.TargetUser.ArrayIndex) Or UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
             ' Si no tiene un camino pero esta pegado al usuario, no queremos gastar tiempo calculando caminos.
             If .pathFindingInfo.PathLength = 0 And EstaPegadoAlUsuario Then Exit Sub
+            Call ResetNpcWanderState(AtackerNpcIndex)
             Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.TargetUser.ArrayIndex).pos)
         Else
             Call AI_CaminarSinRumboCercaDeOrigen(AtackerNpcIndex)
@@ -1698,6 +1887,7 @@ Public Function GoToNextWp(ByVal NpcIndex As Integer) As t_WorldPos
 End Function
 
 Public Sub SetMovement(ByVal NpcIndex As Integer, ByVal NewMovement As e_TipoAI)
+    If NpcList(NpcIndex).Movement <> NewMovement Then Call ResetNpcWanderState(NpcIndex)
     NpcList(NpcIndex).Movement = NewMovement
     If IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
         If NewMovement = e_TipoAI.Estatico Or NewMovement = SigueAmo Then

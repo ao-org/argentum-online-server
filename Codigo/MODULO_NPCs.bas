@@ -364,6 +364,11 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         Call ClearNpcRef(.MaestroNPC)
         .Mascotas = 0
         .Movement = 0
+        .WanderProfile = NpcWanderDefault
+        .WanderHeading = 0
+        .WanderStepsRemaining = 0
+        .WanderBlockedAttempts = 0
+        .WanderPauseUntil = 0
         .name = "NPC SIN INICIAR"
         .npcType = 0
         .Numero = 0
@@ -1120,6 +1125,7 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
     Dim MaxInventory As Long
     Dim cant As Long
     Dim respawnScheduleValue As Long
+    Dim wanderProfileName As String
     With NpcInfoCache(NpcNumber)
         .Exists = True
         .TestOnly = Val(LeerNPCs.GetValue(SectionName, "TESTONLY"))
@@ -1132,6 +1138,18 @@ Private Sub LoadNpcInfoIntoCache(ByVal NpcNumber As Integer)
         .Desc = LeerNPCs.GetValue(SectionName, "Desc")
         .nivel = Val(LeerNPCs.GetValue(SectionName, "Nivel"))
         .Movement = Val(LeerNPCs.GetValue(SectionName, "Movement"))
+        wanderProfileName = UCase$(Trim$(LeerNPCs.GetValue(SectionName, "WanderProfile", "DEFAULT")))
+        Select Case wanderProfileName
+            Case vbNullString, "DEFAULT"
+                .WanderProfile = NpcWanderDefault
+            Case "ANIMAL"
+                .WanderProfile = NpcWanderAnimal
+            Case "GUARD"
+                .WanderProfile = NpcWanderGuard
+            Case Else
+                .WanderProfile = NpcWanderDefault
+                Call LogError("Invalid WanderProfile | NpcNumber=" & NpcNumber & " | Value=" & wanderProfileName & " | Using=DEFAULT")
+        End Select
         .AguaValida = Val(LeerNPCs.GetValue(SectionName, "AguaValida"))
         .TierraInvalida = Val(LeerNPCs.GetValue(SectionName, "TierraInValida"))
         .LavaValida = Val(LeerNPCs.GetValue(SectionName, "LavaValida"))
@@ -1526,6 +1544,11 @@ Private Sub InitializeNpcFromInfo(ByVal NpcIndex As Integer, _
         .Desc = Info.Desc
         .nivel = Info.nivel
         Call SetMovement(NpcIndex, Info.Movement)
+        .WanderProfile = Info.WanderProfile
+        .WanderHeading = 0
+        .WanderStepsRemaining = 0
+        .WanderBlockedAttempts = 0
+        .WanderPauseUntil = 0
         .flags.OldMovement = .Movement
         .flags.AguaValida = Info.AguaValida
         .flags.GlobalQuestBossIndex = Info.GlobalQuestBossIndex

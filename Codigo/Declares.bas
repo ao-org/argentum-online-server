@@ -3475,6 +3475,12 @@ Public Type t_NpcCaminataCache
     Espera As Long
 End Type
 
+Public Enum e_NpcWanderProfile
+    NpcWanderDefault = 0
+    NpcWanderAnimal = 1
+    NpcWanderGuard = 2
+End Enum
+
 Public Type t_NpcInfoCache
     Exists As Boolean
     TestOnly As Integer
@@ -3486,6 +3492,7 @@ Public Type t_NpcInfoCache
     Desc As String
     nivel As Integer
     Movement As Integer
+    WanderProfile As e_NpcWanderProfile
     AguaValida As Integer
     GlobalQuestBossIndex As Integer
     TierraInvalida As Integer
@@ -3668,6 +3675,11 @@ Public Type t_Npc
     pos As t_WorldPos 'Posicion
     Orig As t_WorldPos
     Movement As e_TipoAI
+    WanderProfile As e_NpcWanderProfile
+    WanderHeading As e_Heading
+    WanderStepsRemaining As Integer
+    WanderBlockedAttempts As Integer
+    WanderPauseUntil As Long
     Attackable As Byte
     Hostile As Byte
     PoderAtaque As Long
